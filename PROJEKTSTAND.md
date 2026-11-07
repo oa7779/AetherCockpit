@@ -29,6 +29,16 @@ Alle neun GitHub-Assetgrößen und SHA256-Digests gegen lokale Dateien geprüft;
 Latest und Tag zeigen auf Beta 36 beziehungsweise den genauen Quellcommit.
 Regulärer GitHub-Release für Latest, Produktstatus weiterhin BETA.
 
+GitHub-Präsentation nach Veröffentlichung ergänzt: vier neue Screenshots
+aus dem aktuellen Beta-36-UI-Test für Dashboard, Mainframe Tag/Nacht und
+Schoner unter `docs/screenshots`; README und Releasebeschreibung zeigen sie.
+Dashboard ohne Messwerte, Board-/Schonerbilder mit gekennzeichneten Testdaten.
+Screenshotlauf mit 1172 Assertions bestanden, Bilder visuell geprüft.
+Keine Programmänderung, neue Version oder erneute Paketierung; veröffentlichte
+Setup-/Portable-/Server-/Intune-Dateien und ihre Prüfsummen bleiben unverändert.
+Die Paketdokumentation entspricht weiterhin dem geprüften Releasezeitpunkt;
+die neue Galerie ist eine Ergänzung der GitHub-Präsentation.
+
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
 Veröffentlichte Beta **0.7.0-beta.36**, Dateiversion **0.7.0.36**.

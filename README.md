@@ -48,6 +48,28 @@ Glasrahmen, LED-Ziffern und abschaltbare Animation prägen die Oberfläche.
 Das anklickbare Mainboard ist schematisch: Leiterbahnen und Lüfter illustrieren
 die Szene, echte Messwerte stehen daneben.
 
+### Einblicke in Beta 36
+
+Die Aufnahmen zeigen die Anwendung im lokalen UI-Test: Das Dashboard wartet
+auf Messwerte, Mainframe und Schoner verwenden synthetische Testdaten.
+Die Bilder werden auf GitHub bereitgestellt.
+
+**Dashboard und aufgabenbezogene Navigation**
+
+![AETHER-Dashboard vor der ersten Messung](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-dashboard.png)
+
+**Mainframe im Tagmodus mit getrennten Gerätedetails**
+
+![AETHER-Mainframe im Tagmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-mainframe-day.png)
+
+**Mainframe im Nachtmodus mit korrigierten GPU-Lüftern**
+
+![AETHER-Mainframe im Nachtmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-mainframe-night.png)
+
+**Bildschirmschoner mit Neon-Platine und eigener Sekundenanzeige**
+
+![AETHER-Bildschirmschoner mit synthetischen Testdaten](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-saver.png)
+
 ## Installation
 
 **Setup:** Die x64-Setup-EXE aus dem Release herunterladen, Prüfsumme vergleichen
