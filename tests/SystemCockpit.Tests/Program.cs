@@ -134,6 +134,11 @@ internal static class Program
                 }
                 _assertions += BootTests.LiveUi(Option("--boot-screenshot"), Option("--neon-screenshot"));
             }
+            if (args.Contains("--branding-ui"))
+            {
+                var index = Array.IndexOf(args, "--branding-screenshot-prefix");
+                _assertions += BootTests.BrandingUi(index >= 0 && index + 1 < args.Length ? args[index + 1] : null);
+            }
             if (args.Contains("--dashboard-ui"))
             {
                 var screenshotIndex = Array.IndexOf(args, "--dashboard-screenshot");

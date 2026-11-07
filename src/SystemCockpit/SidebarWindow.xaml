@@ -33,8 +33,10 @@
         </Style>
       </ResourceDictionary>
     </Window.Resources>
-    <Border Background="#F10C0920" BorderBrush="#9C44B5" BorderThickness="1.5"
-            CornerRadius="14,4,14,4" Padding="10">
+    <AdornerDecorator>
+    <Border x:Name="BarNeonFrame" Background="#F10C0920" BorderBrush="{DynamicResource GlassRim}" BorderThickness="2"
+            CornerRadius="14,4,14,4" Padding="10" Margin="5"
+            controls:FrameGlow.Visible="True" controls:FrameGlow.Enabled="{Binding MotionEnabled}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -51,7 +53,9 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <TextBlock Text="AETHER / xBAR" Foreground="#D45CFF" FontFamily="Consolas"
-                               FontSize="17" FontWeight="Bold"/>
+                               FontSize="17" FontWeight="Bold">
+                        <TextBlock.Effect><DropShadowEffect Color="#E744FF" BlurRadius="14" ShadowDepth="0" Opacity="0.8"/></TextBlock.Effect>
+                    </TextBlock>
                     <TextBlock Text="LIVE DIAGRAMME" Foreground="#7C7398" FontFamily="Consolas"
                                FontSize="9"/>
                 </StackPanel>
@@ -135,4 +139,5 @@
             </Popup>
         </Grid>
     </Border>
+    </AdornerDecorator>
 </Window>

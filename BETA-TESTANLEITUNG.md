@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.34**
+**Beta: 0.7.0-beta.35**
 
 Diese Anleitung hilft beim Nachstellen von Bedien- und Darstellungsfehlern.
 Sie verlangt keine Reparatur oder Änderung eines produktiven Rechners.
@@ -36,7 +36,11 @@ Gemischte DPI, mehrere Monitore und Explorer-Neustart sind besonders
 relevant für Fensterposition und Gadgets. Windows kann Fokuswechsel
 und Benachrichtigungen begrenzen.
 
-## Schwerpunkt Beta 34
+## Aktueller Testschwerpunkt
+
+Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-35-Stand.
+Installationsversion und Prüfsumme vor dem Test vergleichen; das Intune-Paket
+auf einem dafür vorgesehenen Gerät separat abnehmen.
 
 - Verstärkten Glow in Hauptfenster, Dashboard und Schoner prüfen:
   Halos und Bewegung bei verschiedenen DPI-Einstellungen ansehen.

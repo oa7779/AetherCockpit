@@ -9,15 +9,17 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Neue Beta: 0.7.0-beta.34**
+**Aktuelle Beta: 0.7.0-beta.35**
 
-Beta 34 verstärkt Neon-Glow und abschaltbare Bewegung in Cockpit, Dashboard
-und Bildschirmschoner. Neue Konsolenassistenten ergänzen Windows-Diagnose
+Beta 35 liefert den aktuellen Stand als neues Setup, Portable-, Server-
+und Intune-Paket. Das Logo beim Start und im Dashboard ist wieder sichtbar,
+die xBar erhält stärkeren Glow. Neon-Glow und abschaltbare Bewegung prägen
+Cockpit, Dashboard und Bildschirmschoner. Konsolenassistenten ergänzen Windows-Diagnose
 und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
 HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Beta-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34)
+[Aktuelle Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/latest)
 · [Versionsgeschichte](CHANGELOG.md)
 
 ## Wesentliche Funktionen

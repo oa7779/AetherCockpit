@@ -34,6 +34,17 @@ Kein Zertifikat wird in Windows installiert.
 `tests\Verify-ServiceAcl.ps1` prüft fünf synthetische ACL-Fälle ohne
 Dienstregistrierung oder Änderung realer Dateirechte.
 
+`tests\Verify-IntunePackage.ps1` prüft das erzeugte `.intunewin` ohne Installation:
+Containerstruktur, MAC, IV, SHA256 des entschlüsselten Quell-ZIPs und
+SHA256 des einzigen darin enthaltenen Setups müssen stimmen.
+
+```powershell
+powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.35\AetherCockpit-Setup-0.7.0-beta.35-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe
+```
+
+Die Prüfung verwendet einen temporären Fixtureordner und entfernt ihn danach.
+Eine tatsächliche Intune-Verteilung wird damit nicht durchgeführt.
+
 `tests\Verify-ManagerApi.ps1` prüft eine eigens gestartete Loopback-API mit
 synthetischen Geräten, Berichten und Ergebnissen. Es erzeugt Auftragsdatensätze,
 führt sie aber nicht aus. Nur einen isolierten `manager-validation`-Datenordner
@@ -53,6 +64,7 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--board-ui` | Synthetische Mainboardgeometrie, Auswahl und Darstellung |
 | `--sensor-charts-ui` | Sensorverläufe und Lücken mit Testdaten |
 | `--xbar-ui` | Diagrammleiste und Anordnung |
+| `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
 | `--desktop-ui` | Gadgets und Desktopparameter |
 | `--screensaver-ui` | Synthetische Schonerszene ohne Hardwareinitialisierung |
 | `--inventory-ui` | Inventarfenster mit kontrollierten Testdaten |
@@ -60,6 +72,7 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 Optionale Screenshots verwenden `--board-screenshot`, `--sensor-charts-screenshot`,
 `--screensaver-screenshot`, `--inventory-screenshot` mit einem Zielpfad.
 `--professional-screenshot-prefix` benennt mehrere Workflow-Bilder.
+`--branding-screenshot-prefix` erzeugt Boot-, Dashboard- und xBar-Bilder.
 Screenshots mit realen Namen und Pfaden vor Weitergabe prüfen.
 
 ## Lesende lokale Prüfungen

@@ -16,12 +16,14 @@
                 <Line X1="0" X2="280" Y1="0" Y2="0" Stroke="#493362"/>
                 <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#30233F"/>
                 <Line X1="0" X2="280" Y1="56" Y2="56" Stroke="#493362"/>
+                <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="8" Opacity="0.12"/>
+                <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="4.5" Opacity="0.28"/>
                 <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="2"/>
             </Canvas>
         </Viewbox>
     </DataTemplate>
     <DataTemplate x:Key="MetricTemplate">
-        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#443451"
+        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11"/>
@@ -38,7 +40,7 @@
         </Border>
     </DataTemplate>
     <DataTemplate x:Key="HistoryTemplate">
-        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#443451"
+        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <DockPanel>
@@ -52,7 +54,7 @@
         </Border>
     </DataTemplate>
     <DataTemplate x:Key="VolumeTemplate">
-        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#443451"
+        <Border Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#32D5FF"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <TextBlock Text="{Binding Name}" Foreground="#32D5FF" FontFamily="Consolas" FontWeight="Bold"/>

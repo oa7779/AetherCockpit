@@ -2,20 +2,12 @@
 
 ## Paketstand
 
-Das vorhandene Win32-Paket gehört zu **0.7.0-beta.28**, nicht zu Beta 34.
-Sein historisches Deploymentblatt liegt im Workspace unter
-`dist\intune\INTUNE-DEPLOYMENT.md`.
-Es enthält:
-
-- `AetherCockpit-Setup-0.7.0-beta.28-win-x64.intunewin`
-- Paket-SHA256:
-  `a01a831826b8acfa777983c69c252143d5466aea35be1285427b1b772992a651`
-- zugrunde liegendes Setup-SHA256:
-  `a89721c0e78daf030934f8956f13d370978c9233452bf3df30be46ae95a5fe42`
-
-Dieses Paket und sein Begleitblatt bleiben als Release-Unterlagen unverändert.
-Die folgende Anleitung beschreibt die aktuellen Parameter. Für Beta 34 wurde
-noch kein `.intunewin` erzeugt.
+Aktuelles Win32-Paket: **0.7.0-beta.35**.
+`AetherCockpit-Setup-0.7.0-beta.35-win-x64.intunewin` wird aus dem
+gleichnamigen Beta-35-Setup erzeugt und mit SHA256-Prüfsumme auf
+[GitHub](https://github.com/oa7779/AetherCockpit/releases/latest) veröffentlicht.
+Lokale Ausgabe: `dist\intune\0.7.0-beta.35`.
+Die alten Beta-27-/28-Pakete und ihr historisches Begleitblatt bleiben unverändert.
 
 ## Neues Paket vorbereiten
 
@@ -25,10 +17,13 @@ GitHub-Quellstands. Einen eigenen Quellordner verwenden,
 der nur das geprüfte Setup enthält, und einen neuen Ausgabeordner wählen:
 
 ```powershell
-.\tools\intune\IntuneWinAppUtil.exe -c C:\AetherPackage\Source -s AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe -o C:\AetherPackage\Output -q
+powershell -NoProfile -File .\build\Publish-Intune.ps1
 ```
 
-Vorhandene Release-Ausgaben nicht überschreiben.
+Das Skript liest die Version aus dem Publishprofil, kopiert nur das zugehörige
+Setup in einen temporären Quellordner, erzeugt `.intunewin` und Prüfsumme
+und kopiert dieses Deploymentblatt in die neue Ausgabe.
+Vorhandene Release-Ausgaben werden abgewiesen.
 Das Setup enthält die Runtime und die vom Publish übernommenen Dokumente.
 
 ## App-Konfiguration
@@ -44,10 +39,10 @@ Erststart-Assistenten aus.
 
 ### Installation
 
-Intune-Befehlszeile für ein neu erzeugtes Beta-34-Paket:
+Intune-Befehlszeile für das Beta-35-Paket:
 
 ```text
-AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
+AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
 ```
 
 Die vorausgewählte Autostart-Aufgabe wird ohne Zustimmung übersprungen
@@ -86,19 +81,26 @@ Benötigte Daten vorher sichern.
 
 ### Erkennung
 
-Für Beta 34:
+Für Beta 35:
 
 | Regel | Wert |
 |---|---|
 | Dateipfad | `C:\Program Files\AETHER System Control` |
 | Datei | `SystemCockpit.exe` |
-| Versionsvergleich | größer oder gleich `0.7.0.34`, 64-Bit-Zuordnung |
+| Versionsvergleich | größer oder gleich `0.7.0.35`, 64-Bit-Zuordnung |
 | Alternativer Registry-Pfad | `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7B0C30A1-7DB4-45B7-A872-F94664465F40}_is1` |
-| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.34`, 64-Bit-Zuordnung |
+| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.35`, 64-Bit-Zuordnung |
 
-Für das vorhandene Beta-28-Paket bleiben `0.7.0.28` beziehungsweise
-`0.7.0-beta.28` maßgeblich. Installationsziel kann abweichen; eine Dateiregel
+Die Registry-Erkennung muss für jede neue Beta auf deren Versionszeichenfolge
+angepasst werden. Installationsziel kann abweichen; eine Dateiregel
 am Standardpfad passt dann nicht.
+
+Bestehende Intune-App auf das neue `.intunewin` umstellen oder mit
+Supersedence als erhaltendes Update verteilen, nicht zuerst deinstallieren.
+Installationsbefehl, App-Version und Erkennung gemeinsam aktualisieren.
+Den Clientdienst nur bereitstellen, wenn er gewünscht ist; Serveranmeldung und
+lokale Rechtefreigabe bleiben im separaten Assistenten und werden nicht durch
+einen SYSTEM-Installationslauf impliziert.
 
 ### Rückgabecodes
 
@@ -111,4 +113,5 @@ Weitere Fehler anhand des Setup-Logs prüfen.
 Beta-27-Pakete hatten eingeschränkten Silent-Install und keinen
 unbeaufsichtigten Uninstall; für neue Verteilung nicht verwenden.
 
-[Installation](INSTALLATION.md) · [Paketierung](DEVELOPMENT.md)
+[Installation](https://github.com/oa7779/AetherCockpit/blob/main/docs/INSTALLATION.md)
+· [Paketierung](https://github.com/oa7779/AetherCockpit/blob/main/docs/DEVELOPMENT.md)

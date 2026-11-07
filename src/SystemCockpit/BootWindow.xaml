@@ -21,7 +21,7 @@
             </Canvas></Viewbox>
             <Border Width="240" Height="225" Background="#070513" BorderBrush="#FC46EA" BorderThickness="1" CornerRadius="24">
                 <Border.Effect><DropShadowEffect Color="#D72FFF" BlurRadius="35" ShadowDepth="0" Opacity="0.6"/></Border.Effect>
-                <Image Source="Assets/aether-logo.png" Margin="8" Stretch="Uniform"/>
+                <Image x:Name="BootLogo" Source="/SystemCockpit;component/Assets/aether-logo.png" Margin="8" Stretch="Uniform"/>
             </Border>
             <Rectangle x:Name="Sweep" Width="110" HorizontalAlignment="Left" IsHitTestVisible="False" Opacity="0.2">
                 <Rectangle.Fill><LinearGradientBrush><GradientStop Color="#00FFFFFF"/><GradientStop Color="#FF9DFFFA" Offset="0.5"/><GradientStop Color="#00FFFFFF" Offset="1"/></LinearGradientBrush></Rectangle.Fill>

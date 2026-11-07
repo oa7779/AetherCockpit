@@ -9,6 +9,24 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.35
+
+### Paketierung und Veröffentlichung
+
+- Setup, Portable-Client und separater Verwaltungsserver vollständig neu gebaut.
+- Aktuelles Intune-Win32-Paket aus genau demselben Setup ergänzt, mit
+  versionsgleicher Installations-/Erkennungsanleitung und SHA256-Prüfsummen.
+- Reproduzierbares Intune-Publishskript mit getrennten, geschützten Ausgaben.
+- GitHub-Downloadziel auf die aktuelle Beta gesetzt statt auf Beta 32.
+
+### Darstellung
+
+- AETHER-Logo beim Start und im Dashboard über die eingebettete Ressource
+  wiederhergestellt; Dashboardlogo vergrößert und ohne negativen Abstand.
+- xBar mit stärkerem Neonrahmen, leuchtender Überschrift und mehrlagigen
+  Verlaufskurven. Energiebewegung beachtet den Animationsschalter und Windows.
+- Diagnose-, Sensor- und Verwaltungslogik unverändert.
+
 ## 0.7.0-beta.34
 
 ### Neu

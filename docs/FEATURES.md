@@ -1,7 +1,7 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand Beta 34; sie enthält keine Versionsgeschichte.
+beschreibt den aktuellen Quellstand Beta 35; sie enthält keine Versionsgeschichte.
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 ## Beobachtung und Darstellung

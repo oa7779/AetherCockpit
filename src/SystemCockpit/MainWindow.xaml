@@ -121,7 +121,8 @@
                     </Style>
                 </StackPanel.Resources>
                 <StackPanel DockPanel.Dock="Top">
-                    <Image Source="Assets/aether-logo.png" Height="64" Stretch="Uniform" Margin="0,-15,0,8"/>
+                    <Image x:Name="DashboardLogo" Source="/SystemCockpit;component/Assets/aether-logo.png"
+                           Height="112" Stretch="Uniform" Margin="0,0,0,10"/>
                     <TextBlock Text="A E T H E R" Foreground="#24FFE3" FontFamily="Consolas" FontSize="25" FontWeight="Bold">
                         <TextBlock.Effect><DropShadowEffect Color="#24FFE3" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></TextBlock.Effect>
                     </TextBlock>

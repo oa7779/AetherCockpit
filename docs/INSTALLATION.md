@@ -20,16 +20,16 @@ Der Bildschirmschoner läuft dagegen ohne UAC; siehe [Benutzerhandbuch](USER-GUI
 ## Download und Prüfsumme
 
 Veröffentlichte Pakete stehen bei den
-[GitHub-Beta 34](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34).
+[GitHub-Downloads](https://github.com/oa7779/AetherCockpit/releases/latest).
 Vor dem Start die
 SHA256-Prüfsumme mit der zugehörigen `.sha256`-Datei vergleichen:
 
-Beispiel für die Beta-34-Dateien:
+Beispiel für die Beta-35-Dateien:
 
 ```powershell
-Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe -Algorithm SHA256
-Get-FileHash .\AetherCockpit-0.7.0-beta.34-win-x64.zip -Algorithm SHA256
-Get-FileHash .\AetherManager-0.7.0-beta.34-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe -Algorithm SHA256
+Get-FileHash .\AetherCockpit-0.7.0-beta.35-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherManager-0.7.0-beta.35-win-x64.zip -Algorithm SHA256
 ```
 
 Die Beta-Pakete sind nicht signiert. SmartScreen oder Schutzsoftware können
@@ -142,11 +142,11 @@ Verzeichnisbereinigung.
 
 ## Silent-Installation
 
-Die folgende Kommandozeile verwendet das lokale Beta-33-Setup.
+Die folgende Kommandozeile verwendet das aktuelle Beta-35-Setup.
 Bei einem veröffentlichten Download dessen tatsächlichen Dateinamen einsetzen.
 
 ```powershell
-.\AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+.\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 ```
 
 Ohne `/AutostartConsent=1` wird keine neue erhöhte Aufgabe eingerichtet.

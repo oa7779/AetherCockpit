@@ -66,6 +66,97 @@ internal static class BootTests
             throw new InvalidOperationException($"Application icon too faint at {bitmap.PixelWidth} pixels");
     }
 
+    public static int BrandingUi(string? screenshotPrefix)
+    {
+        var count = 0;
+        void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
+        void VerifyLogo(Image image)
+        {
+            Check(image.Source is BitmapSource { PixelWidth: > 100, PixelHeight: > 100 },
+                "Actual compiled window must decode the embedded AETHER logo");
+            var source = (BitmapSource)image.Source;
+            var bitmap = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);
+            var pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
+            bitmap.CopyPixels(pixels, bitmap.PixelWidth * 4, 0);
+            var bright = 0;
+            for (var i = 0; i < pixels.Length; i += 4)
+                if (pixels[i + 3] > 100 && Math.Max(pixels[i], Math.Max(pixels[i + 1], pixels[i + 2])) > 160) bright++;
+            Check(bright > bitmap.PixelWidth * bitmap.PixelHeight / 20, "Decoded logo contains the actual luminous brand pixels");
+            Check(image.ActualWidth >= 90 && image.ActualHeight >= 90 && image.IsVisible && image.Opacity == 1,
+                "Logo is visible at readable dimensions, not clipped or hidden");
+            var window = Window.GetWindow(image);
+            Check(new Rect(window.RenderSize).Contains(
+                    image.TransformToAncestor(window).TransformBounds(new Rect(image.RenderSize))),
+                "Logo lies inside the visible window");
+        }
+        void CaptureSynthetic(FrameworkElement content, Window original, object? model,
+            double width, double height, string suffix, Action<Window> verify)
+        {
+            var host = new Window { Content = content, DataContext = model, Width = width, Height = height, ShowInTaskbar = false,
+                Background = original.Background, Foreground = original.Foreground, FontFamily = original.FontFamily };
+            host.Resources.MergedDictionaries.Add(original.Resources);
+            try
+            {
+                host.Show();
+                Pump();
+                verify(host);
+                Capture(host, screenshotPrefix is null ? null : screenshotPrefix + suffix + ".png");
+            }
+            finally { host.Close(); Pump(); }
+        }
+        var boot = new BootWindow();
+        try
+        {
+            var content = (FrameworkElement)boot.Content;
+            boot.Content = null;
+            CaptureSynthetic(content, boot, null, 980, 780, "-boot",
+                _ => VerifyLogo((Image)boot.FindName("BootLogo")));
+        }
+        finally { boot.CloseAfterStartup(); }
+        var main = new MainWindow();
+        try
+        {
+            var content = (FrameworkElement)main.Content;
+            main.Content = null;
+            CaptureSynthetic(content, main, main.Model, 1100, 760, "-dashboard", host =>
+            {
+                VerifyLogo((Image)main.FindName("DashboardLogo"));
+                var pages = (TabControl)main.FindName("Pages");
+                Check(pages.ActualWidth > 600 && pages.ActualHeight > 350,
+                    "Dashboard retains usable content dimensions at minimum supported test window");
+                Check(host.Content == content, "Dashboard is rendered without starting the production MainWindow services");
+            });
+        }
+        finally { main.Close(); }
+        var model = new CockpitModel { MotionEnabled = false };
+        var bar = new SidebarWindow(model, model.Settings, _ => throw new InvalidOperationException("Synthetic bar must not save settings"));
+        try
+        {
+            var content = (FrameworkElement)bar.Content;
+            bar.Content = null;
+            CaptureSynthetic(content, bar, model, 350, 760, "-bar", _ =>
+            {
+                var frame = (Border)bar.FindName("BarNeonFrame");
+                var layer = System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame);
+                Check(layer?.GetAdorners(frame)?.Length == 1 && !SystemCockpit.Controls.FrameGlow.GetMotionActive(frame),
+                    "Bar has a static halo with motion disabled and its own adorner layer");
+                model.MotionEnabled = true;
+                Pump();
+                Check(SystemCockpit.Controls.FrameGlow.GetMotionActive(frame) == SystemParameters.ClientAreaAnimation,
+                    "Bar motion follows both the AETHER switch and Windows animation permission");
+                model.MotionEnabled = false;
+                Pump();
+                Check(!SystemCockpit.Controls.FrameGlow.GetMotionActive(frame), "Disabling bar motion immediately removes energy clocks");
+                var curves = ((DataTemplate)bar.Resources["CurveTemplate"]).LoadContent() as Viewbox;
+                var canvas = (Canvas)curves!.Child;
+                Check(canvas.Children.OfType<System.Windows.Shapes.Polyline>().Count() == 3,
+                    "Bar curve has layered glow without an effect on labels or measurement text");
+            });
+        }
+        finally { bar.Close(); }
+        return count;
+    }
+
     public static int LiveUi(string? bootScreenshot, string? cockpitScreenshot)
     {
         var boot = new BootWindow();

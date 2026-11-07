@@ -4,10 +4,14 @@
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-Veröffentlichte Beta **0.7.0-beta.34**, Dateiversion **0.7.0.34**.
-[GitHub-Beta 34](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34)
-mit Client-Setup, Portable-ZIP, separatem Server-ZIP und Prüfsummen.
-Releasetag und Quellcode-Commit: `32783f9`. Frühere Pakete bleiben unverändert.
+Aktuelle Paketierung **0.7.0-beta.35**, Dateiversion **0.7.0.35**.
+Releaseziel: Setup, Portable-Client, separater Server, aktuelles Intune-Paket
+und Prüfsummen; der GitHub-Latest-Link soll auf diese Beta zeigen.
+Beta 35 enthält außerdem die Logo-Reparatur für Boot und Dashboard sowie
+stärkeren xBar-Glow. Eingebettete Bildressource und Dokumentationskopie sind
+getrennt; UI verwendet den komponentengebundenen Ressourcenpfad.
+Beta 34 bleibt unter Tag `v0.7.0-beta.34`, Quellcode-Commit `32783f9`, erhalten.
+Frühere Pakete bleiben unverändert.
 Der Nutzer hat für diesen
 Durchlauf Entwicklung, Paketierung, Commit und GitHub-Release beauftragt.
 Der zuvor veröffentlichte Quellstand ist `591a142`; er enthält Beta 33,
@@ -20,6 +24,10 @@ die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
 
 | Ausgabe | SHA256 |
 |---|---|
+| [Setup Beta 35](dist/AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe) | `ac516529ce584db58e959a04691219939edf29d9c134568f0e6d4c205af492c8` |
+| [Portable Beta 35](dist/AetherCockpit-0.7.0-beta.35-win-x64.zip) | `ff6378aa56bb7fe6466158d4120f285e70360de87042f88ed9db21fb680630a5` |
+| [Server Beta 35](dist/AetherManager-0.7.0-beta.35-win-x64.zip) | `2815a130595d96465494732f6a9b2584f6aa15b78924cdf9c65646e947f83e5a` |
+| [Intune Beta 35](dist/intune/0.7.0-beta.35/AetherCockpit-Setup-0.7.0-beta.35-win-x64.intunewin) | `d8181149501cf2bf12552413155f9d88666efb7648634497116dcbd49b50c7c9` |
 | [Setup Beta 34](dist/AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe) | `79e6d0500634f8cdf00e127ca7a8a12f5930905dd3ab5455d9704e961c6f6ccc` |
 | [Portable Beta 34](dist/AetherCockpit-0.7.0-beta.34-win-x64.zip) | `c3db3278299f573777156d74697be29064260a56daab5ad2a67b47d9509025be` |
 | [Server Beta 34](dist/AetherManager-0.7.0-beta.34-win-x64.zip) | `0ac29200133f91a540eeb78ae1e75f4cda2439dec2253517a5d2119435e33b6b` |
@@ -32,8 +40,8 @@ die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
 · [Veröffentlichter Beta-32-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.32)
 
 Der bekannte veröffentlichte Quellcode-Commit zu Beta 32 ist `3a6abdb`.
-Bestehende `dist`-Ausgaben bleiben unverändert. Das aktuelle Intune-Paket
-gehört weiterhin zu Beta 28; für Beta 33 wurde keines erstellt.
+Bestehende `dist`-Ausgaben bleiben unverändert. Intune wird für Beta 35
+aus dem aktuellen Setup neu erzeugt; die historischen Pakete bleiben erhalten.
 Die alten Pakete enthalten ältere Dokumentation und werden nicht nachträglich
 umgeschrieben. Künftige Publish-Ausgaben übernehmen die neue Dokumentstruktur.
 
@@ -63,6 +71,21 @@ umgeschrieben. Künftige Publish-Ausgaben übernehmen die neue Dokumentstruktur.
   Grafik, `/s`, `/p` und Windows-Audiogeräteinventar bleiben erhalten.
 
 ## Bisherige Verifikation
+
+Beta 35: Releasebuild ohne Warnungen/Fehler; 1447 STA-Assertions einschließlich
+synthetischer Boot-/Dashboard-Logo- und xBar-Glow-Prüfung, zusätzlich 44
+Verwaltungs-/HTTPS-Assertions bestanden. Ein HTTPS-Durchlauf hatte einen
+Start-Zeitablauf; der erneute vollständige Lauf bestand.
+Die 1447 Assertions bestanden auch mit den tatsächlich publizierten Cockpit-
+und Shared-DLLs aus einem separaten Fixtureordner ohne externe Logodatei.
+Die Testassembly wurde dabei mit der Release-Assemblyversion gebaut.
+Setup neu erstellt am 07.11.2026 um 21:41:09 lokal.
+Intune: MAC, IV, entschlüsselter ZIP-SHA256 und byteidentisches eingebettetes
+Setup geprüft. Kein Tenant-Rollout und keine produktive Installation.
+742 Client- und 378 Server-ZIP-Dateien vollständig hashverglichen.
+50 Quell-/Paketdokumente und 217 relative Links geprüft; Paketdokumente
+entsprechen dem Quellstand. 4439 historische `dist`-Dateien sowie die drei
+Beta-34-Paketprüfsummen unverändert.
 
 Vor der Dokumentationsüberarbeitung: Releasebuild ohne Warnungen/Fehler,
 Publish und Setup erfolgreich; 1086 STA-Assertions mit Operations-/Board-UI,
