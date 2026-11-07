@@ -9,6 +9,18 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.37
+
+- Als ungeprüfte Vorabversion veröffentlicht; neuer Laufzeittest durch Windows
+  Code Integrity blockiert. Prüfstatus in den Test- und Installationsanleitungen.
+- Nacht-Hintergründe in Hauptfenster, Mainframe und Bildschirmschoner sind
+  schwarz statt blau/violett. Tag-Hintergründe bleiben blau.
+- Mainframe-Himmel, Rastergrund, Binärberge und Gerätedetails folgen der
+  Farbwahl; farbige Neonlinien, Glow und Bewegung bleiben erhalten.
+- Automatischer Zeitplan und manuelle Übersteuerung unverändert.
+- Setup, Portable-Client, Server und Intune neu paketiert; GitHub-Galerie
+  auf den aktuellen Schwarz-/Blau-Stand aktualisiert.
+
 ## 0.7.0-beta.36
 
 ### Bedienung und Darstellung

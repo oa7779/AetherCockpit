@@ -1,6 +1,11 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.36**
+**Beta: 0.7.0-beta.37**
+
+**Ungeprüfte Vorabversion:** Der Beta-37-Testlauf ist durch Windows Code
+Integrity blockiert (`0x800711C7`). Die Pakete sind nicht laufzeitgeprüft.
+Nur in einer freigegebenen Testumgebung einsetzen; Schutzrichtlinien
+nicht deaktivieren oder umgehen.
 
 Diese Anleitung hilft beim Nachstellen von Bedien- und Darstellungsfehlern.
 Sie verlangt keine Reparatur oder Änderung eines produktiven Rechners.
@@ -38,7 +43,7 @@ und Benachrichtigungen begrenzen.
 
 ## Aktueller Testschwerpunkt
 
-Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-36-Stand.
+Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-37-Stand.
 Installationsversion und Prüfsumme vor dem Test vergleichen; das Intune-Paket
 auf einem dafür vorgesehenen Gerät separat abnehmen.
 
@@ -49,6 +54,8 @@ auf einem dafür vorgesehenen Gerät separat abnehmen.
 - GPU-Lüfter auf der Kühlerseite sowie getrennte Mainframe-Gerätedetails prüfen.
 - Darstellung / Desktop: automatischer Wechsel um 07/19 Uhr lokaler Zeit,
   Immer Tag/Nacht und Übernahme im Schoner prüfen.
+- Nacht-Hintergründe schwarz, Tag-Hintergründe blau; Neonlinien und Glow
+  bleiben auch bei abgeschalteter Bewegung farbig.
 - Die Uhrsekunden auch während Messungen beobachten; sie hängen nicht mehr
   an der Hardwareprobe. Schonerstatus und Zeichnung dürfen sich nicht überlagern.
   Animation ausschalten: statischer Glow bleibt, Bewegungen enden.

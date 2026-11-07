@@ -1,5 +1,5 @@
-#define AppVersion "0.7.0-beta.36"
-#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.36-win-x64"
+#define AppVersion "0.7.0-beta.37"
+#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.37-win-x64"
 
 #ifdef SetupUninstallValidation
 #ifndef SetupValidation
@@ -65,8 +65,8 @@ OutputBaseFilename=AetherCockpit-Setup-{#AppVersion}-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
-VersionInfoVersion=0.7.0.36
-VersionInfoProductVersion=0.7.0.36
+VersionInfoVersion=0.7.0.37
+VersionInfoProductVersion=0.7.0.37
 WizardStyle=modern
 Compression=lzma2/ultra64
 SolidCompression=yes

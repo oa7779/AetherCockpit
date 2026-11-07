@@ -2,6 +2,51 @@
 
 ## Stand
 
+Beta 37 in Vorbereitung: Nacht-Hintergründe schwarz
+statt blau/violett, Tag-Hintergründe blau. Hauptfenster, Mainframe-Himmel,
+Rastergrund, Binärberge und Schonerhintergrund angepasst; farbige Neonlinien
+und Glow bleiben erhalten. Der Nutzer hat alle Pakete und GitHub-Aktualisierung
+beauftragt. Neue Ausgaben getrennt als 0.7.0-beta.37, Dateiversion 0.7.0.37.
+Releasebuild ohne Warnungen/Fehler; 1455 Assertions mit Interface-, Board-
+und Schoner-UI bestanden. Schwarz als exakter Farbwert in Hintergründen
+geprüft; Tag-/Nacht- und Schonerbilder visuell kontrolliert.
+Beta-37-Versionsbuild ebenfalls ohne Warnungen/Fehler. Der neue Testlauf
+ist durch Windows Code Integrity blockiert: 0x800711C7, Ereignis 3077,
+fehlende Enterprise-Signaturfreigabe für SystemCockpit.Tests.dll.
+Keine Sicherheitsrichtlinie geändert oder umgangen. Nach anfänglichem Stopp
+hat der Nutzer die Veröffentlichung als ungeprüfte Beta bestätigt.
+Paketierung, Commit und GitHub-Prerelease werden mit deutlichem Prüfstatus
+ausgeführt; keine erneute Ausführung der blockierten Testassembly.
+Dokumente und Versionsquellen sind lokal auf Beta 37 vorbereitet; veröffentlichte
+Beta 36 unverändert. 7826 historische dist-Dateien vor Paketierung gehasht.
+
+Beta-37-Client-/Serverordner, Setup und Intune am 07.11.2026 lokal erstellt.
+Setup-Dateiversion 0.7.0.37; Intune-MAC, IV, entschlüsselter ZIP-SHA256 und
+identisches eingebettetes Setup geprüft. Keine Laufzeitprüfung der neuen Pakete.
+Drei Bilder aus dem zuvor bestandenen Schwarz-/Blau-UI-Lauf unter
+docs/screenshots/beta37-* kopiert. README und Paketdokumente kennzeichnen
+die Ausgabe als ungeprüfte Vorabversion.
+Der historische Dateiabgleich wurde unterbrochen: 6266 Einträge der
+7826-Dateien-Basis fehlen inzwischen, mehrere ältere dist-Ordner sind
+nicht mehr vorhanden. Ursache nicht geklärt; in diesem Durchlauf nicht gelöscht.
+Keine Behauptung unveränderter vollständiger Historie möglich.
+Noch kein Beta-37-ZIP, Commit, Push oder GitHub-Release.
+Der Nutzer hat auf die Nachfrage zur Historie mit dem Auftrag umgelenkt,
+ein kostenloses SignPath-Zertifikat zu beschaffen. SignPath-Antragsformular
+im Browser geöffnet, offizielle Bedingungen geprüft; nichts eingereicht.
+Kostenloses OSS-Signing verlangt Annahme durch die Foundation, nachweisbare
+Build-Herkunft und Projekt-Reputation. Kein Zertifikat erhalten und keine
+Signierung konfiguriert. Signatur allein belegt keine Freigabe durch die
+vorhandene Windows-Enterprise-Richtlinie.
+
+SignPath-Antrag im Browser als Entwurf ausgefüllt; keine Einreichung oder
+Zustimmung zu Vertragsbedingungen. Der Nutzer hat zuerst GitHub Actions
+beauftragt. Neuer Windows-Buildworkflow verwendet bestehende Konsolenrunner,
+Publishskripte und Inno Setup; unsigned Artefakte mit Hashmanifest und
+Repository-/Commit-/Run-Herkunft. Keine SignPath-Signierung oder Release-
+Automatik. Der Workflow-Grundlauf ersetzt die grafischen UI-Tests nicht.
+Remote-Prüfung steht noch aus.
+
 Beta 36 veröffentlicht mit sechs aufgabenbezogenen Navigationsgruppen,
 getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
 sichtbaren Kühlerseite. Lokaler Tagmodus 07–19 Uhr, Nacht außerhalb, mit

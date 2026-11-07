@@ -32,9 +32,8 @@ public partial class HardwareBoardView
     private void AnimateSky(LinearGradientBrush brush)
     {
         Color[] alternate = DataContext is CockpitModel { IsDaytime: true }
-            ? [Ink("#183254").Color, Ink("#275078").Color, Ink("#28779B").Color, Ink("#885BA8").Color, Ink("#FFA87A").Color]
-            : [Ink("#100928").Color, Ink("#17114F").Color, Ink("#123C83").Color,
-            Ink("#6B22A9").Color, Ink("#F24DAA").Color];
+            ? [Ink("#183254").Color, Ink("#275078").Color, Ink("#28779B").Color, Ink("#397CA8").Color, Ink("#579CC4").Color]
+            : [Colors.Black];
         for (var index = 0; index < brush.GradientStops.Count; index++)
             _skyColors.Add((brush.GradientStops[index], alternate[index % alternate.Length]));
     }
@@ -53,9 +52,9 @@ public partial class HardwareBoardView
     {
         var day = DataContext is CockpitModel { IsDaytime: true };
         _skyBrush = new LinearGradientBrush(new GradientStopCollection {
-                new(Ink(day ? "#1C3456" : "#03051B").Color, 0), new(Ink(day ? "#314B83" : "#10064A").Color, .45),
-                new(Ink(day ? "#546BA3" : "#3B087C").Color, .77), new(Ink(day ? "#CE77B3" : "#C80CB9").Color, .94),
-                new(Ink(day ? "#FFB57B" : "#FF7066").Color, 1) }, new Point(0, 0), new Point(0, horizon)) {
+                new(Ink(day ? "#1C3456" : "#000000").Color, 0), new(Ink(day ? "#314B83" : "#000000").Color, .45),
+                new(Ink(day ? "#546BA3" : "#000000").Color, .77), new(Ink(day ? "#477FA8" : "#000000").Color, .94),
+                new(Ink(day ? "#6AA6CD" : "#000000").Color, 1) }, new Point(0, 0), new Point(0, horizon)) {
                     MappingMode = BrushMappingMode.Absolute };
         AnimateSky(_skyBrush);
     }
@@ -72,8 +71,10 @@ public partial class HardwareBoardView
         var ground = new Canvas { Width = width, Height = _screensaverLayout ? Math.Max(280, BoardCanvas.Height - horizon) : 280,
             ClipToBounds = true,
             IsHitTestVisible = false, Tag = "synthwave-ground",
-            Background = AnimateHorizon(new LinearGradientBrush(Ink("#152B82").Color, Ink("#07051F").Color, 90),
-                "#382064", "#071F29") };
+            Background = DataContext is CockpitModel { IsDaytime: true }
+                ? AnimateHorizon(new LinearGradientBrush(Ink("#152B82").Color, Ink("#071529").Color, 90),
+                    "#203864", "#071F29")
+                : Ink("#000000") };
         _gridMotion = new ScaleTransform(1, 1);
         var gridLines = new Canvas();
         var gridInk = new LinearGradientBrush(new GradientStopCollection {
@@ -139,8 +140,10 @@ public partial class HardwareBoardView
             IsHitTestVisible = false, Tag = "binary-mountains" };
         var ridgeInk = Ink("#EE3BFF");
         _routeColors.Add((ridgeInk, Ink("#37D9C8").Color));
-        NeonPath(viewport, outline, ridgeInk, 2, AnimateHorizon(new LinearGradientBrush(
-            Ink("#2A085E").Color, Ink("#092B61").Color, 90), "#103448", "#342052"));
+        NeonPath(viewport, outline, ridgeInk, 2, DataContext is CockpitModel { IsDaytime: true }
+            ? AnimateHorizon(new LinearGradientBrush(
+                Ink("#183254").Color, Ink("#092B61").Color, 90), "#103448", "#203452")
+            : Ink("#000000"));
         var mesh = new StreamGeometry();
         using (var context = mesh.Open())
         {

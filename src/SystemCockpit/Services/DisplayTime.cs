@@ -18,7 +18,12 @@ public static class DisplayTime
     {
         foreach (var key in new[] { "WindowBackdrop", "GlossPanel", "ChromeSidebar", "SceneBackdrop" })
             window.Resources.Remove(key);
-        if (!day) return;
+        if (!day)
+        {
+            foreach (var key in new[] { "WindowBackdrop", "GlossPanel", "ChromeSidebar", "SceneBackdrop" })
+                window.Resources[key] = Frozen("#000000");
+            return;
+        }
         window.Resources["WindowBackdrop"] = Frozen("#15243D");
         window.Resources["SceneBackdrop"] = Frozen("#15243D");
         window.Resources["GlossPanel"] = new LinearGradientBrush(

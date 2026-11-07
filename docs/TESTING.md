@@ -1,5 +1,18 @@
 # Tests
 
+## Prüfstatus Beta 37
+
+Der Versionsbuild ist ohne Warnungen oder Fehler abgeschlossen. Windows
+Code Integrity blockiert den neuen Testlauf mit `0x800711C7` (Ereignis 3077:
+Testassembly erfüllt die Enterprise-Signaturrichtlinie nicht).
+Beta 37 wird auf Nutzerauftrag als ungeprüfte Vorabversion veröffentlicht.
+Die neuen Programmpakete sind nicht laufzeitgeprüft; Schutzrichtlinien
+bleiben unverändert.
+
+Vor dem Versionsbuild bestand die Schwarz-/Blau-Korrektur 1455 Assertions
+mit Interface-, Board- und Schoner-UI. Die zugehörigen Screenshots zeigen
+diesen früheren Teststand, nicht einen neuen Pakettest.
+
 ## Testplattform
 
 `tests\SystemCockpit.Tests` ist ein **STA-Konsolenrunner**, kein
@@ -39,7 +52,7 @@ Containerstruktur, MAC, IV, SHA256 des entschlüsselten Quell-ZIPs und
 SHA256 des einzigen darin enthaltenen Setups müssen stimmen.
 
 ```powershell
-powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.36\AetherCockpit-Setup-0.7.0-beta.36-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe
+powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.37\AetherCockpit-Setup-0.7.0-beta.37-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe
 ```
 
 Die Prüfung verwendet einen temporären Fixtureordner und entfernt ihn danach.
@@ -65,7 +78,7 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--sensor-charts-ui` | Sensorverläufe und Lücken mit Testdaten |
 | `--xbar-ui` | Diagrammleiste und Anordnung |
 | `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
-| `--interface-ui` | Aufgabengruppen, echte Zielrouten, getrennte Mainframe-Bereiche, GPU-Lüfterebene, Tag-/Nachtgrenzen und Sekunden-Takt mit synthetischer Animation |
+| `--interface-ui` | Aufgabengruppen, echte Zielrouten, getrennte Mainframe-Bereiche, GPU-Lüfterebene, Tag-/Nachtgrenzen, schwarze Nacht-Hintergründe und Sekunden-Takt mit synthetischer Animation |
 | `--desktop-ui` | Gadgets und Desktopparameter |
 | `--screensaver-ui` | Synthetische Schonerszene ohne Hardwareinitialisierung |
 | `--inventory-ui` | Inventarfenster mit kontrollierten Testdaten |

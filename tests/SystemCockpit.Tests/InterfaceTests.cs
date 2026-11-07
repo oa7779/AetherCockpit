@@ -140,7 +140,9 @@ internal static class InterfaceTests
             main.Model.Settings = main.Model.Settings with { DisplayMode = "night" };
             clock.Refresh(morning); Pump();
             if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-mainframe-night.png");
-            Check(!main.Model.IsDaytime && !host.Resources.Contains("SceneBackdrop"), "Night removes only time palette and restores skin");
+            Check(!main.Model.IsDaytime && new[] { "WindowBackdrop", "GlossPanel", "ChromeSidebar", "SceneBackdrop" }
+                .All(key => host.Resources[key] is SolidColorBrush brush && brush.Color == Colors.Black && brush.IsFrozen),
+                "Night uses frozen pure-black shell backgrounds instead of the blue/purple skin");
             var fans = ((Canvas)board.FindName("BoardCanvas")).Children.OfType<Canvas>()
                 .Where(p => Equals(p.Tag, "gpu-fan-plane")).ToArray();
             Check(fans.Length == 3 && fans.All(p => p.RenderTransform is MatrixTransform m &&
@@ -161,8 +163,12 @@ internal static class InterfaceTests
             pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, "Mainboard")); Pump();
             var nightSky = (LinearGradientBrush)((Canvas)board.FindName("BoardCanvas"))
                 .Children.OfType<System.Windows.Shapes.Rectangle>().Single(r => Equals(r.Tag, "synthwave-sky")).Fill;
-            Check((Color)nightSky.GradientStops[0].GetAnimationBaseValue(GradientStop.ColorProperty) == Color.FromRgb(3, 5, 27),
+            Check(nightSky.GradientStops.All(stop =>
+                    (Color)stop.GetAnimationBaseValue(GradientStop.ColorProperty) == Colors.Black && stop.Color == Colors.Black),
                 "Returning to a hidden board catches up with the current day/night mode");
+            Check(((Canvas)((Canvas)board.FindName("BoardCanvas")).Children.OfType<Canvas>()
+                .Single(c => Equals(c.Tag, "synthwave-ground"))).Background is SolidColorBrush groundBrush &&
+                groundBrush.Color == Colors.Black, "Night ground remains black behind the neon grid");
             var seen = new List<(string Text, double Time)>();
             var elapsed = Stopwatch.StartNew();
             void Changed(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
@@ -201,7 +207,7 @@ internal static class InterfaceTests
             Check(background.GradientStops[0].Color == Color.FromRgb(27, 48, 81),
                 "Saver accepts manual day mode from a fresh local frame without starting animation");
             saver.Present(frame.Hardware, frame with { DisplayMode = "night" }, "SYNTHETIC");
-            Check(background.GradientStops[0].Color == Color.FromRgb(3, 5, 27),
+            Check(background.GradientStops.All(stop => stop.Color == Colors.Black),
                 "Saver accepts manual night mode from the same hardware snapshot");
             var decorator = (System.Windows.Documents.AdornerDecorator)saver.Content;
             var panel = (Grid)decorator.Child;

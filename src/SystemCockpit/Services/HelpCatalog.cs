@@ -53,7 +53,8 @@ public static class HelpCatalog
             "Skalen sind Anzeigereferenzen, Gruppenmaxima gekennzeichnet; fehlende Werte bleiben --. Der Internetzustand stammt von Windows.\n" +
             "Der Animationsschalter steuert Datenfluss, Lüfter, Raster und Binärberge. Monitorabschaltung und Pixelpflege weiter nutzen; " +
             "Bewegung allein verhindert OLED-Einbrennen nicht verlässlich. Darstellung / Desktop wählt den Tag-/Nachtmodus: " +
-            "automatisch Tag von 07 bis 19 Uhr lokaler Zeit, sonst Nacht, oder dauerhaft Tag/Nacht. Der Schoner übernimmt diese Wahl.",
+            "automatisch Tag von 07 bis 19 Uhr lokaler Zeit, sonst Nacht, oder dauerhaft Tag/Nacht. " +
+            "Tag verwendet blaue, Nacht schwarze Hintergründe; Neon und Glow bleiben farbig. Der Schoner übernimmt diese Wahl.",
             "mainboard motherboard platine retro 1986 hardware bus usb sata ram gpu controller schaubild luefter binaer ssd"),
         new("Mainboard", "Bildschirmschoner / AetherMainboard.scr",
             "Im Setup den optionalen Schoner installieren und in der Windows-Liste AETHER Mainframe 1986 auswählen. " +

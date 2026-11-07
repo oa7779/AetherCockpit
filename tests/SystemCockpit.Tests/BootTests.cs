@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SystemCockpit;
+using SystemCockpit.Services;
 
 internal static class BootTests
 {
@@ -95,6 +96,15 @@ internal static class BootTests
             var host = new Window { Content = content, DataContext = model, Width = width, Height = height, ShowInTaskbar = false,
                 Background = original.Background, Foreground = original.Foreground, FontFamily = original.FontFamily };
             host.Resources.MergedDictionaries.Add(original.Resources);
+            if (original is MainWindow mainWindow)
+            {
+                var now = DateTimeOffset.Now;
+                var day = DisplayTime.IsDay(mainWindow.Model.Settings.DisplayMode, now);
+                mainWindow.Model.UpdateDisplayTime(now);
+                mainWindow.Model.IsDaytime = day;
+                DisplayTime.Apply(mainWindow, day);
+                DisplayTime.Apply(host, day);
+            }
             try
             {
                 host.Show();

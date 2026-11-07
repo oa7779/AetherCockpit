@@ -63,7 +63,8 @@ Messgröße und Einheit. Gruppenmaxima sind als solche bezeichnet.
 Tag-/Nachtmodus. **Automatisch** verwendet die lokale Uhrzeit: Tag von
 07:00 bis vor 19:00 Uhr, Nacht außerhalb dieses Zeitraums. **Immer Tag**
 und **Immer Nacht** übersteuern den Zeitplan. Das Retro-Neon-Design und
-die vorhandenen Skins bleiben erhalten; der Tagmodus hellt Hintergründe auf.
+die vorhandenen Skins bleiben erhalten. Die Zeithintergründe sind tagsüber
+blau und nachts schwarz; Neonlinien, Bauteile und Glow bleiben farbig.
 Es werden weder Standortdaten noch Sonnenaufgangszeiten abgefragt.
 Die Wahl wird lokal gespeichert und auch beim separaten Schonerstart gelesen.
 Ein frischer Cockpit-Livefeed überträgt die aktuelle Wahl an den Schoner.

@@ -60,7 +60,7 @@ public partial class HardwareBoardView
         Text("ISOMETRIC SERVICE DRAWING  /  REV. 1986", 32, groundTop + 260, "#73658F", 13, 800);
         Box(0, 0, BoardSurface.Width, depth, -8, 8, "#231049", "#23EFFF");
         Face([Project(8, 8), Project(BoardSurface.Width - 8, 8), Project(BoardSurface.Width - 8, depth - 8),
-            Project(8, depth - 8)], DataContext is CockpitModel { IsDaytime: true } ? "#253B58" : "#111332", "#7960D9");
+            Project(8, depth - 8)], DataContext is CockpitModel { IsDaytime: true } ? "#253B58" : "#000000", "#7960D9");
         Route([Project(0, 0), Project(BoardSurface.Width, 0), Project(BoardSurface.Width, depth),
             Project(0, depth), Project(0, 0)], "#23EFFF", snapshot.Devices.Length > 0, "board-neon-rim");
         Route([Project(8, 8, 2), Project(BoardSurface.Width - 8, 8, 2), Project(BoardSurface.Width - 8, depth - 8, 2),

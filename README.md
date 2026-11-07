@@ -9,10 +9,17 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Aktuelle Beta: 0.7.0-beta.36**
+**Aktuelle Beta: 0.7.0-beta.37**
 
-Beta 36 ordnet die Funktionen nach Aufgaben und trennt Mainframe-Zeichnung
-und Gerätedetails. GPU-Lüfter sitzen auf der sichtbaren Kühlerseite;
+**Ungeprüfte Vorabversion:** Der neue Beta-37-Testlauf wurde durch Windows
+Code Integrity blockiert (`0x800711C7`). Der Versionsbuild war fehlerfrei;
+die neuen Programmpakete sind nicht laufzeitgeprüft. Nur in einer
+freigegebenen Testumgebung einsetzen.
+
+Beta 37 verwendet schwarze Nacht- und blaue Tag-Hintergründe in Hauptfenster,
+Mainframe und Bildschirmschoner. Neonfarben und Glow bleiben erhalten.
+Die Funktionen sind nach Aufgaben geordnet, Mainframe-Zeichnung
+und Gerätedetails getrennt. GPU-Lüfter sitzen auf der sichtbaren Kühlerseite;
 Board und Komponenten erhalten stärkeren Glow. Der Tag-/Nachtmodus folgt
 der lokalen Uhrzeit oder einer manuellen Wahl. Die Uhr aktualisiert ihre
 Sekunden unabhängig von Hardwareabfragen. Konsolenassistenten ergänzen Windows-Diagnose
@@ -20,7 +27,8 @@ und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
 HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Aktuelle Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/latest)
+[Beta-37-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.37)
+· [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
 · [Versionsgeschichte](CHANGELOG.md)
 
 ## Wesentliche Funktionen
@@ -48,27 +56,23 @@ Glasrahmen, LED-Ziffern und abschaltbare Animation prägen die Oberfläche.
 Das anklickbare Mainboard ist schematisch: Leiterbahnen und Lüfter illustrieren
 die Szene, echte Messwerte stehen daneben.
 
-### Einblicke in Beta 36
+### Einblicke in Beta 37
 
-Die Aufnahmen zeigen die Anwendung im lokalen UI-Test: Das Dashboard wartet
-auf Messwerte, Mainframe und Schoner verwenden synthetische Testdaten.
-Die Bilder werden auf GitHub bereitgestellt.
-
-**Dashboard und aufgabenbezogene Navigation**
-
-![AETHER-Dashboard vor der ersten Messung](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-dashboard.png)
+Die Aufnahmen stammen aus dem bestandenen UI-Test der Schwarz-/Blau-Korrektur
+vor dem Beta-37-Versionsbuild. Mainframe und Schoner verwenden synthetische
+Testdaten. Sie sind kein Laufzeitnachweis für die neuen Pakete.
 
 **Mainframe im Tagmodus mit getrennten Gerätedetails**
 
-![AETHER-Mainframe im Tagmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-mainframe-day.png)
+![AETHER-Mainframe im blauen Tagmodus](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-mainframe-day.png)
 
 **Mainframe im Nachtmodus mit korrigierten GPU-Lüftern**
 
-![AETHER-Mainframe im Nachtmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-mainframe-night.png)
+![AETHER-Mainframe im schwarzen Nachtmodus](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-mainframe-night.png)
 
 **Bildschirmschoner mit Neon-Platine und eigener Sekundenanzeige**
 
-![AETHER-Bildschirmschoner mit synthetischen Testdaten](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-saver.png)
+![AETHER-Bildschirmschoner mit schwarzem Hintergrund und synthetischen Testdaten](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-saver.png)
 
 ## Installation
 

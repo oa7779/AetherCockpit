@@ -1,0 +1,114 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main, ci/windows-build]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Read release version
+        run: |
+          $profile = [xml](Get-Content -LiteralPath .\src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml -Raw)
+          $version = [string]$profile.Project.PropertyGroup.Version
+          $fileVersion = [string]$profile.Project.PropertyGroup.FileVersion
+          if ($version -notmatch '^\d+\.\d+\.\d+-beta\.\d+$' -or $fileVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            throw 'Invalid release profile version.'
+          }
+          "AETHER_VERSION=$version" >> $env:GITHUB_ENV
+          "AETHER_FILE_VERSION=$fileVersion" >> $env:GITHUB_ENV
+
+      - name: Restore and build
+        run: |
+          dotnet restore .\SystemCockpit.slnx
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build .\SystemCockpit.slnx -c Release --no-restore "-p:Version=$env:AETHER_VERSION" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$env:AETHER_FILE_VERSION"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run STA and management assertions
+        run: |
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet .\tests\AetherManager.Tests\bin\Release\net10.0-windows\AetherManager.Tests.dll
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Publish client and server
+        run: |
+          & .\build\Publish-Beta.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\build\Publish-Manager.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run assertions against published assemblies
+        run: |
+          $fixture = Join-Path $env:RUNNER_TEMP 'AetherPublishedTests'
+          New-Item -ItemType Directory -Path $fixture | Out-Null
+          Get-ChildItem -LiteralPath .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows | Copy-Item -Destination $fixture -Recurse
+          foreach ($name in @('SystemCockpit.dll', 'AetherScreensaver.dll', 'AetherOperations.Shared.dll')) {
+            Copy-Item -LiteralPath ".\dist\AetherCockpit-$env:AETHER_VERSION-win-x64\$name" -Destination $fixture -Force
+          }
+          dotnet (Join-Path $fixture 'SystemCockpit.Tests.dll')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build installer
+        run: |
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
+          if (!(Test-Path -LiteralPath $iscc)) { throw 'Inno Setup 6 is required on the Windows runner.' }
+          & $iscc .\build\AetherCockpit.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Archive packages and record build provenance
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          foreach ($product in @('AetherCockpit', 'AetherManager')) {
+            $folder = (Resolve-Path -LiteralPath ".\dist\$product-$env:AETHER_VERSION-win-x64").Path
+            [IO.Compression.ZipFile]::CreateFromDirectory($folder, "$folder.zip")
+          }
+          $manifest = foreach ($file in Get-ChildItem -LiteralPath .\dist -File) {
+            (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $file.Name
+          }
+          $manifest | Set-Content -LiteralPath .\dist\SHA256SUMS.txt -Encoding utf8
+          @{
+            repository = $env:GITHUB_REPOSITORY
+            commit = $env:GITHUB_SHA
+            ref = $env:GITHUB_REF
+            run = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+            version = $env:AETHER_VERSION
+            signed = $false
+          } | ConvertTo-Json | Set-Content -LiteralPath .\dist\build-provenance.json -Encoding utf8
+
+      - name: Upload unsigned build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aether-windows-${{ env.AETHER_VERSION }}-${{ github.run_id }}
+          path: |
+            dist\*.exe
+            dist\*.zip
+            dist\SHA256SUMS.txt
+            dist\build-provenance.json
+          if-no-files-found: error
+          retention-days: 14

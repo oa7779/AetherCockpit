@@ -247,16 +247,18 @@ internal static class HardwareBoardTests
                 !terrain.Clip.FillContains(new Point(canvas.Width * .5, 170)),
                 "Mountain ranges flank the horizon left and right with an open central perspective corridor");
             assertions += VerifyLandscape(view);
-            var groundPalette = (LinearGradientBrush)canvas.Children.OfType<Canvas>()
+            var groundPalette = canvas.Children.OfType<Canvas>()
                 .Single(c => Equals(c.Tag, "synthwave-ground")).Background;
             var glowPalette = (RadialGradientBrush)canvas.Children.OfType<Ellipse>()
                 .Single(c => Equals(c.Tag, "horizon-glow")).Fill;
-            var mountainPalette = (LinearGradientBrush)terrain.Children.OfType<System.Windows.Shapes.Path>().First().Fill;
+            var mountainPalette = terrain.Children.OfType<System.Windows.Shapes.Path>().First().Fill;
             var ridgeInk = (SolidColorBrush)terrain.Children.OfType<System.Windows.Shapes.Path>().First(p => p.Stroke is not null).Stroke;
             var gridPalette = (LinearGradientBrush)((Canvas)canvas.Children.OfType<Canvas>()
                 .Single(c => Equals(c.Tag, "synthwave-ground")).Children[0]).Children.OfType<System.Windows.Shapes.Path>().First().Stroke;
-            var groundColor = groundPalette.GradientStops[0].Color;
-            var mountainColor = mountainPalette.GradientStops[0].Color;
+            Color BaseColor(Brush brush) => brush is LinearGradientBrush gradient
+                ? gradient.GradientStops[0].Color : ((SolidColorBrush)brush).Color;
+            var groundColor = BaseColor(groundPalette);
+            var mountainColor = BaseColor(mountainPalette);
             var glowColor = glowPalette.GradientStops[0].Color;
             var ridgeColor = ridgeInk.Color;
             var gridColor = gridPalette.GradientStops[0].Color;
@@ -266,15 +268,16 @@ internal static class HardwareBoardTests
             clockTimer.Tick += (_, _) => { clockTimer.Stop(); clockWait.Continue = false; };
             clockTimer.Start();
             Dispatcher.PushFrame(clockWait);
-            Check(groundPalette.GradientStops[0].Color != groundColor &&
-                mountainPalette.GradientStops[0].Color != mountainColor && glowPalette.Center != glowCenter &&
+            Check((model.IsDaytime
+                    ? BaseColor(groundPalette) != groundColor && BaseColor(mountainPalette) != mountainColor
+                    : BaseColor(groundPalette) == Colors.Black && BaseColor(mountainPalette) == Colors.Black) &&
+                glowPalette.Center != glowCenter &&
                 glowPalette.GradientStops[0].Color != glowColor && ridgeInk.Color != ridgeColor &&
                 gridPalette.GradientStops[0].Color != gridColor &&
                 glowPalette.GradientStops.All(s => s.HasAnimatedProperties),
-                "Actual frames change horizon ground/mountain colors and move the colored glow, not just animation flags");
+                "Actual frames preserve black night ground while moving the colored neon glow and grid");
             Check(glowPalette.GradientStops[^1].Color.A == 0 &&
-                groundPalette.GradientStops.All(s => s.Color.A == 255) &&
-                mountainPalette.GradientStops.All(s => s.Color.A == 255),
+                BaseColor(groundPalette).A == 255 && BaseColor(mountainPalette).A == 255,
                 "Animated horizon keeps the glow edge transparent and the landscape opaque");
             Check(transforms.OfType<RotateTransform>().All(t => t.Angle > 0) &&
                 transforms.OfType<TranslateTransform>().All(t => t.X < 0) &&
@@ -308,8 +311,9 @@ internal static class HardwareBoardTests
             Check(Descendants((StackPanel)soundLabel.Content).OfType<TextBlock>().Single(t => Equals(t.Tag, "component-name:sound")).Text
                 .StartsWith("Z Routed Headset"), "Group caption names actually used audio before unused or default-only devices");
             model.MotionEnabled = false;
-            Check(!glowPalette.HasAnimatedProperties && !groundPalette.GradientStops.Any(s => s.HasAnimatedProperties) &&
-                !mountainPalette.GradientStops.Any(s => s.HasAnimatedProperties),
+            bool Animated(Brush brush) => brush.HasAnimatedProperties ||
+                brush is GradientBrush gradient && gradient.GradientStops.Any(s => s.HasAnimatedProperties);
+            Check(!glowPalette.HasAnimatedProperties && !Animated(groundPalette) && !Animated(mountainPalette),
                 "Motion off removes horizon glow, ground and mountain animation clocks");
             Check(!view.FlowAnimating && flows.All(f => !f.HasAnimatedProperties),
                 "Global animation switch removes every flow animation clock");

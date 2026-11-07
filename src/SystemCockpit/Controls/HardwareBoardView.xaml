@@ -68,7 +68,7 @@
       <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
       <TextBlock x:Name="DetailTitle" Text="KOMPONENTEN / Bauteil auswaehlen" Foreground="#FFCE54" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap"/>
       <TextBlock x:Name="InternetText" Grid.Row="1" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,8"/>
-      <ListBox x:Name="DeviceList" Grid.Row="2" Background="#100C24" Foreground="#DCEAF7" BorderThickness="0"
+      <ListBox x:Name="DeviceList" Grid.Row="2" Background="{DynamicResource SceneBackdrop}" Foreground="#DCEAF7" BorderThickness="0"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
        <ListBox.ItemTemplate><DataTemplate>
         <StackPanel Margin="4,6">

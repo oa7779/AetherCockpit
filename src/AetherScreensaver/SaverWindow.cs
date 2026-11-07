@@ -44,8 +44,8 @@ internal sealed class SaverWindow : Window
         }
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         _backdrop = new LinearGradientBrush(new GradientStopCollection {
-            new(Color.FromRgb(3, 5, 27), 0), new(Color.FromRgb(70, 8, 142), .6),
-            new(Color.FromRgb(12, 20, 66), 1) }, 90);
+            new(Colors.Black, 0), new(Colors.Black, .6),
+            new(Colors.Black, 1) }, 90);
         Background = _backdrop; ShowInTaskbar = false; Topmost = parent == 0;
         Width = Math.Max(1, bounds.Width); Height = Math.Max(1, bounds.Height);
         _board = new HardwareBoardView { DataContext = _model };
@@ -78,7 +78,7 @@ internal sealed class SaverWindow : Window
         {
             SetMotion(false);
             Color[] colors = day ? [Color.FromRgb(27, 48, 81), Color.FromRgb(46, 79, 125), Color.FromRgb(36, 63, 99)]
-                : [Color.FromRgb(3, 5, 27), Color.FromRgb(70, 8, 142), Color.FromRgb(12, 20, 66)];
+                : [Colors.Black, Colors.Black, Colors.Black];
             for (var i = 0; i < colors.Length; i++) _backdrop.GradientStops[i].Color = colors[i];
             SetMotion(_model.MotionEnabled);
         });
@@ -151,7 +151,7 @@ internal sealed class SaverWindow : Window
         FrameGlow.SetEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,
-                _model.IsDaytime ? Color.FromRgb(62, 92, 128) : Color.FromRgb(22, 38, 90), TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
+                _model.IsDaytime ? Color.FromRgb(62, 92, 128) : Colors.Black, TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
                     AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
         _headerDrift.BeginAnimation(TranslateTransform.XProperty, enabled ? new DoubleAnimation(0, 16, TimeSpan.FromSeconds(31)) {
             AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
