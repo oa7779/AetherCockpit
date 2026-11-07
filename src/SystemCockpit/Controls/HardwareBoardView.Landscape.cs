@@ -31,7 +31,9 @@ public partial class HardwareBoardView
 
     private void AnimateSky(LinearGradientBrush brush)
     {
-        Color[] alternate = [Ink("#100928").Color, Ink("#17114F").Color, Ink("#123C83").Color,
+        Color[] alternate = DataContext is CockpitModel { IsDaytime: true }
+            ? [Ink("#183254").Color, Ink("#275078").Color, Ink("#28779B").Color, Ink("#885BA8").Color, Ink("#FFA87A").Color]
+            : [Ink("#100928").Color, Ink("#17114F").Color, Ink("#123C83").Color,
             Ink("#6B22A9").Color, Ink("#F24DAA").Color];
         for (var index = 0; index < brush.GradientStops.Count; index++)
             _skyColors.Add((brush.GradientStops[index], alternate[index % alternate.Length]));
@@ -49,10 +51,11 @@ public partial class HardwareBoardView
 
     private void PrepareSky(double horizon)
     {
+        var day = DataContext is CockpitModel { IsDaytime: true };
         _skyBrush = new LinearGradientBrush(new GradientStopCollection {
-                new(Ink("#03051B").Color, 0), new(Ink("#10064A").Color, .45),
-                new(Ink("#3B087C").Color, .77), new(Ink("#C80CB9").Color, .94),
-                new(Ink("#FF7066").Color, 1) }, new Point(0, 0), new Point(0, horizon)) {
+                new(Ink(day ? "#1C3456" : "#03051B").Color, 0), new(Ink(day ? "#314B83" : "#10064A").Color, .45),
+                new(Ink(day ? "#546BA3" : "#3B087C").Color, .77), new(Ink(day ? "#CE77B3" : "#C80CB9").Color, .94),
+                new(Ink(day ? "#FFB57B" : "#FF7066").Color, 1) }, new Point(0, 0), new Point(0, horizon)) {
                     MappingMode = BrushMappingMode.Absolute };
         AnimateSky(_skyBrush);
     }

@@ -37,6 +37,13 @@ public partial class HardwareBoardView : UserControl
     private readonly Dictionary<string, TextBlock> _componentReadings = [];
     private readonly Dictionary<string, (FrameworkElement Text, Grid Dial, NeonGauge Gauge, TextBlock Name, TextBlock Value)> _componentDials = [];
     private BoardFeedFrame? _lastFrame;
+    private readonly Dictionary<string, IReadOnlyList<BoardComponentReadings.Metric>> _dialMetrics = [];
+    private bool? _motionState;
+    private bool _windowsAnimations = SystemParameters.ClientAreaAnimation;
+    private string? _selectedGroup;
+    private string? _selectedDevice;
+    private bool _drawnDay;
+    internal int AnimationStarts { get; private set; }
 
     public HardwareBoardView()
     {
@@ -44,8 +51,14 @@ public partial class HardwareBoardView : UserControl
         BoardScale.RenderTransform = _sceneDrift;
         _readoutTimer.Tick += (_, _) => RefreshReadouts();
         DataContextChanged += (_, _) => ConnectModel();
-        Loaded += (_, _) => { ConnectModel(); UpdateMotion(); };
-        Unloaded += (_, _) => { DisconnectModel(); UpdateMotion(); };
+        Loaded += (_, _) =>
+        {
+            _windowsAnimations = SystemParameters.ClientAreaAnimation;
+            SystemParameters.StaticPropertyChanged -= WindowsMotionChanged;
+            SystemParameters.StaticPropertyChanged += WindowsMotionChanged;
+            ConnectModel(); UpdateMotion();
+        };
+        Unloaded += (_, _) => { SystemParameters.StaticPropertyChanged -= WindowsMotionChanged; DisconnectModel(); UpdateMotion(); };
         IsVisibleChanged += (_, _) => UpdateMotion();
     }
 
@@ -56,6 +69,12 @@ public partial class HardwareBoardView : UserControl
         {
             _model = model;
             _model.PropertyChanged += ModelChanged;
+            if (Snapshot is { } snapshot && _drawnDay != model.IsDaytime)
+            {
+                var frame = _lastFrame;
+                Apply(snapshot);
+                UpdateComponentReadings(frame);
+            }
         }
         UpdateMotion();
     }
@@ -69,13 +88,29 @@ public partial class HardwareBoardView : UserControl
     private void ModelChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(CockpitModel.MotionEnabled)) UpdateMotion();
+        if (e.PropertyName == nameof(CockpitModel.IsDaytime) && Snapshot is { } snapshot)
+        {
+            var frame = _lastFrame;
+            Apply(snapshot);
+            UpdateComponentReadings(frame);
+        }
+    }
+
+    private void WindowsMotionChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(SystemParameters.ClientAreaAnimation)) return;
+        _windowsAnimations = SystemParameters.ClientAreaAnimation;
+        UpdateMotion();
     }
 
     private void UpdateMotion()
     {
-        SceneAnimating = !_shutdown && IsLoaded && IsVisible && _model?.MotionEnabled == true;
+        SceneAnimating = !_shutdown && IsLoaded && IsVisible && _model?.MotionEnabled == true && _windowsAnimations;
         if (!_shutdown && IsLoaded && IsVisible) _readoutTimer.Start(); else _readoutTimer.Stop();
         FlowAnimating = SceneAnimating && _flows.Count > 0;
+        if (_motionState == SceneAnimating) return;
+        _motionState = SceneAnimating;
+        if (SceneAnimating) AnimationStarts++;
         foreach (var flow in _flows)
             flow.BeginAnimation(Shape.StrokeDashOffsetProperty, FlowAnimating
                 ? new DoubleAnimation(0, -40 / flow.StrokeThickness, TimeSpan.FromSeconds(2.4)) { RepeatBehavior = RepeatBehavior.Forever,
@@ -86,10 +121,13 @@ public partial class HardwareBoardView : UserControl
                 ? new DoubleAnimation(0, 360, TimeSpan.FromSeconds(18)) { RepeatBehavior = RepeatBehavior.Forever } : null);
         _gridMotion?.BeginAnimation(ScaleTransform.ScaleYProperty, SceneAnimating
             ? new DoubleAnimation(1, 1 / 1.22, TimeSpan.FromSeconds(3)) { RepeatBehavior = RepeatBehavior.Forever } : null);
-        foreach (var row in _binaryRows)
+        for (var index = 0; index < _binaryRows.Count; index++)
+        {
+            var row = _binaryRows[index];
             row.BeginAnimation(TranslateTransform.XProperty, SceneAnimating
-                ? new DoubleAnimation(0, -BinaryPeriod, TimeSpan.FromSeconds(34 + _binaryRows.IndexOf(row) * 2))
+                ? new DoubleAnimation(0, -BinaryPeriod, TimeSpan.FromSeconds(34 + index * 2))
                     { RepeatBehavior = RepeatBehavior.Forever } : null);
+        }
         foreach (var (stop, alternate) in _skyColors)
         {
             stop.BeginAnimation(GradientStop.ColorProperty, SceneAnimating
@@ -118,6 +156,7 @@ public partial class HardwareBoardView : UserControl
 
     private void ClearMotion()
     {
+        _motionState = null;
         foreach (var flow in _flows) flow.BeginAnimation(Shape.StrokeDashOffsetProperty, null);
         foreach (var fan in _fans) fan.BeginAnimation(RotateTransform.AngleProperty, null);
         foreach (var row in _binaryRows) row.BeginAnimation(TranslateTransform.XProperty, null);
@@ -140,8 +179,8 @@ public partial class HardwareBoardView : UserControl
         _screensaverLayout = true;
         PresentationHeader.Visibility = Visibility.Collapsed;
         DeviceDetails.Visibility = Visibility.Collapsed;
-        ((Panel)BoardScale.Parent).Children.Remove(BoardScale);
-        BoardScroller.Visibility = Visibility.Collapsed;
+        BoardScroller.Content = null;
+        BoardWorkspace.Visibility = Visibility.Collapsed;
         var viewport = new Grid { Margin = new Thickness(12), ClipToBounds = true };
         viewport.SizeChanged += (_, e) => ConfigureViewport(e.NewSize);
         viewport.Children.Add(BoardScale);
@@ -182,6 +221,11 @@ public partial class HardwareBoardView : UserControl
         }
         foreach (var (key, text) in _componentReadings)
             text.Text = BoardComponentReadings.Describe(key, frame);
+        if (!ReferenceEquals(_lastFrame, frame) || _dialMetrics.Count == 0)
+        {
+            _dialMetrics.Clear();
+            foreach (var key in _componentDials.Keys) _dialMetrics[key] = BoardComponentReadings.Metrics(key, frame);
+        }
         _lastFrame = frame;
         UpdateDials(_sceneTime.Elapsed);
     }
@@ -202,7 +246,7 @@ public partial class HardwareBoardView : UserControl
         var slot = Math.Max(0, (long)(elapsed.TotalSeconds / 6));
         foreach (var (key, controls) in _componentDials)
         {
-            var metrics = BoardComponentReadings.Metrics(key, _lastFrame);
+            var metrics = _dialMetrics.GetValueOrDefault(key) ?? [];
             var metric = metrics.Count > 0 ? metrics[(int)(slot / 2 % metrics.Count)] : null;
             controls.Text.Visibility = slot % 2 == 0 ? Visibility.Visible : Visibility.Collapsed;
             controls.Dial.Visibility = slot % 2 == 0 ? Visibility.Collapsed : Visibility.Visible;
@@ -216,7 +260,18 @@ public partial class HardwareBoardView : UserControl
 
     internal void EnsureLoaded()
     {
-        if (!_loaded && !_busy && !_shutdown) Pending = LoadAsync();
+        if (!_loaded && Snapshot is null && !_busy && !_shutdown) Pending = LoadAsync();
+    }
+
+    private void ZoomChanged(object sender, SelectionChangedEventArgs e) => ApplyZoom();
+
+    private void ApplyZoom()
+    {
+        if (_screensaverLayout || BoardScale is null || BoardZoom.SelectedItem is not ComboBoxItem { Tag: string value }) return;
+        var scale = double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+        BoardScroller.HorizontalScrollBarVisibility = scale == 0 ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
+        BoardScale.StretchDirection = scale == 0 ? StretchDirection.DownOnly : StretchDirection.Both;
+        BoardScale.Width = scale == 0 ? double.NaN : BoardCanvas.Width * scale;
     }
 
     internal void Shutdown()
@@ -224,6 +279,7 @@ public partial class HardwareBoardView : UserControl
         _shutdown = true;
         _stop.Cancel();
         DisconnectModel();
+        SystemParameters.StaticPropertyChanged -= WindowsMotionChanged;
         UpdateMotion();
     }
 
@@ -261,20 +317,30 @@ public partial class HardwareBoardView : UserControl
         Snapshot = snapshot;
         var visible = _screensaverLayout ? HardwareTopology.ScreensaverSnapshot(snapshot) : snapshot;
         Groups = HardwareTopology.Group(visible);
+        _drawnDay = DataContext is CockpitModel { IsDaytime: true };
         BoardCanvas.Children.Clear();
         _componentReadings.Clear();
         _componentDials.Clear();
+        _dialMetrics.Clear();
         DrawBoard(visible);
+        ApplyZoom();
         UpdateComponentReadings(null);
         StatusText.Text = $"{snapshot.Devices.Length} Windows-Geraeteeintraege inkl. Audio-Endpunktstatus / Momentaufnahme {DateTime.Now:HH:mm:ss}" +
             (snapshot.Warnings.Length > 0 ? "\n" + string.Join("\n", snapshot.Warnings) : "");
         InternetText.Text = snapshot.Internet;
-        Select(Groups.First(group => group.Devices.Count > 0 || group.Key == "other"));
+        var selected = Groups.FirstOrDefault(group => group.Key == _selectedGroup) ??
+            Groups.First(group => group.Devices.Count > 0 || group.Key == "other");
+        if (_selectedDevice is { } id && selected.Devices.FirstOrDefault(device => device.Id == id) is { } device)
+            selected = selected with { Devices = new[] { device } };
+        Select(selected);
         UpdateMotion();
     }
 
     private void Select(BoardGroup group)
     {
+        _selectedGroup = group.Key;
+        var complete = Groups.FirstOrDefault(item => item.Key == group.Key);
+        _selectedDevice = group.Devices.Count == 1 && complete?.Devices.Count > 1 ? group.Devices[0].Id : null;
         DetailTitle.Text = $"{group.Title} / {group.Devices.Count} WINDOWS-EINTRAEGE";
         DeviceList.ItemsSource = group.Devices;
     }

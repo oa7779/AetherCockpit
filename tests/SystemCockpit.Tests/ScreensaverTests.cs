@@ -78,6 +78,33 @@ internal static class ScreensaverTests
         BoardLiveFeed.WriteAsync(bytes, frame, CancellationToken.None).GetAwaiter().GetResult();
         bytes.Position = 0;
         var read = BoardLiveFeed.ReadFrameAsync(bytes, CancellationToken.None).GetAwaiter().GetResult();
+        Check(read.DisplayMode == "auto", "Frames without a manual choice default to automatic day/night mode");
+        foreach (var mode in new[] { "day", "night", "invalid" })
+        {
+            using var modeBytes = new MemoryStream();
+            BoardLiveFeed.WriteAsync(modeBytes, frame with { DisplayMode = mode }, CancellationToken.None).GetAwaiter().GetResult();
+            modeBytes.Position = 0;
+            try
+            {
+                var modeFrame = BoardLiveFeed.ReadFrameAsync(modeBytes, CancellationToken.None).GetAwaiter().GetResult();
+                Check(mode != "invalid" && modeFrame.DisplayMode == mode, "Allowed manual display mode survives local transport");
+            }
+            catch (InvalidDataException) when (mode == "invalid")
+            {
+                Check(true, "Invalid display mode is rejected explicitly at the local feed boundary");
+            }
+        }
+        var legacyFrame = System.Text.Json.Nodes.JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(frame))!.AsObject();
+        legacyFrame.Remove("DisplayMode");
+        var legacyPayload = System.Text.Encoding.UTF8.GetBytes(legacyFrame.ToJsonString());
+        using (var legacyBytes = new MemoryStream())
+        {
+            legacyBytes.Write(BitConverter.GetBytes(legacyPayload.Length));
+            legacyBytes.Write(legacyPayload);
+            legacyBytes.Position = 0;
+            Check(BoardLiveFeed.ReadFrameAsync(legacyBytes, CancellationToken.None).GetAwaiter().GetResult().DisplayMode == "auto",
+                "Existing local frames without DisplayMode remain readable as automatic mode");
+        }
         Check(read.Gpu == "--" && read.Upload is null && read.Hardware.Devices.SequenceEqual(frame.Hardware.Devices),
             "Local feed preserves real device identity and unavailable readings");
         Check(read.Sensors!.SequenceEqual(frame.Sensors!) && BoardComponentReadings.Describe("storage", read).Contains("36 C") &&
@@ -160,7 +187,7 @@ internal static class ScreensaverTests
                 ((System.Windows.Media.LinearGradientBrush)window.Background).GradientStops.Any(stop => stop.HasAnimatedProperties))
                 throw new InvalidOperationException("A detached preview must not start neon clocks before loading.");
             var text = panel.Children.OfType<System.Windows.Controls.StackPanel>().Single()
-                .Children.OfType<System.Windows.Controls.TextBlock>().Last().Text;
+                .Children.OfType<System.Windows.Controls.TextBlock>().Single(t => t.Text.Contains("CPU-TEMP")).Text;
             if (!text.Contains("GPU --%") || !text.Contains("UP --") || !text.Contains("CPU-TEMP --"))
                 throw new InvalidOperationException("Decorative neon must never turn unavailable readings into invented values.");
             return 4;
@@ -222,12 +249,13 @@ internal static class ScreensaverTests
                 root.Arrange(new Rect(0, 0, 3840, 2160));
                 root.UpdateLayout();
                 var board4K = FindVisual<SystemCockpit.Controls.HardwareBoardView>(root)!;
-                board4K.ConfigureViewport(new Size(3816, 2136));
+                board4K.ConfigureViewport(new Size(board4K.ActualWidth - 24, board4K.ActualHeight - 24));
                 root.Measure(new Size(3840, 2160)); root.Arrange(new Rect(0, 0, 3840, 2160)); root.UpdateLayout();
                 var source = (System.Windows.Controls.Canvas)board4K.FindName("BoardCanvas");
                 var scale = (System.Windows.Controls.Viewbox)board4K.FindName("BoardScale");
                 var projected = source.TransformToAncestor(root).TransformBounds(new Rect(0, 0, source.Width, source.Height));
-                if (Math.Abs(root.ActualWidth - 3840) > 1 || projected.Width < 3750 || projected.Height < 2090 ||
+                if (Math.Abs(root.ActualWidth - 3840) > 1 || projected.Width < 3750 ||
+                    Math.Abs(projected.Height - (board4K.ActualHeight - 24)) > 2 ||
                     projected.Left < 0 || projected.Top < 0 || projected.Right > 3840 || projected.Bottom > 2160 ||
                     scale.StretchDirection != System.Windows.Controls.StretchDirection.Both)
                     throw new InvalidOperationException("4K scene must fill the viewport with vector upscaling and no clipping/scrolling.");
@@ -267,11 +295,12 @@ internal static class ScreensaverTests
                 foreach (var size in new[] { new Size(2160, 3840), new Size(5120, 1440), new Size(7680, 4320) })
                 {
                     root.Measure(size); root.Arrange(new Rect(new Point(), size)); root.UpdateLayout();
-                    board4K.ConfigureViewport(new Size(size.Width - 24, size.Height - 24));
+                    board4K.ConfigureViewport(new Size(board4K.ActualWidth - 24, board4K.ActualHeight - 24));
                     root.Measure(size); root.Arrange(new Rect(new Point(), size)); root.UpdateLayout();
                     source = (System.Windows.Controls.Canvas)board4K.FindName("BoardCanvas");
                     projected = source.TransformToAncestor(root).TransformBounds(new Rect(0, 0, source.Width, source.Height));
-                    if (Math.Abs(projected.Width - (size.Width - 24)) > 2 || Math.Abs(projected.Height - (size.Height - 24)) > 2 ||
+                    if (Math.Abs(projected.Width - (size.Width - 24)) > 2 ||
+                        Math.Abs(projected.Height - (board4K.ActualHeight - 24)) > 2 ||
                         projected.Left < 0 || projected.Top < 0 || projected.Right > size.Width || projected.Bottom > size.Height)
                         throw new InvalidOperationException("Portrait, ultrawide and 8K layouts must fill their full viewport without distorting/cropping the board.");
                     layoutAssertions++;

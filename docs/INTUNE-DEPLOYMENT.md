@@ -2,11 +2,11 @@
 
 ## Paketstand
 
-Aktuelles Win32-Paket: **0.7.0-beta.35**.
-`AetherCockpit-Setup-0.7.0-beta.35-win-x64.intunewin` wird aus dem
-gleichnamigen Beta-35-Setup erzeugt und mit SHA256-Prüfsumme auf
+Aktuelles Win32-Paket: **0.7.0-beta.36**.
+`AetherCockpit-Setup-0.7.0-beta.36-win-x64.intunewin` wird aus dem
+gleichnamigen Beta-36-Setup erzeugt und mit SHA256-Prüfsumme auf
 [GitHub](https://github.com/oa7779/AetherCockpit/releases/latest) veröffentlicht.
-Lokale Ausgabe: `dist\intune\0.7.0-beta.35`.
+Lokale Ausgabe: `dist\intune\0.7.0-beta.36`.
 Die alten Beta-27-/28-Pakete und ihr historisches Begleitblatt bleiben unverändert.
 
 ## Neues Paket vorbereiten
@@ -39,10 +39,10 @@ Erststart-Assistenten aus.
 
 ### Installation
 
-Intune-Befehlszeile für das Beta-35-Paket:
+Intune-Befehlszeile für das Beta-36-Paket:
 
 ```text
-AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
+AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
 ```
 
 Die vorausgewählte Autostart-Aufgabe wird ohne Zustimmung übersprungen
@@ -81,15 +81,15 @@ Benötigte Daten vorher sichern.
 
 ### Erkennung
 
-Für Beta 35:
+Für Beta 36:
 
 | Regel | Wert |
 |---|---|
 | Dateipfad | `C:\Program Files\AETHER System Control` |
 | Datei | `SystemCockpit.exe` |
-| Versionsvergleich | größer oder gleich `0.7.0.35`, 64-Bit-Zuordnung |
+| Versionsvergleich | größer oder gleich `0.7.0.36`, 64-Bit-Zuordnung |
 | Alternativer Registry-Pfad | `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7B0C30A1-7DB4-45B7-A872-F94664465F40}_is1` |
-| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.35`, 64-Bit-Zuordnung |
+| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.36`, 64-Bit-Zuordnung |
 
 Die Registry-Erkennung muss für jede neue Beta auf deren Versionszeichenfolge
 angepasst werden. Installationsziel kann abweichen; eine Dateiregel

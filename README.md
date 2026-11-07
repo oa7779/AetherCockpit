@@ -9,12 +9,13 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Aktuelle Beta: 0.7.0-beta.35**
+**Aktuelle Beta: 0.7.0-beta.36**
 
-Beta 35 liefert den aktuellen Stand als neues Setup, Portable-, Server-
-und Intune-Paket. Das Logo beim Start und im Dashboard ist wieder sichtbar,
-die xBar erhält stärkeren Glow. Neon-Glow und abschaltbare Bewegung prägen
-Cockpit, Dashboard und Bildschirmschoner. Konsolenassistenten ergänzen Windows-Diagnose
+Beta 36 ordnet die Funktionen nach Aufgaben und trennt Mainframe-Zeichnung
+und Gerätedetails. GPU-Lüfter sitzen auf der sichtbaren Kühlerseite;
+Board und Komponenten erhalten stärkeren Glow. Der Tag-/Nachtmodus folgt
+der lokalen Uhrzeit oder einer manuellen Wahl. Die Uhr aktualisiert ihre
+Sekunden unabhängig von Hardwareabfragen. Konsolenassistenten ergänzen Windows-Diagnose
 und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
 HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.

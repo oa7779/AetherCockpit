@@ -1,7 +1,7 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand Beta 35; sie enthält keine Versionsgeschichte.
+beschreibt den aktuellen Quellstand Beta 36; sie enthält keine Versionsgeschichte.
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 ## Beobachtung und Darstellung
@@ -14,7 +14,7 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
 | Desktop | Sechs xBar-Diagrammgruppen, Gadgets mit Position und Deckkraft, Tray, Temperatur-Overlay und Multi-Monitor-Bildschirmschoner |
-| Oberfläche | Vier Skins, LED-Instrumente, Animation ein/aus, Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
+| Oberfläche | Vier Skins, Tag-/Nachtmodus, unabhängige Sekundenanzeige, LED-Instrumente, Animation ein/aus, aufgabenbezogene Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
 | Neon-Effekte | Verstärkte Halos, Pulslicht und Energiebewegung in Schoner, Hauptfenster und Dashboard; Bewegung abschaltbar |
 
 Sensoren werden nur angezeigt, wenn sie der Provider meldet. Das Mainboard ist

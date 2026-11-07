@@ -18,6 +18,8 @@ public static class HelpCatalog
         new("Arbeitsplatz", "Funktion finden / Strg+K",
             "FUNKTION FINDEN oder Strg+K öffnet die Arbeitsplatzsuche. Arbeitsbereich und Suchbegriffe kombinieren, " +
             "Wirkung und Schritte lesen und den passenden Bereich öffnen. Die Suche startet keinen Auftrag und schaltet den Expertenmodus nicht ein.\n" +
+            "Die linke Navigation ist nach Übersicht, Hardware, Diagnose, Wartung, Verwaltung und Hilfe gruppiert. " +
+            "Ein Pfeil kennzeichnet Module der separaten Systemkontrolle. Der aktive Bereich bleibt im Besuchsverlauf sichtbar.\n" +
             "AUSGABE EIN/AUS schafft Platz für Tabellen. Aufträge zeigt bis zu 200 Einträge dieser Fenstersitzung im RAM; " +
             "freie Befehle und sensible Anzeigen bleiben ausgenommen. Wartungsberichte und Aktionsjournal werden getrennt geführt.",
             "suche arbeitsplatz navigation auftraege warteschlange professionell"),
@@ -43,14 +45,15 @@ public static class HelpCatalog
             "Keine ankreuzen leert alles. Erst Vorschau und Gesamtbestätigung erlauben endgültiges Löschen ohne Papierkorb.",
             "speicherfresser grosse dateien filter cleanup temp autostart"),
         new("Mainboard", "Virtuelles Mainboard / 1986",
-            "Cockpit -> Mainboard / 1986 liest Windows-PnP-Geräte und RAM-Bänke. HARDWARE NEU LESEN aktualisiert die Momentaufnahme. " +
-            "Bauteil oder Beschriftung anklicken zeigt die erfassten Geräte mit Status und verfügbarer Eltern-ID.\n" +
+            "Hardware -> Mainframe / Board liest Windows-PnP-Geräte und RAM-Bänke. HARDWARE NEU LESEN aktualisiert die Momentaufnahme. " +
+            "Bauteil oder Beschriftung anklicken zeigt rechts die erfassten Geräte mit Status und verfügbarer Eltern-ID.\n" +
             "Die Platine mit CPU-Kühler, RAM, GPU und Anschlüssen ist schematisch. Datenpfade und Lüftertempo sind dekorativ, " +
             "keine elektrische Topologie oder Drehzahlmessung. Laufwerke erscheinen einzeln; weitere Schnittstellen bleiben in Gruppendetails.\n" +
             "Instrumente wechseln etwa alle sechs Sekunden durch zuordenbare Messkanäle und nennen Hardware und Einheit. " +
             "Skalen sind Anzeigereferenzen, Gruppenmaxima gekennzeichnet; fehlende Werte bleiben --. Der Internetzustand stammt von Windows.\n" +
             "Der Animationsschalter steuert Datenfluss, Lüfter, Raster und Binärberge. Monitorabschaltung und Pixelpflege weiter nutzen; " +
-            "Bewegung allein verhindert OLED-Einbrennen nicht verlässlich.",
+            "Bewegung allein verhindert OLED-Einbrennen nicht verlässlich. Darstellung / Desktop wählt den Tag-/Nachtmodus: " +
+            "automatisch Tag von 07 bis 19 Uhr lokaler Zeit, sonst Nacht, oder dauerhaft Tag/Nacht. Der Schoner übernimmt diese Wahl.",
             "mainboard motherboard platine retro 1986 hardware bus usb sata ram gpu controller schaubild luefter binaer ssd"),
         new("Mainboard", "Bildschirmschoner / AetherMainboard.scr",
             "Im Setup den optionalen Schoner installieren und in der Windows-Liste AETHER Mainframe 1986 auswählen. " +

@@ -19,6 +19,18 @@ internal sealed class DesktopSettingsWindow : Window
         Content = new ScrollViewer { Content = panel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
         panel.Children.Add(new TextBlock { Text = "DESKTOP / GADGETS", FontSize = 23, Foreground = Brushes.Turquoise });
         panel.Children.Add(new TextBlock { Text = "Copyright (c) 2026 Olaf Weins", Margin = new Thickness(0, 8, 0, 16) });
+        panel.Children.Add(new TextBlock { Text = "TAG / NACHT / Hauptfenster, Mainframe und Schoner", Foreground = Brushes.Turquoise });
+        var mode = new ComboBox { ItemsSource = new[]
+        {
+            new { Id = "auto", Name = "Automatisch: Tag 07–19 Uhr (lokale Zeit)" },
+            new { Id = "day", Name = "Immer Tag" }, new { Id = "night", Name = "Immer Nacht" }
+        }, DisplayMemberPath = "Name", SelectedValuePath = "Id", SelectedValue = model.Settings.DisplayMode,
+            Margin = new Thickness(0, 6, 0, 12) };
+        mode.SelectionChanged += (_, _) =>
+        {
+            if (mode.SelectedValue is string value) save(model.Settings with { DisplayMode = value });
+        };
+        panel.Children.Add(mode);
         void Toggle(string title, bool value, Func<CockpitSettings, bool, CockpitSettings> update)
         {
             var box = new CheckBox { Content = title, IsChecked = value, Margin = new Thickness(0, 5, 0, 5) };

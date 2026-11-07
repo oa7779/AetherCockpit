@@ -121,7 +121,7 @@ POST {{baseUrl}}/api/v1/management/heartbeat
 Authorization: Bearer {{deviceToken}}
 Content-Type: application/json
 
-{ "clientVersion": "0.7.0-beta.35", "allowChanges": false, "allowAutoRepair": false }
+{ "clientVersion": "0.7.0-beta.36", "allowChanges": false, "allowAutoRepair": false }
 
 ### Genau einen Auftrag übernehmen (nicht erneut ausgegeben)
 POST {{baseUrl}}/api/v1/management/claim

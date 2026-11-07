@@ -46,6 +46,9 @@ public sealed partial class CockpitModel : Observable
     public string AccessStatus { get => _accessStatus; set => Set(ref _accessStatus, value); }
     public bool CanClean { get => _canClean; set => Set(ref _canClean, value); }
     public bool MotionEnabled { get => _motionEnabled; set => Set(ref _motionEnabled, value); }
+    private bool _isDaytime;
+    public bool IsDaytime { get => _isDaytime; internal set { if (_isDaytime == value) return; Set(ref _isDaytime, value); OnPropertyChanged(nameof(DisplayStatus)); } }
+    public string DisplayStatus => IsDaytime ? "TAG / NEON" : "NACHT / NEON";
     public ICollectionView SensorView { get; }
     public ICollectionView StatisticsView { get; }
     public ICollectionView CleanupView { get; }
@@ -302,7 +305,13 @@ public sealed partial class CockpitModel : Observable
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> items)
     {
-        target.Clear();
-        foreach (var item in items) target.Add(item);
+        var index = 0;
+        foreach (var item in items)
+        {
+            if (index == target.Count) target.Add(item);
+            else if (!EqualityComparer<T>.Default.Equals(target[index], item)) target[index] = item;
+            index++;
+        }
+        while (target.Count > index) target.RemoveAt(target.Count - 1);
     }
 }

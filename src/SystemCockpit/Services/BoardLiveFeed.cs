@@ -10,7 +10,7 @@ namespace SystemCockpit.Services;
 
 public sealed record BoardFeedFrame(DateTimeOffset Timestamp, BoardSnapshot Hardware, string Cpu, string Ram,
     string Gpu, string Download, double? Upload, string Temperature, bool Motion,
-    SensorReading[]? Sensors = null);
+    SensorReading[]? Sensors = null, string DisplayMode = "auto");
 
 public static class BoardLiveFeed
 {
@@ -41,7 +41,8 @@ public static class BoardLiveFeed
                     model.Cards[0].Value, model.Cards[1].Value, model.Cards[2].Value, model.Cards[3].Value,
                     double.TryParse(model.SidebarUpload.NumericValue, out var upload) ? upload : null,
                     model.CpuTemperature, model.MotionEnabled, model.Sensors.Select(s =>
-                        s.Value is { } value && !double.IsFinite(value) ? s with { Value = null } : s).ToArray()));
+                        s.Value is { } value && !double.IsFinite(value) ? s with { Value = null } : s).ToArray(),
+                    model.Settings.DisplayMode));
                 using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
                 deadline.CancelAfter(TimeSpan.FromSeconds(3));
                 await WriteAsync(server, frame, deadline.Token);
@@ -104,6 +105,8 @@ public static class BoardLiveFeed
         await stream.ReadExactlyAsync(bytes, token);
         var frame = JsonSerializer.Deserialize<BoardFeedFrame>(bytes)
             ?? throw new InvalidDataException("Board-Livefeed ist leer.");
+        if (frame.DisplayMode is not ("auto" or "day" or "night"))
+            throw new InvalidDataException("Board-Livefeed-Darstellungsmodus ist ungueltig.");
         if (frame.Hardware is null || frame.Hardware.Devices is null || frame.Hardware.Warnings is null ||
             frame.Hardware.Board is null || frame.Hardware.Internet is null ||
             frame.Cpu is null || frame.Ram is null || frame.Gpu is null || frame.Download is null || frame.Temperature is null)

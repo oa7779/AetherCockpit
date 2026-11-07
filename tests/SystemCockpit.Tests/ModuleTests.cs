@@ -380,7 +380,7 @@ internal static class ModuleTests
             Check(pies.Length == 3 && pies[0].FreePercent == 25 && pies[1].FreePercent == 75 &&
                   pies[2].FreePercent is null,
                 "Each volume has a bound pie chart, including an explicit unavailable volume");
-            Check(Descendants(sidebar).OfType<System.Windows.Shapes.Polyline>().Count() == 8,
+            Check(Descendants(sidebar).OfType<System.Windows.Shapes.Polyline>().Count(p => p.StrokeThickness == 2) == 8,
                 "CPU, RAM, GPU, three temperatures and both network directions render live curves");
             sidebar.OptionsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);

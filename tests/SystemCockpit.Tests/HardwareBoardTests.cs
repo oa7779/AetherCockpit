@@ -26,7 +26,8 @@ internal static class HardwareBoardTests
             var ground = canvas.Children.OfType<Canvas>().Single(c => Equals(c.Tag, "synthwave-ground"));
             if (isolate == "no-rays") ((Canvas)ground.Children[0]).Visibility = Visibility.Collapsed;
             Console.WriteLine($"RENDER isolate={isolate}; tier={RenderCapability.Tier >> 16}; " +
-                $"effects={Descendants(view).OfType<UIElement>().Count(e => e.Effect is not null)}");
+                $"effects={Descendants(view).OfType<UIElement>().Count(e => e.Effect is not null)}; " +
+                $"animated-paths={Descendants(view).OfType<Polyline>().Count(p => p.HasAnimatedProperties)}");
             var intervals = new List<double>();
             TimeSpan? previous = null;
             void Frame(object? sender, EventArgs args)
@@ -281,12 +282,11 @@ internal static class HardwareBoardTests
                 "Actual frames rotate fans, move binary right-to-left and shrink grid toward horizon");
             foreach (var line in flows.Where(f => f.Tag is string tag && tag.StartsWith("callout-route:", StringComparison.Ordinal)))
             {
-                var halos = flows.Where(f => Equals(f.Tag, "neon-halo:" + line.Tag)).ToArray();
+                var halos = canvas.Children.OfType<Polyline>().Where(f => Equals(f.Tag, "neon-halo:" + line.Tag)).ToArray();
                 Check(halos.Length == 2 && halos.All(h => ReferenceEquals(h.Stroke, line.Stroke) &&
                     ReferenceEquals(h.Points, line.Points) &&
-                    Math.Abs(h.StrokeDashArray[0] * h.StrokeThickness - 10) < .001 &&
-                    Math.Abs(h.StrokeDashOffset * h.StrokeThickness - line.StrokeDashOffset * line.StrokeThickness) < .1),
-                    "Vector glow shares route geometry/colors and keeps dashed movement synchronized across stroke widths");
+                    h.StrokeDashArray.Count == 0 && !h.HasAnimatedProperties && h.StrokeThickness > line.StrokeThickness),
+                    "Static vector halos share route geometry/colors without redundant animated dash clocks");
             }
             var decoded = string.Concat(HardwareBoardView.BinarySignature.Trim().Split(' ')
                 .Select(bits => (char)Convert.ToByte(bits, 2)));

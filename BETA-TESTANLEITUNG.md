@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.35**
+**Beta: 0.7.0-beta.36**
 
 Diese Anleitung hilft beim Nachstellen von Bedien- und Darstellungsfehlern.
 Sie verlangt keine Reparatur oder Änderung eines produktiven Rechners.
@@ -38,12 +38,19 @@ und Benachrichtigungen begrenzen.
 
 ## Aktueller Testschwerpunkt
 
-Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-35-Stand.
+Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-36-Stand.
 Installationsversion und Prüfsumme vor dem Test vergleichen; das Intune-Paket
 auf einem dafür vorgesehenen Gerät separat abnehmen.
 
 - Verstärkten Glow in Hauptfenster, Dashboard und Schoner prüfen:
   Halos und Bewegung bei verschiedenen DPI-Einstellungen ansehen.
+- Aufgabengruppen öffnen, aktive Route und Zurück/Vor prüfen. Pfeilziele
+  wechseln in die Systemkontrolle, ohne eine Aktion auszuführen.
+- GPU-Lüfter auf der Kühlerseite sowie getrennte Mainframe-Gerätedetails prüfen.
+- Darstellung / Desktop: automatischer Wechsel um 07/19 Uhr lokaler Zeit,
+  Immer Tag/Nacht und Übernahme im Schoner prüfen.
+- Die Uhrsekunden auch während Messungen beobachten; sie hängen nicht mehr
+  an der Hardwareprobe. Schonerstatus und Zeichnung dürfen sich nicht überlagern.
   Animation ausschalten: statischer Glow bleibt, Bewegungen enden.
 - Den neuen Windows-Werkzeugbereich öffnen und Verfügbarkeit,
   Beschreibungen und Konsolenausgabe prüfen. Systemänderungen nicht

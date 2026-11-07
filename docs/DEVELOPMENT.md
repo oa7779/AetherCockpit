@@ -52,7 +52,7 @@ Ein Build startet keine produktive App und keine Sensoren.
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.35`, Dateiversion `0.7.0.35`,
+aktuell `0.7.0-beta.36`, Dateiversion `0.7.0.36`,
 Assembly-Version `0.7.0.0`.
 
 `build\AetherCockpit.iss` muss dazu passen: `AppVersion`, `PublishDir`,
@@ -78,7 +78,7 @@ Der Host heißt in der Ausgabe `AetherMainboard.scr`, der Discovery-Starter
 `Aether.scr`. Beide teilen die Cockpit-Runtime.
 
 Der Ausgabeordner wird aus der Profilversion gebildet:
-`dist\AetherCockpit-0.7.0-beta.35-win-x64`.
+`dist\AetherCockpit-0.7.0-beta.36-win-x64`.
 **Existiert er bereits, bricht das Skript ab.** Das ist im aktuellen
 Workspace der Fall. Vorhandene Releases nicht überschreiben.
 Für eine spätere Ausgabe Versionsänderung und neuen Zielpfad als eigenen
@@ -91,7 +91,7 @@ Das separate selbstenthaltene Serverpaket erzeugen:
 powershell -NoProfile -File .\build\Publish-Manager.ps1
 ```
 
-Ziel: `dist\AetherManager-0.7.0-beta.35-win-x64`. Auch dieses Skript verweigert
+Ziel: `dist\AetherManager-0.7.0-beta.36-win-x64`. Auch dieses Skript verweigert
 vorhandene Ausgaben. Die Dienstassistenten werden zur Buildprüfung nicht ausgeführt.
 
 Nach Erzeugung des passenden Setups das Intune-Paket separat bauen:
@@ -110,7 +110,7 @@ Setup als Quelle und verweigert vorhandene versionsbezogene Intune-Ausgaben.
 Für einen neu erzeugten, noch nicht archivierten Release:
 
 ```powershell
-$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.35-win-x64).Path
+$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.36-win-x64).Path
 [System.IO.Compression.ZipFile]::CreateFromDirectory($release, "$release.zip")
 $iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
 if (-not (Test-Path -LiteralPath $iscc)) {
@@ -118,10 +118,10 @@ if (-not (Test-Path -LiteralPath $iscc)) {
 }
 & $iscc .\build\AetherCockpit.iss
 Get-FileHash "$release.zip" -Algorithm SHA256
-Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe -Algorithm SHA256
+Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe -Algorithm SHA256
 ```
 
-Die obigen Namen beschreiben Beta 35; vorhandene ZIP-/Setup-Dateien vorher
+Die obigen Namen beschreiben Beta 36; vorhandene ZIP-/Setup-Dateien vorher
 nicht überschreiben. `ISCC` schützt bestehende Ausgaben nicht wie das
 Publishskript. Prüfsummen als `.sha256` mit Hash und Dateiname speichern.
 ZIP-Einträge, Größen und SHA256 jeweils gegen den Publish-Ordner vergleichen.

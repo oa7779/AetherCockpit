@@ -60,9 +60,11 @@ public partial class HardwareBoardView
         Text("ISOMETRIC SERVICE DRAWING  /  REV. 1986", 32, groundTop + 260, "#73658F", 13, 800);
         Box(0, 0, BoardSurface.Width, depth, -8, 8, "#231049", "#23EFFF");
         Face([Project(8, 8), Project(BoardSurface.Width - 8, 8), Project(BoardSurface.Width - 8, depth - 8),
-            Project(8, depth - 8)], "#111332", "#7960D9");
+            Project(8, depth - 8)], DataContext is CockpitModel { IsDaytime: true } ? "#253B58" : "#111332", "#7960D9");
         Route([Project(0, 0), Project(BoardSurface.Width, 0), Project(BoardSurface.Width, depth),
-            Project(0, depth), Project(0, 0)], "#23EFFF", false, "board-neon-rim");
+            Project(0, depth), Project(0, 0)], "#23EFFF", snapshot.Devices.Length > 0, "board-neon-rim");
+        Route([Project(8, 8, 2), Project(BoardSurface.Width - 8, 8, 2), Project(BoardSurface.Width - 8, depth - 8, 2),
+            Project(8, depth - 8, 2), Project(8, 8, 2)], "#B354FF", false, "component-rim:board-inner");
         for (var lane = 0; lane < 14; lane++)
         {
             var u = 35 + lane * 40;
@@ -102,6 +104,8 @@ public partial class HardwareBoardView
                 Box(164 + fin * 12, 129, 5, 113, 23, 15, "#3D6470", "#9FCED1", cpu);
             Disc(225, 180, 41, 43, "#102533", "#A4EADE", cpu);
             Fan(225, 180, 42, 34, "#39FF68");
+            Route([Project(140, 105, 2), Project(315, 105, 2), Project(315, 265, 2),
+                Project(140, 265, 2), Project(140, 105, 2)], cpu.Accent, true, "component-rim:cpu");
         }
         if (ram.Devices.Count > 0)
         {
@@ -112,6 +116,8 @@ public partial class HardwareBoardView
                 Box(u + 3, 45, 7, 195, 8, 44, "#264F48", ram.Accent, ram);
                 for (var chip = 0; chip < 7; chip++)
                     Box(u + 2, 56 + chip * 25, 11, 17, 47, 6, "#172A31", "#B9CF75", ram);
+                Route([Project(u + 3, 45, 54), Project(u + 3, 240, 54)],
+                    ram.Accent, true, "component-rim:ram");
             }
         }
         var controller = Find("controller");
@@ -128,12 +134,19 @@ public partial class HardwareBoardView
         {
             Box(130, 320, 350, 90, 8, 64, "#1B2238", "#B6C7D5", gpu);
             Box(138, 322, 334, 86, 70, 8, "#34344E", gpu.Accent, gpu);
+            Route([Project(138, 322, 80), Project(472, 322, 80), Project(472, 408, 80),
+                Project(138, 408, 80), Project(138, 322, 80)], gpu.Accent, true, "component-rim:gpu");
+            Face([Project(138, 411, 10), Project(472, 411, 10), Project(472, 411, 78),
+                Project(138, 411, 78)], "#202A40", gpu.Accent, gpu);
             for (var fan = 0; fan < 3; fan++)
             {
                 var center = 195 + fan * 105;
-                Disc(center, 364, 78, 42, "#101725", "#D5C9E9", gpu);
-                Disc(center, 364, 79, 32, "#1A2940", gpu.Accent, gpu);
-                Fan(center, 364, 80, 26, gpu.Accent);
+                Point[] Ring(double radius) => Enumerable.Range(0, 25).Select(i =>
+                    Project(center + radius * Math.Cos(i * Math.PI / 12), 412, 44 + radius * Math.Sin(i * Math.PI / 12))).ToArray();
+                Face(Ring(32), "#0B1321", "#D5C9E9", gpu);
+                Face(Ring(29), "#15233A", gpu.Accent, gpu);
+                Route(Ring(31), "#24FFE3", false, "component-rim:gpu-fan-" + fan);
+                Fan(center, 412, 44, 26, gpu.Accent, vertical: true);
             }
             Segment(Project(145, 324, 79), Project(460, 324, 79), "#9A83C7", 1.4);
             Segment(Project(145, 406, 79), Project(460, 406, 79), "#77889B", 1.4);
@@ -396,27 +409,35 @@ public partial class HardwareBoardView
             Box(u - 3, v + 10 + port * d / 2, 4, d / 2 - 12, 6, h - 10, "#071421", group.Accent, group);
     }
 
-    private void Fan(double u, double v, double z, double radius, string color)
+    private void Fan(double u, double v, double z, double radius, string color, bool vertical = false)
     {
         var center = Project(u, v, z);
         var rotation = new RotateTransform();
         _fans.Add(rotation);
-        var plane = new Canvas { RenderTransform = new MatrixTransform(.72 * _boardScale, .30 * _boardScale,
-            -.72 * _boardScale, .38 * _boardScale, center.X, center.Y),
-            IsHitTestVisible = false };
+        var plane = new Canvas { RenderTransform = vertical
+            ? new MatrixTransform(.72 * _boardScale, .30 * _boardScale, 0, -_boardScale, center.X, center.Y)
+            : new MatrixTransform(.72 * _boardScale, .30 * _boardScale, -.72 * _boardScale, .38 * _boardScale, center.X, center.Y),
+            IsHitTestVisible = false, Tag = vertical ? "gpu-fan-plane" : "cpu-fan-plane" };
         var rotor = new Canvas { RenderTransform = rotation };
         for (var blade = 0; blade < 7; blade++)
         {
             var angle = blade * Math.PI * 2 / 7;
-            rotor.Children.Add(new Polygon { Points = new PointCollection
-                { new(5 * Math.Cos(angle), 5 * Math.Sin(angle)),
-                  new(radius * Math.Cos(angle + .3), radius * Math.Sin(angle + .3)),
-                  new(radius * Math.Cos(angle + .7), radius * Math.Sin(angle + .7)) },
-                Fill = Ink("#395866"), Stroke = Ink(color), StrokeThickness = 1.2 });
+            Point Polar(double distance, double offset) => new(distance * Math.Cos(angle + offset), distance * Math.Sin(angle + offset));
+            var geometry = new StreamGeometry();
+            using (var context = geometry.Open())
+            {
+                context.BeginFigure(Polar(7, 0), true, true);
+                context.BezierTo(Polar(radius * .5, .08), Polar(radius, .12), Polar(radius, .42), true, true);
+                context.BezierTo(Polar(radius, .7), Polar(radius * .6, .82), Polar(7, .7), true, true);
+            }
+            geometry.Freeze();
+            rotor.Children.Add(new System.Windows.Shapes.Path { Data = geometry, Fill = Ink("#557A91"),
+                Stroke = Ink(color), StrokeThickness = .8, IsHitTestVisible = false });
         }
         plane.Children.Add(rotor);
+        plane.Children.Add(new Ellipse { Width = 14, Height = 14, Fill = Ink("#B8D8DE"), Stroke = Ink(color),
+            StrokeThickness = 1.2, Margin = new Thickness(-7, -7, 0, 0), Tag = "fan-hub" });
         BoardCanvas.Children.Add(plane);
-        Disc(u, v, z + 1, 7, "#B8D8DE", color);
     }
 
     private void Disc(double u, double v, double z, double radius, string fill, string stroke, BoardGroup? group = null) =>
@@ -437,6 +458,7 @@ public partial class HardwareBoardView
     {
         var face = new Polygon { Points = new PointCollection(points), Fill = Ink(fill), Stroke = Ink(stroke),
             StrokeThickness = 1.2, SnapsToDevicePixels = false, Tag = group?.Key };
+        face.Points.Freeze();
         if (group is not null)
         {
             face.Cursor = Cursors.Hand;
@@ -451,19 +473,14 @@ public partial class HardwareBoardView
     {
         var line = new Polyline { Points = new PointCollection(points), Stroke = Ink(color),
             StrokeThickness = animate ? 2 : 1, Opacity = animate ? .8 : .45, IsHitTestVisible = false, Tag = tag };
-        if (animate || tag == "board-neon-rim")
+        if (animate || tag == "board-neon-rim" || tag?.StartsWith("component-rim:", StringComparison.Ordinal) == true)
         {
             line.Points.Freeze();
-            foreach (var (spread, opacity) in new[] { (8.0, .08), (4.0, .18) })
+            foreach (var (spread, opacity) in new[] { (12.0, .12), (5.0, .28) })
             {
                 var halo = new Polyline { Points = line.Points, Stroke = line.Stroke,
                     StrokeThickness = line.StrokeThickness + spread, Opacity = opacity,
                     IsHitTestVisible = false, Tag = "neon-halo:" + tag };
-                if (animate)
-                {
-                    halo.StrokeDashArray = new DoubleCollection { 10 / halo.StrokeThickness, 10 / halo.StrokeThickness };
-                    _flows.Add(halo);
-                }
                 BoardCanvas.Children.Add(halo);
             }
             line.Opacity = .95;

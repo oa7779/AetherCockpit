@@ -322,9 +322,10 @@ internal static class ProfessionalWorkflowTests
                 main.Model.CleanupFiles.Add(new(@"C:\fixture\hidden.tmp", 20, DateTime.UtcNow) { Selected = true });
                 main.Model.CleanupFilter = "visible";
                 host.Show(); Pump();
-                var navigation = (StackPanel)((Button)main.FindName("CockpitNav")).Parent;
-                var navigationButtons = navigation.Children.OfType<Button>().Concat(navigation.Children.OfType<StackPanel>()
-                    .SelectMany(panel => panel.Children.OfType<Button>())).ToArray();
+                var navigation = (StackPanel)main.FindName("NavigationGroups");
+                foreach (var expander in navigation.Children.OfType<Expander>()) expander.IsExpanded = true;
+                Pump();
+                var navigationButtons = Descendants(navigation).OfType<Button>().Where(b => b.Tag is string).ToArray();
                 Check(navigationButtons.All(button => button.Content is string text &&
                     new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
                         new Typeface(button.FontFamily, button.FontStyle, button.FontWeight, button.FontStretch),

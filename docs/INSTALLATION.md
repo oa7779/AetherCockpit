@@ -24,12 +24,12 @@ Veröffentlichte Pakete stehen bei den
 Vor dem Start die
 SHA256-Prüfsumme mit der zugehörigen `.sha256`-Datei vergleichen:
 
-Beispiel für die Beta-35-Dateien:
+Beispiel für die Beta-36-Dateien:
 
 ```powershell
-Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe -Algorithm SHA256
-Get-FileHash .\AetherCockpit-0.7.0-beta.35-win-x64.zip -Algorithm SHA256
-Get-FileHash .\AetherManager-0.7.0-beta.35-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe -Algorithm SHA256
+Get-FileHash .\AetherCockpit-0.7.0-beta.36-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherManager-0.7.0-beta.36-win-x64.zip -Algorithm SHA256
 ```
 
 Die Beta-Pakete sind nicht signiert. SmartScreen oder Schutzsoftware können
@@ -142,11 +142,11 @@ Verzeichnisbereinigung.
 
 ## Silent-Installation
 
-Die folgende Kommandozeile verwendet das aktuelle Beta-35-Setup.
+Die folgende Kommandozeile verwendet das aktuelle Beta-36-Setup.
 Bei einem veröffentlichten Download dessen tatsächlichen Dateinamen einsetzen.
 
 ```powershell
-.\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+.\AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 ```
 
 Ohne `/AutostartConsent=1` wird keine neue erhöhte Aufgabe eingerichtet.

@@ -9,6 +9,32 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.36
+
+### Bedienung und Darstellung
+
+- Funktionen nach Übersicht, Hardware, Diagnose, Wartung, Verwaltung und Hilfe
+  gruppiert; aktive Gruppe und Ziel bleiben sichtbar, vorhandene Routen erhalten.
+- Mainframezeichnung und Gerätedetails getrennt; Legende ausklappbar.
+  Einpassansicht und 75-/100-/125-Prozent-Zoom mit getrenntem Scrollen.
+- GPU-Lüfter mit gebogenen Rotorblättern auf der Kühlerseite statt auf der
+  schmalen Oberseite; Naben, Ringe und Rotoren in derselben Projektionsebene.
+- Stärkerer Glow an Platine, CPU, RAM und GPU mit statischen Vektorhalos.
+- Tag-/Nachtmodus in Hauptfenster, Mainframe und Schoner: lokale Uhrzeit
+  07–19 Uhr für Tag, sonst Nacht, mit gespeicherter manueller Übersteuerung.
+- Schonerstatus und Sekundenanzeige stehen über der Szene statt darüber.
+
+### Aktualisierung und Leistung
+
+- Uhrsekunden unabhängig von Hardwareproben, Uptime zwischen Proben fortgeführt.
+- Unveränderte Listenmitgliedschaft wird ohne Zurücksetzen der WPF-Ansicht
+  aktualisiert; Gerätauswahl bleibt bei Erscheinungswechsel erhalten.
+- Instrumentkanäle je Liveframe zwischengespeichert; keine mehrfachen
+  Animationsneustarts bei gleichem Zustand. Unsichtbare Boards halten
+  Animation und Readouttimer an; Windows-Animationsfreigabe wird beachtet.
+- Neue synthetische Navigations-, Themen-, GPU- und Sekunden-Taktprüfungen.
+- Setup, Portable, Server und Intune auf versionsgleichen Stand gebracht.
+
 ## 0.7.0-beta.35
 
 ### Paketierung und Veröffentlichung

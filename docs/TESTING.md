@@ -39,7 +39,7 @@ Containerstruktur, MAC, IV, SHA256 des entschlüsselten Quell-ZIPs und
 SHA256 des einzigen darin enthaltenen Setups müssen stimmen.
 
 ```powershell
-powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.35\AetherCockpit-Setup-0.7.0-beta.35-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe
+powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.36\AetherCockpit-Setup-0.7.0-beta.36-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe
 ```
 
 Die Prüfung verwendet einen temporären Fixtureordner und entfernt ihn danach.
@@ -65,6 +65,7 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--sensor-charts-ui` | Sensorverläufe und Lücken mit Testdaten |
 | `--xbar-ui` | Diagrammleiste und Anordnung |
 | `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
+| `--interface-ui` | Aufgabengruppen, echte Zielrouten, getrennte Mainframe-Bereiche, GPU-Lüfterebene, Tag-/Nachtgrenzen und Sekunden-Takt mit synthetischer Animation |
 | `--desktop-ui` | Gadgets und Desktopparameter |
 | `--screensaver-ui` | Synthetische Schonerszene ohne Hardwareinitialisierung |
 | `--inventory-ui` | Inventarfenster mit kontrollierten Testdaten |
@@ -73,6 +74,14 @@ Optionale Screenshots verwenden `--board-screenshot`, `--sensor-charts-screensho
 `--screensaver-screenshot`, `--inventory-screenshot` mit einem Zielpfad.
 `--professional-screenshot-prefix` benennt mehrere Workflow-Bilder.
 `--branding-screenshot-prefix` erzeugt Boot-, Dashboard- und xBar-Bilder.
+`--interface-screenshot-prefix` erzeugt Mainframebilder im Tag-/Nachtmodus.
+Die Sekundenprüfung beobachtet sechs Sekunden lang Property-Änderungen
+ohne Sensorzugriff. Nach dem ersten Intervall gilt maximal 1,5 Sekunden Abstand.
+`--board-render-profile verify` prüft bei synthetischer WPF-Komposition
+ein p95-Budget von 33,4 ms; `4k` fordert ein großes Fenster an und meldet
+die tatsächlich erreichte Größe. Diese Callbackzeiten sind keine gemessenen
+GPU-Present-FPS. Der Schoner-UI-Test rendert zusätzlich in ein echtes
+3840×2160-Bildziel und prüft Hochkant-, Ultrawide- und 8K-Layout.
 Screenshots mit realen Namen und Pfaden vor Weitergabe prüfen.
 
 ## Lesende lokale Prüfungen

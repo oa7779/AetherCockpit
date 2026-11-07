@@ -6,6 +6,10 @@ using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Data;
+using System.IO;
+using System.Diagnostics;
+using System.Text.Json;
 using SystemCockpit;
 using SystemCockpit.Controls;
 using SystemCockpit.Services;
@@ -26,10 +30,18 @@ internal sealed class SaverWindow : Window
     private readonly Border _neonFrame;
     private bool? _motion;
     private bool _closed;
+    private readonly DisplayPulse _displayPulse;
+    private readonly string? _settingsIssue;
 
     internal SaverWindow(System.Drawing.Rectangle bounds, nint parent = 0)
     {
         _bounds = bounds; _parent = parent;
+        try { _model.Settings = CockpitSettings.Load(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException)
+        {
+            Trace.TraceError("AETHER Schoner-Darstellungseinstellungen: {0}", ex);
+            _settingsIssue = "Darstellungseinstellungen nicht lesbar: " + ex.Message;
+        }
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         _backdrop = new LinearGradientBrush(new GradientStopCollection {
             new(Color.FromRgb(3, 5, 27), 0), new(Color.FromRgb(70, 8, 142), .6),
@@ -41,9 +53,16 @@ internal sealed class SaverWindow : Window
         _status = new TextBlock { Foreground = Brushes.Cyan, TextWrapping = TextWrapping.Wrap, FontSize = 14 };
         _readings = new TextBlock { Foreground = Brushes.Gold, TextWrapping = TextWrapping.Wrap, FontSize = 15 };
         var panel = new Grid { ClipToBounds = true };
+        panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
         var header = new StackPanel { VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(12),
             IsHitTestVisible = false, Opacity = .75, MaxHeight = 75 };
         header.Children.Add(_status); header.Children.Add(_readings);
+        var clock = new TextBlock { Foreground = Brushes.LightCyan, FontFamily = new FontFamily("Consolas"), FontSize = 16 };
+        clock.SetBinding(TextBlock.TextProperty, new Binding(nameof(CockpitModel.SystemClock)) { Source = _model });
+        header.Children.Add(clock);
+        header.MaxHeight = 110;
+        Grid.SetRow(_board, 1);
         panel.Children.Add(_board);
         panel.Children.Add(header);
         _neonFrame = new Border { BorderBrush = new LinearGradientBrush(
@@ -51,21 +70,32 @@ internal sealed class SaverWindow : Window
             BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(12),
             Margin = new Thickness(8), IsHitTestVisible = false };
         FrameGlow.SetVisible(_neonFrame, true);
+        Grid.SetRowSpan(_neonFrame, 2);
         panel.Children.Add(_neonFrame);
         header.RenderTransform = _headerDrift;
         Content = new AdornerDecorator { Child = panel };
+        _displayPulse = new DisplayPulse(Dispatcher, _model, day =>
+        {
+            SetMotion(false);
+            Color[] colors = day ? [Color.FromRgb(27, 48, 81), Color.FromRgb(46, 79, 125), Color.FromRgb(36, 63, 99)]
+                : [Color.FromRgb(3, 5, 27), Color.FromRgb(70, 8, 142), Color.FromRgb(12, 20, 66)];
+            for (var i = 0; i < colors.Length; i++) _backdrop.GradientStops[i].Color = colors[i];
+            SetMotion(_model.MotionEnabled);
+        });
         SourceInitialized += (_, _) => PlaceNative();
         Loaded += (_, _) =>
         {
             SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
             SystemParameters.StaticPropertyChanged += AnimationSettingsChanged;
             SetMotion(_model.MotionEnabled);
+            _displayPulse.Start();
         };
-        IsVisibleChanged += (_, _) => SetMotion(_model.MotionEnabled);
-        Unloaded += (_, _) => { SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged; SetMotion(false); };
+        IsVisibleChanged += (_, _) => { SetMotion(_model.MotionEnabled); if (IsVisible && IsLoaded) _displayPulse.Start(); else _displayPulse.Stop(); };
+        Unloaded += (_, _) => { _displayPulse.Stop(); SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged; SetMotion(false); };
         Closed += (_, _) =>
         {
             _closed = true;
+            _displayPulse.Dispose();
             SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
             _board.Shutdown(); SetMotion(false); FrameGlow.SetVisible(_neonFrame, false);
         };
@@ -92,6 +122,11 @@ internal sealed class SaverWindow : Window
     internal void Present(BoardSnapshot hardware, BoardFeedFrame? frame, string status)
     {
         if (frame is not null && !BoardLiveFeed.IsFresh(frame, DateTimeOffset.UtcNow)) frame = null;
+        if (frame is not null && frame.DisplayMode != _model.Settings.DisplayMode)
+        {
+            _model.Settings = _model.Settings with { DisplayMode = frame.DisplayMode };
+            _displayPulse.Refresh(DateTimeOffset.Now);
+        }
         if (_hardware != hardware)
         {
             _board.Apply(hardware);
@@ -100,7 +135,8 @@ internal sealed class SaverWindow : Window
         _model.MotionEnabled = SystemParameters.ClientAreaAnimation && (frame?.Motion ?? true);
         SetMotion(_model.MotionEnabled);
         _board.UpdateComponentReadings(frame);
-        _status.Text = status + (hardware.Warnings.Length == 0 ? "" : "\n" + string.Join(" / ", hardware.Warnings));
+        _status.Text = status + (_settingsIssue is null ? "" : "\n" + _settingsIssue) +
+            (hardware.Warnings.Length == 0 ? "" : "\n" + string.Join(" / ", hardware.Warnings));
         _readings.Text = frame is null
             ? "KEINE LIVE-MESSWERTE / CPU -- / RAM -- / GPU -- / DOWN -- / UP -- / TEMP --"
             : $"LIVE / CPU {frame.Cpu}% / RAM {frame.Ram}% / GPU {frame.Gpu}% / DOWN {frame.Download} Mbit/s / " +
@@ -115,7 +151,7 @@ internal sealed class SaverWindow : Window
         FrameGlow.SetEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,
-                Color.FromRgb(22, 38, 90), TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
+                _model.IsDaytime ? Color.FromRgb(62, 92, 128) : Color.FromRgb(22, 38, 90), TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
                     AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
         _headerDrift.BeginAnimation(TranslateTransform.XProperty, enabled ? new DoubleAnimation(0, 16, TimeSpan.FromSeconds(31)) {
             AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);

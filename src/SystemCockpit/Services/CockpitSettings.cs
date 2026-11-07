@@ -22,6 +22,7 @@ public sealed record CockpitSettings
     public bool ExpertMode { get; init; } = true;
     // Skin der Fensteroberflaeche; wird beim Programmstart angewendet. Retro-Neon ist das Original.
     public string Skin { get; init; } = "retro-neon";
+    public string DisplayMode { get; init; } = "auto";
     public string OverlayMonitorDeviceName { get; init; } = "";
     public string OverlayDockSide { get; init; } = "right";
     public double OverlayVerticalOffset { get; init; } = 0.02;
@@ -52,6 +53,8 @@ public sealed record CockpitSettings
     public int DnsFailureAlertThreshold { get; init; } = 30;
     public void Validate()
     {
+        if (DisplayMode is not ("auto" or "day" or "night"))
+            throw new ArgumentException("Darstellungsmodus muss auto, day oder night sein.");
         static void Range(double value, double min, double max, string name)
         {
             if (!double.IsFinite(value) || value < min || value > max)

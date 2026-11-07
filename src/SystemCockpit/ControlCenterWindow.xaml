@@ -58,7 +58,7 @@
             <TextBlock Text="AETHER // ZENTRALE SYSTEMKONTROLLE" Foreground="#D45CFF" FontFamily="Consolas" FontSize="24"/>
             <TextBlock Text="Autor: Olaf Weins // ADMINISTRATOR // Freie Konsole: Enter startet direkt, ohne weitere Bestaetigung." Foreground="#32D5FF" Margin="0,8,0,0"/>
             <Border BorderBrush="#6940A8" BorderThickness="1" CornerRadius="8" Background="#140E2C" Padding="10,6" Margin="0,10,0,0">
-                <DockPanel>
+                <WrapPanel>
                     <Button x:Name="CcBack" Content="&#9664; ZURUECK" Click="CcBackClicked" IsEnabled="False" Margin="0,0,8,0"
                             ToolTip="Zum vorherigen Modul zurueck - auch per Maus-Zurueck-Taste oder Alt+Pfeil links"/>
                     <Button x:Name="CcForward" Content="VOR &#9654;" Click="CcForwardClicked" IsEnabled="False" Margin="0,0,8,0"
@@ -70,7 +70,7 @@
                     <TextBlock x:Name="CcTrail" Text="SYSTEMKONTROLLE &#9656; SMART" Foreground="#24FFE3" FontFamily="Consolas"
                                VerticalAlignment="Center" Margin="10,0,0,0"
                                ToolTip="Aktuelles Modul. Zurueck/Vor folgen deinem Besuchsverlauf wie im Browser."/>
-                </DockPanel>
+                </WrapPanel>
             </Border>
         </StackPanel>
         <TabControl x:Name="Modules" Grid.Row="1" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" SelectionChanged="ModuleChanged">

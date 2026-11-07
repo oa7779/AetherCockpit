@@ -2,6 +2,28 @@
 
 ## Stand
 
+Beta 36 vorbereitet mit sechs aufgabenbezogenen Navigationsgruppen,
+getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
+sichtbaren Kühlerseite. Lokaler Tagmodus 07–19 Uhr, Nacht außerhalb, mit
+manueller Übersteuerung in Desktop-Einstellungen und Übernahme im Schoner.
+Uhrsekunden unabhängig von Hardwareproben. Animationsneustarts, Halo-Clocks
+und unnötige Collection-Resets reduziert. Der Nutzer hat neue Beta-Pakete
+für Setup, Portable, Server und Intune samt GitHub-Veröffentlichung bestätigt.
+Quellbuild: null Warnungen/Fehler; 1543 STA- und 44 Verwaltungsassertions
+bestanden, einschließlich Feed-Kompatibilität, ungültiger Modi, Mindestgröße
+und validierter Desktop-Speichercallbacks ohne echte Einstellungsänderung.
+1543 Assertions mit den tatsächlich gepackten Cockpit-/Schoner-/Shared-DLLs
+bestanden. Sekundenprüfung dort maximal 1,095 s Abstand über sechs Sekunden.
+Synthetische WPF-Komposition bei 1265×683 p95 20,9 ms (Budget 33,4 ms);
+keine GPU-FPS-Angabe. Vorherige Beta 35 im identischen Profil ebenfalls
+p95 20,9 ms; animierte Polylines von 69 auf 27 reduziert, keine allgemeine
+FPS- oder CPU-Verbesserung behauptet. 742 Client-/378 Server-ZIP-Dateien
+hashverglichen, 50 Dokumente und 217 Links geprüft. Intune MAC, IV,
+entschlüsselter ZIP-SHA256 und byteidentisches Setup geprüft; kein Tenant-Rollout.
+4439 historische dist-Dateien und sämtliche Beta-34-/35-Paketprüfsummen unverändert.
+Setup erstellt am 07.11.2026 um 22:16:50 lokal; Dateiversion 0.7.0.36.
+Veröffentlichung und abschließender GitHub-Assetvergleich folgen.
+
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
 Veröffentlichte Beta **0.7.0-beta.35**, Dateiversion **0.7.0.35**.
@@ -30,6 +52,10 @@ die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
 
 | Ausgabe | SHA256 |
 |---|---|
+| [Setup Beta 36](dist/AetherCockpit-Setup-0.7.0-beta.36-win-x64.exe) | `cc4252b8b4fd850f6f852093cc0b73f5cf732f75cb119a3e0813f98bdd527725` |
+| [Portable Beta 36](dist/AetherCockpit-0.7.0-beta.36-win-x64.zip) | `7235f2d59b7539e3ed52c4fb1ffe7bca333648d93a269aac6a6f93e8eee9181d` |
+| [Server Beta 36](dist/AetherManager-0.7.0-beta.36-win-x64.zip) | `7e17c3c4682e58f1f6ef41e175cb3f6c48309bf91438fc3dcbea6f7a6b8c68b2` |
+| [Intune Beta 36](dist/intune/0.7.0-beta.36/AetherCockpit-Setup-0.7.0-beta.36-win-x64.intunewin) | `8694a9a9a2dd06c4a5b363f929481629792f61dbaf99b103931c229b0f985812` |
 | [Setup Beta 35](dist/AetherCockpit-Setup-0.7.0-beta.35-win-x64.exe) | `ac516529ce584db58e959a04691219939edf29d9c134568f0e6d4c205af492c8` |
 | [Portable Beta 35](dist/AetherCockpit-0.7.0-beta.35-win-x64.zip) | `ff6378aa56bb7fe6466158d4120f285e70360de87042f88ed9db21fb680630a5` |
 | [Server Beta 35](dist/AetherManager-0.7.0-beta.35-win-x64.zip) | `2815a130595d96465494732f6a9b2584f6aa15b78924cdf9c65646e947f83e5a` |

@@ -74,6 +74,21 @@ public sealed partial class CockpitModel
     private string _systemClock = "--:--:--", _systemUptime = "Windows-Uptime / Baseline ausstehend";
     public string SystemClock { get => _systemClock; private set => Set(ref _systemClock, value); }
     public string SystemUptime { get => _systemUptime; private set => Set(ref _systemUptime, value); }
+    private TimeSpan? _uptimeBaseline;
+    private long _uptimeTick;
+    private long _displaySecond = long.MinValue;
+    internal void UpdateDisplayTime(DateTimeOffset localTime)
+    {
+        var second = localTime.Ticks / TimeSpan.TicksPerSecond;
+        if (_displaySecond == second) return;
+        _displaySecond = second;
+        SystemClock = localTime.ToString("HH:mm:ss");
+        if (_uptimeBaseline is { } baseline)
+        {
+            var uptime = baseline + TimeSpan.FromMilliseconds(Math.Max(0, Environment.TickCount64 - _uptimeTick));
+            SystemUptime = $"UPTIME {uptime.Days}d {uptime:hh\\:mm\\:ss}";
+        }
+    }
     private string _eventStatus = "Ereignisse werden gelesen.";
     private string _processFilter = "", _eventFilter = "";
     private int _eventSeverity;
@@ -105,7 +120,8 @@ public sealed partial class CockpitModel
 
     public void ApplyDashboard(DashboardSnapshot snapshot, LiveSample sample)
     {
-        SystemClock = snapshot.Timestamp.LocalDateTime.ToString("HH:mm:ss");
+        _uptimeBaseline = snapshot.Uptime;
+        _uptimeTick = Environment.TickCount64;
         SystemUptime = $"UPTIME {snapshot.Uptime.Days}d {snapshot.Uptime:hh\\:mm\\:ss}";
         PhysicalMemoryMb = Math.Max(1, sample.MemoryTotalGb * 1024);
         if (CoreGraphs.Count != snapshot.Cores.Count)

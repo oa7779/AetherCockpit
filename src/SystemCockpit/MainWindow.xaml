@@ -9,7 +9,7 @@
         <SolidColorBrush x:Key="Muted" Color="#A8A4C5"/>
         <DrawingBrush x:Key="ConsoleGrid" TileMode="Tile" Viewport="0,0,36,36" ViewportUnits="Absolute">
             <DrawingBrush.Drawing>
-                <GeometryDrawing Brush="#080516">
+                <GeometryDrawing Brush="{DynamicResource SceneBackdrop}">
                     <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,36,36"/></GeometryDrawing.Geometry>
                     <GeometryDrawing.Pen><Pen Brush="#171127" Thickness="0.5"/></GeometryDrawing.Pen>
                 </GeometryDrawing>
@@ -129,30 +129,13 @@
                     <TextBlock Text="NEON WAVE / GLASS CONTROL" Foreground="#F56AFF" FontFamily="Consolas" FontSize="10" Margin="0,8,0,14"/>
                     <Border Background="#D45CFF" Height="12" CornerRadius="6,0,0,6" Margin="0,0,0,5"/>
                     <Border Background="#4294FF" Height="7" CornerRadius="4,0,0,4" Margin="22,0,0,18"/>
-                    <TextBlock Text="KOMMANDOBRUECKE" FontFamily="Consolas" FontSize="10" Foreground="#32D5FF" Margin="0,0,0,12"/>
+                    <TextBlock Text="AUFGABEN / BEREICHE" FontFamily="Consolas" FontSize="10" Foreground="#32D5FF" Margin="0,0,0,12"/>
                     <Button Content="FUNKTION FINDEN" Click="TaskCenterClicked" HorizontalContentAlignment="Left" Margin="0,0,0,12" ToolTip="Arbeitsplatz mit Suchfunktion und gefuehrten Arbeitsablaeufen (Strg+K). Oeffnet nur Bereiche, startet keine Aktion."/>
-                    <Button x:Name="CockpitNav" Content="01   Cockpit" Tag="Cockpit" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#24FFE3"/>
-                    <Button Content="Mainboard / 1986" Tag="Mainboard" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#F56AFF"/>
-                    <Button Content="02   Taskmanager" Tag="Taskmanager" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#24FFE3"/>
-                    <Button Content="03   Sensor-Matrix" Tag="Sensoren" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#4294FF"/>
-                    <Button Content="04   Laufwerke" Tag="Laufwerke" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8"/>
-                    <Button Content="05   Messauswertung" Tag="Messauswertung" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#24FFE3"/>
-                    <Button Content="06   Diagnose" Tag="Diagnose" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#4294FF"/>
-                    <Button Content="07   Sicherheit" Tag="Sicherheit" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,0,0,8" BorderBrush="#D45CFF"/>
-                    <Button Content="08   Cleaner" Tag="Cleaner" Click="Navigate" HorizontalContentAlignment="Left" BorderBrush="#D45CFF"/>
-                    <Button Content="09   Ereignisse" Tag="Ereignisse" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,6,0,6" BorderBrush="#F56AFF"/>
-                    <Button Content="10   Superadmin" Tag="Superadmin" Click="Navigate" HorizontalContentAlignment="Left" BorderBrush="#32D5FF"/>
-                    <Button Content="11   Operations" Tag="Operations" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,6,0,0" BorderBrush="#39FF68" ToolTip="Leistungsindex, Wartungsplaene, Geraetediagnose und lokale Cloud-Voraussetzungen"/>
-                    <Button Content="12   Hilfe" Tag="Hilfe" Click="Navigate" HorizontalContentAlignment="Left" Margin="0,6,0,0" BorderBrush="#DCA4FF" ToolTip="Durchsuchbare Anleitung zu jedem Modul"/>
-                    <StackPanel>
-                        <TextBlock Text="SYSTEMKONTROLLE / DIREKT" Foreground="#D45CFF" FontFamily="Consolas" FontSize="10" Margin="0,16,0,8"/>
-                        <Button Content="Pakete / WinGet" Tag="Pakete" Click="ControlCenterNavigate" HorizontalContentAlignment="Left" Margin="0,0,0,6" BorderBrush="#39FF68" ToolTip="Paket-Center: installierte Pakete, Updates, Suche, Aktionen mit exakten IDs"/>
-                        <Button Content="Befehls-Katalog" Tag="Wartung" Click="ControlCenterNavigate" HorizontalContentAlignment="Left" Margin="0,0,0,6" BorderBrush="#FFB86C" ToolTip="103 Windows-Befehle mit Risikoanzeige, Einsteiger-/Expertenmodus und CRT-Konsole"/>
-                        <Button Content="SMART / Laufwerke" Tag="SMART" Click="ControlCenterNavigate" HorizontalContentAlignment="Left" Margin="0,0,0,6" BorderBrush="#32D5FF" ToolTip="Vollstaendige smartctl-Diagnose und Selbsttests"/>
-                        <Button Content="Netzwerk / Tests" Tag="Netzwerk" Click="ControlCenterNavigate" HorizontalContentAlignment="Left" BorderBrush="#4294FF" ToolTip="Ping, LAN-Scan, WLAN, Captive Portal und Speedtest"/>
-                    </StackPanel>
+                    <StackPanel x:Name="NavigationGroups"/>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+                    <Button Content="Darstellung / Desktop" Click="DisplaySettingsClicked" HorizontalContentAlignment="Left"
+                            ToolTip="Tag-/Nachtmodus, Transparenz, Gadgets und Hintergrunddiagnose einstellen."/>
                     <CheckBox Content="Scanner-Animation" ToolTip="Scanner, Neon-Energiepfade und Pulsieren ein/aus. Statisches Neon bleibt sichtbar; Windows-Animationseinstellungen werden beachtet." IsChecked="{Binding MotionEnabled}"/>
                     <TextBlock Text="{Binding AccessStatus}" Foreground="#32D5FF" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" Margin="0,6,0,8"/>
                     <TextBlock Text="ADMIN / UAC beim Start" Foreground="#24FFE3" FontSize="11" Margin="0,0,0,14"/>

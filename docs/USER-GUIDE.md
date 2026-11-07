@@ -14,11 +14,12 @@ Der Erststart verwendet immer das Retro-Neon-Originaldesign.
 
 ## Navigation und Suche
 
-Die Hauptseiten führen von Beobachtung über Auswertung und Diagnose zur
-Verwaltung: Cockpit, Taskmanager, Sensoren, Laufwerke, Messauswertung,
-Diagnose, Sicherheit, Cleaner, Ereignisse, Superadmin, Operations und Hilfe.
-Die erweiterte Systemkontrolle bietet unter anderem SMART, Pakete, Wartung,
-Netzwerk, Spuren und Einstellungen.
+Die linke Navigation gruppiert die Funktionen in **Übersicht, Hardware,
+Diagnose, Wartung, Verwaltung und Hilfe**. Gruppen lassen sich ausklappen;
+die Gruppe des aktiven Bereichs wird geöffnet. Die vorhandenen Module
+bleiben erreichbar. **↗** kennzeichnet einen Wechsel in die separate
+Systemkontrolle, etwa für SMART, Netzwerk, Pakete oder Windows-Werkzeuge.
+Ein Klick öffnet den Bereich und startet keine Aktion.
 
 **Zurück/Vor**, Maus-Daumentasten und `Alt+Pfeil links/rechts` bewegen sich
 durch den lokalen Besuchsverlauf. Er hält bis zu 100 Schritte im RAM.
@@ -36,9 +37,13 @@ Datenträger. Unlesbare Werte erscheinen als nicht verfügbar.
 Die Bedeutung von Skalen und Messkanälen steht unter
 [Hardware und Sensoren](HARDWARE-SENSORS.md).
 
-Unter **Cockpit → Mainboard / 1986** öffnet sich die Neon-Platine. Bauteile
+Unter **Hardware → Mainframe / Board** öffnet sich die Neon-Platine. Bauteile
 und Beschriftungen sind anklickbar; Details enthalten die erfassten
-Windows-Geräte, Status und verfügbare Eltern-ID. Laufwerke erscheinen
+Windows-Geräte, Status und verfügbare Eltern-ID rechts neben der Zeichnung.
+Zeichnung und Geräteliste scrollen getrennt. **Board einpassen** zeigt die
+Gesamtansicht; 75, 100 oder 125 Prozent vergrößern die Zeichnung mit
+horizontalem und vertikalem Scrollen. Die ausführliche Legende lässt
+sich ausklappen. Laufwerke erscheinen
 einzeln, auch bei identischen Modellen. Die RAM-Zeichnung zeigt höchstens
 acht Riegel, während die Details die erfassten Einträge behalten.
 
@@ -53,6 +58,19 @@ Die Zeichnung bildet keine echte Leiterbahn-, PCIe-Lane- oder
 Gehäusetopologie ab. Lüfter drehen dekorativ. Rundinstrumente wechseln
 etwa alle sechs Sekunden durch zuordenbare Kanäle und nennen Hardware,
 Messgröße und Einheit. Gruppenmaxima sind als solche bezeichnet.
+
+**Darstellung / Desktop** in der linken Leiste oder im Tray öffnet den
+Tag-/Nachtmodus. **Automatisch** verwendet die lokale Uhrzeit: Tag von
+07:00 bis vor 19:00 Uhr, Nacht außerhalb dieses Zeitraums. **Immer Tag**
+und **Immer Nacht** übersteuern den Zeitplan. Das Retro-Neon-Design und
+die vorhandenen Skins bleiben erhalten; der Tagmodus hellt Hintergründe auf.
+Es werden weder Standortdaten noch Sonnenaufgangszeiten abgefragt.
+Die Wahl wird lokal gespeichert und auch beim separaten Schonerstart gelesen.
+Ein frischer Cockpit-Livefeed überträgt die aktuelle Wahl an den Schoner.
+
+Die Uhr verwendet die aktuelle lokale Systemzeit, nicht den Zeitpunkt der
+letzten Hardwareprobe. Die Uptime läuft zwischen erfolgreichen Windows-Proben
+weiter. Zeitkorrekturen von Windows werden in der Uhranzeige übernommen.
 
 ## xBar, Gadgets und Overlay
 

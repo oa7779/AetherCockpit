@@ -26,12 +26,25 @@
     <TextBlock Text="AETHER // MAINFRAME 1986" FontFamily="Consolas" FontSize="26" Foreground="#F56AFF" VerticalAlignment="Center"/>
    </DockPanel>
    <TextBlock x:Name="StatusText" Text="Hardware wird beim ersten Oeffnen lokal gelesen." TextWrapping="Wrap" Foreground="#24FFE3" Margin="0,8"/>
-   <TextBlock Text="ISOMETRISCHE HARDWARE-SKIZZE / Bauteile oder Beschriftungen anklicken. Animierte Pfade sind SCHEMATISCH: keine gemessenen Paketwege, PCIe-Lanes oder exakte physische Bestueckung."
-    TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
-   <TextBlock Text="Audio: GELB = aktive Windows-Audiositzung (auch bei Stille), GRUEN = Standardrolle. Screens: Hauptbildschirm zuerst. Momentaufnahme; nach Geraete-/Ausgabewechsel HARDWARE NEU LESEN."
-    TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
+   <TextBlock Text="SCHEMATISCHE ANORDNUNG / Bauteile anklicken: Windows-Details rechts. Pfade und Lüfter sind keine Messwerte."
+              Foreground="#B7A7CD" TextWrapping="Wrap" FontSize="11"/>
+   <Expander Header="Darstellung und Statuslegende" Foreground="#B7A7CD">
+    <StackPanel>
+     <TextBlock Text="ISOMETRISCHE HARDWARE-SKIZZE / Bauteile oder Beschriftungen anklicken. Animierte Pfade sind SCHEMATISCH: keine gemessenen Paketwege, PCIe-Lanes oder exakte physische Bestueckung."
+      TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
+     <TextBlock Text="Audio: GELB = aktive Windows-Audiositzung (auch bei Stille), GRUEN = Standardrolle. Screens: Hauptbildschirm zuerst. Momentaufnahme; nach Geraete-/Ausgabewechsel HARDWARE NEU LESEN."
+      TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
+    </StackPanel>
+   </Expander>
    <WrapPanel Margin="0,8,0,0">
     <CheckBox Content="Animation: Datenfluss, Luefter, Raster und Binaertext" IsChecked="{Binding MotionEnabled}" Foreground="#24FFE3"/>
+    <ComboBox x:Name="BoardZoom" SelectedIndex="0" SelectionChanged="ZoomChanged" Margin="10,0" Width="140"
+              ToolTip="Einpassen oder Details vergrößern; Zeichnung scrollt unabhängig von der Geräteliste.">
+     <ComboBoxItem Content="Board einpassen" Tag="0"/>
+     <ComboBoxItem Content="Board 75 %" Tag="0.75"/>
+     <ComboBoxItem Content="Board 100 %" Tag="1"/>
+     <ComboBoxItem Content="Board 125 %" Tag="1.25"/>
+    </ComboBox>
     <TextBlock Text="    ECHTE LIVE-MESSWERTE / separat, nicht pro Leiterbahn" Foreground="#FFCE54" FontFamily="Consolas"/>
    </WrapPanel>
    <WrapPanel Margin="0,6,0,0">
@@ -43,16 +56,19 @@
     <TextBlock Text="    CPU-TEMP " Foreground="#32D5FF"/><TextBlock Text="{Binding CpuTemperature}" Foreground="White"/>
    </WrapPanel>
   </StackPanel>
-  <ScrollViewer x:Name="BoardScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-   <StackPanel>
+  <Grid x:Name="BoardWorkspace" Grid.Row="1">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="280"/></Grid.ColumnDefinitions>
+   <ScrollViewer x:Name="BoardScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <Viewbox x:Name="BoardScale" Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Center">
      <Canvas x:Name="BoardCanvas" Width="1320" Height="900" Background="#080717" ClipToBounds="True"/>
     </Viewbox>
-    <Border x:Name="DeviceDetails" BorderBrush="#7944B5" BorderThickness="1" Background="#110C26" Padding="16" Margin="0,12,0,0">
-     <StackPanel>
-      <TextBlock x:Name="DetailTitle" Text="KOMPONENTEN / Bauteil auswaehlen" Foreground="#FFCE54" FontFamily="Consolas" FontSize="17"/>
-      <TextBlock x:Name="InternetText" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,8"/>
-      <ListBox x:Name="DeviceList" Background="#100C24" Foreground="#DCEAF7" BorderThickness="0" MaxHeight="330"
+   </ScrollViewer>
+    <Border x:Name="DeviceDetails" Grid.Column="1" BorderBrush="#7944B5" BorderThickness="1" Background="{DynamicResource GlossPanel}" Padding="10" Margin="8,0,0,0">
+     <Grid>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+      <TextBlock x:Name="DetailTitle" Text="KOMPONENTEN / Bauteil auswaehlen" Foreground="#FFCE54" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap"/>
+      <TextBlock x:Name="InternetText" Grid.Row="1" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,8"/>
+      <ListBox x:Name="DeviceList" Grid.Row="2" Background="#100C24" Foreground="#DCEAF7" BorderThickness="0"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
        <ListBox.ItemTemplate><DataTemplate>
         <StackPanel Margin="4,6">
@@ -65,9 +81,8 @@
         </StackPanel>
        </DataTemplate></ListBox.ItemTemplate>
       </ListBox>
-     </StackPanel>
+     </Grid>
     </Border>
-   </StackPanel>
-  </ScrollViewer>
+  </Grid>
  </Grid>
 </UserControl>

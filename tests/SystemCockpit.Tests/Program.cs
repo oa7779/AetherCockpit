@@ -139,6 +139,11 @@ internal static class Program
                 var index = Array.IndexOf(args, "--branding-screenshot-prefix");
                 _assertions += BootTests.BrandingUi(index >= 0 && index + 1 < args.Length ? args[index + 1] : null);
             }
+            if (args.Contains("--interface-ui"))
+            {
+                var index = Array.IndexOf(args, "--interface-screenshot-prefix");
+                _assertions += InterfaceTests.Run(index >= 0 && index + 1 < args.Length ? args[index + 1] : null);
+            }
             if (args.Contains("--dashboard-ui"))
             {
                 var screenshotIndex = Array.IndexOf(args, "--dashboard-screenshot");
@@ -369,8 +374,10 @@ internal static class Program
             "Every main module explains itself via tooltip");
         // Navigation: Verlauf, Leiste und linke Rubriken muessen zusammenpassen.
         var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
-        var navButtons = ((System.Windows.Controls.StackPanel)((System.Windows.Controls.Button)window.FindName("CockpitNav")).Parent)
-            .Children.OfType<System.Windows.Controls.Button>().Where(b => b.Tag is string).ToList();
+        var navButtons = ((System.Windows.Controls.StackPanel)window.FindName("NavigationGroups"))
+            .Children.OfType<System.Windows.Controls.Expander>().SelectMany(group =>
+                ((System.Windows.Controls.StackPanel)group.Content).Children.OfType<System.Windows.Controls.Button>())
+            .Where(b => b.Tag is string route && pageHeaders.Contains(route)).ToList();
         Assert(navButtons.Count == 13 && navButtons.All(b => pageHeaders.Contains((string)b.Tag)) &&
             navButtons.Select(b => (string)b.Tag).Distinct().Count() == 13,
             "Left rubric buttons map one-to-one onto real page headers including help");

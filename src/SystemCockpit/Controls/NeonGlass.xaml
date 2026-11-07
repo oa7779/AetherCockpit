@@ -25,6 +25,7 @@
     </LinearGradientBrush>
     <!-- Theme-Schluessel: Skins ueberschreiben diese Werte auf App-Ebene. Retro-Neon ist das Original. -->
     <SolidColorBrush x:Key="WindowBackdrop" Color="#080516"/>
+    <SolidColorBrush x:Key="SceneBackdrop" Color="#080516"/>
     <SolidColorBrush x:Key="ButtonBorder" Color="#914ADB"/>
     <SolidColorBrush x:Key="ButtonBorderAlt" Color="#D45CFF"/>
 </ResourceDictionary>

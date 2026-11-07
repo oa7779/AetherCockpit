@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private readonly ManagerReportingService _managerReporting;
     private readonly BackgroundDiagnosticMonitor _backgroundDiagnostics;
     private readonly CancellationTokenSource _stop = new();
+    private readonly DisplayPulse _displayPulse;
     private readonly SemaphoreSlim _sensorGate = new(1);
     private readonly LocalHistory _history = new(Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AetherCockpit", "History"));
@@ -49,6 +50,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        InitializeNavigation();
+        _displayPulse = new DisplayPulse(Dispatcher, _model, day => DisplayTime.Apply(this, day));
         _managerReporting = new ManagerReportingService(status =>
         {
             if (!Dispatcher.HasShutdownStarted)
@@ -109,8 +112,11 @@ public partial class MainWindow : Window
         }
         Loaded += (_, _) =>
         {
+            _displayPulse.Start();
             StartBackgroundServices();
         };
+        IsVisibleChanged += (_, _) => { if (IsVisible && IsLoaded) _displayPulse.Start(); else _displayPulse.Stop(); };
+        Closed += (_, _) => _displayPulse.Dispose();
         Closing += OnClosing;
     }
 
@@ -146,6 +152,7 @@ public partial class MainWindow : Window
     }
 
     internal void OpenDesktopSettings() => _desktop?.OpenSettings();
+    private void DisplaySettingsClicked(object sender, RoutedEventArgs e) => OpenDesktopSettings();
     internal void OpenNetworkMonitor() => _desktop?.OpenNetwork();
 
     private void SaveDesktopSettings(CockpitSettings settings)
@@ -906,7 +913,7 @@ public partial class MainWindow : Window
         if (!_trailNavigating) _trail.Visit(header);
         if (header == "Mainboard") HardwareBoard.EnsureLoaded();
         if (NavTrail is null) return;
-        NavTrail.Text = $"HAUPTEBENE  \u25B8  {header.ToUpperInvariant()}";
+        NavTrail.Text = $"{UpdateNavigation(header).ToUpperInvariant()}  \u25B8  {header.ToUpperInvariant()}";
         NavBack.IsEnabled = _trail.CanBack;
         NavForward.IsEnabled = _trail.CanForward;
     }
