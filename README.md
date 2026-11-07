@@ -31,6 +31,10 @@ Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 · [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
 · [Versionsgeschichte](CHANGELOG.md)
 
+**Codesignierung:** Die kostenlose SignPath-Codesignierung ist beantragt;
+die Entscheidung steht aus. Die aktuellen Pakete sind weiterhin unsigniert.
+[Status und Signaturhinweise](docs/SECURITY-AND-PRIVACY.md#codesignierung).
+
 ## Wesentliche Funktionen
 
 - **Beobachten:** CPU-Kerne, Prozesse, RAM, Datenträger, Netzwerk und verfügbare

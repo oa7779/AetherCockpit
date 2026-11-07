@@ -1,5 +1,18 @@
 # Sicherheit und Datenschutz
 
+## Codesignierung
+
+Die kostenlose Codesignierung über die SignPath Foundation wurde am
+07.11.2026 beantragt. Das Antragsformular bestätigt den Eingang.
+Die Entscheidung steht aus; ein Zertifikat wurde noch nicht erteilt und
+SignPath ist noch nicht in den Build eingebunden. Aktuelle Pakete sind
+weiterhin unsigniert.
+
+Der [Windows-CI-Build](DEVELOPMENT.md#github-actions) erzeugt Pakete mit
+Prüfsummen und nachvollziehbarer Build-Herkunft. Diese Herkunft ersetzt
+keine Codesignatur. Auch eine spätere Signatur bedeutet nicht automatisch
+eine Freigabe durch die Sicherheitsrichtlinien eines verwalteten Rechners.
+
 ## Rechte und Freigaben
 
 Das Cockpit startet mit `requireAdministrator` und verlangt Windows-UAC.

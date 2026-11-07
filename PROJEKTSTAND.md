@@ -63,6 +63,11 @@ Das geteilte SignPath-Formular zeigt inzwischen „Form submitted“ und
 aber nicht durch den Assistenten abgesendet. Keine Bestätigung des genauen
 eingereichten Formularstands; die neue CI-Herkunft konnte vorher nicht
 nachgetragen werden. Annahme, Zertifikat und Signing-Anbindung stehen aus.
+Der Nutzer hat die Beantragung bestätigt und die Veröffentlichung des
+Status beauftragt. README, Sicherheitsdokumentation und Buildanleitung
+nennen den Antrag mit ausstehender Entscheidung; keine Signaturzusage.
+Der geprüfte Quell-/CI-Stand wird samt Dokumentation per Fast-forward auf
+`main` übernommen. Keine neue Paketierung oder Releaseveröffentlichung.
 
 Beta 36 veröffentlicht mit sechs aufgabenbezogenen Navigationsgruppen,
 getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
@@ -102,8 +107,8 @@ Die Paketdokumentation entspricht weiterhin dem geprüften Releasezeitpunkt;
 die neue Galerie ist eine Ergänzung der GitHub-Präsentation.
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
-Arbeitsbranch `ci/windows-build`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-`main` bleibt auf dem bisherigen veröffentlichten Stand.
+Arbeitsbranch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
+Der separate Branch `ci/windows-build` enthält den geprüften CI-Quellstand.
 Veröffentlichte Beta **0.7.0-beta.36**, Dateiversion **0.7.0.36**.
 Vorherige [GitHub-Beta 35](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.35)
 bleibt erhalten. Die folgenden Angaben dokumentieren ihre Veröffentlichung:

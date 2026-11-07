@@ -64,6 +64,8 @@ GitHub-Release, installiert kein Produkt und enthält noch keine SignPath-
 Anbindung. Er ersetzt nicht die grafischen UI-/Hardwareprüfungen oder die
 Intune-Paketierung. SignPath-Annahme, Freigaberollen und Signing-Konfiguration
 müssen vor einer Zertifikatsnutzung separat eingerichtet werden.
+Der Antrag bei der SignPath Foundation ist eingereicht, die Entscheidung
+steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
 
 ## Versionsquelle
 
