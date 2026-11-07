@@ -1,6 +1,6 @@
 # AETHER System Control - Anleitung fuer Betatester
 
-**Version: 0.7.0-beta.31 / Windows x64**
+**Version: 0.7.0-beta.32 / Windows x64**
 
 AETHER verbindet Systembeobachtung, Hardware-Diagnose und bewusst freizugebende
 Windows-Verwaltung in einer eigenstaendigen 80er-Retro-Neon-Oberflaeche.
@@ -8,6 +8,12 @@ Die Beta ist eine Vorabversion, kein garantiert fehlerfreies Wartungsprodukt.
 
 Copyright (c) 2026 Olaf Weins.
 Rechte und Lizenzbedingungen enthaltener Drittanbieter bleiben bestehen.
+
+## Beta 32: eigenstaendige Produktdokumentation
+
+Vergleichs- und Vorbildnennungen wurden aus Funktionsuebersicht und
+Projektbeschreibungen entfernt. Produktfunktionen und bestehende optionale
+Integrationen bleiben unveraendert.
 
 ## Neu in Beta 31: optionale zentrale Verwaltung
 
@@ -118,8 +124,9 @@ Sicherer erster Test: Suche/Kategorien, vorhandene synthetische oder selbst
 gewaehlte Logdatei und Paketlisten-Vorschau pruefen. Import startet keine
 Installation. Netzwerkfenster oeffnen startet keinen Mitschnitt; Speicheranalyse
 oeffnen startet keinen Scan. Keine Reparatur/Update/Loeschung nur zum Ausprobieren.
-Der [Funktionsabgleich](FUNKTIONSABGLEICH.md) nennt Quellen und Grenzen;
-AETHER ersetzt Wireshark, UniGetUI oder Autoruns nicht vollstaendig.
+Die [Funktionsuebersicht](FUNKTIONSABGLEICH.md) beschreibt Umfang und Grenzen;
+AETHER deckt nicht saemtliche Spezialfunktionen externer Analyse- und
+Verwaltungsprogramme ab.
 
 ## 1. Voraussetzungen und wichtige Hinweise
 
@@ -146,7 +153,7 @@ AETHER ersetzt Wireshark, UniGetUI oder Autoruns nicht vollstaendig.
 
 ### Windows-Setup
 
-1. `AetherCockpit-Setup-0.7.0-beta.31-win-x64.exe` ausfuehren.
+1. `AetherCockpit-Setup-0.7.0-beta.32-win-x64.exe` ausfuehren.
 2. UAC bestaetigen und Installation bzw. erkanntes Update pruefen.
 3. Bei Neuinstallation Diagrammgruppen und Desktop-Gadgets auswaehlen.
 4. Autostart nur aktivieren, wenn die erhoehte Aufgabe fuer das angezeigte
@@ -157,7 +164,7 @@ AETHER ersetzt Wireshark, UniGetUI oder Autoruns nicht vollstaendig.
 Hinweis fuer Softwareverteilung: Ab Beta 28 laeuft das Setup auch
 unbeaufsichtigt (`/VERYSILENT /SUPPRESSMSGBOXES /NORESTART`). Dabei wird
 keine Autostart-Aufgabe eingerichtet und kein Mitschnitt aktiviert; Details
-stehen in der README unter 0.7.0-beta.31.
+stehen in der README unter 0.7.0-beta.32.
 
 ### Vorhandene Installation aktualisieren
 
@@ -460,7 +467,7 @@ keine Fremdlizenz. Nur eigenen oder ausdruecklich freigegebenen Verkehr erfassen
   naechsten Aufbewahrungslauf, begrenzter eigener Gesamtbestand.
 - Regeln fuer viele SYN-Zielports, DNS-Fehler und TCP-Verbindungen.
   Tray-Hinweise und lokale Logs, kein Ton und keine automatische Blockierung.
-- Keine vollstaendige Wireshark-Protokollanalyse, TLS-Entschluesselung oder
+- Keine vollstaendige Offline-Protokollanalyse, TLS-Entschluesselung oder
   garantierte Angriffserkennung. Fehlalarme sind moeglich.
 - Auch gekuerzte Pakete koennen sensible Daten enthalten. Mitschnitte nicht
   ungeprueft weitergeben. Die begrenzte Live-Anzeige kann Pakete auslassen;

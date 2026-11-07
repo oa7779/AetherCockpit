@@ -4,7 +4,7 @@ Autor: **Olaf Weins**. Copyright (c) 2026 Olaf Weins.
 Autorenschaft betrifft AETHER; Rechte und Namensnennungen eingebundener
 Drittanbieter bleiben unveraendert.
 
-**Beta 0.7.0-beta.31**: Windows x64, als selbstenthaltenes Setup oder portable
+**Beta 0.7.0-beta.32**: Windows x64, als selbstenthaltenes Setup oder portable
 Version inklusive .NET-Laufzeit, Hardwarebibliotheken und portablen
 Messwerkzeugen verfuegbar. Das Setup installiert nach `Program Files` und
 erstellt eine Startmenue-Verknuepfung; optional kommt eine
@@ -36,7 +36,7 @@ ZIP vollstaendig entpacken und `SystemCockpit.exe` starten.
 
 - [Aktuelle Downloads und SHA256-Pruefsummen](https://github.com/oa7779/AetherCockpit/releases/latest)
 - [Ausfuehrliche Anleitung fuer Betatester](BETA-TESTANLEITUNG.md)
-- [Funktionsabgleich mit MB-NEXUS, UniGetUI, Wireshark, Sioni und Wise](FUNKTIONSABGLEICH.md)
+- [Funktionsumfang und Grenzen](FUNKTIONSABGLEICH.md)
 - [MIT-Lizenz fuer AETHER](LICENSE) und [Drittanbieter-Hinweise](THIRD-PARTY-NOTICES.md)
 
 Den gesamten Ausgabeordner zusammen behalten. Die bisherige Entwicklerversion
@@ -105,6 +105,14 @@ Befehle sind nicht durch die Schutzregeln der gefuehrten Module eingeschraenkt.
   getestet; Gesamtbuild und STA-Tests bestehen, aber der neue Cockpit-
   Anmelde-/Reporting-Pfad wurde noch nicht manuell durchgespielt.
   Im Einzelplatzmodus uebertraegt Beta 31 keine Daten.
+
+### 0.7.0-beta.32: Eigenstaendige Produktdokumentation
+
+- Vergleichs- und Vorbildnennungen aus der Funktionsuebersicht und den
+  Projektbeschreibungen entfernt. Funktionsumfang und Grenzen sind jetzt
+  eigenstaendig beschrieben.
+- Optionale Integrationen mit installierten Drittprogrammen bleiben erhalten;
+  ihr Einsatz erfolgt weiterhin bewusst und nach Bestaetigung.
 
 ### 0.7.0-beta.29: Lokale Diagnose-Agenten
 
@@ -224,7 +232,8 @@ Befehle sind nicht durch die Schutzregeln der gefuehrten Module eingeschraenkt.
 - Netzwerk trennt Live-Analyse, Erfassung und Warnungen. Kombinierte Filter,
   Metadatendetails und CSV nur fuer das begrenzte Live-Fenster. PCAP-Datei
   bleibt ungefiltert; nach Stop bestaetigte Uebergabe an installiertes Wireshark.
-  Keine native Wireshark-Vollanalyse, kein automatisches Angriffsschutzprodukt.
+  Keine vollstaendige Offline-Protokollanalyse, kein automatisches
+  Angriffsschutzprodukt.
 - Sensor-Snapshot-CSV, filterbare Statistik und CSV sichtbarer Statistikreihen.
   Dieselbe kollisionssichere Kanalzuordnung wie Live-Charts gilt nun auch fuer
   MIN/MAX/AVG und alte/neue Messlogs; widerspruechliche Duplikate werden nicht
@@ -238,7 +247,7 @@ Befehle sind nicht durch die Schutzregeln der gefuehrten Module eingeschraenkt.
 - Systemkontroll-Konsole anfangs platzsparend verborgen; bei Auftrag/Wartung
   sichtbar, ueber AUSGABE EIN/AUS schaltbar. Dunkle Tabellenkoepfe und kleinere
   Fensterhoehen unterstuetzt. Retro-Neon, Schoner und bisherige Freigaben bleiben.
-- [Quellen, bewusst nicht uebernommene Funktionen und verbleibende Grenzen](FUNKTIONSABGLEICH.md).
+- [Funktionsumfang und Grenzen](FUNKTIONSABGLEICH.md).
   Kein Registry-/RAM-Cleaner, pauschales Debloating oder Schutzabschalten.
 
 ### 0.7.0-beta.22: Synthwave-Farben, Neon-Glow und Horizontberge
@@ -631,7 +640,8 @@ https://npcap.com/guide/npcap-devguide.html .
   Konfiguration. Spaeter in Netzwerkueberwachung deaktivierbar.
 - Begrenzte lokale Auswertung von Ethernet/VLAN, IPv4/IPv6, TCP/UDP/ICMP und
   DNS-Fehlerkoepfen. Nicht unterstuetzte Linktypen wie Loopback werden
-  ausdruecklich abgelehnt. Keine TLS-Entschluesselung, keine Wireshark-Vollanalyse,
+  ausdruecklich abgelehnt. Keine TLS-Entschluesselung, keine vollstaendige
+  Offline-Protokollanalyse,
   keine Prozesszuordnung der Pakete und keine Garantie, Angriffe zu erkennen.
 - Regelalarme: viele verschiedene TCP-SYN-Zielports je Sender/Ziel und Minute,
   viele DNS-Fehlerantworten je Empfaenger und Minute sowie hohe lokale
@@ -1186,12 +1196,10 @@ Laufwerks- und Messauswertungsseiten.
 | Systemkontrolle | Reversible HKCU/HKLM-Run-Autostartverwaltung, SFC Verify/Scan, DISM Scan/Restore, CHKDSK Online-Scan, UEFI-Neustart mit Abbruchmoeglichkeit, Explorer-Neustart der aktuellen Sitzung und direkte Windows-Verwaltungswerkzeuge |
 | Sensible Anzeige | Separat bestaetigte lokale WLAN-Profil-, BitLocker-Recovery- und OEM-Firmware-Schluesselanzeige; keine automatische Abfrage, Speicherung, Exportfunktion oder Uebertragung |
 
-Referenzabgleich: https://bmbaer.hier-im-netz.de/ .
-Die Funktionsgruppen sind eigenstaendig umgesetzt, nicht der fremde Code,
-das Layout oder Werbeversprechen. Scan-Parallelitaet, Sicherheitsregeln und
-Reinigung unterscheiden sich bewusst. Es gibt keinen geratenen Health-Score,
-keine Restlebensdauerprognose, keine pauschale Registry-Optimierung und keine
-Garantie, dass jeder Sensor oder Laufwerkstest auf jeder Hardware verfuegbar ist.
+Die Funktionsgruppen sind eigenstaendig umgesetzt. Es gibt keinen geratenen
+Health-Score, keine Restlebensdauerprognose, keine pauschale
+Registry-Optimierung und keine Garantie, dass jeder Sensor oder Laufwerkstest
+auf jeder Hardware verfuegbar ist.
 
 ## Messwerkzeuge und Lizenzen
 
@@ -1435,13 +1443,13 @@ kleinen nativen SCR-Starter auch Visual C++ x64 Build Tools und Windows SDK):
 
 ```powershell
 powershell -NoProfile -File .\build\Publish-Beta.ps1
-$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.31-win-x64).Path
+$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.32-win-x64).Path
 [System.IO.Compression.ZipFile]::CreateFromDirectory($release, "$release.zip")
 Get-FileHash "$release.zip" -Algorithm SHA256
 $iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
 if (-not (Test-Path $iscc)) { $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe' }
 & $iscc .\build\AetherCockpit.iss
-Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.31-win-x64.exe -Algorithm SHA256
+Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.32-win-x64.exe -Algorithm SHA256
 ```
 
 ```powershell

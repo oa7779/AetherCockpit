@@ -1,6 +1,6 @@
 # AETHER Manager server prototype
 
-The source release for Beta 31 includes this .NET 10 Minimal API and the
+The source release includes this .NET 10 Minimal API and the
 cockpit's opt-in reporting client. The server is a separate project; it is not
 installed with the cockpit and must be started separately. It remains a
 local-first prototype: it listens on loopback by default, and LAN deployment
