@@ -41,6 +41,9 @@ internal static class DesktopFeatureTests
         restored.Validate();
         Check(restored.GadgetLayouts[0].Opacity == 0.5 && restored.SidebarOpacity == 0.6,
             "Desktop opacity and negative monitor coordinates survive serialization");
+        Check(!new CockpitSettings().BackgroundDiagnosticsEnabled &&
+            (restored with { BackgroundDiagnosticsEnabled = true }).BackgroundDiagnosticsEnabled,
+            "Read-only background diagnosis defaults off and can be explicitly enabled");
         var model = new CockpitModel { Settings = merged };
         var items = GadgetCatalog.Get(model);
         Check(items.Select(item => item.Id).SequenceEqual(new[]
@@ -179,7 +182,7 @@ internal static class DesktopFeatureTests
         void Save(CockpitSettings settings) { saved.Add(settings); model.Settings = settings; }
         using var trace = new System.Diagnostics.TextWriterTraceListener(Console.Error);
         System.Diagnostics.Trace.Listeners.Add(trace);
-        using var controller = new DesktopController(main, model, Save, () => { });
+        using var controller = new DesktopController(main, model, Save, () => { }, () => { });
         controller.StopAsync().GetAwaiter().GetResult();
         try
         {
@@ -215,6 +218,15 @@ internal static class DesktopFeatureTests
                 var panel = (StackPanel)((ScrollViewer)settingsWindow.Content).Content;
                 var controls = panel.Children.OfType<Slider>().ToArray();
                 Check(controls.Length == 3, "App settings expose separate app, bar and gadget opacity controls");
+                var backgroundDiagnostics = panel.Children.OfType<CheckBox>()
+                    .Single(box => Equals(box.Content, "Hintergrunddiagnose aktivieren / alle 30 Minuten"));
+                Check(backgroundDiagnostics.IsChecked == false,
+                    "Background diagnosis requires explicit opt-in in desktop settings");
+                backgroundDiagnostics.IsChecked = true;
+                backgroundDiagnostics.RaiseEvent(new RoutedEventArgs(
+                    System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                Check(saved[^1].BackgroundDiagnosticsEnabled,
+                    "Explicit background-diagnosis toggle persists through the existing settings callback");
                 controls[0].Value = 0.8;
                 controls[1].Value = 0.55;
                 Check(main.Opacity == 0.8 && model.Settings.SidebarOpacity == 0.55,
@@ -229,6 +241,8 @@ internal static class DesktopFeatureTests
                 Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
                 Check(networkWindow.IsVisible && !controller.Network.IsCapturing,
                     "Opening network configuration never starts packet capture or adapter discovery");
+                Check(NpcapCapture.OfficialDownloadPage == "https://npcap.com/#download",
+                    "Npcap installation help targets only the official HTTPS download page");
                 if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(networkWindow, screenshotPrefix + "-network.png");
             }
             finally { networkWindow.Close(); }

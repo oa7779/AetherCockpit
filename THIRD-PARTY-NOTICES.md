@@ -1,27 +1,62 @@
-# Third-party notices
+# Drittanbieter, Lizenzen und Herkunft
 
-The MIT license in [LICENSE](./LICENSE) applies to AETHER-authored code and
-documentation only. It does not replace the terms of third-party components
-redistributed with AETHER.
+Die [MIT-Lizenz von AETHER](LICENSE) gilt für eigenen Quellcode und
+Dokumentation. Sie ersetzt keine Bedingungen mitgelieferter oder separat
+installierter Komponenten. Deren Copyright-, Lizenz- und Herkunftshinweise
+müssen bei Weitergabe erhalten bleiben.
 
-## Components bundled in `tools`
+## Mitgelieferte Messwerkzeuge
 
-- **smartmontools 7.5** (`smartctl.exe`, `drivedb.h`, and
-  `smartmontools-7.5-source.tar.gz`): GNU General Public License, version 2.
-  The license text is in [`tools/COPYING.txt`](./tools/COPYING.txt); source and
-  provenance details are included alongside the binaries.
-- **PresentMon 2.6.0** (`PresentMon.exe`): MIT License. The copyright and
-  permission notice are in [`tools/PresentMon-LICENSE.txt`](./tools/PresentMon-LICENSE.txt).
+| Komponente | Verwendung | Lizenz und Unterlagen |
+|---|---|---|
+| smartmontools 7.5 r5714 x64 | `smartctl.exe` für SMART-Diagnose und Selbsttests; `drivedb.h` als Gerätedatenbank | GPL Version 2; [Original-Lizenz](tools/COPYING.txt), [Quellarchiv](tools/smartmontools-7.5-source.tar.gz) |
+| PresentMon 2.6.0 x64 Console | `PresentMon.exe` für Frameintervalle eines ausgewählten Prozesses | MIT; [originaler Copyright- und Lizenztext](tools/PresentMon-LICENSE.txt) |
 
-## NuGet dependencies
+[Das Herkunftsmanifest](tools/provenance.json) nennt offizielle Downloadquellen,
+Versionen und SHA256 für Binärdateien, smartmontools-Installer und Quellarchiv.
+Das GPL-Quellarchiv bleibt zusammen mit Lizenz und Werkzeug im Paket.
+Bei Änderungen oder Weiterverteilung die jeweiligen Quellcode- und
+Lizenzpflichten prüfen; die AETHER-Lizenz hebt sie nicht auf.
 
-- **LibreHardwareMonitorLib 0.9.6**: Mozilla Public License 2.0 (MPL-2.0).
-  See the package metadata and license at
-  <https://licenses.nuget.org/MPL-2.0>; source:
-  <https://github.com/LibreHardwareMonitor/LibreHardwareMonitor>.
-- Transitive NuGet dependencies retain the licenses declared in their
-  respective package metadata. The self-contained .NET runtime distribution
-  includes its own third-party notices.
+## Hardwareprovider und .NET
 
-The listed versions describe the current project and bundled tools; consult
-package metadata and the adjacent provenance file when updating components.
+**LibreHardwareMonitorLib 0.9.6** liefert Sensorzugriff unter MPL 2.0.
+[Lizenztext](https://licenses.nuget.org/MPL-2.0)
+und [Projektquellen](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)
+sind der Komponente zugeordnet. Änderungen an MPL-Dateien unterliegen
+deren Offenlegungsbedingungen. Nicht verfügbare Sensoren werden durch
+eine Lizenz oder Installation nicht automatisch zugänglich.
+
+Transitive NuGet-Abhängigkeiten behalten die Lizenzen ihrer Paketmetadaten.
+Der separate Verwaltungsserver referenziert Microsoft.AspNetCore.OpenApi
+und Microsoft.Extensions.Hosting.WindowsServices; seine Abhängigkeiten
+werden nicht als Serverinstallation mit dem Cockpit ausgeliefert.
+
+Die selbstenthaltene Ausgabe enthält die .NET-/Windows-Desktop-Laufzeit
+mit eigenen Lizenz- und Drittanbieterhinweisen. Diese gehören weiterhin
+zum vollständigen Paket. Für konkrete Abhängigkeiten und Versionen gelten
+Projekt-, NuGet- und Runtime-Metadaten der jeweiligen Ausgabe.
+
+## Externes Npcap
+
+Npcap ist optional für Paketmitschnitte und **nicht gebündelt**. Das Setup
+kann nach Auswahl die [offizielle Downloadseite](https://npcap.com/#download)
+öffnen; Installation und Lizenzprüfung erfolgen separat.
+
+Die Npcap-Lizenz deckt nicht automatisch jede organisatorische Nutzung
+oder Weiterverteilung ab. Insbesondere bei zentraler Softwareverteilung
+und gebündelter Installation die geltenden Bedingungen und gegebenenfalls
+OEM-/Redistributionsrechte prüfen. AETHER erteilt dafür keine Rechte
+und installiert Npcap nicht unbeaufsichtigt.
+
+## Weitere Voraussetzungen und Integrationen
+
+Windows, Windows-Werkzeuge und WinGet sind Voraussetzungen mit ihren eigenen
+Bedingungen. Optional gestartetes UniGetUI/WingetUI und Wireshark sind
+separate Installationen, keine nachgebauten oder mitgelieferten Bestandteile.
+Der aktuelle Bildschirmschoner enthält keine Musikfunktion und verwendet
+keine externen Musikdateien.
+
+Originale Drittanbieter-Lizenztexte werden nicht übersetzt oder gekürzt.
+Diese Übersicht beschreibt die Quellen und Werkzeuge des aktuellen Arbeitsbaums;
+ältere Releasepakete behalten ihren damaligen Stand.

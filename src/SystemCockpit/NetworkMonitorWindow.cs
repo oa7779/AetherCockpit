@@ -100,6 +100,30 @@ internal sealed class NetworkMonitorWindow : Window
             }
         };
         panel.Children.Add(devices);
+        var download = new Button
+        {
+            Content = "Npcap fehlt? Offizielle Downloadseite oeffnen",
+            Style = buttonStyle,
+            Padding = new Thickness(8),
+            Margin = new Thickness(0, 4, 0, 8)
+        };
+        download.Click += (_, _) =>
+        {
+            if (MessageBox.Show(this,
+                    "AETHER liefert Npcap nicht mit. Die offizielle Npcap-Seite wird geoeffnet; Download und Installation erfolgen durch Sie und unter den Npcap-Lizenzbedingungen. Fortfahren?",
+                    "Npcap separat installieren", MessageBoxButton.YesNo, MessageBoxImage.Information) != MessageBoxResult.Yes)
+                return;
+            try
+            {
+                Process.Start(new ProcessStartInfo(NpcapCapture.OfficialDownloadPage) { UseShellExecute = true });
+            }
+            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+            {
+                MessageBox.Show(this, ex.Message, "Npcap-Downloadseite konnte nicht geoeffnet werden",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        };
+        panel.Children.Add(download);
         var buttons = new WrapPanel();
         var start = new Button { Content = "Mitschnitt starten (Bestaetigung)", Style = buttonStyle, Padding = new Thickness(8) };
         start.Click += (_, _) =>

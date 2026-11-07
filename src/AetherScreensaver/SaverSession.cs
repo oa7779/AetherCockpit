@@ -20,8 +20,6 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
     private uint? _lastInput;
     private readonly long _started = Environment.TickCount64;
     private bool _stopping;
-    private SaverAudio? _audio;
-    private string? _audioError;
 
     internal void Start()
     {
@@ -41,12 +39,6 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
             Mouse.OverrideCursor = Cursors.None;
             SystemEvents.DisplaySettingsChanged += ScreensChanged;
         }
-        _audio = new SaverAudio(message =>
-        {
-            _audioError = message;
-            foreach (var window in _windows) window.ShowAudioError(message);
-        });
-        _audio.Start(arguments.Mode);
         _input.Tick += CheckInput;
         _input.Start();
         _poll = PollAsync();
@@ -103,10 +95,7 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
             {
                 if (!_stop.IsCancellationRequested)
                     foreach (var window in _windows)
-                    {
                         window.Present(hardware, frame, status);
-                        if (_audioError is not null) window.ShowAudioError(_audioError);
-                    }
             });
             try { await Task.Delay(TimeSpan.FromSeconds(2), _stop.Token); }
             catch (OperationCanceledException) when (_stop.IsCancellationRequested) { break; }
@@ -138,7 +127,6 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
     {
         if (_stopping) return;
         _stopping = true;
-        _audio?.Dispose();
         Trace.TraceInformation("AETHER Bildschirmschoner wird beendet.");
         _input.Stop();
         _stop.Cancel();
@@ -151,7 +139,6 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
     public void Dispose()
     {
         _stopping = true;
-        _audio?.Dispose();
         _input.Stop();
         SystemEvents.DisplaySettingsChanged -= ScreensChanged;
         Mouse.OverrideCursor = null;

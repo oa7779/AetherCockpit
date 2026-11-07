@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private readonly HardwareSensors _sensors = new();
     private readonly WindowsProbe _probe = new();
     private readonly ManagerReportingService _managerReporting;
+    private readonly BackgroundDiagnosticMonitor _backgroundDiagnostics;
     private readonly CancellationTokenSource _stop = new();
     private readonly SemaphoreSlim _sensorGate = new(1);
     private readonly LocalHistory _history = new(Path.Combine(
@@ -29,6 +30,7 @@ public partial class MainWindow : Window
     private Task _eventTask = Task.CompletedTask;
     private Task _boardFeedTask = Task.CompletedTask;
     private Task _managerReportingTask = Task.CompletedTask;
+    private Task _backgroundDiagnosticsTask = Task.CompletedTask;
     private Task _currentProbe = Task.CompletedTask;
     private bool _sensorsEnabled, _recording, _allowClose, _closing;
     private DateTimeOffset _lastRecorded = DateTimeOffset.MinValue;
@@ -56,11 +58,30 @@ public partial class MainWindow : Window
                         _model.Footer = status;
                 });
         });
+        _backgroundDiagnostics = new BackgroundDiagnosticMonitor(message =>
+        {
+            if (!Dispatcher.HasShutdownStarted)
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (_closing) return;
+                    _model.Footer = message;
+                    _desktop?.NotifyDiagnostics(message);
+                });
+        }, status =>
+        {
+            if (!Dispatcher.HasShutdownStarted)
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (!_closing) _model.Footer = status;
+                });
+        });
         DataContext = _model;
         _model.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(CockpitModel.CleanupFilter))
                 Dispatcher.BeginInvoke(UpdateCleanupSelection);
+            if (e.PropertyName == nameof(CockpitModel.Settings))
+                _backgroundDiagnostics.Configure(_model.Settings.BackgroundDiagnosticsEnabled);
         };
         // Startpunkt des Navigationsverlaufs; spaetere Events deduplizieren sich selbst.
         _trail.Visit("Cockpit");
@@ -103,6 +124,8 @@ public partial class MainWindow : Window
         _boardFeedTask = BoardLiveFeed.ServeAsync(_model, Dispatcher, _stop.Token);
         _managerReporting.Configure(_model.Settings);
         _managerReportingTask = _managerReporting.RunAsync(_stop.Token);
+        _backgroundDiagnostics.Configure(_model.Settings.BackgroundDiagnosticsEnabled);
+        _backgroundDiagnosticsTask = _backgroundDiagnostics.RunAsync(_stop.Token);
     }
 
     internal bool ManagerDeviceTokenAvailable => _managerReporting.HasDeviceToken;
@@ -118,7 +141,7 @@ public partial class MainWindow : Window
 
     internal void InitializeDesktop(bool logon)
     {
-        _desktop = new DesktopController(this, _model, SaveDesktopSettings, RequestExit);
+        _desktop = new DesktopController(this, _model, SaveDesktopSettings, RequestExit, () => Operations.OpenWindowsAssistants());
         if (logon) _desktop.StartLogonCapture();
     }
 
@@ -223,6 +246,7 @@ public partial class MainWindow : Window
         _stop.Cancel();
         HardwareBoard.Shutdown();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
+            _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);
         if (_desktop is not null)
         {
@@ -1037,6 +1061,7 @@ public partial class MainWindow : Window
         Operations.Shutdown();
         HardwareBoard.Shutdown();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
+            _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask);
         await Task.WhenAll(Workbench.Pending, EmbeddedEvents.Pending, Operations.Pending, HardwareBoard.Pending);
         if (controlCenter is not null) await controlCenter.PendingOperations;

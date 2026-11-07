@@ -71,6 +71,20 @@ internal static class OperationsTests
         Check(DiagnosticAssistants.Analyze(diagnosticSnapshot with { Adapters = [] })
             .Findings.Single(f => f.Agent == "Verbindungen").Severity == "UNBEKANNT",
             "Unavailable network inventory remains unknown instead of healthy");
+        var activeBackgroundFindings = new HashSet<string>(StringComparer.Ordinal);
+        var firstBackgroundFindings = BackgroundDiagnosticMonitor.FindNewActionableFindings(
+            diagnosticReport.Findings, activeBackgroundFindings);
+        Check(BackgroundDiagnosticMonitor.Interval == TimeSpan.FromMinutes(30) &&
+            firstBackgroundFindings.Any(f => f.Agent == "Treiber und Geraete") &&
+            firstBackgroundFindings.All(BackgroundDiagnosticMonitor.IsActionable),
+            "Background scans use the agreed interval and alert only on actionable findings");
+        Check(BackgroundDiagnosticMonitor.FindNewActionableFindings(
+                diagnosticReport.Findings, activeBackgroundFindings).Length == 0,
+            "Unchanged findings do not repeat notifications every scan");
+        BackgroundDiagnosticMonitor.FindNewActionableFindings([], activeBackgroundFindings);
+        Check(BackgroundDiagnosticMonitor.FindNewActionableFindings(
+                diagnosticReport.Findings, activeBackgroundFindings).Length == firstBackgroundFindings.Length,
+            "Resolved findings can alert again if they reappear after a clean scan");
         var parsedDiagnostic = DiagnosticAssistants.Parse("""
             {"MachineName":"fixture-host","Windows":"Windows 11","DisplayVersion":"24H2","Build":"26100.1",
              "Events":[],"Devices":[],"Adapters":[],"Applications":[],"Drivers":[]}
@@ -277,6 +291,9 @@ internal static class OperationsTests
                     WindowsTroubleshootingAssistants.All.Any(assistant =>
                         !Descendants(hub).OfType<Button>().Any(button => Equals(button.Tag, assistant.Id))))
                     throw new InvalidOperationException("Dedicated Windows troubleshooting assistants are missing from the Operations UI");
+                if (!Descendants(hub).OfType<Button>().Any(button =>
+                        Equals(button.Content, "Letzten Hintergrundbericht oeffnen")))
+                    throw new InvalidOperationException("Background diagnosis report shortcut is missing");
                 pages.SelectedItem = pages.Items.Cast<TabItem>().Single(page => Equals(page.Header, "Diagnose"));
                 Pump();
                 Find<Button>(main, button => Equals(button.Content, "Windows-Diagnose & Problemlösung"))

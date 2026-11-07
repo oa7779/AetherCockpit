@@ -51,7 +51,6 @@ internal static class Program
             _assertions += SettingsUpgradeTests.Run();
             _assertions += HardwareBoardTests.Run();
             _assertions += ScreensaverTests.Run();
-            _assertions += SaverAudioTests.Run(args.Contains("--screensaver-ui"));
             _assertions += SensorChartTests.Run();
             if (args.Contains("--sensor-charts-ui"))
             {

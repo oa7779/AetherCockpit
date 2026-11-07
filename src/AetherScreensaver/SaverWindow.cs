@@ -16,7 +16,6 @@ internal sealed class SaverWindow : Window
     private readonly HardwareBoardView _board;
     private readonly TextBlock _status;
     private readonly TextBlock _readings;
-    private readonly TextBlock _audioStatus;
     private readonly CockpitModel _model = new();
     private BoardSnapshot? _hardware;
     private readonly System.Drawing.Rectangle _bounds;
@@ -38,11 +37,10 @@ internal sealed class SaverWindow : Window
         _board.UseScreensaverLayout();
         _status = new TextBlock { Foreground = Brushes.Cyan, TextWrapping = TextWrapping.Wrap, FontSize = 14 };
         _readings = new TextBlock { Foreground = Brushes.Gold, TextWrapping = TextWrapping.Wrap, FontSize = 15 };
-        _audioStatus = new TextBlock { Foreground = Brushes.Gold, TextWrapping = TextWrapping.Wrap, FontSize = 13 };
         var panel = new Grid { ClipToBounds = true };
         var header = new StackPanel { VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(12),
             IsHitTestVisible = false, Opacity = .75, MaxHeight = 75 };
-        header.Children.Add(_status); header.Children.Add(_readings); header.Children.Add(_audioStatus);
+        header.Children.Add(_status); header.Children.Add(_readings);
         panel.Children.Add(_board);
         panel.Children.Add(header);
         header.RenderTransform = _headerDrift;
@@ -50,8 +48,6 @@ internal sealed class SaverWindow : Window
         SourceInitialized += (_, _) => PlaceNative();
         Closed += (_, _) => { _board.Shutdown(); SetMotion(false); };
     }
-
-    internal void ShowAudioError(string message) => _audioStatus.Text = message;
 
     protected override Size MeasureOverride(Size availableSize)
     {

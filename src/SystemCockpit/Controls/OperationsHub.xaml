@@ -30,7 +30,7 @@
  <Grid>
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="150"/><RowDefinition Height="6"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <StackPanel><TextBlock Text="OPERATIONS // PLANEN · PRUEFEN · BEWUSST AUSFUEHREN" Foreground="#39FF68" FontFamily="Consolas" FontSize="20"/>
-   <TextBlock Text="Lokaler Einzelplatz + explizite Arbeitsgruppen-Ziele. Keine automatische Geraetesuche, Cloud-Verbindung oder Hintergrundwartung." Foreground="#24FFE3" Margin="0,6"/>
+   <TextBlock Text="Lokaler Einzelplatz + explizite Arbeitsgruppen-Ziele. Hintergrunddiagnose ist separat einstellbar und bleibt lesend; Reparaturen erfordern weiterhin eine Vorschau und ausdrueckliche Freigabe." Foreground="#24FFE3" Margin="0,6"/>
   </StackPanel>
   <TabControl Grid.Row="1" x:Name="Tabs" Background="#0C0719" BorderBrush="#8734C5">
    <TabItem Header="Leistungsindex">
@@ -110,9 +110,10 @@
        Background="#060909" Foreground="#83FFB0" FontFamily="Consolas" AutomationProperties.Name="Windows-Assistent Diagnoseausgabe"/>
       <WrapPanel>
        <Button Content="Windows-Reparaturplan vorbereiten / noch nichts ausfuehren" Click="RepairPlanPrepareClicked" ToolTip="DISM RestoreHealth und SFC scannow; Vorschau und Wiederherstellungspunkt, danach jeden Aenderungsschritt einzeln bestaetigen"/>
+       <Button Content="Letzten Hintergrundbericht oeffnen" Click="BackgroundReportClicked" ToolTip="Nur den zuletzt lokal gespeicherten Diagnosebericht anzeigen"/>
        <Button Content="Lokale Berichte" Click="ReportsClicked"/>
       </WrapPanel>
-      <TextBlock Text="Treiber werden nicht automatisch installiert. Update-/Reparaturaktionen sind separat, mit Vorschau und ausdruecklicher Freigabe. Keine zentrale Uebermittlung." Foreground="#24FFE3" Margin="0,4"/>
+      <TextBlock Text="Treiber werden nicht automatisch installiert. Updates und Reparaturen benötigen eigene Vorschau und Freigabe. Diese Assistenten speichern lokal; separat aktivierte Clientberichte können Diagnoseinventar an den Verwaltungsserver senden." Foreground="#24FFE3" Margin="0,4"/>
      </StackPanel>
     </ScrollViewer>
    </TabItem>

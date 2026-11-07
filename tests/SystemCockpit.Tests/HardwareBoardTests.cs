@@ -202,6 +202,11 @@ internal static class HardwareBoardTests
             Check(canvas.Children.OfType<Polygon>().Any(p => Equals(p.Tag, "gpu")) &&
                 canvas.Children.OfType<Polygon>().Any(p => Equals(p.Tag, "cpu")),
                 "CPU cooler and GPU model geometry are clickable and associated with detected hardware");
+            var gpuGeometry = canvas.Children.OfType<Polygon>().Where(p => Equals(p.Tag, "gpu")).ToArray();
+            var gpuPoints = gpuGeometry.SelectMany(p => p.Points).ToArray();
+            Check(gpuGeometry.Count(p => p.Points.Count == 25) >= 6 &&
+                gpuPoints.Max(point => point.X) - gpuPoints.Min(point => point.X) > 180,
+                "GPU shroud, three fan rings, and card bracket render as a wide clickable expansion card");
             foreach (var button in buttons)
             {
                 Check(Canvas.GetLeft(button) >= 0 && Canvas.GetTop(button) + button.ActualHeight <= canvas.Height &&

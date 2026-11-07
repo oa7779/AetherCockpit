@@ -23,6 +23,10 @@ internal sealed record SaverArguments(SaverMode Mode, nint Parent = 0)
 
 internal static class Program
 {
+    internal const string ConfigurationMessage =
+        "Der AETHER-Bildschirmschoner hat derzeit keine eigenen Einstellungen. " +
+        "Wartezeit und Anmeldeseite bei Reaktivierung legst du in den Windows-Bildschirmschonereinstellungen fest.";
+
     [STAThread]
     private static int Main(string[] args)
     {
@@ -40,7 +44,8 @@ internal static class Program
                 });
             if (options.Mode == SaverMode.Configure)
             {
-                new SaverConfigurationWindow().ShowDialog();
+                MessageBox.Show(ConfigurationMessage, "AETHER / Bildschirmschoner",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return 0;
             }
             using var session = new SaverSession(app, options);

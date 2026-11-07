@@ -5,43 +5,43 @@
 @deviceId = replace-with-enrolled-device-id
 @reportId = replace-with-report-id
 
-### Health check
+### Erreichbarkeit
 GET {{baseUrl}}/health
 
-### OpenAPI document
+### API-Beschreibung
 GET {{baseUrl}}/openapi/v1.json
 
-### Enroll one device (code is single-use; device starts pending)
+### Gerät anmelden (Einmalcode; zunächst pending)
 POST {{baseUrl}}/api/v1/enroll
 Content-Type: application/json
 
 {
   "code": "{{enrollmentCode}}",
   "machineName": "AETHER-TEST-PC",
-  "cockpitVersion": "0.7.0-beta.30"
+  "cockpitVersion": "0.7.0.0"
 }
 
-### Create another single-use enrollment code
+### Neuen Einmalcode erzeugen
 POST {{baseUrl}}/api/v1/admin/enrollment-codes
 Authorization: Bearer {{adminToken}}
 
-### List pending and approved devices
+### Ausstehende und freigegebene Geräte auflisten
 GET {{baseUrl}}/api/v1/admin/devices
 Authorization: Bearer {{adminToken}}
 
-### Read one device
+### Ein Gerät lesen
 GET {{baseUrl}}/api/v1/admin/devices/{{deviceId}}
 Authorization: Bearer {{adminToken}}
 
-### Approve a device after verifying it with the operator
+### Gerät nach Identitätsprüfung manuell freigeben
 POST {{baseUrl}}/api/v1/admin/devices/{{deviceId}}/approve
 Authorization: Bearer {{adminToken}}
 
-### Check a device's enrollment and approval state
+### Eigenen Anmelde- und Freigabestatus lesen
 GET {{baseUrl}}/api/v1/device
 Authorization: Bearer {{deviceToken}}
 
-### Submit a report only after the device is approved
+### Beispieldaten nach Gerätefreigabe senden
 POST {{baseUrl}}/api/v1/reports
 Authorization: Bearer {{deviceToken}}
 Content-Type: application/json
@@ -57,14 +57,14 @@ Content-Type: application/json
   }
 }
 
-### List recent reports
+### Berichte paginiert auflisten
 GET {{baseUrl}}/api/v1/admin/reports?limit=100&offset=0
 Authorization: Bearer {{adminToken}}
 
-### Read one report
+### Einen Bericht lesen
 GET {{baseUrl}}/api/v1/admin/reports/{{reportId}}
 Authorization: Bearer {{adminToken}}
 
-### Example not-found response
+### Beispiel für einen nicht vorhandenen Bericht
 GET {{baseUrl}}/api/v1/admin/reports/00000000-0000-0000-0000-000000000000
 Authorization: Bearer {{adminToken}}

@@ -27,22 +27,22 @@
         <!-- Schritt 1: Einfuehrung / Funktionsuebersicht -->
         <ScrollViewer x:Name="StepIntro" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Ein lokales Windows-Cockpit, das jeder versteht - und das dir bei jeder aendernden Aktion vorher die Kontrolle laesst."
+                <TextBlock Text="Deine Windows-Kommandozentrale für Hardwareüberwachung, Diagnose, Wartung und Systemverwaltung im Retro-Neon-Design."
                            FontSize="15" Margin="0,0,0,14"/>
                 <TextBlock Text="WAS AETHER KANN" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,0,0,8"/>
-                <TextBlock Text="- Live-Cockpit und xBar-Diagrammleiste: CPU, RAM, GPU, Temperatur- und Netzwerkverlaeufe; Laufwerksbelegung als Tortendiagramme."/>
-                <TextBlock Text="- Frei verteilbare Desktop-Gadgets, separate Transparenzregler und Tray bei der Uhr. X blendet das Hauptfenster aus; vollstaendig beenden im Tray-Menue."/>
-                <TextBlock Text="- Optionale lokale Netzwerkalarme und begrenzte Npcap-Paketmitschnitte nur nach gesonderter Freigabe. Npcap wird nicht installiert."/>
-                <TextBlock Text="- Taskmanager mit Graph je CPU-Kern; Sensor-Matrix; SMART-Diagnose und Selbsttests fuer SSDs/Festplatten."/>
-                <TextBlock Text="- Mess-Aufzeichnung mit MIN/MAX/AVG und PresentMon-FPS-Auswertung fuer Gamer und Profis."/>
-                <TextBlock Text="- Diagnose: lesende Windows-Pruefungen, Speicherdiagnose-Ergebnisse und Diagnose-Export mit Schwaerzung."/>
-                <TextBlock Text="- Cleaner mit Vorschau und Bewertung; loescht nur ausdruecklich angekreuzte Dateien."/>
-                <TextBlock Text="- Paket-Center (WinGet): Installieren, Aktualisieren, Deinstallieren mit exakten IDs und Bestaetigung."/>
+                <TextBlock Text="- Live-Cockpit und xBar: CPU, RAM, GPU, Temperatur- und Netzwerkverläufe sowie Laufwerksbelegung."/>
+                <TextBlock Text="- Desktop-Gadgets, Transparenzregler und Tray. X blendet das Hauptfenster aus; vollständig beenden im Tray-Menü."/>
+                <TextBlock Text="- Netzwerkalarme und begrenzte Paketmitschnitte mit eigener Freigabe. Npcap wird separat installiert und lizenziert."/>
+                <TextBlock Text="- CPU-Kerngraphen, Sensor-Matrix, SMART-Diagnose und freizugebende Selbsttests."/>
+                <TextBlock Text="- Messaufzeichnung, MIN/MAX/AVG und PresentMon-Framezeitauswertung."/>
+                <TextBlock Text="- Windows-Diagnoseassistenten, Ereignisse und Export mit Musterschwärzung. Hintergrunddiagnose ist wählbar und repariert nicht automatisch."/>
+                <TextBlock Text="- Cleaner mit Dateivorschau und Bestätigung der ausgewählten Löschkandidaten."/>
+                <TextBlock Text="- Paket-Center: Installieren, Aktualisieren und Deinstallieren mit exakten IDs und Bestätigung."/>
                 <TextBlock Text="- Befehls-Katalog: 103 Windows-Befehle mit Risikoanzeige und Einsteiger-/Expertenmodus, CRT-Konsole."/>
-                <TextBlock Text="- Superadmin und Operations: statusbasierte Verwaltung und native Wartungsplaene - jede Aktion einzeln bestaetigt."/>
-                <TextBlock Text="- Netzwerk-Werkzeuge, Speedtest, Shellbag-Analyse; vier Skins; durchsuchbares Hilfe-Center."/>
+                <TextBlock Text="- Superadmin und Operations: statusbasierte Verwaltung und Wartungspläne mit Vorschau und Einzelbestätigung."/>
+                <TextBlock Text="- Netzwerkwerkzeuge, Downloadtest, Shellbag-Analyse, vier Skins und lokale Hilfe."/>
                 <TextBlock Text="GRUNDREGEL" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,16,0,8"/>
-                <TextBlock Text="Lesen passiert automatisch, Aendern niemals - jede veraendernde Aktion verlangt deine ausdrueckliche Bestaetigung. Einzelplatz ohne Serverkontakt; Berichte nur nach Anmeldung, Freigabe und ausdruecklichem Opt-in."/>
+                <TextBlock Text="Geführte Änderungen benötigen deine Bestätigung. Die freie Administratorkonsole startet dagegen mit Enter direkt. Einzelplatz bleibt ohne Managerkontakt; Serverberichte verlangen Anmeldung, manuelle Freigabe und getrenntes Übertragungs-Opt-in."/>
             </StackPanel>
         </ScrollViewer>
 

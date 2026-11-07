@@ -1,5 +1,5 @@
-#define AppVersion "0.7.0-beta.32"
-#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.32-win-x64"
+#define AppVersion "0.7.0-beta.33"
+#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.33-win-x64"
 
 #ifdef SetupUninstallValidation
 #ifndef SetupValidation
@@ -65,8 +65,8 @@ OutputBaseFilename=AetherCockpit-Setup-{#AppVersion}-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
-VersionInfoVersion=0.7.0.32
-VersionInfoProductVersion=0.7.0.32
+VersionInfoVersion=0.7.0.33
+VersionInfoProductVersion=0.7.0.33
 WizardStyle=modern
 Compression=lzma2/ultra64
 SolidCompression=yes
@@ -111,6 +111,7 @@ Root: HKLM64; Subkey: "Software\AetherCockpit"; ValueType: string; ValueName: "I
 
 [Run]
 #ifndef SetupValidation
+Filename: "https://npcap.com/#download"; Description: "Offizielle Npcap-Downloadseite oeffnen / separat installieren"; StatusMsg: "Offizielle Npcap-Downloadseite wird geoeffnet ..."; Flags: postinstall shellexec skipifsilent unchecked; Check: NpcapDownloadAvailable
 Filename: "{app}\SystemCockpit.exe"; Description: "AETHER jetzt starten / EULA beim ersten Start bestaetigen"; Flags: postinstall nowait skipifsilent runascurrentuser
 #endif
 
@@ -226,10 +227,11 @@ begin
   DesktopPage.Add('Desktop-Gadgets aktivieren'); DesktopPage.Values[0] := True;
   DesktopPage.Add('Ich genehmige ausdruecklich die erhoehte Autostart-Aufgabe fuer dieses Konto.');
   CapturePage := CreateInputOptionPage(DesktopPage.ID, 'Optionaler Npcap-Mitschnitt',
-    'Npcap wird NICHT mitgeliefert oder installiert. Lizenz und Installation separat pruefen.',
+    'Npcap wird NICHT mitgeliefert. Bei ausdruecklicher Auswahl kann Setup nach der Installation die offizielle Downloadseite oeffnen; Download und Installation erfolgen durch Sie.',
     'Nur eigene/berechtigte Schnittstelle. Maximal 128 Bytes/Paket, 100 MB oder 15 Minuten, ' +
     'ein Mitschnitt je Anmeldung. Lokale Dateien fuer 7 Tage, Gesamtbestand ca. 500 MB begrenzt. ' +
     'Auch Paketkoepfe koennen vertrauliche Inhalte enthalten. Keine Cloud, Entschluesselung oder Blockierung.', False, False);
+  CapturePage.Add('Netzwerkmitschnitt gewuenscht / Npcap-Downloadseite nach Setup anbieten');
   CapturePage.Add('Automatischen Mitschnitt bei Anmeldung aktivieren');
   CapturePage.Add('Ich genehmige diesen Mitschnitt auch fuer zukuenftige Anmeldungen bis zur Deaktivierung.');
   CaptureAdapter := TNewComboBox.Create(WizardForm);
@@ -347,7 +349,7 @@ begin
     else
       Result := 'Keine ausdrueckliche Zustimmung zur erhoehten Autostart-Aufgabe.';
   end;
-  if CapturePage.Values[0] and not CapturePage.Values[1] then
+  if CapturePage.Values[1] and not CapturePage.Values[2] then
     Result := 'Keine ausdrueckliche Zustimmung zum automatischen Mitschnitt.';
 end;
 
@@ -366,13 +368,19 @@ begin
     MsgBox('Autostart benoetigt Ihre ausdrueckliche Zustimmung. Alternativ die Autostart-Aufgabe abwaehlen.', mbError, MB_OK);
     Result := False;
   end;
-  if (CurPageID = CapturePage.ID) and CapturePage.Values[0] then begin
-    if not CapturePage.Values[1] or not WizardIsTaskSelected('autostart') or
+  if (CurPageID = CapturePage.ID) and CapturePage.Values[1] then begin
+    if not CapturePage.Values[2] or not WizardIsTaskSelected('autostart') or
       (CaptureAdapter.ItemIndex < 0) or not FileExists(ExpandConstant('{sys}\Npcap\wpcap.dll')) then begin
       MsgBox('Automatischer Mitschnitt erfordert Zustimmung, Autostart, eine Schnittstelle und separat installiertes Npcap. Es wird kein Treiber installiert.', mbError, MB_OK);
       Result := False;
     end;
   end;
+end;
+
+function NpcapDownloadAvailable: Boolean;
+begin
+  Result := not WizardSilent and CapturePage.Values[0] and
+    not FileExists(ExpandConstant('{sys}\Npcap\wpcap.dll'));
 end;
 
 procedure RunTaskCommand(Params: String);
@@ -525,7 +533,7 @@ begin
   end;
   Log('AETHER: preparing desktop profile.');
   Device := '';
-  if CapturePage.Values[0] then begin
+  if CapturePage.Values[1] then begin
     Device := AdapterNames[CaptureAdapter.ItemIndex];
     StringChangeEx(Device, '\', '\\', True);
   end;
@@ -535,7 +543,7 @@ begin
     ',"Cpu":' + BoolJson(DiagramPage.Values[0]) + ',"Ram":' + BoolJson(DiagramPage.Values[1]) +
     ',"Gpu":' + BoolJson(DiagramPage.Values[2]) + ',"Temperatures":' + BoolJson(DiagramPage.Values[3]) +
     ',"Network":' + BoolJson(DiagramPage.Values[4]) + ',"Drives":' + BoolJson(DiagramPage.Values[5]) +
-    ',"CaptureAtLogon":' + BoolJson(CapturePage.Values[0]) + ',"CaptureDevice":"' + Device + '"}';
+    ',"CaptureAtLogon":' + BoolJson(CapturePage.Values[1]) + ',"CaptureDevice":"' + Device + '"}';
   Log('AETHER: writing desktop profile.');
   if not SaveStringToFile(ExpandConstant('{app}\desktop-defaults.json'), Json, False) then
     RaiseException('Desktop-Konfiguration konnte nicht gespeichert werden.');
@@ -605,7 +613,7 @@ begin
     Result := MsgBox('AETHER vollstaendig entfernen?' + #13#10#13#10 +
       'Laufende AETHER-App, Gadgets, Tray und Bildschirmschoner dieser Installation werden beendet. ' +
       'Installationsordner sowie Einstellungen, Logs, Aufzeichnungen und Sicherungen dieses Windows-Kontos werden geloescht. ' +
-      'Externe Musikdateien und andere portable Versionen bleiben erhalten.',
+      'Externe Dateien und andere portable Versionen bleiben erhalten.',
       mbConfirmation, MB_YESNO) = IDYES;
 end;
 

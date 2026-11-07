@@ -1,0 +1,142 @@
+# Entwicklung und Paketierung
+
+## Projektstruktur
+
+| Pfad | Aufgabe |
+|---|---|
+| `src\SystemCockpit` | WPF-Cockpit, Windows-Abfragen, Sensoren, Verwaltung und lokaler Reportingclient |
+| `src\AetherScreensaver` | Nicht erhöhter Schonerhost und nativer Windows-SCR-Starter |
+| `src\AetherManager.Server` | Separate ASP.NET-Core-Verwaltungs-API |
+| `tests\SystemCockpit.Tests` | STA-Konsolenrunner mit Assertions und optionalen UI-/Live-Modi |
+| `tests` | Isolierte Setup-, Recovery-, Uninstall- und Produkt-Smoke-Skripte |
+| `build` | Publishskript, Inno-Setup-Definition, Iconerzeugung und Uninstallhilfe |
+| `tools` | Originale Messwerkzeuge, Lizenztexte, Quellarchiv und Herkunftsmanifest |
+| `docs` | Fachanleitungen ohne Versionsgeschichte |
+| `dist` | Bestehende portable Builds, ZIPs, Setups und historische Intune-Ausgabe |
+
+Der Workspace ist mit der bestehenden GitHub-Historie von
+`oa7779/AetherCockpit` verbunden; Arbeitsbranch ist `main` mit
+Upstream `origin/main`. Vor Veröffentlichungen Status und Remote-Stand prüfen.
+Keine Release-Verzeichnisse als Arbeitskopie verwenden.
+
+## Voraussetzungen
+
+- Windows x64 mit .NET 10 SDK.
+- Für WPF-UI-Tests ein grafischer Desktop.
+- Visual C++ x64 Build Tools und Windows SDK für den nativen `Aether.scr`.
+- Inno Setup 6 für die Setup-Erzeugung.
+- NuGet-Zugriff bei fehlenden SDK-/Runtimepaketen.
+
+Der Server referenziert ASP.NET Core OpenAPI und WindowsServices.
+Die Cockpit-Abhängigkeit und mitgelieferten Messwerkzeuge sind unter
+[Drittanbieter-Hinweise](../THIRD-PARTY-NOTICES.md) dokumentiert.
+Keine Werkzeuge oder Lizenzen durch handgeschriebene Ersatzdateien ersetzen.
+
+## Build
+
+Vom Workspace-Stamm:
+
+```powershell
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+dotnet build .\SystemCockpit.slnx -c Release
+```
+
+Bei vorhandenen Restore-Ergebnissen kann `--no-restore` verwendet werden.
+Ein Build startet keine produktive App und keine Sensoren.
+[Tests und ihre Nebenwirkungen](TESTING.md) sind separat beschrieben.
+
+## Versionsquelle
+
+Die Release-Version steht in
+`src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
+aktuell `0.7.0-beta.33`, Dateiversion `0.7.0.33`,
+Assembly-Version `0.7.0.0`.
+
+`build\AetherCockpit.iss` muss dazu passen: `AppVersion`, `PublishDir`,
+`VersionInfoVersion` und `VersionInfoProductVersion`.
+Das normale Projektbuild ohne Publishprofil setzt diese Releasewerte
+nicht selbst. Nicht aus einer gewöhnlichen Build-DLL auf den
+veröffentlichten Beta-Stand schließen.
+
+Der Client meldet beim Enrollment die Assembly-Version, nicht automatisch
+den vollständigen Beta-Tag. Die Dokumentation verspricht daher keine
+Beta-genaue Geräteversionsanzeige.
+
+## Publish mit Bildschirmschoner
+
+```powershell
+powershell -NoProfile -File .\build\Publish-Beta.ps1
+```
+
+Das Skript publiziert Cockpit und Schoner selbstenthalten für `win-x64`.
+Es prüft, dass beide dieselbe Cockpit-DLL verwenden, übernimmt die
+Schonerdateien und baut den nativen SCR-Starter mit Visual C++.
+Der Host heißt in der Ausgabe `AetherMainboard.scr`, der Discovery-Starter
+`Aether.scr`. Beide teilen die Cockpit-Runtime.
+
+Der Ausgabeordner wird aus der Profilversion gebildet:
+`dist\AetherCockpit-0.7.0-beta.33-win-x64`.
+**Existiert er bereits, bricht das Skript ab.** Das ist im aktuellen
+Workspace der Fall. Den vorhandenen Beta-33-Release nicht überschreiben.
+Für eine spätere Ausgabe Versionsänderung und neuen Zielpfad als eigenen
+Release-Schritt planen.
+
+## ZIP, Setup und Prüfsummen
+
+Für einen neu erzeugten, noch nicht archivierten Release:
+
+```powershell
+$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.33-win-x64).Path
+[System.IO.Compression.ZipFile]::CreateFromDirectory($release, "$release.zip")
+$iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
+if (-not (Test-Path -LiteralPath $iscc)) {
+    $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
+}
+& $iscc .\build\AetherCockpit.iss
+Get-FileHash "$release.zip" -Algorithm SHA256
+Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.33-win-x64.exe -Algorithm SHA256
+```
+
+Die obigen Namen beschreiben Beta 33; vorhandene ZIP-/Setup-Dateien vorher
+nicht überschreiben. `ISCC` schützt bestehende Ausgaben nicht wie das
+Publishskript. Prüfsummen als `.sha256` mit Hash und Dateiname speichern.
+ZIP-Einträge, Größen und SHA256 jeweils gegen den Publish-Ordner vergleichen.
+Buildwerkzeuge und Laufzeitpakete beeinflussen Binärdateien; ein erneut
+gebautes Paket ist nicht zwangsläufig bytegleich.
+
+## Dokumentationsübernahme
+
+Die Content-Einträge in `SystemCockpit.csproj` übernehmen README, Changelog,
+Betatester-Anleitung, Fachdokumente, AETHER-Lizenz und Drittanbieter-Hinweise.
+Das vorhandene Logo wird mit seinem relativen Pfad mitgeliefert.
+Server-README und HTTP-Beispiele werden als Dokumentation übernommen,
+nicht als installierter Server.
+
+Inno Setup kopiert den Publish-Ordner rekursiv; ZIP archiviert ihn vollständig.
+Änderungen an Quellen allein aktualisieren **keine bereits erzeugten
+Release-Pakete**. Dokumentationsübernahme vor einer neuen Ausgabe statisch
+prüfen. Historische `dist`-Dateien und deren Prüfsummen bleiben unverändert.
+
+## Serverentwicklung
+
+Serverstart, Listener, Token und Datenordner:
+[Zentrale Verwaltung](CENTRAL-MANAGEMENT.md).
+Der Server wird separat gebaut und gestartet; er ist kein automatisch
+laufender Bestandteil der Desktopinstallation.
+
+## Technische Invarianten
+
+- Fehlende Sensoren bleiben fehlend; NVMe-Temperaturgrenzen sind keine Messwerte.
+- GPU-Werte bleiben einem Gerät zugeordnet; Kanalidentitäten berücksichtigen
+  doppelte Provider-IDs.
+- Prozessdetails sichern PID mit Startzeit; Prozess-I/O bleibt von Disk-I/O getrennt.
+- Geführte Änderungen behalten Vorschau, Bestätigung und Zustandsprüfung.
+- Operations verwendet für SFC den vorhandenen UTF-16-Ausgabehelper;
+  lange PowerShell-Skripte werden über Standardinput transportiert.
+- Bei Operations-Journalfehlern Ausgabe weiter drainen und Folgeschritte stoppen.
+- Paketaktionen verwenden vollständige IDs/Quellen; Import startet keine Installer.
+- Einzelplatzmodus bleibt ohne Managerkontakt; Berichts- und Capturefreigaben
+  sind voneinander unabhängig.
+
+Im Workspace hält `PROJEKTSTAND.md` lokale Ausgaben und offene Arbeiten fest.
+Die Übergabe wird nicht in Benutzerpakete übernommen.

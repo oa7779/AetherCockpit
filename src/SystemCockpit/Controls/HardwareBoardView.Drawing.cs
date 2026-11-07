@@ -126,13 +126,25 @@ public partial class HardwareBoardView
             Box(128, 335 + slot * 58, 350, 12, 1, 7, "#18252F", "#657B8D");
         if (gpu.Devices.Count > 0)
         {
-            Box(130, 330, 350, 68, 11, 62, "#20243D", gpu.Accent, gpu);
+            Box(130, 320, 350, 90, 8, 64, "#1B2238", "#B6C7D5", gpu);
+            Box(138, 322, 334, 86, 70, 8, "#34344E", gpu.Accent, gpu);
             for (var fan = 0; fan < 3; fan++)
             {
-                Disc(195 + fan * 105, 363, 74, 28, "#101A28", "#C7B4DA", gpu);
-                Fan(195 + fan * 105, 363, 75, 23, gpu.Accent);
+                var center = 195 + fan * 105;
+                Disc(center, 364, 78, 42, "#101725", "#D5C9E9", gpu);
+                Disc(center, 364, 79, 32, "#1A2940", gpu.Accent, gpu);
+                Fan(center, 364, 80, 26, gpu.Accent);
             }
-            Box(119, 328, 12, 74, 5, 74, "#68818C", "#C4D7DC", gpu);
+            Segment(Project(145, 324, 79), Project(460, 324, 79), "#9A83C7", 1.4);
+            Segment(Project(145, 406, 79), Project(460, 406, 79), "#77889B", 1.4);
+            Box(119, 318, 12, 94, 5, 74, "#68818C", "#C4D7DC", gpu);
+            for (var port = 0; port < 3; port++)
+                Box(116, 327 + port * 22, 6, 14, 24, 11, "#0A1320", "#9FCED1", gpu);
+            for (var contact = 0; contact < 18; contact++)
+            {
+                var start = 205 + contact * 11;
+                Segment(Project(start, 411, 12), Project(start + 7, 411, 12), "#FFCE54", 2);
+            }
         }
         DrawPorts(Find("network"), 22, 38, 42, 62, 30);
         DrawPorts(Find("usb"), 22, 135, 42, 98, 26);

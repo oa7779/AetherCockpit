@@ -28,7 +28,11 @@
     <Content Include="..\..\THIRD-PARTY-NOTICES.md" Link="THIRD-PARTY-NOTICES.md" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\README.md" Link="README.md" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\BETA-TESTANLEITUNG.md" Link="BETA-TESTANLEITUNG.md" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\..\FUNKTIONSABGLEICH.md" Link="FUNKTIONSABGLEICH.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\CHANGELOG.md" Link="CHANGELOG.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\docs\*.md" Link="docs\%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Assets\aether-logo.png" Link="src\SystemCockpit\Assets\aether-logo.png" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\AetherManager.Server\README.md" Link="src\AetherManager.Server\README.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\AetherManager.Server\AetherManager.Server.http" Link="src\AetherManager.Server\AetherManager.Server.http" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\tools\*" Link="tools\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 

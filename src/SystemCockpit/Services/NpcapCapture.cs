@@ -30,12 +30,13 @@ internal sealed class NpcapCapture : IDisposable
     public const int SnapLength = 128;
     public const long MaxFileBytes = 100_000_000;
     public static readonly TimeSpan MaxDuration = TimeSpan.FromMinutes(15);
+    internal const string OfficialDownloadPage = "https://npcap.com/#download";
     public static string LibraryPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "Npcap", "wpcap.dll");
 
     public NpcapCapture()
     {
         if (!File.Exists(LibraryPath))
-            throw new FileNotFoundException("Npcap ist nicht installiert. Installation und Lizenz separat pruefen; AETHER installiert keinen Capture-Treiber.", LibraryPath);
+            throw new FileNotFoundException("Npcap ist nicht installiert. AETHER liefert keinen Capture-Treiber mit; offiziellen Download und Lizenzbedingungen separat pruefen.", LibraryPath);
         _library = LoadLibraryEx(LibraryPath, IntPtr.Zero, 0x00000100 | 0x00000800);
         if (_library == IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
         try

@@ -566,9 +566,7 @@ public partial class ControlCenterWindow : Window
     private void AppendTerminal(string text)
     {
         if (_outputLimitReached) return;
-        // Wagenruecklauf ohne Zeilenumbruch = einzeiliger Fortschrittsbalken:
-        // die aktuelle Zeile wird wie in einem echten Terminal ueberschrieben,
-        // statt fuer jede Fortschrittsmeldung eine neue Zeile anzuhaengen.
+        // Wagenruecklauf aktualisiert die laufende Fortschrittszeile ohne neue Zeile.
         var segments = text.Replace("\r\n", "\n").Split('\r');
         for (var i = 0; i < segments.Length; i++)
         {

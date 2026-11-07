@@ -43,6 +43,7 @@ public sealed record CockpitSettings
     public double GadgetOpacity { get; init; } = 0.9;
     public bool GadgetsEnabled { get; init; }
     public List<GadgetLayout> GadgetLayouts { get; init; } = [];
+    public bool BackgroundDiagnosticsEnabled { get; init; }
     public bool NetworkMonitorEnabled { get; init; }
     public bool CaptureAtLogon { get; init; }
     public string CaptureDevice { get; init; } = "";

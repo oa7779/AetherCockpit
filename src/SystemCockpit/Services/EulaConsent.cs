@@ -5,7 +5,7 @@ namespace SystemCockpit.Services;
 
 /// <summary>
 /// Speichert die einmalige Zustimmung zur Endnutzer-Lizenzvereinbarung lokal.
-/// Ohne Zustimmung startet das Cockpit nicht. Rein lokal, keine Uebertragung.
+/// Ohne Zustimmung startet das Cockpit nicht; die Zustimmungsdatei wird nicht übertragen.
 /// </summary>
 public sealed class EulaConsent(string directory)
 {
@@ -60,41 +60,50 @@ public sealed class EulaConsent(string directory)
         Rechte (z.B. bei Vorsatz/grober Fahrlaessigkeit) bleiben unberuehrt.
 
         3. Administratorrechte
-        Die Software benoetigt Administratorrechte, um Hardware-Sensoren und
-        Systeminformationen zu lesen. Erteile diese nur, wenn du der Quelle
-        vertraust. Vor Reparaturen einen Wiederherstellungspunkt anlegen.
+        Das Cockpit benötigt Administratorrechte für Hardwarezugriff und
+        Systemverwaltung. Erteile sie nur bei vertrauenswürdiger Herkunft.
+        Vor Reparaturen wichtige Daten sichern; ein Wiederherstellungspunkt
+        ersetzt kein Backup.
 
-        4. Keine automatischen Aenderungen / lokale Verarbeitung
-        Ohne deine ausdrueckliche Bestaetigung nimmt die Software keine
-        veraendernden Aktionen vor. Es findet keine Cloud-Uebertragung und kein
-        Tracking statt. Einstellungen, Protokolle und das Rechner-Inventar
-        bleiben lokal unter %LOCALAPPDATA%\AetherCockpit.
+        4. Freigaben und Datenverarbeitung
+        Geführte Änderungen benötigen deine Bestätigung. Die freie
+        Administratorkonsole führt eingegebene Befehle mit Enter direkt aus.
+        Einstellungen und lokale Berichte liegen unter
+        %LOCALAPPDATA%\AetherCockpit des ausführenden Kontos.
+        AETHER hat keine allgemeine App-Telemetrie. Im Einzelplatzmodus
+        erfolgt kein Kontakt zum Verwaltungsserver. Optionaler Clientbetrieb
+        überträgt Diagnoseberichte erst nach Anmeldung, manueller Freigabe
+        und getrenntem Übertragungs-Opt-in. Netzwerkwerkzeuge, Updates und
+        aufgerufene Programme können ihre jeweiligen Ziele kontaktieren.
 
-        5. Datenschutz des Inventars
-        Das beim ersten Start erstellte Rechner-Inventar (Hardware und
-        installierte Software) wird nur lokal angezeigt/gespeichert. Es kann
-        Rechnernamen und Seriennummern enthalten; teile es nur bewusst.
+        5. Diagnose und Datenschutz
+        Das Erstinventar wird lokal angezeigt und kann als Text gespeichert
+        werden. Inventare, Ereignisse, Backups und Mitschnitte können Namen,
+        Geräte-IDs und private Pfade enthalten. Vor Weitergabe prüfen.
+        Die Musterschwärzung des Text-Exports gilt nicht automatisch für
+        andere Berichte oder die optionale Serverübertragung.
 
         6. Fremdkomponenten
-        Die Software nutzt Fremdkomponenten unter deren eigenen Lizenzen,
-        u.a. LibreHardwareMonitor (MPL 2.0) und smartmontools (GPL v2).
-        Deren Lizenzbedingungen gelten fuer die jeweiligen Komponenten fort.
+        Die Software nutzt LibreHardwareMonitor (MPL 2.0), smartmontools
+        (GPL v2) und PresentMon (MIT) unter deren eigenen Bedingungen.
+        Die mitgelieferten Lizenz- und Herkunftshinweise gelten weiter.
 
-        7. Optionale Desktop- und Netzwerkfunktionen
-        Desktop-Gadgets und Tray koennen nach Ausblenden des Hauptfensters
-        weiterlaufen; vollstaendiges Beenden ueber das Symbol bei der Uhr.
-        Eine erhoehte Autostart-Aufgabe und automatische Paketmitschnitte
-        werden nur nach gesonderter ausdruecklicher Freigabe eingerichtet.
-        Npcap wird nicht mitgeliefert; Installation und Lizenz separat pruefen.
-        Mitschnitte koennen trotz 128-Byte-Grenze vertrauliche Daten enthalten.
-        Sie bleiben lokal, sind auf 100 MiB/15 Minuten begrenzt und werden
-        nach sieben Tagen beim naechsten Aufbewahrungslauf entfernt.
-        Netzwerkalarme sind regelbasierte Indizien, keine Angriffsnachweise
-        oder Zusage einer vollstaendigen Sicherheitsueberwachung.
+        7. Desktop, Mitschnitt und Deinstallation
+        Gadgets und aktivierte Hintergrunddiagnose laufen nach Ausblenden
+        des Hauptfensters weiter. Vollständig beenden über das Tray.
+        Anmeldestart und automatischer Mitschnitt benötigen eigene Freigaben.
+        Npcap wird separat installiert und lizenziert, nicht mitgeliefert.
+        Mitschnitte bleiben lokal und sind auf 128 Bytes je Paket,
+        100.000.000 Bytes (100 MB) je Datei und 15 Minuten begrenzt.
+        Eigene Captures werden nach sieben Tagen beim nächsten
+        Aufbewahrungslauf entfernt. Sie können vertrauliche Daten enthalten.
+        Netzwerkalarme sind Indizien, keine Angriffsnachweise.
+        Der aktuelle Uninstaller entfernt nach Bestätigung Installation
+        und AETHER-Daten des ausführenden Kontos. Benötigte Daten vorher
+        außerhalb dieser Ordner sichern; externe Dateien bleiben erhalten.
 
         8. Zustimmung
-        Durch Akzeptieren bestaetigst du, diese Bedingungen gelesen zu haben
-        und mit ihnen einverstanden zu sein. Andernfalls wird die Software
-        beendet und nicht weiter ausgefuehrt.
+        Mit Akzeptieren bestätigst du, die Bedingungen gelesen zu haben
+        und mit ihnen einverstanden zu sein. Andernfalls endet die Software.
         """;
 }

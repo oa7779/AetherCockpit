@@ -14,11 +14,28 @@ internal static class ScreensaverTests
     {
         var count = 0;
         void Check(bool value, string message) { count++; if (!value) throw new InvalidOperationException(message); }
-        Check(SaverArguments.Parse([]).Mode == SaverMode.Configure, "Invocation without arguments opens configuration, not fullscreen");
+        Check(SaverArguments.Parse([]).Mode == SaverMode.Configure, "Invocation without arguments shows configuration notice, not fullscreen");
         Check(SaverArguments.Parse(["/S"]).Mode == SaverMode.Fullscreen, "Standard fullscreen argument is case insensitive");
         Check(SaverArguments.Parse(["/p:123"]).Parent == 123 &&
             SaverArguments.Parse(["/p", "456"]).Mode == SaverMode.Preview, "Both standard preview handle forms parse");
         Check(SaverArguments.Parse(["/c:123"]).Mode == SaverMode.Configure, "Windows configuration owner form parses");
+        Check(SaverArguments.Parse(["/c"]).Mode == SaverMode.Configure &&
+            SaverArguments.Parse(["-c"]).Mode == SaverMode.Configure,
+            "Configuration switches still route to the settings notice");
+        Check(AetherScreensaver.Program.ConfigurationMessage.Contains("keine eigenen Einstellungen") &&
+            AetherScreensaver.Program.ConfigurationMessage.Contains("Windows-Bildschirmschonereinstellungen"),
+            "Configuration explains the absence of custom settings and points to Windows");
+        var saverAssembly = typeof(SaverSession).Assembly;
+        Check(new[] { "SaverAudio", "SaverAudioSettings", "SaverConfigurationWindow" }.All(name =>
+            saverAssembly.GetType("AetherScreensaver." + name) is null),
+            "Removed music player, preferences and settings window are absent from the compiled saver");
+        Check(typeof(SaverSession).GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            .All(field => field.FieldType != typeof(System.Windows.Media.MediaPlayer) &&
+                field.FieldType != typeof(System.Media.SoundPlayer)),
+            "Screensaver session owns no music playback object");
+        Check(typeof(SaverWindow).GetMethod("ShowAudioError",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic) is null,
+            "Screensaver scene no longer exposes a music error display");
         foreach (var args in new[] { new[] { "/p" }, new[] { "/p:0" }, new[] { "/p:-1" }, new[] { "/unknown" } })
         {
             try { SaverArguments.Parse(args); Check(false, "Invalid saver argument accepted"); }

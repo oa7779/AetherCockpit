@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $root = Join-Path ([IO.Path]::GetTempPath()) ('AetherUninstallTest-' + [guid]::NewGuid().ToString('N'))
 $app = Join-Path $root 'app'
 $data = Join-Path $root 'data'
-$outside = Join-Path $root 'external-music.wav'
+$outside = Join-Path $root 'external-file.txt'
 New-Item -ItemType Directory -Path $root | Out-Null
 $ownedProcess = $null
 $portableProcess = $null

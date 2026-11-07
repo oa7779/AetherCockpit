@@ -16,18 +16,22 @@ internal sealed class DesktopController : IDisposable
     private readonly Dictionary<string, GadgetWindow> _gadgets = [];
     private readonly Forms.NotifyIcon _tray;
     private readonly DispatcherTimer _desktopHealth;
+    private readonly Action _openDiagnostics;
     private bool _hidden, _refreshing, _disposed;
     private bool _refreshQueued;
+    private bool _diagnosticBalloon;
     private DesktopSettingsWindow? _settingsWindow;
     private NetworkMonitorWindow? _networkWindow;
     public NetworkWatch Network { get; }
     internal int GadgetCount => _gadgets.Count;
 
-    public DesktopController(MainWindow main, CockpitModel model, Action<CockpitSettings> save, Action exit)
+    public DesktopController(MainWindow main, CockpitModel model, Action<CockpitSettings> save, Action exit,
+        Action openDiagnostics)
     {
         _main = main;
         _model = model;
         _save = save;
+        _openDiagnostics = openDiagnostics;
         Network = new NetworkWatch(() => _model.Settings, Notify);
         _tray = new Forms.NotifyIcon
         {
@@ -52,6 +56,16 @@ internal sealed class DesktopController : IDisposable
         Menu("Gadgets schliessen", () => _save(_model.Settings with { GadgetsEnabled = false }));
         Menu("AETHER vollstaendig beenden", exit);
         _tray.DoubleClick += (_, _) => _main.Dispatcher.Invoke(() => WindowActivation.Show(_main));
+        _tray.BalloonTipClicked += (_, _) =>
+        {
+            if (!_diagnosticBalloon) return;
+            _diagnosticBalloon = false;
+            _main.Dispatcher.BeginInvoke(() =>
+            {
+                WindowActivation.Show(_main);
+                _openDiagnostics();
+            });
+        };
         _model.PropertyChanged += ModelChanged;
         _model.Volumes.CollectionChanged += VolumesChanged;
         _desktopHealth = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
@@ -163,7 +177,15 @@ internal sealed class DesktopController : IDisposable
     private void Notify(string message)
     {
         if (_disposed) return;
+        _diagnosticBalloon = false;
         _tray.ShowBalloonTip(7000, "AETHER / Netzwerkhinweis", message, Forms.ToolTipIcon.Warning);
+    }
+
+    internal void NotifyDiagnostics(string message)
+    {
+        if (_disposed) return;
+        _diagnosticBalloon = true;
+        _tray.ShowBalloonTip(7000, "AETHER / Hintergrunddiagnose", message, Forms.ToolTipIcon.Warning);
     }
 
     public async Task StopAsync() => await Network.StopAsync();

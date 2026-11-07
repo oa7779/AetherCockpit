@@ -42,6 +42,13 @@ internal sealed class DesktopSettingsWindow : Window
         });
         Toggle("Desktop-Gadgets anzeigen (unabhaengig vom Hauptfenster)", model.Settings.GadgetsEnabled,
             (s, v) => s with { GadgetsEnabled = v });
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Windows-Ereignisse, Geraete, Adapter, installierte Apps und Treiber alle 30 Minuten lesend pruefen. Der neueste Bericht bleibt lokal. Es werden keine Reparaturen ausgefuehrt. Bei Windows-Anmeldung laeuft die Pruefung nur, wenn die separat genehmigte AETHER-Autostart-Aufgabe eingerichtet ist.",
+            TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 4)
+        });
+        Toggle("Hintergrunddiagnose aktivieren / alle 30 Minuten", model.Settings.BackgroundDiagnosticsEnabled,
+            (s, v) => s with { BackgroundDiagnosticsEnabled = v });
         panel.Children.Add(new TextBlock { Text = "PARAMETER / fuer Gadgets und xBar", Foreground = Brushes.Turquoise, Margin = new Thickness(0, 15, 0, 5) });
         Toggle("CPU", model.Settings.SidebarWidgetCpu, (s, v) => s with { SidebarWidgetCpu = v });
         Toggle("RAM", model.Settings.SidebarWidgetMemory, (s, v) => s with { SidebarWidgetMemory = v });

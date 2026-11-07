@@ -61,9 +61,14 @@ begin
   DesktopPage.Values[1] := True;
   CapturePage.Values[0] := True;
   CapturePage.Values[1] := False;
+  CapturePage.Values[2] := False;
+  if PrepareToInstall(Restart) <> '' then
+    RaiseException('Npcap download offer must not require capture consent.');
+  CapturePage.Values[1] := True;
   if PrepareToInstall(Restart) = '' then
     RaiseException('Missing capture consent was accepted.');
   CapturePage.Values[0] := False;
+  CapturePage.Values[1] := False;
   if PrepareToInstall(Restart) <> '' then
     RaiseException('Valid no-capture consent was rejected.');
   Log('AETHER SETUP VALIDATION PASS');

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -117,6 +118,25 @@ public partial class OperationsHub : UserControl
         Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Header, "Wartungsplan"));
         Write("[VORBEREITET / NICHT AUSGEFUEHRT] Windows-Reparaturplan. Erst Vorschau pruefen und danach den Plan sowie jeden Aenderungsschritt einzeln bestaetigen.\n");
     }
+    private void BackgroundReportClicked(object sender, RoutedEventArgs e)
+    {
+        var path = BackgroundDiagnosticMonitor.ReportPath;
+        if (!File.Exists(path))
+        {
+            Write("[HINTERGRUNDDIAGNOSE] Noch kein Bericht vorhanden. AETHER muss mindestens einen Diagnosezyklus abschliessen.\n");
+            return;
+        }
+        try
+        {
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            Write("[HINTERGRUNDDIAGNOSE] Letzten lokalen Bericht geoeffnet: " + path + "\n");
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)
+        {
+            Trace.TraceError("AETHER Hintergrundbericht konnte nicht geoeffnet werden: {0}", ex);
+            Write("[FEHLER] Hintergrundbericht konnte nicht geoeffnet werden: " + ex.Message + "\n");
+        }
+    }
     private async void AgentsRunClicked(object sender, RoutedEventArgs e) => await RunAsync("Komplettes lokales Diagnoseinventar", async token =>
     {
         SystemActions.RequireAdmin();
@@ -223,7 +243,7 @@ public partial class OperationsHub : UserControl
     private void SaveResults(string run, List<MaintenanceResult> results)
     {
         Save(run, "Ergebnis.json", results);
-        var html = new StringBuilder("<!doctype html><html lang=\"de\"><meta charset=\"utf-8\"><title>AETHER Operations-Bericht</title><body style=\"background:#090611;color:#b0ffd4;font-family:Consolas,monospace\"><h1>AETHER / lokaler Laufbericht</h1><p>Kein Gesundheitssiegel. Teilaenderungen bei Fehler/Abbruch moeglich. Inventar kann private Angaben enthalten.</p>");
+        var html = new StringBuilder("<!doctype html><html lang=\"de\"><meta charset=\"utf-8\"><title>AETHER Operations-Bericht</title><body style=\"background:#090611;color:#b0ffd4;font-family:Consolas,monospace\"><h1>AETHER / lokaler Laufbericht</h1><p>Dieser Bericht dokumentiert die ausgeführten Schritte. Ein erfolgreicher Exitcode bestätigt keinen fehlerfreien Rechner. Fehler oder Abbruch können Teilergebnisse hinterlassen. Inventar vor Weitergabe auf private Angaben prüfen.</p>");
         foreach (var result in results)
             html.Append("<details><summary>").Append(WebUtility.HtmlEncode(result.Action + " / " + result.State))
                 .Append("</summary><p>").Append(WebUtility.HtmlEncode($"{result.Started:o} bis {result.Finished:o}"))
