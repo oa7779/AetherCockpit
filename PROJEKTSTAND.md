@@ -4,9 +4,15 @@
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-Aktuelle Paketierung **0.7.0-beta.35**, Dateiversion **0.7.0.35**.
-Releaseziel: Setup, Portable-Client, separater Server, aktuelles Intune-Paket
-und Prüfsummen; der GitHub-Latest-Link soll auf diese Beta zeigen.
+Veröffentlichte Beta **0.7.0-beta.35**, Dateiversion **0.7.0.35**.
+[GitHub-Beta 35](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.35)
+mit Setup, Portable-Client, separatem Server, aktuellem Intune-Paket
+und Prüfsummen. Quellcode-Commit und Releasetag: `ea79802`.
+Veröffentlicht am 07.11.2026 um 21:42:25 lokal.
+Alle neun Assetgrößen und GitHub-SHA256-Digests stimmen mit den lokalen Dateien
+überein; `/releases/latest` zeigt geprüft auf `v0.7.0-beta.35`.
+Für den Latest-Link als regulärer GitHub-Release markiert; Produktstatus
+und Releasebeschreibung bleiben BETA, keine Produktionsfreigabe.
 Beta 35 enthält außerdem die Logo-Reparatur für Boot und Dashboard sowie
 stärkeren xBar-Glow. Eingebettete Bildressource und Dokumentationskopie sind
 getrennt; UI verwendet den komponentengebundenen Ressourcenpfad.
@@ -40,7 +46,7 @@ die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
 · [Veröffentlichter Beta-32-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.32)
 
 Der bekannte veröffentlichte Quellcode-Commit zu Beta 32 ist `3a6abdb`.
-Bestehende `dist`-Ausgaben bleiben unverändert. Intune wird für Beta 35
+Bestehende `dist`-Ausgaben bleiben unverändert. Intune wurde für Beta 35
 aus dem aktuellen Setup neu erzeugt; die historischen Pakete bleiben erhalten.
 Die alten Pakete enthalten ältere Dokumentation und werden nicht nachträglich
 umgeschrieben. Künftige Publish-Ausgaben übernehmen die neue Dokumentstruktur.
