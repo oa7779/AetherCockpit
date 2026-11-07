@@ -4,9 +4,11 @@
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-Aktuelle Entwicklung **0.7.0-beta.34**, Dateiversion **0.7.0.34**.
-Releaseziel: GitHub-Beta 34 mit Client-Setup, Portable-ZIP und separatem
-Server-ZIP. Frühere Pakete bleiben unverändert. Der Nutzer hat für diesen
+Veröffentlichte Beta **0.7.0-beta.34**, Dateiversion **0.7.0.34**.
+[GitHub-Beta 34](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34)
+mit Client-Setup, Portable-ZIP, separatem Server-ZIP und Prüfsummen.
+Releasetag und Quellcode-Commit: `32783f9`. Frühere Pakete bleiben unverändert.
+Der Nutzer hat für diesen
 Durchlauf Entwicklung, Paketierung, Commit und GitHub-Release beauftragt.
 Der zuvor veröffentlichte Quellstand ist `591a142`; er enthält Beta 33,
 die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
