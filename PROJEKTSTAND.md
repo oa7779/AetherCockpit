@@ -30,7 +30,8 @@ Der historische Dateiabgleich wurde unterbrochen: 6266 Einträge der
 7826-Dateien-Basis fehlen inzwischen, mehrere ältere dist-Ordner sind
 nicht mehr vorhanden. Ursache nicht geklärt; in diesem Durchlauf nicht gelöscht.
 Keine Behauptung unveränderter vollständiger Historie möglich.
-Noch kein Beta-37-ZIP, Commit, Push oder GitHub-Release.
+Lokal noch kein Beta-37-ZIP oder GitHub-Release. Der aktuelle Quellstand
+ist inzwischen auf dem separaten CI-Branch veröffentlicht (siehe unten).
 Der Nutzer hat auf die Nachfrage zur Historie mit dem Auftrag umgelenkt,
 ein kostenloses SignPath-Zertifikat zu beschaffen. SignPath-Antragsformular
 im Browser geöffnet, offizielle Bedingungen geprüft; nichts eingereicht.
@@ -45,7 +46,23 @@ beauftragt. Neuer Windows-Buildworkflow verwendet bestehende Konsolenrunner,
 Publishskripte und Inno Setup; unsigned Artefakte mit Hashmanifest und
 Repository-/Commit-/Run-Herkunft. Keine SignPath-Signierung oder Release-
 Automatik. Der Workflow-Grundlauf ersetzt die grafischen UI-Tests nicht.
-Remote-Prüfung steht noch aus.
+Remote-Prüfung erfolgreich am 07.11.2026:
+[Windows-Build 42420444909](https://github.com/oa7779/AetherCockpit/actions/runs/42420444909)
+auf Branch `ci/windows-build`, Quellcommit `913181a`.
+Build ohne Warnungen/Fehler; 836 STA- und 44 Verwaltungsassertions bestanden,
+zusätzlich 836 STA-Assertions gegen die publizierten Assemblies.
+Client-/Server-ZIPs, Setup, Hashmanifest und Herkunft als unsigniertes
+CI-Artefakt erzeugt. Keine grafischen Tests, Intune-Paketierung oder
+Installation in diesem Lauf; lokale Code-Integrity-Sperre bleibt bestehen.
+`main`, Releasetags und bestehende GitHub-Releases unverändert.
+Git verwendet nun die vom Nutzer freigegebene GitHub-CLI-Anmeldung mit
+Workflow-Berechtigung.
+
+Das geteilte SignPath-Formular zeigt inzwischen „Form submitted“ und
+„Thank you, we'll be in touch soon.“ Der Antrag ist eingereicht, wurde
+aber nicht durch den Assistenten abgesendet. Keine Bestätigung des genauen
+eingereichten Formularstands; die neue CI-Herkunft konnte vorher nicht
+nachgetragen werden. Annahme, Zertifikat und Signing-Anbindung stehen aus.
 
 Beta 36 veröffentlicht mit sechs aufgabenbezogenen Navigationsgruppen,
 getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
@@ -85,7 +102,8 @@ Die Paketdokumentation entspricht weiterhin dem geprüften Releasezeitpunkt;
 die neue Galerie ist eine Ergänzung der GitHub-Präsentation.
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
-Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
+Arbeitsbranch `ci/windows-build`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
+`main` bleibt auf dem bisherigen veröffentlichten Stand.
 Veröffentlichte Beta **0.7.0-beta.36**, Dateiversion **0.7.0.36**.
 Vorherige [GitHub-Beta 35](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.35)
 bleibt erhalten. Die folgenden Angaben dokumentieren ihre Veröffentlichung:

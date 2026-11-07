@@ -13,6 +13,15 @@ Vor dem Versionsbuild bestand die Schwarz-/Blau-Korrektur 1455 Assertions
 mit Interface-, Board- und Schoner-UI. Die zugehörigen Screenshots zeigen
 diesen früheren Teststand, nicht einen neuen Pakettest.
 
+Der separate
+[GitHub-Actions-Lauf 42420444909](https://github.com/oa7779/AetherCockpit/actions/runs/42420444909)
+prüfte Quellcommit `913181a` auf `windows-2022`: Build ohne Warnungen/Fehler,
+836 STA- und 44 Verwaltungsassertions bestanden. Weitere 836 STA-Assertions
+bestanden mit den dort publizierten Assemblies. ZIPs und Setup wurden als
+unsignierte CI-Artefakte erzeugt. Der Lauf umfasst weder grafische UI-Tests
+noch Installation oder Intune; er prüft nicht die zuvor lokal erzeugten
+Beta-37-Pakete und hebt die lokale Code-Integrity-Sperre nicht auf.
+
 ## Testplattform
 
 `tests\SystemCockpit.Tests` ist ein **STA-Konsolenrunner**, kein
