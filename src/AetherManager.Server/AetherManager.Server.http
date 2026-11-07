@@ -1,0 +1,70 @@
+@baseUrl = http://127.0.0.1:5187
+@adminToken = read-from-data-folder-admin-token.txt
+@enrollmentCode = read-once-from-data-folder-enrollment-code.txt
+@deviceToken = paste-token-from-enrollment-response
+@deviceId = replace-with-enrolled-device-id
+@reportId = replace-with-report-id
+
+### Health check
+GET {{baseUrl}}/health
+
+### OpenAPI document
+GET {{baseUrl}}/openapi/v1.json
+
+### Enroll one device (code is single-use; device starts pending)
+POST {{baseUrl}}/api/v1/enroll
+Content-Type: application/json
+
+{
+  "code": "{{enrollmentCode}}",
+  "machineName": "AETHER-TEST-PC",
+  "cockpitVersion": "0.7.0-beta.30"
+}
+
+### Create another single-use enrollment code
+POST {{baseUrl}}/api/v1/admin/enrollment-codes
+Authorization: Bearer {{adminToken}}
+
+### List pending and approved devices
+GET {{baseUrl}}/api/v1/admin/devices
+Authorization: Bearer {{adminToken}}
+
+### Read one device
+GET {{baseUrl}}/api/v1/admin/devices/{{deviceId}}
+Authorization: Bearer {{adminToken}}
+
+### Approve a device after verifying it with the operator
+POST {{baseUrl}}/api/v1/admin/devices/{{deviceId}}/approve
+Authorization: Bearer {{adminToken}}
+
+### Check a device's enrollment and approval state
+GET {{baseUrl}}/api/v1/device
+Authorization: Bearer {{deviceToken}}
+
+### Submit a report only after the device is approved
+POST {{baseUrl}}/api/v1/reports
+Authorization: Bearer {{deviceToken}}
+Content-Type: application/json
+
+{
+  "capturedAt": "2026-04-04T12:00:00Z",
+  "report": {
+    "snapshot": {
+      "machineName": "AETHER-TEST-PC",
+      "windows": "Windows 11"
+    },
+    "findings": []
+  }
+}
+
+### List recent reports
+GET {{baseUrl}}/api/v1/admin/reports?limit=100&offset=0
+Authorization: Bearer {{adminToken}}
+
+### Read one report
+GET {{baseUrl}}/api/v1/admin/reports/{{reportId}}
+Authorization: Bearer {{adminToken}}
+
+### Example not-found response
+GET {{baseUrl}}/api/v1/admin/reports/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{adminToken}}

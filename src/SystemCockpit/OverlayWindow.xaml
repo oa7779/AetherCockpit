@@ -1,0 +1,64 @@
+<Window x:Class="SystemCockpit.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AETHER Overlay" Width="250" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" ShowActivated="False">
+    <Window.Resources>
+        <Style x:Key="OverlayLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#32D5FF"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="OverlayValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#24FFE3"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    <Border Background="#E6120C26" BorderBrush="#7944B5" BorderThickness="1.5" CornerRadius="8" Padding="12">
+        <StackPanel>
+            <Grid Margin="0,0,0,6" MouseLeftButtonDown="DragClicked">
+                <TextBlock Text="AETHER / LIVE" Foreground="#D45CFF" FontFamily="Consolas" FontWeight="Bold"/>
+                <Button Content="X" Click="CloseClicked" HorizontalAlignment="Right" Width="22" Height="20"
+                        Padding="0" Background="#22FFFFFF" Foreground="#E1EAF7" BorderBrush="#7944B5" FontSize="10"
+                        AutomationProperties.Name="Overlay schliessen"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                <TextBlock Text="CPU TEMP" Style="{StaticResource OverlayLabel}"/>
+                <TextBlock Grid.Column="1" Text="{Binding CpuTemperature}">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource OverlayValue}">
+                        <Style.Triggers><DataTrigger Binding="{Binding CpuTempWarning}" Value="True">
+                            <Setter Property="Foreground" Value="#FF5470"/></DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
+                <TextBlock Grid.Row="1" Text="GPU TEMP" Style="{StaticResource OverlayLabel}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding GpuTemperature}">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource OverlayValue}">
+                        <Style.Triggers><DataTrigger Binding="{Binding GpuTempWarning}" Value="True">
+                            <Setter Property="Foreground" Value="#FF5470"/></DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
+                <TextBlock Grid.Row="2" Text="SSD TEMP" Style="{StaticResource OverlayLabel}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding StorageTemperature}">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource OverlayValue}">
+                        <Style.Triggers><DataTrigger Binding="{Binding StorageTempWarning}" Value="True">
+                            <Setter Property="Foreground" Value="#FF5470"/></DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
+                <TextBlock Grid.Row="3" Text="CPU LAST" Style="{StaticResource OverlayLabel}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Cards[0].Value, StringFormat={}{0} %}" Style="{StaticResource OverlayValue}"/>
+            </Grid>
+            <Border x:Name="AlertBanner" Background="#66FF2244" BorderBrush="#FF5470" BorderThickness="1"
+                    CornerRadius="4" Padding="6" Margin="0,8,0,0" Visibility="Collapsed">
+                <TextBlock Text="{Binding OverlayAlert}" Foreground="#FFD7DE" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap"/>
+            </Border>
+        </StackPanel>
+    </Border>
+</Window>

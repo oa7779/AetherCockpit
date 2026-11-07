@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\aether.ico</ApplicationIcon>
+    <Authors>Olaf Weins</Authors>
+    <Company>Olaf Weins</Company>
+    <Product>AETHER System Control</Product>
+    <Copyright>Copyright (c) 2026 Olaf Weins</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <InternalsVisibleTo Include="SystemCockpit.Tests" />
+    <InternalsVisibleTo Include="AetherScreensaver" />
+    <Resource Include="Assets\aether-logo.png" />
+    <Resource Include="Assets\aether.ico" />
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
+    <Content Include="..\..\LICENSE" Link="LICENSE" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\THIRD-PARTY-NOTICES.md" Link="THIRD-PARTY-NOTICES.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\README.md" Link="README.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\BETA-TESTANLEITUNG.md" Link="BETA-TESTANLEITUNG.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\FUNKTIONSABGLEICH.md" Link="FUNKTIONSABGLEICH.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\tools\*" Link="tools\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

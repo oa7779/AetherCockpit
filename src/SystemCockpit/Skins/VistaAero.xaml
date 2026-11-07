@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Skin: Windows-Vista-Aero-Anmutung (dunkle Glasvariante). Neon-Inhaltsakzente bleiben lesbar. -->
+    <LinearGradientBrush x:Key="WindowBackdrop" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#0B1A2C"/><GradientStop Color="#040910" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlossPanel" StartPoint="0,0" EndPoint="0.3,1">
+        <GradientStop Color="#4C7FAE" Offset="0"/>
+        <GradientStop Color="#1E3B59" Offset="0.06"/>
+        <GradientStop Color="#16304A" Offset="0.3"/>
+        <GradientStop Color="#0C1E31" Offset="0.32"/>
+        <GradientStop Color="#0E2236" Offset="0.87"/>
+        <GradientStop Color="#2F587E" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlassRim" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#E4F4FF"/>
+        <GradientStop Color="#6FC2FF" Offset="0.28"/>
+        <GradientStop Color="#2F6FA8" Offset="0.55"/>
+        <GradientStop Color="#A5DAFF" Offset="0.8"/>
+        <GradientStop Color="#D7EEFF" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlossButton" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#86AFD2"/><GradientStop Color="#31587D" Offset="0.47"/>
+        <GradientStop Color="#142B41" Offset="0.5"/><GradientStop Color="#264863" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ChromeSidebar" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#15293F"/><GradientStop Color="#081220" Offset="0.08"/>
+        <GradientStop Color="#0B1828" Offset="0.85"/><GradientStop Color="#224666" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ButtonBorder" Color="#7FB9E8"/>
+    <SolidColorBrush x:Key="ButtonBorderAlt" Color="#7FB9E8"/>
+</ResourceDictionary>

@@ -1,0 +1,73 @@
+<UserControl x:Class="SystemCockpit.Controls.HardwareBoardView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <UserControl.Resources>
+  <Style x:Key="BoardLabel" TargetType="Button">
+   <Setter Property="Background" Value="#080717"/>
+   <Setter Property="Padding" Value="0"/>
+   <Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Frame" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="0,0,0,1" Padding="4,3,4,6" ClipToBounds="True">
+     <ContentPresenter/>
+    </Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Frame" Property="Background" Value="#292044"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Frame" Property="Background" Value="#292044"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+ </UserControl.Resources>
+ <Grid>
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <StackPanel x:Name="PresentationHeader" Margin="0,0,0,10">
+   <DockPanel>
+    <Button x:Name="RefreshButton" Content="HARDWARE NEU LESEN" Click="RefreshClicked" Style="{StaticResource NeonButton}" DockPanel.Dock="Right"/>
+    <TextBlock Text="AETHER // MAINFRAME 1986" FontFamily="Consolas" FontSize="26" Foreground="#F56AFF" VerticalAlignment="Center"/>
+   </DockPanel>
+   <TextBlock x:Name="StatusText" Text="Hardware wird beim ersten Oeffnen lokal gelesen." TextWrapping="Wrap" Foreground="#24FFE3" Margin="0,8"/>
+   <TextBlock Text="ISOMETRISCHE HARDWARE-SKIZZE / Bauteile oder Beschriftungen anklicken. Animierte Pfade sind SCHEMATISCH: keine gemessenen Paketwege, PCIe-Lanes oder exakte physische Bestueckung."
+    TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
+   <TextBlock Text="Audio: GELB = aktive Windows-Audiositzung (auch bei Stille), GRUEN = Standardrolle. Screens: Hauptbildschirm zuerst. Momentaufnahme; nach Geraete-/Ausgabewechsel HARDWARE NEU LESEN."
+    TextWrapping="Wrap" Foreground="#B7A7CD" FontFamily="Consolas" FontSize="11"/>
+   <WrapPanel Margin="0,8,0,0">
+    <CheckBox Content="Animation: Datenfluss, Luefter, Raster und Binaertext" IsChecked="{Binding MotionEnabled}" Foreground="#24FFE3"/>
+    <TextBlock Text="    ECHTE LIVE-MESSWERTE / separat, nicht pro Leiterbahn" Foreground="#FFCE54" FontFamily="Consolas"/>
+   </WrapPanel>
+   <WrapPanel Margin="0,6,0,0">
+    <TextBlock Text="CPU " Foreground="#39FF68"/><TextBlock x:Name="CpuLive" Text="{Binding Cards[0].Value}" Foreground="White"/><TextBlock Text=" %    RAM " Foreground="#FFCE54"/>
+    <TextBlock Text="{Binding Cards[1].Value}" Foreground="White"/><TextBlock Text=" %    GPU " Foreground="#F56AFF"/>
+    <TextBlock x:Name="GpuLive" Text="{Binding Cards[2].Value}" Foreground="White"/><TextBlock Text=" %    DOWNLOAD " Foreground="#24FFE3"/>
+    <TextBlock x:Name="DownloadLive" Text="{Binding Cards[3].Value}" Foreground="White"/><TextBlock Text=" Mbit/s    UPLOAD " Foreground="#24FFE3"/>
+    <TextBlock Text="{Binding SidebarUpload.Value}" Foreground="White"/>
+    <TextBlock Text="    CPU-TEMP " Foreground="#32D5FF"/><TextBlock Text="{Binding CpuTemperature}" Foreground="White"/>
+   </WrapPanel>
+  </StackPanel>
+  <ScrollViewer x:Name="BoardScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+   <StackPanel>
+    <Viewbox x:Name="BoardScale" Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Center">
+     <Canvas x:Name="BoardCanvas" Width="1320" Height="900" Background="#080717" ClipToBounds="True"/>
+    </Viewbox>
+    <Border x:Name="DeviceDetails" BorderBrush="#7944B5" BorderThickness="1" Background="#110C26" Padding="16" Margin="0,12,0,0">
+     <StackPanel>
+      <TextBlock x:Name="DetailTitle" Text="KOMPONENTEN / Bauteil auswaehlen" Foreground="#FFCE54" FontFamily="Consolas" FontSize="17"/>
+      <TextBlock x:Name="InternetText" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,8"/>
+      <ListBox x:Name="DeviceList" Background="#100C24" Foreground="#DCEAF7" BorderThickness="0" MaxHeight="330"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+       <ListBox.ItemTemplate><DataTemplate>
+        <StackPanel Margin="4,6">
+         <TextBlock Text="{Binding Name}" Foreground="#24FFE3" TextWrapping="Wrap"/>
+         <TextBlock Text="{Binding Status, StringFormat=Windows-Status: {0}}" Foreground="#FFCE54"/>
+         <TextBlock Text="{Binding Usage}" Foreground="#39FF68" TextWrapping="Wrap"/>
+         <TextBlock Text="{Binding Class, StringFormat=Klasse: {0}}" Foreground="#B7A7CD"/>
+         <TextBlock Text="{Binding Id, StringFormat=Geraet: {0}}" TextWrapping="Wrap"/>
+         <TextBlock Text="{Binding ParentId, StringFormat='Windows-Eltern-ID (leer = nicht verfuegbar): {0}'}" Foreground="#B7A7CD" TextWrapping="Wrap"/>
+        </StackPanel>
+       </DataTemplate></ListBox.ItemTemplate>
+      </ListBox>
+     </StackPanel>
+    </Border>
+   </StackPanel>
+  </ScrollViewer>
+ </Grid>
+</UserControl>

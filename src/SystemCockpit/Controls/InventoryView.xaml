@@ -1,0 +1,57 @@
+<UserControl x:Class="SystemCockpit.Controls.InventoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="IsReadOnly" Value="True"/><Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/><Setter Property="Background" Value="#15102D"/>
+            <Setter Property="RowBackground" Value="#15102D"/><Setter Property="AlternatingRowBackground" Value="#1C1336"/>
+            <Setter Property="Foreground" Value="#E1EAF7"/><Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="ColumnHeaderStyle"><Setter.Value><Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="#39204E"/><Setter Property="Foreground" Value="#24FFE3"/><Setter Property="Padding" Value="8,6"/>
+            </Style></Setter.Value></Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <StackPanel Margin="0,0,0,10">
+            <WrapPanel>
+                <TextBlock Text="RECHNER-INVENTAR" Foreground="#24FFE3" FontFamily="Consolas" FontSize="18" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <Button x:Name="RefreshButton" Content="Inventar aktualisieren" Click="RefreshClicked" Margin="0,0,8,0"/>
+                <Button x:Name="SaveButton" Content="Als Textdatei speichern" Click="SaveClicked" IsEnabled="False"/>
+            </WrapPanel>
+            <TextBlock x:Name="Status" Text="Noch nicht erfasst." Foreground="#32D5FF" TextWrapping="Wrap" Margin="0,8,0,0"/>
+            <Border x:Name="Investigation" Visibility="Collapsed" Background="#211339" BorderBrush="#24FFE3" BorderThickness="1" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock Text="DEIN RECHNER WIRD UNTERSUCHT - BITTE WARTEN" Foreground="#24FFE3" FontFamily="Consolas" FontSize="16" TextWrapping="Wrap"/>
+                    <TextBlock Text="Nur lesende Inventarisierung. Weiter geht es erst nach Abschluss." Foreground="#E1EAF7" Margin="0,6"/>
+                    <ProgressBar x:Name="InvestigationProgress" Height="8" IsIndeterminate="False" Foreground="#24FFE3" Background="#110C26"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="1.3*"/></Grid.ColumnDefinitions>
+            <DockPanel Margin="0,0,10,0">
+                <TextBlock DockPanel.Dock="Top" Text="HARDWARE / SYSTEM" Foreground="#D45CFF" FontFamily="Consolas" Margin="0,0,0,6"/>
+                <DataGrid x:Name="HardwareGrid">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="BEREICH" Binding="{Binding Category}" Width="*"/>
+                        <DataGridTextColumn Header="KOMPONENTE" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="DETAIL" Binding="{Binding Detail}" Width="2*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+            <DockPanel Grid.Column="1">
+                <TextBlock x:Name="SoftwareHeader" DockPanel.Dock="Top" Text="INSTALLIERTE SOFTWARE" Foreground="#D45CFF" FontFamily="Consolas" Margin="0,0,0,6"/>
+                <DataGrid x:Name="SoftwareGrid">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="2*"/>
+                        <DataGridTextColumn Header="VERSION" Binding="{Binding Version}" Width="*"/>
+                        <DataGridTextColumn Header="HERAUSGEBER" Binding="{Binding Publisher}" Width="2*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

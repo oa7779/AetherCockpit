@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\SystemCockpit\Assets\aether.ico</ApplicationIcon>
+    <StartupObject>AetherScreensaver.Program</StartupObject>
+    <Authors>Olaf Weins</Authors>
+    <Product>AETHER Mainboard Screensaver</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <ProjectReference Include="..\SystemCockpit\SystemCockpit.csproj" />
+    <InternalsVisibleTo Include="SystemCockpit.Tests" />
+  </ItemGroup>
+</Project>

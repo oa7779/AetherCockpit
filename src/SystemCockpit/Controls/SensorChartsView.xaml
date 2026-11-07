@@ -1,0 +1,82 @@
+<UserControl x:Class="SystemCockpit.Controls.SensorChartsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:local="clr-namespace:SystemCockpit.Controls">
+ <UserControl.Resources>
+  <Style TargetType="TabItem">
+   <Setter Property="Visibility" Value="Visible"/>
+   <Setter Property="Background" Value="#211335"/>
+   <Setter Property="Foreground" Value="#24FFE3"/>
+   <Setter Property="Padding" Value="14,8"/>
+   <Setter Property="Template">
+    <Setter.Value>
+     <ControlTemplate TargetType="TabItem">
+      <Border x:Name="HeaderFrame" Background="{TemplateBinding Background}" BorderBrush="#51347A"
+        BorderThickness="1" Padding="{TemplateBinding Padding}">
+       <ContentPresenter ContentSource="Header"/>
+      </Border>
+      <ControlTemplate.Triggers>
+       <Trigger Property="IsSelected" Value="True">
+        <Setter TargetName="HeaderFrame" Property="Background" Value="#392253"/>
+        <Setter TargetName="HeaderFrame" Property="BorderBrush" Value="#24FFE3"/>
+       </Trigger>
+       <Trigger Property="IsKeyboardFocused" Value="True">
+        <Setter TargetName="HeaderFrame" Property="BorderBrush" Value="#FFCE54"/>
+       </Trigger>
+      </ControlTemplate.Triggers>
+     </ControlTemplate>
+    </Setter.Value>
+   </Setter>
+  </Style>
+ </UserControl.Resources>
+ <TabControl x:Name="SensorModes" Background="#080717" BorderBrush="#51347A">
+  <TabItem Header="LIVE-DIAGRAMME">
+   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel>
+     <TextBlock Text="Hardware + Einheit = eigene Skala. Sensoren per Farblegende ein-/ausblenden (fuer diese Sitzung). Letzte 180 Messzyklen (bei 2s etwa 6 Minuten), nur im Arbeitsspeicher. Fehlende Werte bleiben Luecken; Grenzwerte stehen nur in der Detailmatrix."
+       TextWrapping="Wrap" Foreground="#A8A4C5" Margin="0,6,0,12"/>
+     <TextBlock x:Name="EmptyCharts" Text="{Binding SensorCharts.EmptyText}" TextWrapping="Wrap" Foreground="#FFCE54"/>
+     <TextBlock Text="{Binding SensorCharts.Warning}" TextWrapping="Wrap" Foreground="#FFCE54"/>
+     <ItemsControl x:Name="ChartGroups" ItemsSource="{Binding SensorCharts.View}">
+      <ItemsControl.ItemTemplate>
+       <DataTemplate>
+        <Border BorderBrush="#51347A" BorderThickness="1" Background="#110C26" Padding="12" Margin="0,0,0,14">
+         <StackPanel>
+          <TextBlock Text="{Binding Title}" FontFamily="Consolas" FontSize="18" Foreground="#24FFE3" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding HardwareId}" Foreground="#A8A4C5" FontSize="11"/>
+          <local:SensorPlot Group="{Binding}" Margin="0,6,0,0"/>
+          <ItemsControl ItemsSource="{Binding SeriesView}">
+           <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+           <ItemsControl.ItemTemplate>
+            <DataTemplate>
+             <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="0,5,18,5" MaxWidth="380"
+               ToolTip="{Binding Identity}" Foreground="{Binding Accent}" VerticalContentAlignment="Center">
+              <StackPanel>
+               <TextBlock Text="{Binding Name}" Foreground="{Binding Accent}" TextWrapping="Wrap"/>
+               <TextBlock Text="{Binding Current}" Foreground="#DCEAF7" FontFamily="Consolas" FontSize="11"/>
+              </StackPanel>
+             </CheckBox>
+            </DataTemplate>
+           </ItemsControl.ItemTemplate>
+          </ItemsControl>
+         </StackPanel>
+        </Border>
+       </DataTemplate>
+      </ItemsControl.ItemTemplate>
+     </ItemsControl>
+    </StackPanel>
+   </ScrollViewer>
+  </TabItem>
+  <TabItem Header="DETAILMATRIX / GRENZWERTE">
+   <DataGrid x:Name="SensorTable" ItemsSource="{Binding SensorView}" EnableRowVirtualization="True"
+      AutoGenerateColumns="False" IsReadOnly="True">
+    <DataGrid.Columns>
+     <DataGridTextColumn Header="KOMPONENTE" Binding="{Binding Hardware}" Width="2*"/>
+     <DataGridTextColumn Header="SENSOR" Binding="{Binding Name}" Width="2*"/>
+     <DataGridTextColumn Header="TYP" Binding="{Binding Type}" Width="*"/>
+     <DataGridTextColumn Header="LIVE" Binding="{Binding Display}" Width="*"/>
+    </DataGrid.Columns>
+   </DataGrid>
+  </TabItem>
+ </TabControl>
+</UserControl>

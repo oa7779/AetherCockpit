@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+dist/
+.env
+.env.*
+*.pfx
+*.pem
+admin-token.txt
+enrollment-code.txt
+TestResults/

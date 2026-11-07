@@ -1,0 +1,138 @@
+<Window x:Class="SystemCockpit.SidebarWindow"
+        x:Name="Root"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:SystemCockpit.Controls"
+        Title="AETHER xBar" Width="350" Height="760" MinHeight="480" Opacity="{Binding Settings.SidebarOpacity}"
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
+        Background="Transparent" Foreground="#E1EAF7" FontFamily="Segoe UI"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        WindowStartupLocation="Manual" Loaded="WindowLoaded" Closing="WindowClosing">
+    <Window.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Controls/DiagramTemplates.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+        <BooleanToVisibilityConverter x:Key="BoolVisibility"/>
+        <Style x:Key="BarButton" TargetType="Button">
+            <Setter Property="Background" Value="#221A35"/>
+            <Setter Property="Foreground" Value="#DCEAF7"/>
+            <Setter Property="BorderBrush" Value="#493362"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#32D5FF"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="4,12,4,5"/>
+        </Style>
+      </ResourceDictionary>
+    </Window.Resources>
+    <Border Background="#F10C0920" BorderBrush="#9C44B5" BorderThickness="1.5"
+            CornerRadius="14,4,14,4" Padding="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid MouseLeftButtonDown="HeaderDrag">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="AETHER / xBAR" Foreground="#D45CFF" FontFamily="Consolas"
+                               FontSize="17" FontWeight="Bold"/>
+                    <TextBlock Text="LIVE DIAGRAMME" Foreground="#7C7398" FontFamily="Consolas"
+                               FontSize="9"/>
+                </StackPanel>
+                <Button x:Name="PinButton" Grid.Column="1" Content="PIN" Style="{StaticResource BarButton}"
+                        Padding="7,5" Click="PinClicked" ToolTip="Anheften oder als frei schwebende Leiste nutzen"/>
+                <Button x:Name="OptionsButton" Grid.Column="2" Content="⚙" Style="{StaticResource BarButton}"
+                        Padding="8,5" Click="OptionsClicked" ToolTip="Monitor, Verhalten und Diagrammauswahl"/>
+                <Button Grid.Column="3" Content="×" Style="{StaticResource BarButton}" Padding="8,5"
+                        Click="CloseClicked" ToolTip="xBar schliessen"/>
+            </Grid>
+            <Border Grid.Row="1" Margin="0,8,0,4" Padding="9" Background="#22121832"
+                    BorderBrush="#443451" BorderThickness="1" CornerRadius="6">
+                <StackPanel>
+                    <TextBlock Text="{Binding LiveStatus}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="10"/>
+                </StackPanel>
+            </Border>
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <ContentControl x:Name="CpuChart" Content="{Binding Cards[0]}" ContentTemplate="{StaticResource MetricTemplate}"
+                                    Visibility="{Binding Settings.SidebarWidgetCpu, Converter={StaticResource BoolVisibility}}"/>
+                    <ContentControl x:Name="MemoryChart" Content="{Binding Cards[1]}" ContentTemplate="{StaticResource MetricTemplate}"
+                                    Visibility="{Binding Settings.SidebarWidgetMemory, Converter={StaticResource BoolVisibility}}"/>
+                    <ContentControl x:Name="GpuChart" Content="{Binding Cards[2]}" ContentTemplate="{StaticResource MetricTemplate}"
+                                    Visibility="{Binding Settings.SidebarWidgetGpu, Converter={StaticResource BoolVisibility}}"/>
+                    <ItemsControl x:Name="TemperatureCharts" ItemsSource="{Binding SidebarTemperatures}"
+                                  ItemTemplate="{StaticResource HistoryTemplate}"
+                                  Visibility="{Binding Settings.SidebarWidgetTemperatures, Converter={StaticResource BoolVisibility}}"/>
+                    <StackPanel x:Name="NetworkCharts" Visibility="{Binding Settings.SidebarWidgetNetwork, Converter={StaticResource BoolVisibility}}">
+                        <ContentControl Content="{Binding Cards[3]}" ContentTemplate="{StaticResource MetricTemplate}"/>
+                        <ContentControl Content="{Binding SidebarUpload}" ContentTemplate="{StaticResource HistoryTemplate}"/>
+                    </StackPanel>
+                    <StackPanel x:Name="DriveCharts" Visibility="{Binding Settings.SidebarWidgetDrives, Converter={StaticResource BoolVisibility}}">
+                        <TextBlock Text="LAUFWERKSBELEGUNG" Style="{StaticResource SectionLabel}"/>
+                        <ItemsControl x:Name="VolumePies" ItemsSource="{Binding Volumes}" ItemTemplate="{StaticResource VolumeTemplate}"/>
+                        <TextBlock Text="Keine Laufwerksmessung verfuegbar" Foreground="#9D92B5" FontSize="10">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasItems, ElementName=VolumePies}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <TextBlock Grid.Row="3" x:Name="SidebarStatus" Text="Diagramme ueber das Zahnrad konfigurieren."
+                       Foreground="#8D82A8" FontSize="9" TextWrapping="Wrap" Margin="2,6,2,0"/>
+            <Popup x:Name="OptionsPopup" Placement="Bottom" PlacementTarget="{Binding ElementName=OptionsButton}"
+                   StaysOpen="False" AllowsTransparency="True">
+                <Border Width="310" MaxHeight="700" Padding="12" Background="#F4130D27"
+                        BorderBrush="#9C44B5" BorderThickness="1.5" CornerRadius="8">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="xBAR EINSTELLUNGEN" Foreground="#D45CFF" FontFamily="Consolas" FontWeight="Bold"/>
+                            <TextBlock Text="Monitor" Foreground="#32D5FF" Margin="0,10,0,3"/>
+                            <ComboBox x:Name="MonitorSelect" DisplayMemberPath="DeviceName" SelectionChanged="MonitorChanged"/>
+                            <TextBlock Text="Andockseite" Foreground="#32D5FF" Margin="0,8,0,3"/>
+                            <ComboBox x:Name="SideSelect" SelectedValuePath="Tag" SelectionChanged="SideChanged">
+                                <ComboBoxItem Content="Rechts" Tag="right"/>
+                                <ComboBoxItem Content="Links" Tag="left"/>
+                            </ComboBox>
+                            <CheckBox x:Name="PinnedToggle" Content="Angeheftet / volle Bildschirmhoehe" Checked="ModeChanged" Unchecked="ModeChanged" Margin="0,8"/>
+                            <CheckBox x:Name="AutoHideToggle" Content="Auto-hide (nur mit Einzelmonitor)" Checked="AutoHideChanged" Unchecked="AutoHideChanged" Margin="0,4"/>
+                            <TextBlock Text="Deckkraft der Leiste (20-100 %)" Foreground="#32D5FF" Margin="0,8,0,3"/>
+                            <Slider x:Name="OpacitySlider" Minimum="0.2" Maximum="1" Value="1"
+                                    ValueChanged="OpacityChanged"/>
+                            <TextBlock Text="DIAGRAMME EINBLENDEN" Foreground="#32D5FF" FontFamily="Consolas" Margin="0,10,0,2"/>
+                            <CheckBox x:Name="CpuWidgetToggle" Content="CPU / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="MemoryWidgetToggle" Content="RAM / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="GpuWidgetToggle" Content="GPU / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="TemperatureWidgetToggle" Content="CPU-/GPU-/SSD-Temperaturverlaeufe" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="NetworkWidgetToggle" Content="Netzwerk / Download und Upload" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="DrivesWidgetToggle" Content="Laufwerke / Belegt-Frei-Torten" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Popup>
+        </Grid>
+    </Border>
+</Window>

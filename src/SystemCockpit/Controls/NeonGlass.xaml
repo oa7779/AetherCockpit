@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <LinearGradientBrush x:Key="GlossPanel" StartPoint="0,0" EndPoint="0.3,1">
+        <GradientStop Color="#403454" Offset="0"/>
+        <GradientStop Color="#251A3A" Offset="0.06"/>
+        <GradientStop Color="#1D1237" Offset="0.3"/>
+        <GradientStop Color="#100B25" Offset="0.32"/>
+        <GradientStop Color="#120C28" Offset="0.87"/>
+        <GradientStop Color="#303452" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlassRim" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#B5FFFF"/>
+        <GradientStop Color="#AD49F2" Offset="0.28"/>
+        <GradientStop Color="#573386" Offset="0.55"/>
+        <GradientStop Color="#FF62D6" Offset="0.8"/>
+        <GradientStop Color="#43FFF1" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlossButton" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#69517F"/><GradientStop Color="#39234E" Offset="0.47"/>
+        <GradientStop Color="#1D1234" Offset="0.5"/><GradientStop Color="#292641" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ChromeSidebar" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#261632"/><GradientStop Color="#0F0A20" Offset="0.08"/>
+        <GradientStop Color="#140B28" Offset="0.85"/><GradientStop Color="#3B2552" Offset="1"/>
+    </LinearGradientBrush>
+    <!-- Theme-Schluessel: Skins ueberschreiben diese Werte auf App-Ebene. Retro-Neon ist das Original. -->
+    <SolidColorBrush x:Key="WindowBackdrop" Color="#080516"/>
+    <SolidColorBrush x:Key="ButtonBorder" Color="#914ADB"/>
+    <SolidColorBrush x:Key="ButtonBorderAlt" Color="#D45CFF"/>
+</ResourceDictionary>
