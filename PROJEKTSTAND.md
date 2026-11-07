@@ -2,7 +2,7 @@
 
 ## Stand
 
-Beta 36 vorbereitet mit sechs aufgabenbezogenen Navigationsgruppen,
+Beta 36 veröffentlicht mit sechs aufgabenbezogenen Navigationsgruppen,
 getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
 sichtbaren Kühlerseite. Lokaler Tagmodus 07–19 Uhr, Nacht außerhalb, mit
 manueller Übersteuerung in Desktop-Einstellungen und Übernahme im Schoner.
@@ -22,11 +22,18 @@ hashverglichen, 50 Dokumente und 217 Links geprüft. Intune MAC, IV,
 entschlüsselter ZIP-SHA256 und byteidentisches Setup geprüft; kein Tenant-Rollout.
 4439 historische dist-Dateien und sämtliche Beta-34-/35-Paketprüfsummen unverändert.
 Setup erstellt am 07.11.2026 um 22:16:50 lokal; Dateiversion 0.7.0.36.
-Veröffentlichung und abschließender GitHub-Assetvergleich folgen.
+Veröffentlicht am 07.11.2026 um 22:21:53 lokal:
+[GitHub-Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36).
+Quellcode-Commit und Releasetag: `66e6ae5`.
+Alle neun GitHub-Assetgrößen und SHA256-Digests gegen lokale Dateien geprüft;
+Latest und Tag zeigen auf Beta 36 beziehungsweise den genauen Quellcommit.
+Regulärer GitHub-Release für Latest, Produktstatus weiterhin BETA.
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-Veröffentlichte Beta **0.7.0-beta.35**, Dateiversion **0.7.0.35**.
+Veröffentlichte Beta **0.7.0-beta.36**, Dateiversion **0.7.0.36**.
+Vorherige [GitHub-Beta 35](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.35)
+bleibt erhalten. Die folgenden Angaben dokumentieren ihre Veröffentlichung:
 [GitHub-Beta 35](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.35)
 mit Setup, Portable-Client, separatem Server, aktuellem Intune-Paket
 und Prüfsummen. Quellcode-Commit und Releasetag: `ea79802`.
