@@ -56,19 +56,19 @@ Die Bilder werden auf GitHub bereitgestellt.
 
 **Dashboard und aufgabenbezogene Navigation**
 
-![AETHER-Dashboard vor der ersten Messung](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-dashboard.png)
+![AETHER-Dashboard vor der ersten Messung](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-dashboard.png)
 
 **Mainframe im Tagmodus mit getrennten Gerätedetails**
 
-![AETHER-Mainframe im Tagmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-mainframe-day.png)
+![AETHER-Mainframe im Tagmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-mainframe-day.png)
 
 **Mainframe im Nachtmodus mit korrigierten GPU-Lüftern**
 
-![AETHER-Mainframe im Nachtmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-mainframe-night.png)
+![AETHER-Mainframe im Nachtmodus](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-mainframe-night.png)
 
 **Bildschirmschoner mit Neon-Platine und eigener Sekundenanzeige**
 
-![AETHER-Bildschirmschoner mit synthetischen Testdaten](https://raw.githubusercontent.com/oa7779/AetherCockpit/main/docs/screenshots/beta36-saver.png)
+![AETHER-Bildschirmschoner mit synthetischen Testdaten](https://raw.githubusercontent.com/oa7779/AetherCockpit/2d574b55225429defe47a3d5f448de87a23c37b6/docs/screenshots/beta36-saver.png)
 
 ## Installation
 
