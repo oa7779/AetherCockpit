@@ -250,7 +250,17 @@ public static class HelpCatalog
             "Berichtsübertragung getrennt aktivieren.\n" +
             "Der Client sendet dann beim ersten möglichen Lauf und stündlich Diagnoseinventar mit Ereignissen und Befunden. " +
             "Das Token ist per DPAPI für das aktuelle Konto geschützt. Zurückschalten stoppt Anfragen und deaktiviert Übertragung. " +
-            "Der Server ist ein separates API-Projekt; Verwaltungsoberfläche und fertiger LAN-/Dienstbetrieb fehlen noch.",
-            "server client manager zentrale verwaltung enrollment anmeldung opt-in dpapi bericht")
+            "Der Server bietet eine HTTPS-Webverwaltung. Der optional und separat bestätigte Windows-Clientdienst " +
+            "meldet Heartbeats und Berichte auch ohne geöffnetes Cockpit und führt feste Verwaltungsaufträge aus. " +
+            "Systemänderungen brauchen lokale und zentrale Freigaben; die DNS-Cache-Autoreparatur zusätzlich beide Automatik-Opt-ins. " +
+            "Der Desktop-Einzelplatzschalter stoppt nicht einen separat installierten Dienst.",
+            "server client manager zentrale verwaltung enrollment anmeldung opt-in dpapi bericht dienst heartbeat"),
+        new("Konsole", "Windows-Werkzeugassistenten",
+            "Der Werkzeugbereich enthält feste Diagnose- und Reparaturaktionen mit Verfügbarkeitsprüfung und " +
+            "Konsolenausgabe. Veränderungen werden bestätigt, fehlende Werkzeuge nicht nachinstalliert. " +
+            "Sysinternals und ADK sind optionale lokale Werkzeuge mit offiziellen Bezugslinks.\n" +
+            "Remote-Updates benötigen eine vollständige aktuelle Suche, eine einzelne GUID/Revision und die Zustimmung " +
+            "zum Lizenztext. Identität und Lizenz werden vor Ausführung erneut geprüft; kein automatischer Neustart.",
+            "werkzeuge assistenten diagnose reparatur sysinternals adk treiber update versionierung")
     ];
 }

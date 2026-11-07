@@ -1,7 +1,7 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand Beta 33; sie enthält keine Versionsgeschichte.
+beschreibt den aktuellen Quellstand Beta 34; sie enthält keine Versionsgeschichte.
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 ## Beobachtung und Darstellung
@@ -15,6 +15,7 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
 | Desktop | Sechs xBar-Diagrammgruppen, Gadgets mit Position und Deckkraft, Tray, Temperatur-Overlay und Multi-Monitor-Bildschirmschoner |
 | Oberfläche | Vier Skins, LED-Instrumente, Animation ein/aus, Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
+| Neon-Effekte | Verstärkte Halos, Pulslicht und Energiebewegung in Schoner, Hauptfenster und Dashboard; Bewegung abschaltbar |
 
 Sensoren werden nur angezeigt, wenn sie der Provider meldet. Das Mainboard ist
 keine elektrische Topologie; Gruppenmaxima und dynamische Skalen sind
@@ -53,6 +54,8 @@ und einzeln bestätigt. [Diagnose und Wartung](SYSTEM-CONTROL.md).
 - 17 Wartungskategorien mit Planvorschau, Wiederherstellungspunkt und
   Einzelbestätigung; Windows-Updates mit GUID, Revision und EULA-Prüfung.
 - Durchsuchbarer Windows-Befehlskatalog und freie PowerShell-Administratorkonsole.
+- 25 feste Windows-Werkzeugaktionen mit Verfügbarkeitsprüfung und Konsolenausgabe;
+  optionale Microsoft-Werkzeuge mit lokalen Start-/Downloadangeboten.
 - Cache-Cleaner mit Kategorie-, Datei- und Löschvorschau; große Dateien
   separat und lesend finden.
 
@@ -72,17 +75,20 @@ Der Cleaner löscht endgültig ohne Papierkorb.
 - Lesende WinRM-Diagnose für eingetragene Windows-Ziele.
 - Optionaler Clientmodus mit Geräteanmeldung und Berichtsübertragung an die
   separate Verwaltungs-API.
+- HTTPS-Webverwaltung mit Gerätefreigaben, Onlinezustand, Richtlinien, Aufträgen
+  und Audit; optionaler Windows-Clientdienst für Betrieb ohne geöffnetes Cockpit.
+- Eng begrenzte DNS-Cache-Autoreparatur mit lokalem und zentralem Opt-in.
 
 [Netzwerkdetails](NETWORK.md) · [Zentrale Verwaltung](CENTRAL-MANAGEMENT.md)
 
 ## Produktgrenzen
 
-AETHER bietet keine automatischen Reparaturen, Treiberdownloads,
+AETHER bietet keine pauschale automatische Heilung, Treiberdownloads,
 Schutzabschaltung, Registry-/RAM-Bereinigung, pauschales Debloating oder
 unbelegte Gesundheitsnoten. Die Paketansicht ist kein IDS und keine vollständige
 Offline-Protokollanalyse. Externe Programme behalten ihre eigenen
 Einstellungen, Freigaben und Protokolle.
 
-Die zentrale Verwaltungsoberfläche, Remote-Reparaturpläne und automatische
-LAN-Einrichtung sind noch nicht umgesetzt. M365-/Copilot-Anzeigen prüfen lokale
-Voraussetzungen, keine Tenant-Daten oder Lizenzen.
+Zertifikate, Netzwerkerreichbarkeit und Firewall werden vom Administrator
+eingerichtet. M365-/Copilot-Anzeigen prüfen lokale Voraussetzungen,
+keine Tenant-Daten oder Lizenzen.

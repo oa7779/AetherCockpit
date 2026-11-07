@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -22,14 +23,16 @@ internal sealed class SaverWindow : Window
     private readonly nint _parent;
     private readonly LinearGradientBrush _backdrop;
     private readonly TranslateTransform _headerDrift = new();
+    private readonly Border _neonFrame;
     private bool? _motion;
+    private bool _closed;
 
     internal SaverWindow(System.Drawing.Rectangle bounds, nint parent = 0)
     {
         _bounds = bounds; _parent = parent;
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         _backdrop = new LinearGradientBrush(new GradientStopCollection {
-            new(Color.FromRgb(3, 5, 27), 0), new(Color.FromRgb(59, 8, 124), .6),
+            new(Color.FromRgb(3, 5, 27), 0), new(Color.FromRgb(70, 8, 142), .6),
             new(Color.FromRgb(12, 20, 66), 1) }, 90);
         Background = _backdrop; ShowInTaskbar = false; Topmost = parent == 0;
         Width = Math.Max(1, bounds.Width); Height = Math.Max(1, bounds.Height);
@@ -43,10 +46,29 @@ internal sealed class SaverWindow : Window
         header.Children.Add(_status); header.Children.Add(_readings);
         panel.Children.Add(_board);
         panel.Children.Add(header);
+        _neonFrame = new Border { BorderBrush = new LinearGradientBrush(
+            Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45),
+            BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(12),
+            Margin = new Thickness(8), IsHitTestVisible = false };
+        FrameGlow.SetVisible(_neonFrame, true);
+        panel.Children.Add(_neonFrame);
         header.RenderTransform = _headerDrift;
-        Content = panel;
+        Content = new AdornerDecorator { Child = panel };
         SourceInitialized += (_, _) => PlaceNative();
-        Closed += (_, _) => { _board.Shutdown(); SetMotion(false); };
+        Loaded += (_, _) =>
+        {
+            SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
+            SystemParameters.StaticPropertyChanged += AnimationSettingsChanged;
+            SetMotion(_model.MotionEnabled);
+        };
+        IsVisibleChanged += (_, _) => SetMotion(_model.MotionEnabled);
+        Unloaded += (_, _) => { SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged; SetMotion(false); };
+        Closed += (_, _) =>
+        {
+            _closed = true;
+            SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
+            _board.Shutdown(); SetMotion(false); FrameGlow.SetVisible(_neonFrame, false);
+        };
     }
 
     protected override Size MeasureOverride(Size availableSize)
@@ -87,8 +109,10 @@ internal sealed class SaverWindow : Window
 
     private void SetMotion(bool enabled)
     {
+        enabled = enabled && !_closed && IsLoaded && IsVisible && SystemParameters.ClientAreaAnimation;
         if (_motion == enabled) return;
         _motion = enabled;
+        FrameGlow.SetEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,
                 Color.FromRgb(22, 38, 90), TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
@@ -97,6 +121,11 @@ internal sealed class SaverWindow : Window
             AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
         _headerDrift.BeginAnimation(TranslateTransform.YProperty, enabled ? new DoubleAnimation(0, 9, TimeSpan.FromSeconds(37)) {
             AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
+    }
+
+    private void AnimationSettingsChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SystemParameters.ClientAreaAnimation)) SetMotion(_model.MotionEnabled);
     }
 
     private void PlaceNative()

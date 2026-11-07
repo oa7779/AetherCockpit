@@ -21,10 +21,29 @@ if (configuredUrls.Length == 0 || configuredUrls.Any(uri =>
     throw new InvalidOperationException("Nicht-loopback Listenadressen erfordern HTTPS. HTTP ist nur auf localhost/127.0.0.1 erlaubt.");
 
 builder.WebHost.UseUrls(urls);
+if (configuredUrls.Any(uri => !uri.IsLoopback) &&
+    string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_ALLOWEDHOSTS")))
+    throw new InvalidOperationException("Netzwerkbetrieb erfordert ASPNETCORE_ALLOWEDHOSTS mit den konkreten Servernamen.");
+if (configuredUrls.Any(uri => !uri.IsLoopback) &&
+    Environment.GetEnvironmentVariable("ASPNETCORE_ALLOWEDHOSTS")!.Split(';').Any(host => host.Contains('*')))
+    throw new InvalidOperationException("Fuer die Fernverwaltung sind Hostfilter-Wildcards nicht erlaubt.");
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 10 * 1024 * 1024;
     options.Configure(builder.Configuration.GetSection("Kestrel"));
+    var thumbprint = Environment.GetEnvironmentVariable("AETHER_MANAGER_CERT_THUMBPRINT");
+    if (!string.IsNullOrWhiteSpace(thumbprint))
+    {
+        using var store = new System.Security.Cryptography.X509Certificates.X509Store(
+            System.Security.Cryptography.X509Certificates.StoreName.My,
+            System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine);
+        store.Open(System.Security.Cryptography.X509Certificates.OpenFlags.ReadOnly);
+        var certificates = store.Certificates.Find(
+            System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint, thumbprint, validOnly: true);
+        if (certificates.Count != 1 || !certificates[0].HasPrivateKey)
+            throw new InvalidOperationException("Ein gueltiges LocalMachine-Serverzertifikat mit privatem Schluessel ist erforderlich.");
+        options.ConfigureHttpsDefaults(https => https.ServerCertificate = certificates[0]);
+    }
 });
 builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -58,6 +77,15 @@ builder.Services.AddRateLimiter(options =>
             QueueLimit = 0,
             AutoReplenishment = true
         }));
+    options.AddPolicy("management", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 120,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+            AutoReplenishment = true
+        }));
 });
 var dataRoot = Environment.GetEnvironmentVariable("AETHER_MANAGER_DATA");
 if (string.IsNullOrWhiteSpace(dataRoot))
@@ -67,6 +95,8 @@ if (string.IsNullOrWhiteSpace(dataRoot))
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AetherCockpit", "Manager");
 }
 builder.Services.AddSingleton<IManagerStore>(_ => new JsonManagerStore(dataRoot));
+builder.Services.AddSingleton<IManagementService>(services =>
+    new ManagementService(dataRoot, services.GetRequiredService<IManagerStore>()));
 builder.Services.AddSingleton<AdminTokenFilter>();
 builder.Services.AddSingleton<DeviceTokenFilter>();
 builder.Services.AddHostedService<ReportRetentionWorker>();
@@ -75,9 +105,21 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseRateLimiter();
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    context.Response.Headers["Content-Security-Policy"] =
+        "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
+    context.Response.Headers.CacheControl = "no-store";
+    await next(context);
+});
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapOpenApi();
 await app.Services.GetRequiredService<IManagerStore>().InitializeAsync(app.Lifetime.ApplicationStopping);
 app.MapManagerEndpoints();
+app.MapManagementEndpoints();
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     var store = app.Services.GetRequiredService<IManagerStore>();

@@ -9,15 +9,15 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Lokal: 0.7.0-beta.33 · Auf GitHub: 0.7.0-beta.32**
+**Neue Beta: 0.7.0-beta.34**
 
-Beta 33 ergänzt Hintergrunddiagnose mit 30 Minuten Pause nach jedem Lauf,
-Tray-Hinweise und eine klarere Grafikkartenzeichnung. Die Dokumentation wurde
-danach neu geordnet; vorhandene Pakete behalten ihren bisherigen Textstand.
-Der aktuelle Quellstand entfernt außerdem die Schoner-Musikfunktion.
-Der Bildschirmschoner verwendet und verwaltet keine Musikdateien.
+Beta 34 verstärkt Neon-Glow und abschaltbare Bewegung in Cockpit, Dashboard
+und Bildschirmschoner. Neue Konsolenassistenten ergänzen Windows-Diagnose
+und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
+HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
+Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Veröffentlichte Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/latest)
+[Beta-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34)
 · [Versionsgeschichte](CHANGELOG.md)
 
 ## Wesentliche Funktionen
@@ -77,7 +77,10 @@ auf. Der optionale **Server-Clientmodus** überträgt Diagnoseberichte erst nach
 Anmeldung, manueller Gerätefreigabe und gesondertem Übertragungs-Opt-in.
 Der Server ist ein separates Quellprojekt, nicht Teil des Cockpit-Setups.
 
-Verwaltungsoberfläche und fertig eingerichteter LAN-/Dienstbetrieb fehlen noch.
+Ein optionaler, gesondert freigegebener Windows-Clientdienst überwacht auch
+bei geschlossenem Cockpit. Die Webverwaltung zeigt Berichte und Aufträge;
+Systemänderungen brauchen lokale und zentrale Freigaben. Ein opt-in-gesteuerter
+DNS-Assistent kann bei passendem Befund den DNS-Cache leeren.
 Details: [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md).
 
 ## Grenzen der Beta
@@ -86,8 +89,9 @@ Details: [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md).
   und Sicherheitskonfiguration ab. Nicht verfügbare Werte bleiben gekennzeichnet;
   Temperaturgrenzen sind keine Messwerte.
 - Das Diagnoseinventar prüft nicht die Funktionsfähigkeit jeder Anwendung.
-  Hintergrunddiagnose ist standardmäßig aus; automatische Reparaturen und
-  automatische Treiberinstallation sind nicht umgesetzt.
+  Hintergrunddiagnose ist standardmäßig aus. Automatische Reparatur ist auf
+  den freigegebenen DNS-Cache-Assistenten begrenzt; Updates und Treiberinstallation
+  werden nicht unbeaufsichtigt ausgeführt.
 - Mitschnitte brauchen separat installiertes Npcap. Die begrenzte Paketansicht
   entschlüsselt kein TLS und liefert keinen umfassenden Angriffsschutz.
 - Die x64-Beta ist nicht signiert. SmartScreen kann warnen. Windows 11 mit
@@ -99,6 +103,8 @@ Details: [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md).
 LibreHardwareMonitor, smartmontools und PresentMon behalten ihre eigenen
 [Lizenzen und Herkunftshinweise](THIRD-PARTY-NOTICES.md).
 Npcap wird separat installiert; das Setup kann seine offizielle Downloadseite öffnen.
+Optionale Microsoft-Werkzeuge werden nur bei vorhandener Installation geöffnet;
+Downloads und Lizenzannahme bleiben beim Administrator.
 
 ## Dokumentation
 

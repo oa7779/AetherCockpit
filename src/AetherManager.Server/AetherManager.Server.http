@@ -4,6 +4,11 @@
 @deviceToken = paste-token-from-enrollment-response
 @deviceId = replace-with-enrolled-device-id
 @reportId = replace-with-report-id
+@jobId = replace-with-job-id
+@claimToken = copy-from-claim-response
+@updateId = copy-from-successful-update-search
+@updateRevision = 0
+@eulaHash = copy-from-successful-update-search
 
 ### Erreichbarkeit
 GET {{baseUrl}}/health
@@ -68,3 +73,82 @@ Authorization: Bearer {{adminToken}}
 ### Beispiel für einen nicht vorhandenen Bericht
 GET {{baseUrl}}/api/v1/admin/reports/00000000-0000-0000-0000-000000000000
 Authorization: Bearer {{adminToken}}
+
+### Gerät sperren (nicht als Teil eines normalen Prüflaufs ausführen)
+POST {{baseUrl}}/api/v1/admin/devices/{{deviceId}}/revoke
+Authorization: Bearer {{adminToken}}
+
+### Feste Aktionen und Voraussetzungen
+GET {{baseUrl}}/api/v1/admin/management/actions
+Authorization: Bearer {{adminToken}}
+
+### Heartbeats und lokale/zentral gesetzte Freigaben
+GET {{baseUrl}}/api/v1/admin/management/devices
+Authorization: Bearer {{adminToken}}
+
+### Gerätefreigaben auf lesenden Betrieb setzen
+PUT {{baseUrl}}/api/v1/admin/management/devices/{{deviceId}}/policy
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "allowChanges": false, "allowAutoRepair": false }
+
+### Lesenden Inventarauftrag anlegen
+POST {{baseUrl}}/api/v1/admin/management/devices/{{deviceId}}/jobs
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "actionId": "inventory", "confirmChanges": false }
+
+### Aufträge eines Geräts
+GET {{baseUrl}}/api/v1/admin/management/jobs?deviceId={{deviceId}}
+Authorization: Bearer {{adminToken}}
+
+### Einzelnen Auftrag mit Ausgabe lesen
+GET {{baseUrl}}/api/v1/admin/management/jobs/{{jobId}}
+Authorization: Bearer {{adminToken}}
+
+### Noch nicht gestarteten Auftrag stornieren
+POST {{baseUrl}}/api/v1/admin/management/jobs/{{jobId}}/cancel
+Authorization: Bearer {{adminToken}}
+
+### Audit lesen
+GET {{baseUrl}}/api/v1/admin/management/audit
+Authorization: Bearer {{adminToken}}
+
+### Geräteliveness; keine lokalen Änderungsfreigaben
+POST {{baseUrl}}/api/v1/management/heartbeat
+Authorization: Bearer {{deviceToken}}
+Content-Type: application/json
+
+{ "clientVersion": "0.7.0-beta.34", "allowChanges": false, "allowAutoRepair": false }
+
+### Genau einen Auftrag übernehmen (nicht erneut ausgegeben)
+POST {{baseUrl}}/api/v1/management/claim
+Authorization: Bearer {{deviceToken}}
+
+### Synthetisches Ergebnis; nur mit zugehöriger Geräteidentität und Claim-Token
+POST {{baseUrl}}/api/v1/management/jobs/{{jobId}}/complete
+Authorization: Bearer {{deviceToken}}
+Content-Type: application/json
+
+{ "claimToken": "{{claimToken}}", "exitCode": 0, "output": "Synthetisches API-Testresultat; keine Windows-Aktion ausgeführt.", "truncated": false }
+
+### Autoreparatur ablehnen: kein passender Befund, HTTP 409
+POST {{baseUrl}}/api/v1/management/auto-repair
+Authorization: Bearer {{deviceToken}}
+Content-Type: application/json
+
+{ "defaultResolverFailed": false, "configuredResolverSucceeded": false }
+
+### Einzelupdate aus zuvor geprüfter Suche; verändert Windows, nicht als Routineprüfung ausführen
+POST {{baseUrl}}/api/v1/admin/management/devices/{{deviceId}}/jobs
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "actionId": "windows-update-install",
+  "confirmChanges": true,
+  "sourceJobId": "{{jobId}}",
+  "update": { "updateId": "{{updateId}}", "revision": {{updateRevision}}, "eulaHash": "{{eulaHash}}", "acceptEula": true }
+}

@@ -18,6 +18,28 @@ er initialisiert keine Hardware-Sensoren.
 dotnet run --project .\tests\SystemCockpit.Tests -c Release
 ```
 
+`tests\AetherManager.Tests` ist ein zusätzlicher Konsolenrunner für Anmeldung,
+Richtlinien, einmalige Auftragsübernahme, Ergebnisgrenzen, Persistenz,
+Gerätesperre und Client-URL-Prüfung. Er verwendet ausschließlich temporäre
+Testdaten und startet keine Windows-Werkzeugaktion:
+
+```powershell
+dotnet run --project .\tests\AetherManager.Tests -c Release
+```
+
+Der Verwaltungsrunner startet zusätzlich eine temporäre Loopback-HTTPS-API
+mit einem selbstsignierten Testzertifikat im Fixtureordner. Nur der Testclient
+pinnt dieses konkrete Zertifikat; der normale Client muss es ablehnen.
+Kein Zertifikat wird in Windows installiert.
+`tests\Verify-ServiceAcl.ps1` prüft fünf synthetische ACL-Fälle ohne
+Dienstregistrierung oder Änderung realer Dateirechte.
+
+`tests\Verify-ManagerApi.ps1` prüft eine eigens gestartete Loopback-API mit
+synthetischen Geräten, Berichten und Ergebnissen. Es erzeugt Auftragsdatensätze,
+führt sie aber nicht aus. Nur einen isolierten `manager-validation`-Datenordner
+verwenden, keinen produktiven Server. Dienstinstallation, reale Reparaturen,
+Updates, Treiberwechsel und Firewalländerungen sind keine Routineprüfungen.
+
 ## Gezielte UI-Prüfungen
 
 ```powershell

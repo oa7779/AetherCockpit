@@ -1,6 +1,7 @@
 <Window x:Class="SystemCockpit.ControlCenterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:services="clr-namespace:SystemCockpit.Services"
         Title="AETHER | Systemkontrolle | Olaf Weins" Width="1180" Height="1000" MinWidth="980" MinHeight="680"
         Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7" WindowStartupLocation="CenterOwner" Icon="Assets/aether.ico">
     <Window.Resources>
@@ -223,6 +224,41 @@
                         </ScrollViewer>
                     </Grid>
                     <TextBlock Text="Mehr Befehle/Optionen: Get-Command, Get-Help BEFEHL -Full, Get-Command BEFEHL -Syntax sowie winget --help / dism /? / sfc /?. Keine Liste kann alle optionalen Windows-Module vorwegnehmen." Foreground="#A8A4C5" Margin="0,8"/>
+                    <Separator/>
+                    <TextBlock Text="WINDOWS TOOL LAB / FESTE ASSISTENTEN" Foreground="#24FFE3" FontSize="18"/>
+                    <TextBlock Text="Feste geprüfte Aktionen: kein freier Scripttext. Jede Änderung verlangt Einzelbestätigung. Verfügbarkeit hängt von Build, Edition, Modulen und Rechten ab. Keine automatische lokale Reparatur." Foreground="#A8A4C5"/>
+                    <ComboBox x:Name="ManagedActions" ItemsSource="{x:Static services:ManagedActionTools.All}" DisplayMemberPath="Name" SelectedIndex="0" AutomationProperties.Name="Sichere Windows-Werkzeuge"/>
+                    <TextBlock Foreground="#FFB86C">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{Binding SelectedItem.Risk, ElementName=ManagedActions}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem.Action.Id, ElementName=ManagedActions}" Value="windows-update-install">
+                                        <Setter Property="Text" Value="ÄNDERND: exakt ausgewähltes Windows-/Treiberupdate installieren; Expertenmodus, vollständige Suche und EULA-Einzelzustimmung erforderlich. Vorher sichern. Teiländerungen bleiben bei Abbruch; kein automatischer Neustart."/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="Aktion prüfen / ausführen" Click="ManagedActionClicked"/>
+                        <Button Content="Updates / Treiber manuell auswählen" Click="UpdateSettingsClicked"/>
+                    </WrapPanel>
+                    <TextBlock Text="GEPRÜFTE EINZELAUSWAHL / WINDOWS + TREIBER" Foreground="#D45CFF" Margin="0,8,0,0"/>
+                    <TextBlock Text="ÄNDERND: Installation nur im Expertenmodus, nach vollständiger Suche und Zustimmung zur exakten EULA. Genau eine GUID/Revision; Quelle und Lizenz werden erneut geprüft. Keine automatische Treiberwahl oder Neustarts. Abbruch ist kein Rollback." Foreground="#FFB86C"/>
+                    <Button Content="Vollständige Update-/Treiberangebote suchen" Click="TypedUpdateSearchClicked" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="UpdatePlanStatus" Text="Noch keine vollständige Suche. Auswahl verfällt nach einer Stunde oder neuer Suche." Foreground="#A8A4C5"/>
+                    <ComboBox x:Name="ReviewedUpdates" DisplayMemberPath="Display" SelectionChanged="ReviewedUpdateSelected" AutomationProperties.Name="Genau ein geprüftes Windows- oder Treiberupdate"/>
+                    <TextBox x:Name="UpdateOfferDetails" IsReadOnly="True" Height="180" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Exakte Updateidentität und vollständiger Lizenztext"/>
+                    <CheckBox x:Name="UpdateEulaAcceptance" Content="Ich habe den exakten Lizenztext dieses ausgewählten Updates gelesen und akzeptiere ihn." Foreground="#FFB86C"/>
+                    <Button Content="Genau dieses Update prüfen / Installation bestätigen" Click="TypedUpdateInstallClicked" HorizontalAlignment="Left"/>
+                    <TextBlock Text="OPTIONAL / MICROSOFT SYSINTERNALS + ADK" Foreground="#D45CFF" Margin="0,8,0,0"/>
+                    <ComboBox x:Name="OptionalTools" ItemsSource="{x:Static services:ManagedActionTools.OptionalTools}" DisplayMemberPath="Display" SelectedIndex="0" AutomationProperties.Name="Optionale Microsoft-Werkzeuge"/>
+                    <WrapPanel>
+                        <Button Content="Lokale Datei-Verfügbarkeit prüfen" Click="OptionalToolAvailabilityClicked"/>
+                        <Button Content="Offizielle Download-/Hilfeseite" Click="OptionalToolDownloadClicked"/>
+                    </WrapPanel>
+                    <TextBlock Text="Keine Installation, kein externer Toolstart, keine automatische EULA-Annahme. Gefundene Dateien sind kein Vertrauens-/Versionsnachweis. WinGet/Pakete und bisherige Assistenten bleiben unverändert." Foreground="#A8A4C5"/>
                     <Separator/>
                     <TextBlock Text="Bisherige gefuehrte Windows-Aktionen (mit Bestaetigung)" Foreground="#24FFE3"/>
                     <ComboBox x:Name="MaintenanceActions" AutomationProperties.Name="Windows-Wartungsaktion"/>

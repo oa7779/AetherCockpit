@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AetherOperations.Shared\AetherOperations.Shared.csproj" />
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
     <InternalsVisibleTo Include="SystemCockpit.Tests" />

@@ -4,11 +4,12 @@
 
 Workspace: `D:\Projekte\SystemCockpit`, mit GitHub-Historie verbunden.
 Branch `main`, Remote `origin`: `https://github.com/oa7779/AetherCockpit.git`.
-Lokaler Release **0.7.0-beta.33**, Dateiversion **0.7.0.33**.
-Letzter veröffentlichter GitHub-Release: **0.7.0-beta.32**.
-Der Quellstand enthält die anschließende Dokumentationsüberarbeitung und
-die Entfernung der Schoner-Musikfunktion. Die Versionsnummer bleibt unverändert;
-bestehende Releasepakete werden nicht ersetzt.
+Aktuelle Entwicklung **0.7.0-beta.34**, Dateiversion **0.7.0.34**.
+Releaseziel: GitHub-Beta 34 mit Client-Setup, Portable-ZIP und separatem
+Server-ZIP. Frühere Pakete bleiben unverändert. Der Nutzer hat für diesen
+Durchlauf Entwicklung, Paketierung, Commit und GitHub-Release beauftragt.
+Der zuvor veröffentlichte Quellstand ist `591a142`; er enthält Beta 33,
+die Dokumentationsüberarbeitung und die vollständige Schoner-Musikentfernung.
 
 [Produktübersicht](README.md) · [Versionsgeschichte](CHANGELOG.md)
 · [Entwicklung und Befehle](docs/DEVELOPMENT.md) · [Tests](docs/TESTING.md)
@@ -17,6 +18,9 @@ bestehende Releasepakete werden nicht ersetzt.
 
 | Ausgabe | SHA256 |
 |---|---|
+| [Setup Beta 34](dist/AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe) | `79e6d0500634f8cdf00e127ca7a8a12f5930905dd3ab5455d9704e961c6f6ccc` |
+| [Portable Beta 34](dist/AetherCockpit-0.7.0-beta.34-win-x64.zip) | `c3db3278299f573777156d74697be29064260a56daab5ad2a67b47d9509025be` |
+| [Server Beta 34](dist/AetherManager-0.7.0-beta.34-win-x64.zip) | `0ac29200133f91a540eeb78ae1e75f4cda2439dec2253517a5d2119435e33b6b` |
 | [Setup Beta 33](dist/AetherCockpit-Setup-0.7.0-beta.33-win-x64.exe) | `6d2883c75db1fccd863c9da044112453b47dd45371a07241e5241f403ae53a44` |
 | [Portable Beta 33](dist/AetherCockpit-0.7.0-beta.33-win-x64.zip) | `c74afbe55f045f6f403429eb44d5b309168ca7a95499c5de1056fc03d2876ec3` |
 | [Setup Beta 32](dist/AetherCockpit-Setup-0.7.0-beta.32-win-x64.exe) | `7fcce670cb746b8f8f8f18bd3bf7fdaa338b5ab6371f790d97d800f26b5df5b6` |
@@ -36,13 +40,22 @@ umgeschrieben. Künftige Publish-Ausgaben übernehmen die neue Dokumentstruktur.
 - Hintergrunddiagnose ist standardmäßig aus. Nach Aktivierung lesender Lauf
   und 30 Minuten Pause; letzter Bericht und neue Befunde im Tray.
   Windows-Anmeldestart braucht die separat genehmigte erhöhte Aufgabe.
-- Reparaturen bleiben mit Vorschau und Einzelbestätigung manuell.
+- Änderungen bleiben mit Vorschau und Einzelbestätigung manuell, abgesehen
+  vom separat freigegebenen DNS-Cache-Assistenten.
   Npcap wird extern installiert; das Setup bietet nur seine Downloadseite an.
 - GPU-Zeichnung mit Kartenkörper, drei Lüfterringen, Blende und Kontakten.
 - Einzelplatz nimmt keinen Managerkontakt auf. Clientmodus verlangt
   Einmalcode, manuelle Freigabe und getrenntes Übertragungs-Opt-in.
-- Server ist ein separates API-Projekt mit Loopback-Standard
-  `127.0.0.1:5187`; keine fertige Verwaltungsoberfläche oder LAN-/Dienstinstallation.
+- Server mit HTTPS-Webverwaltung, Gerätefreigaben und Sperre, Heartbeats,
+  festen Aufträgen, Richtlinien und Audit. Standard im Entwicklerbetrieb:
+  `127.0.0.1:5187`. Dienstpaket benötigt vorhandenes Zertifikat und Hostfilter.
+- Optionaler LocalSystem-Clientdienst mit gesonderter Installations- und
+  Übertragungsfreigabe; lokale und zentrale Änderungsrechte.
+  Eng begrenzte DNS-Cache-Autoreparatur nach doppeltem Opt-in und erneutem Befund.
+- Verstärkte Neon-Halos, Pulslicht und Energiebewegung in Schoner,
+  Hauptfenster und Dashboard; Bewegung weiterhin abschaltbar.
+- Gemeinsamer Windows-Werkzeugkatalog und optionale Microsoft-Werkzeuge.
+  Updates und Treiber bleiben einzeln bestätigt, mit Identitäts- und Lizenzprüfung.
 - Schoner ohne Musikdateiauswahl, Wiedergabe oder Audiokonfiguration.
   `/c` zeigt nur einen Hinweis auf fehlende eigene Einstellungen.
   Grafik, `/s`, `/p` und Windows-Audiogeräteinventar bleiben erhalten.
@@ -62,10 +75,9 @@ auf einem Testgerät durchgespielt.
 ## Fortsetzung
 
 1. Vor weiteren Veröffentlichungen Quelländerungen und Remote-Stand mit Git prüfen.
-2. Bei einem späteren Release die neue Dokumentationsauslieferung prüfen;
-   bestehende Beta-33-Pakete nicht überschreiben.
+2. Neue Versionen separat publizieren; vorhandene Beta-Pakete nicht überschreiben.
 3. Client-Anmeldung und Reporting auf einem Testgerät separat erproben.
-4. Vor LAN-Betrieb HTTPS, Hostfilter, Dienstkonto und Datenverzeichnis-ACLs
+4. Vor Internet-/VPN-Betrieb HTTPS, Hostfilter, Dienstkonto und Datenverzeichnis-ACLs
    einrichten; keine automatische Firewall- oder Zertifikatsänderung.
 
 Hardwarezugriffe, Reparaturen, Updates, Benchmarks und Remoteänderungen
@@ -176,3 +188,38 @@ Der vollständige vorgemerkte Git-Diff wurde unabhängig geprüft; keine
 wesentlichen Probleme gefunden. Der Abgleich mit der lokalen Sicherung bestätigt
 die auf Schoner-Musik und zugehörige Tests und Texte begrenzten neuen Änderungen.
 Das Intune-Paketwerkzeug wird lokal separat bereitgestellt und nicht mitveröffentlicht.
+
+## Beta 34 — Implementierung und Paketprüfung
+
+- Gemeinsamer Katalog mit 25 Aktionen und streng typisierter
+  Windows-/Treiberupdateauswahl; lokale und zentrale Lizenzprüfung,
+  Einzelinstallation und kein automatischer Neustart.
+- Webverwaltung, Gerätesperre, Richtlinien, Heartbeats und auditierte Aufträge.
+  Der Clientdienst speichert Übernahme und Ergebnisse vor Folgeaktionen
+  mit WriteThrough/Datenträgerflush. Unklare Läufe werden nicht erneut gestartet.
+  Inventar-/DNS-Fehler blockieren nicht andere Verwaltungsstufen.
+- Dienstassistenten prüfen Programm- und Daten-ACLs, Besitzer und Links.
+  Die Setup-Dienstoption stellt nur Dateien bereit; Anmeldung und Rechte
+  werden im separaten Konsolenassistenten bestätigt.
+- Releasebuild ohne Warnungen oder Fehler. 1433 STA-Assertions, 44
+  Verwaltungsassertions einschließlich isolierter HTTPS-Zertifikatprüfung,
+  21 HTTP-/Web-/API-Assertions am selbstenthaltenen Serverpaket und fünf
+  synthetische Dienst-/Daten-ACL-Fälle bestanden.
+- Realer Setup-Compiler und nativer SCR-Build erfolgreich. Inno Setup
+  meldet weiterhin den vorhandenen Hinweis zum Architekturidentifier `x64`.
+  Gemeinsame Bibliothek in Cockpit, Clientdienst und Server bytegleich.
+- Client und Server in separaten neuen Ausgaben erzeugt; bestehende
+  Beta-Pakete bleiben erhalten. ZIPs und SHA256-Dateien gehören zum
+  beauftragten GitHub-Releaseziel `v0.7.0-beta.34`.
+- Beide ZIPs vollständig gegen die Ausgabe geprüft: 742 Client- und
+  378 Serverdateien bytegleich. 50 Quell-/Paketdokumente und 216 relative
+  Links gültig. Alle 4439 bisherigen Release-Dateien SHA256-unverändert.
+- Publish übergibt Version, Assembly- und Dateiversion auch an die gemeinsame
+  Bibliothek. Dadurch verwenden Cockpit, Schoner, Dienst und Server dieselbe
+  Bibliothek; der bestehende Cockpit-/Schoner-Hashabgleich bleibt aktiv.
+
+Keine produktive Dienstinstallation, Reparatur, Updateinstallation,
+Treiberänderung, Firewall- oder Zertifikatsinstallation zur Validierung.
+Internet-/VPN-Erreichbarkeit, Zertifikat/DNS, Geräteanmeldung und Freigaben
+müssen auf den vorgesehenen Zielrechnern eingerichtet und abgenommen werden.
+Die Beta bietet keine eigene Mehrbenutzerverwaltung oder MFA.

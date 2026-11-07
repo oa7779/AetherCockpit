@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AETHER · Zentralverwaltung</title><link rel="stylesheet" href="management.css">
+<script src="management.js" defer></script></head>
+<body>
+<header><h1>AETHER <span>Zentralverwaltung</span></h1><p>Geräte · Diagnose · kontrollierte Reparaturen</p></header>
+<section id="login"><label>Administrator-Token <input id="token" type="password" autocomplete="off"></label>
+<button id="connect">Verbinden</button><p>Token bleibt nur im Arbeitsspeicher dieser Seite. Netzwerkzugriff ausschließlich über HTTPS.</p></section>
+<p id="status" role="status"></p>
+<main id="workspace" hidden>
+<nav><button id="refresh">Aktualisieren</button><button id="enrollment">Einmalcode erzeugen</button><button id="logout">Abmelden</button></nav>
+<div class="layout">
+<section><h2>Rechner</h2><div id="devices"></div></section>
+<section><h2 id="device-title">Gerät auswählen</h2><pre id="device-detail"></pre>
+<button id="approve" disabled>Gerät freigeben</button><button id="revoke" disabled>Zugriff sperren</button>
+<fieldset disabled id="policy"><legend>Gerätefreigaben · lokales Opt-in zusätzlich erforderlich</legend>
+<label><input id="changes" type="checkbox"> Bestätigte Systemänderungen erlauben</label>
+<label><input id="auto" type="checkbox"> DNS-Cache bei nachgewiesenem Resolverfehler automatisch leeren (höchstens einmal pro Tag)</label>
+<button id="save-policy">Freigaben speichern</button></fieldset>
+<label>Assistent <select id="actions"></select></label><pre id="action-detail"></pre><button id="queue" disabled>Auftrag prüfen und senden</button>
+<h3>Diagnoseberichte</h3><div id="reports"></div>
+<h3>Aufträge · Ausgabe</h3><div id="jobs"></div><pre id="output"></pre></section>
+<section id="update-plan" hidden><h2>Updateangebote · einzelne Freigabe</h2><div id="updates"></div><pre id="update-eula"></pre><button id="install-update" disabled>Dieses Update und seine Lizenz bestätigen</button></section>
+</div>
+<section><h2>Auditverlauf</h2><pre id="audit"></pre></section>
+</main>
+<footer>Keine freie Fernkonsole. Verfügbare Werkzeuge werden auf dem Zielgerät geprüft.
+Laufende Aufträge werden bei Verbindungsverlust nicht erneut gestartet. Updates, Treiber und Neustarts sind keine automatischen Reparaturen.</footer>
+</body></html>

@@ -10,9 +10,9 @@
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="GlassRim" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="#B5FFFF"/>
-        <GradientStop Color="#AD49F2" Offset="0.28"/>
-        <GradientStop Color="#573386" Offset="0.55"/>
-        <GradientStop Color="#FF62D6" Offset="0.8"/>
+        <GradientStop Color="#C568FF" Offset="0.28"/>
+        <GradientStop Color="#8658C2" Offset="0.55"/>
+        <GradientStop Color="#FF83E1" Offset="0.8"/>
         <GradientStop Color="#43FFF1" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="GlossButton" StartPoint="0,0" EndPoint="0,1">

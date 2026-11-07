@@ -20,16 +20,16 @@ Der Bildschirmschoner läuft dagegen ohne UAC; siehe [Benutzerhandbuch](USER-GUI
 ## Download und Prüfsumme
 
 Veröffentlichte Pakete stehen bei den
-[GitHub-Releases](https://github.com/oa7779/AetherCockpit/releases/latest).
-Lokal ist Beta 33 gebaut, auf GitHub liegt Beta 32. Vor dem Start die
+[GitHub-Beta 34](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.34).
+Vor dem Start die
 SHA256-Prüfsumme mit der zugehörigen `.sha256`-Datei vergleichen:
 
-Beispiel für die **lokal erzeugten Beta-33-Dateien**, nicht für den
-veröffentlichten Beta-32-Download:
+Beispiel für die Beta-34-Dateien:
 
 ```powershell
-Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.33-win-x64.exe -Algorithm SHA256
-Get-FileHash .\AetherCockpit-0.7.0-beta.33-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe -Algorithm SHA256
+Get-FileHash .\AetherCockpit-0.7.0-beta.34-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherManager-0.7.0-beta.34-win-x64.zip -Algorithm SHA256
 ```
 
 Die Beta-Pakete sind nicht signiert. SmartScreen oder Schutzsoftware können
@@ -42,13 +42,19 @@ Fehlalarm behandeln und Schutzfunktionen nicht abschalten.
 2. Zielordner und erkannte Vorinstallation prüfen. Standard:
    `C:\Program Files\AETHER System Control`.
 3. Diagrammgruppen und Desktop-Gadgets wählen.
-4. Optional Desktop-Verknüpfung, Anmeldestart oder Bildschirmschoner wählen.
+4. Optional Desktop-Verknüpfung, Anmeldestart, Bildschirmschoner oder
+   Bereitstellung des Zentralverwaltungsdienstes wählen.
 5. AETHER einmal manuell starten und die EULA bestätigen.
 
 Die Startmenü-Verknüpfung wird angelegt. Der Anmeldestart ist eine erhöhte
 Windows-Aufgabe für das angezeigte Administratorkonto und benötigt eine
 gesonderte Zustimmung. Er startet Tray und Gadgets mit `--tray`, nicht das
 Hauptfenster. Ohne bestätigte EULA startet die App im Tray-Modus nicht.
+
+Die Dienstoption kopiert nur die Dateien. Anmeldung, Datenübertragung und
+Dienstinstallation brauchen anschließend den separat bestätigten
+Konsolenassistenten aus dem Startmenü. Der Server wird als eigenes ZIP geliefert.
+[Dienst, HTTPS und Gerätefreigaben](CENTRAL-MANAGEMENT.md).
 
 Die Npcap-Auswahl bietet nach der Installation die
 [offizielle Downloadseite](https://npcap.com/#download) an. Download,
@@ -140,7 +146,7 @@ Die folgende Kommandozeile verwendet das lokale Beta-33-Setup.
 Bei einem veröffentlichten Download dessen tatsächlichen Dateinamen einsetzen.
 
 ```powershell
-.\AetherCockpit-Setup-0.7.0-beta.33-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+.\AetherCockpit-Setup-0.7.0-beta.34-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 ```
 
 Ohne `/AutostartConsent=1` wird keine neue erhöhte Aufgabe eingerichtet.

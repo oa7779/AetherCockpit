@@ -15,6 +15,8 @@ geführten Module eingeschränkt.
 
 Einsteiger-/Expertenmodus ist eine Bedienhilfe, keine zusätzliche Windows-
 Rechtegrenze. Die App umgeht weder SYSTEM-/TrustedInstaller-Rechte noch GPOs.
+Der optional eingerichtete Clientdienst läuft mit separat bestätigten
+LocalSystem-Rechten; dies ist nicht der Rechtekontext der Desktop-App.
 Vor Änderungen aktuelle Daten sichern; Abbruch und Wiederherstellungspunkt
 sind keine vollständige Rücknahme.
 
@@ -91,6 +93,24 @@ Sie werden vor Übertragung nicht durch die Export-Musterschwärzung gefiltert.
 Der Server speichert sie nach Empfang 90 Tage. Clienttoken sind lokal
 DPAPI-geschützt; das schützt sie nicht vor berechtigten Prozessen desselben Kontos.
 [Anmeldung, Speicher und HTTPS](CENTRAL-MANAGEMENT.md).
+
+Der optionale Clientdienst hat eine eigene Zustimmung zu Übertragung und Betrieb.
+Sein Wechsel in Einzelplatz erfolgt durch Entfernen beziehungsweise Stoppen des
+Dienstes, nicht durch die Einstellung der Desktop-App. Er meldet Heartbeats,
+Inventar und feste Auftragsausgaben auch ohne geöffnetes Cockpit.
+Dienstidentität und gepufferte Ergebnisse liegen geschützt unter
+`%PROGRAMDATA%\AetherCockpit\ManagedClient`; Token mit DPAPI `LocalMachine`.
+SYSTEM und Administratoren behalten Zugriff. Diese Daten bleiben beim Uninstall
+erhalten; Gerätezugriff zusätzlich zentral sperren.
+
+Serverrichtlinien und lokales Opt-in begrenzen Systemänderungen; DNS-Cache-
+Autoreparatur braucht beide Automatikfreigaben und einen erneut geprüften Befund.
+Es gibt keine freie Fernkonsole. Administrator-Token nur über HTTPS/VPN
+verwenden. Die Webverwaltung hat keine Mehrbenutzerrollen oder eigene MFA.
+Auftragsausgaben können private Pfade und Kontodaten enthalten; keine
+Export-Musterschwärzung vor zentraler Speicherung. Aufträge und Audit werden
+nicht automatisch gelöscht. Laufende Windows-Aktionen können nach Abbruch
+Teilergebnisse oder weiterarbeitende Windows-Dienste hinterlassen.
 
 ## Tatsächliche Netzwerkzugriffe
 

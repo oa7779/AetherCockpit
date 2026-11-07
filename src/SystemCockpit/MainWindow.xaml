@@ -25,13 +25,13 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style x:Key="Panel" TargetType="Border">
-            <Setter Property="controls:FrameGlow.Enabled" Value="{Binding MotionEnabled}"/>
+            <Setter Property="controls:FrameGlow.Visible" Value="True"/>
+            <Setter Property="controls:FrameGlow.Enabled" Value="{Binding DataContext.MotionEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
             <Setter Property="Background" Value="{DynamicResource GlossPanel}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource GlassRim}"/>
             <Setter Property="BorderThickness" Value="2,1,1,2"/>
             <Setter Property="CornerRadius" Value="22,5,22,5"/>
             <Setter Property="Padding" Value="22"/>
-            <Setter Property="Effect"><Setter.Value><DropShadowEffect Color="#B53CFF" BlurRadius="18" ShadowDepth="0" Opacity="0.28"/></Setter.Value></Setter>
         </Style>
         <Style TargetType="DataGrid" BasedOn="{StaticResource NeonDataGrid}"/>
         <DataTemplate x:Key="CheckTemplate">
@@ -56,6 +56,8 @@
                         <Canvas Width="280" Height="56" Background="#0A0717">
                             <Line X1="0" Y1="28" X2="280" Y2="28" Stroke="#2D2248"/>
                             <Line X1="0" Y1="56" X2="280" Y2="56" Stroke="#2D2248"/>
+                            <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="7" Opacity="0.12"/>
+                            <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="4" Opacity="0.3"/>
                             <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="2"/>
                         </Canvas>
                     </Viewbox>
@@ -75,6 +77,8 @@
                     <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,3">
                         <Canvas Width="180" Height="56" Background="#071711">
                             <Line X1="0" X2="180" Y1="28" Y2="28" Stroke="#19432B"/>
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="7" Opacity="0.12"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="4" Opacity="0.3"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                             <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="2" RenderTransformOrigin="0,0"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                         </Canvas>
                     </Viewbox>
@@ -92,7 +96,10 @@
                         <TextBlock Text="{Binding Title}" Foreground="#FF576E" FontFamily="Consolas" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </DockPanel>
                     <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,4"><Canvas Width="280" Height="56" Background="#08060C">
-                        <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#392027"/><Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="2"/>
+                        <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#392027"/>
+                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="7" Opacity="0.12"/>
+                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="4" Opacity="0.3"/>
+                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="2"/>
                     </Canvas></Viewbox>
                     <ProgressBar Grid.Row="2" Value="{Binding Level, Mode=OneWay}" Maximum="100" Foreground="#FF354A" Background="#391321" BorderThickness="0"/>
                 </Grid>
@@ -100,6 +107,8 @@
         </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
+    <Border x:Name="ShellNeonFrame" Margin="6" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="12"
+            controls:FrameGlow.Visible="True" controls:FrameGlow.Enabled="{Binding MotionEnabled}">
     <Grid Background="{StaticResource ConsoleGrid}">
         <Grid.ColumnDefinitions><ColumnDefinition Width="212"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
         <Border Background="{DynamicResource ChromeSidebar}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="0,0,3,0">
@@ -143,7 +152,7 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
-                    <CheckBox Content="Scanner-Animation" ToolTip="Scanner und animierte Neon-Rahmen ein/aus" IsChecked="{Binding MotionEnabled}"/>
+                    <CheckBox Content="Scanner-Animation" ToolTip="Scanner, Neon-Energiepfade und Pulsieren ein/aus. Statisches Neon bleibt sichtbar; Windows-Animationseinstellungen werden beachtet." IsChecked="{Binding MotionEnabled}"/>
                     <TextBlock Text="{Binding AccessStatus}" Foreground="#32D5FF" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" Margin="0,6,0,8"/>
                     <TextBlock Text="ADMIN / UAC beim Start" Foreground="#24FFE3" FontSize="11" Margin="0,0,0,14"/>
                     <Border BorderBrush="#6940A8" BorderThickness="1" CornerRadius="16,3,16,3" Padding="12">
@@ -239,14 +248,19 @@
                                                 <Rectangle.Style>
                                                     <Style TargetType="Rectangle">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding MotionEnabled}" Value="True">
-                                                                <DataTrigger.EnterActions>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding MotionEnabled}" Value="True"/>
+                                                                    <Condition Binding="{Binding Path=(controls:FrameGlow.MotionActive), ElementName=ShellNeonFrame}" Value="True"/>
+                                                                    <Condition Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <MultiDataTrigger.EnterActions>
                                                                     <BeginStoryboard x:Name="ScannerMotion">
                                                                         <Storyboard><DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" From="0" To="410" Duration="0:0:2.4" AutoReverse="True" RepeatBehavior="Forever"/></Storyboard>
                                                                     </BeginStoryboard>
-                                                                </DataTrigger.EnterActions>
-                                                                <DataTrigger.ExitActions><RemoveStoryboard BeginStoryboardName="ScannerMotion"/></DataTrigger.ExitActions>
-                                                            </DataTrigger>
+                                                                </MultiDataTrigger.EnterActions>
+                                                                <MultiDataTrigger.ExitActions><RemoveStoryboard BeginStoryboardName="ScannerMotion"/></MultiDataTrigger.ExitActions>
+                                                            </MultiDataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Rectangle.Style>
@@ -645,4 +659,5 @@
             </Border>
         </Grid>
     </Grid>
+    </Border>
 </Window>

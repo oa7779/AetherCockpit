@@ -1,5 +1,5 @@
-#define AppVersion "0.7.0-beta.33"
-#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.33-win-x64"
+#define AppVersion "0.7.0-beta.34"
+#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.34-win-x64"
 
 #ifdef SetupUninstallValidation
 #ifndef SetupValidation
@@ -65,8 +65,8 @@ OutputBaseFilename=AetherCockpit-Setup-{#AppVersion}-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
-VersionInfoVersion=0.7.0.33
-VersionInfoProductVersion=0.7.0.33
+VersionInfoVersion=0.7.0.34
+VersionInfoProductVersion=0.7.0.34
 WizardStyle=modern
 Compression=lzma2/ultra64
 SolidCompression=yes
@@ -75,10 +75,13 @@ SolidCompression=yes
 Name: "desktopicon"; Description: "Desktop-Verknuepfung erstellen"; GroupDescription: "Zusaetzliche Verknuepfungen:"; Flags: unchecked
 Name: "autostart"; Description: "Gadgets und Tray bei Anmeldung starten (erhoehte Aufgabe fuer dieses Administratorkonto)"; GroupDescription: "Autostart:"
 Name: "screensaver"; Description: "AETHER Mainboard-Bildschirmschoner (.scr) mitinstallieren (nicht automatisch aktivieren)"; GroupDescription: "Optional:"; Flags: unchecked
+Name: "managedclient"; Description: "Optionalen Zentralverwaltungsdienst bereitstellen (Einrichtung und Freigaben danach separat)"; GroupDescription: "Optional:"; Flags: unchecked
 
 [Files]
 #ifndef SetupValidation
-Source: "{#PublishDir}\*"; DestDir: "{app}"; Excludes: "Aether.scr,AetherMainboard.scr,AetherScreensaver.*"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#PublishDir}\*"; DestDir: "{app}"; Excludes: "Aether.scr,AetherMainboard.scr,AetherScreensaver.*,ManagedClient\*"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#PublishDir}\ManagedClient\*"; DestDir: "{app}\ManagedClient"; Tasks: managedclient; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "Manage-ClientService.ps1"; Flags: dontcopy
 Source: "{#PublishDir}\Aether.scr"; DestDir: "{app}"; Tasks: screensaver; Flags: ignoreversion
 Source: "{#PublishDir}\Aether.scr"; DestDir: "{sys}"; Tasks: screensaver; Flags: ignoreversion
 Source: "{#PublishDir}\AetherMainboard.scr"; DestDir: "{app}"; Tasks: screensaver; Flags: ignoreversion
@@ -99,6 +102,7 @@ Source: "Uninstall-Aether.ps1"; Flags: dontcopy
 [Icons]
 #ifndef SetupValidation
 Name: "{autoprograms}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"
+Name: "{autoprograms}\AETHER Zentralverwaltung - Clientdienst einrichten"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoLogo -NoProfile -ExecutionPolicy Bypass -File ""{app}\Configure-ManagedClient.ps1"""; Tasks: managedclient
 Name: "{autodesktop}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"; Tasks: desktopicon
 Name: "{autoprograms}\AETHER Bildschirmschoner - Einstellungen"; Filename: "{app}\AetherMainboard.scr"; Parameters: "/c"; Tasks: screensaver
 Name: "{autoprograms}\AETHER Bildschirmschoner - Datei anzeigen"; Filename: "{sys}\explorer.exe"; Parameters: "/select,""{app}\AetherMainboard.scr"""; Tasks: screensaver
@@ -121,6 +125,7 @@ var
   CaptureAdapter: TNewComboBox;
   AdapterNames: TStringList;
   InstalledPath, InstalledVersion, RecoveryApprovedPath: String;
+  ManagedClientWasRunning: Boolean;
 
 #ifdef SetupValidation
 procedure VerifySetup; forward;
@@ -519,11 +524,39 @@ begin
 #endif
 end;
 
+procedure ManageClient(Operation: String);
+#ifndef SetupValidation
+var
+  Code, Index: Integer;
+  Output: TExecOutput;
+  Parameters: String;
+#endif
+begin
+#ifndef SetupValidation
+  ExtractTemporaryFile('Manage-ClientService.ps1');
+  Parameters := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
+    ExpandConstant('{tmp}\Manage-ClientService.ps1') + '" -InstallDirectory "' +
+    ExpandConstant('{app}') + '" -Operation ' + Operation;
+  if not ExecAndCaptureOutput(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'),
+    Parameters, '', SW_HIDE, ewWaitUntilTerminated, Code, Output) or Output.Error or (Code <> 0) then
+    RaiseException('AETHER-Clientdienst konnte nicht kontrolliert ' + Operation + ' werden. Installation abgebrochen.');
+  for Index := 0 to GetArrayLength(Output.StdOut) - 1 do begin
+    Log(Output.StdOut[Index]);
+    if Pos('AETHER CLIENT WAS RUNNING', Output.StdOut[Index]) > 0 then ManagedClientWasRunning := True;
+  end;
+#endif
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   Json, Device: String;
 begin
+  if CurStep = ssInstall then ManageClient('Stop');
   if CurStep <> ssPostInstall then Exit;
+  if ManagedClientWasRunning then begin
+    ManageClient('Start');
+    ManagedClientWasRunning := False;
+  end;
   if PreserveInstalledConfiguration then begin
     Log('AETHER: update preserves desktop profile, user settings and existing autostart task.');
 #ifdef SetupValidation
@@ -531,6 +564,7 @@ begin
 #endif
     Exit;
   end;
+
   Log('AETHER: preparing desktop profile.');
   Device := '';
   if CapturePage.Values[1] then begin
@@ -560,6 +594,19 @@ begin
 #ifdef SetupValidation
   VerifySetup;
 #endif
+end;
+
+procedure DeinitializeSetup;
+begin
+  if ManagedClientWasRunning then begin
+    try
+      ManageClient('Start');
+    except
+      Log('AETHER client service restart failed after interrupted installation: ' + GetExceptionMessage);
+      MsgBox('Der zuvor laufende AETHER-Clientdienst muss nach dem abgebrochenen Setup in der Windows-Diensteverwaltung geprueft werden.',
+        mbError, MB_OK);
+    end;
+  end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
@@ -613,6 +660,7 @@ begin
     Result := MsgBox('AETHER vollstaendig entfernen?' + #13#10#13#10 +
       'Laufende AETHER-App, Gadgets, Tray und Bildschirmschoner dieser Installation werden beendet. ' +
       'Installationsordner sowie Einstellungen, Logs, Aufzeichnungen und Sicherungen dieses Windows-Kontos werden geloescht. ' +
+      'Ein zugehoeriger Zentralverwaltungsdienst wird entfernt; seine geschuetzten ProgramData-Kontodaten bleiben erhalten. ' +
       'Externe Dateien und andere portable Versionen bleiben erhalten.',
       mbConfirmation, MB_YESNO) = IDYES;
 end;

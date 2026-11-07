@@ -31,6 +31,9 @@ Transitive NuGet-Abhängigkeiten behalten die Lizenzen ihrer Paketmetadaten.
 Der separate Verwaltungsserver referenziert Microsoft.AspNetCore.OpenApi
 und Microsoft.Extensions.Hosting.WindowsServices; seine Abhängigkeiten
 werden nicht als Serverinstallation mit dem Cockpit ausgeliefert.
+Der optionale Clientdienst verwendet Microsoft.Extensions.Hosting.WindowsServices
+und System.Security.Cryptography.ProtectedData. Seine Laufzeit liegt getrennt
+unter `ManagedClient`; der Verwaltungsserver bleibt ein eigenes Paket.
 
 Die selbstenthaltene Ausgabe enthält die .NET-/Windows-Desktop-Laufzeit
 mit eigenen Lizenz- und Drittanbieterhinweisen. Diese gehören weiterhin
@@ -54,6 +57,9 @@ und installiert Npcap nicht unbeaufsichtigt.
 Windows, Windows-Werkzeuge und WinGet sind Voraussetzungen mit ihren eigenen
 Bedingungen. Optional gestartetes UniGetUI/WingetUI und Wireshark sind
 separate Installationen, keine nachgebauten oder mitgelieferten Bestandteile.
+Sysinternals und Windows ADK werden ebenfalls nicht gebündelt.
+Die Werkzeugauswahl öffnet vorhandene Installationen oder die offiziellen
+Microsoft-Bezugsseiten; Lizenzannahme und Installation erfolgen separat.
 Der aktuelle Bildschirmschoner enthält keine Musikfunktion und verwendet
 keine externen Musikdateien.
 

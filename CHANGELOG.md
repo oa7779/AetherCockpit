@@ -9,7 +9,25 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
-## Quellstand nach Beta 33 — kein neuer Release
+## 0.7.0-beta.34
+
+### Neu
+
+- Stärkerer Neon-Glow in Hauptfenster, Dashboard und Schoner mit
+  abschaltbaren Energie- und Pulsanimationen.
+- Gemeinsamer Katalog mit 25 Windows-Aktionen, Verfügbarkeitsprüfung,
+  begrenzter Konsolenausgabe und Bestätigung vor Systemänderungen.
+- Optionale Microsoft-Werkzeuge mit lokalen Start-/Downloadangeboten,
+  ohne automatische Installation oder Lizenzannahme.
+- HTTPS-Webverwaltung für Gerätefreigabe und Sperre, Heartbeats, Diagnoseberichte,
+  Geräterichtlinien, feste Remote-Aufträge und Audit.
+- Einzelne Windows- und Treiberupdateangebote mit GUID, Revision und
+  Lizenzabgleich vor bestätigter Installation; kein automatischer Neustart.
+- Optionaler Windows-Clientdienst mit eigenem Anmelde- und Übertragungs-Opt-in,
+  getrennten Änderungsfreigaben und dauerhaft gepufferten Ergebnissen.
+- Gerätebezogen freigegebener DNS-Assistent: Cachekorrektur nur bei passendem
+  Resolverbefund, erneuter Prüfung und höchstens einem automatischen Auftrag pro Tag.
+- Separates selbstenthaltenes Serverpaket mit Dienstinstallationsassistent.
 
 ### Entfernt
 
@@ -30,7 +48,7 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 - Maßeinheiten, Aufbewahrungsregeln und lokale/optionale Datenübertragung
   anhand des Quellcodes korrigiert. Eingebettete Hilfe und Einführungen überarbeitet.
 - Dokumentationsübernahme für künftige Builds ergänzt; vorhandene Release-Pakete
-  bleiben unverändert. Keine neue Versionsnummer oder Veröffentlichung.
+  bleiben unverändert.
 
 ## 0.7.0-beta.33 — lokaler Build
 

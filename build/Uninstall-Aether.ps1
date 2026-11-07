@@ -94,6 +94,13 @@ elseif (!$data.Equals((Join-Path $env:LOCALAPPDATA 'AetherCockpit'), [StringComp
 $data = Assert-DedicatedDirectory $data ''
 Assert-NoLinks $install
 if (Test-Path -LiteralPath $data) { Assert-NoLinks $data }
+if (!$ValidationRoot) {
+    $serviceHelper = Join-Path $install 'Manage-ClientService.ps1'
+    if (Test-Path -LiteralPath $serviceHelper -PathType Leaf) {
+        & $serviceHelper -InstallDirectory $install -Operation Remove
+        if (!$?) { throw 'AETHER-Clientdienst konnte nicht entfernt werden.' }
+    }
+}
 
 & {
     # Match the exact installation path; never stop unrelated portable releases by name.

@@ -3,10 +3,13 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using SystemCockpit;
+using SystemCockpit.Controls;
 using SystemCockpit.Services;
 
 internal static class DashboardTests
@@ -67,6 +70,62 @@ internal static class DashboardTests
         model.EventsFailed("fixture failed");
         Check(model.Processes.Count == 0 && model.CoreGraphs.All(g => g.Value == "--") && model.EventCounts.Count == 0,
             "Metric/event failures clear stale values");
+        count += NeonEffects();
+        return count;
+    }
+
+    internal static int NeonEffects()
+    {
+        var count = 0;
+        void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
+        var border = new Border { Width = 160, Height = 100, CornerRadius = new CornerRadius(22, 5, 22, 5) };
+        var decorator = new AdornerDecorator { Child = border };
+        FrameGlow.SetVisible(border, true);
+        decorator.Measure(new Size(180, 120));
+        decorator.Arrange(new Rect(0, 0, 180, 120));
+        border.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+        var adorner = decorator.AdornerLayer.GetAdorners(border)?.Single();
+        Check(adorner is not null && !adorner.IsHitTestVisible,
+            "Static neon halo is present with motion disabled and never captures input");
+        var rims = (Grid)VisualTreeHelper.GetChild(adorner!, 0);
+        Check(rims.Children.OfType<Border>().Count() == 3 && rims.Children.OfType<Border>().All(b =>
+                b.CornerRadius == border.CornerRadius && b.Effect is null && b.BorderBrush.IsFrozen),
+            "Frozen layered frame strokes preserve asymmetric glass corners without rasterizing content");
+        var trails = rims.Children.OfType<Rectangle>().ToArray();
+        Check(trails.Length == 2 && trails.All(r => !r.HasAnimatedProperties && r.Visibility == Visibility.Hidden),
+            "Motion-off frame keeps static glow with no energy clocks");
+        FrameGlow.SetEnabled(border, true);
+        Check(ReferenceEquals(adorner, decorator.AdornerLayer.GetAdorners(border)?.Single()),
+            "Changing motion reuses the same static halo");
+        Check(trails.All(r => r.HasAnimatedProperties == (border.IsVisible && SystemParameters.ClientAreaAnimation)) &&
+            FrameGlow.GetMotionActive(border) == (border.IsVisible && SystemParameters.ClientAreaAnimation),
+            "Energy trails require both visible content and Windows animation permission");
+        FrameGlow.SetEnabled(border, false);
+        Check(!FrameGlow.GetMotionActive(border) && trails.All(r => !r.HasAnimatedProperties && r.Visibility == Visibility.Hidden) &&
+            decorator.AdornerLayer.GetAdorners(border)?.Length == 1,
+            "Disabling motion removes every trail clock but retains the neon frame");
+        border.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent));
+        Check(decorator.AdornerLayer.GetAdorners(border) is not { Length: > 0 },
+            "Unloading removes glow adorners and event subscriptions");
+        border.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+        Check(decorator.AdornerLayer.GetAdorners(border)?.Length == 1,
+            "Reloading restores exactly one static frame");
+        FrameGlow.SetVisible(border, false);
+        Check(decorator.AdornerLayer.GetAdorners(border) is not { Length: > 0 },
+            "Turning off frame visibility releases the remaining static adorner");
+
+        int LitTicks(double level)
+        {
+            var gauge = new NeonGauge { Width = 120, Height = 120, Level = level, Accent = Brushes.Lime };
+            gauge.Measure(new Size(120, 120));
+            gauge.Arrange(new Rect(0, 0, 120, 120));
+            gauge.UpdateLayout();
+            return VisualTreeHelper.GetDrawing(gauge)!.Children.Count - 2;
+        }
+        Check(LitTicks(double.NaN) == 40 && LitTicks(double.PositiveInfinity) == 40 && LitTicks(0) == 40,
+            "Unknown, non-finite and zero readings never acquire decorative lit ticks");
+        Check(LitTicks(50) == 80 && LitTicks(100) == 120,
+            "Only measured lit ticks gain two lightweight glow strokes");
         return count;
     }
 

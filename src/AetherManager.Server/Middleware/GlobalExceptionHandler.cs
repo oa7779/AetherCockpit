@@ -9,12 +9,20 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         CancellationToken cancellationToken)
     {
         logger.LogError(exception, "Unhandled AETHER Manager request failure");
-        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        var status = exception switch
+        {
+            ArgumentException => StatusCodes.Status400BadRequest,
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            InvalidOperationException => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
+        };
+        httpContext.Response.StatusCode = status;
         await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
         {
-            Status = StatusCodes.Status500InternalServerError,
-            Title = "Internal Server Error",
-            Detail = "The request could not be completed.",
+            Status = status,
+            Title = status == 500 ? "Internal Server Error" : "Management request rejected",
+            Detail = status == 500 ? "The request could not be completed." :
+                "Check the device state, permissions, action identifier and request limits.",
             Instance = httpContext.Request.Path
         }, cancellationToken);
         return true;

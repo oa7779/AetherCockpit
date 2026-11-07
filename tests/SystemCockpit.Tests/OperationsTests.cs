@@ -16,6 +16,7 @@ internal static class OperationsTests
     {
         var count = 0;
         void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
+        count += ManagedActionTests.Run();
         var valid = PerformanceIndex.Parse("""{"State":1,"Base":8.9,"Cpu":9.5,"Memory":9.4,"Graphics":9.2,"Disk":8.9,"StoredAt":null}""");
         Check(valid.Valid && valid.Base == 8.9 && valid.Cpu == 9.5, "Display real valid Windows scores");
         var invalid = PerformanceIndex.Parse("""{"State":2,"Base":9.9,"Cpu":9.9,"Memory":9.9,"Graphics":9.9,"Disk":9.9,"StoredAt":null}""");
@@ -164,6 +165,9 @@ internal static class OperationsTests
                 DiagnosticAssistants.CollectionScript, MaintenancePlans.RestorePointScript,
                 ManagedDevices.CloudReadinessScript, ManagedDevices.DiagnosticScript(new("fixture-host")) };
             scripts.AddRange(WindowsTroubleshootingAssistants.All.Select(a => a.Script));
+            scripts.AddRange(AetherOperations.ManagedActionCatalog.All.Select(a => a.Script));
+            scripts.Add(ManagedActionTests.DnsFixtureScript);
+            scripts.Add(ManagedActionTests.WindowsUpdateFixtureScript);
             foreach (var action in MaintenancePlans.Catalog.Where(a => a.Id != "cleanup"))
                 scripts.Add(MaintenancePlans.Build(action, [new(Guid.NewGuid() + ":1", "Fixture", 1, "EULA 'quoted'")], "Fixture.Package"));
             var manifest = Path.Combine(folder, "scripts.json");
@@ -172,6 +176,12 @@ internal static class OperationsTests
                 "foreach($script in $scripts){$errors=$null;[void][Management.Automation.Language.Parser]::ParseInput($script,[ref]$null,[ref]$errors);if($errors.Count){throw ($errors | Out-String)}};'Syntax OK'",
                 CancellationToken.None).GetAwaiter().GetResult();
             if (!parser.Contains("Syntax OK")) throw new InvalidOperationException("Operations scripts parser failed");
+            var dnsFixtures = CommandRunner.PowerShellAsync(ManagedActionTests.DnsFixtureScript,
+                CancellationToken.None).GetAwaiter().GetResult();
+            if (!dnsFixtures.Contains("DNS fixtures OK")) throw new InvalidOperationException("Managed DNS dry fixtures failed");
+            var updateFixtures = CommandRunner.PowerShellAsync(ManagedActionTests.WindowsUpdateFixtureScript,
+                CancellationToken.None).GetAwaiter().GetResult();
+            if (!updateFixtures.Contains("Windows Update fixtures OK")) throw new InvalidOperationException("Typed Windows Update fixtures failed");
             var large = AdminShell.RunAsync("#" + new string('x', 40000) + "\n'Large unicode / Gruen: ä / no mutation'", TimeSpan.FromSeconds(20), CancellationToken.None).GetAwaiter().GetResult();
             if (large.ExitCode != 0 || !large.Output.Contains("Gruen: ä")) throw new InvalidOperationException("Large stdin-transport script failed");
             var updateFixture = new AvailableUpdate("11111111-1111-1111-1111-111111111111:1", "Fixture", 1, "Expected license");
@@ -325,7 +335,7 @@ internal static class OperationsTests
                 while (main.IsVisible && watch.Elapsed < TimeSpan.FromSeconds(20)) { Pump(); Thread.Sleep(20); }
                 if (main.IsVisible) throw new InvalidOperationException("Operations shutdown exceeded limit");
             }
-            return 10;
+            return 28;
         }
         finally { Directory.Delete(folder, true); }
     }

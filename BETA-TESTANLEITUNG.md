@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-**Lokaler Build: 0.7.0-beta.33 · Veröffentlichter GitHub-Release: 0.7.0-beta.32**
+**Beta: 0.7.0-beta.34**
 
 Diese Anleitung hilft beim Nachstellen von Bedien- und Darstellungsfehlern.
 Sie verlangt keine Reparatur oder Änderung eines produktiven Rechners.
@@ -36,7 +36,17 @@ Gemischte DPI, mehrere Monitore und Explorer-Neustart sind besonders
 relevant für Fensterposition und Gadgets. Windows kann Fokuswechsel
 und Benachrichtigungen begrenzen.
 
-## Schwerpunkt Beta 33
+## Schwerpunkt Beta 34
+
+- Verstärkten Glow in Hauptfenster, Dashboard und Schoner prüfen:
+  Halos und Bewegung bei verschiedenen DPI-Einstellungen ansehen.
+  Animation ausschalten: statischer Glow bleibt, Bewegungen enden.
+- Den neuen Windows-Werkzeugbereich öffnen und Verfügbarkeit,
+  Beschreibungen und Konsolenausgabe prüfen. Systemänderungen nicht
+  als Teil dieses Darstellungsrundgangs ausführen.
+- Separate HTTPS-Webverwaltung ansehen. Gerätefreigabe, Berichte und
+  Auftragsstatus nur mit bewusst eingerichteten Testgeräten prüfen.
+  Der optionale Clientdienst benötigt eine eigene Einrichtungsfreigabe.
 
 - Hintergrunddiagnose in den Desktop-Einstellungen einschalten:
   erster lesender Lauf sofort, danach 30 Minuten Pause nach jedem Lauf.
@@ -50,7 +60,9 @@ und Benachrichtigungen begrenzen.
 - GPU-Kartenkörper, drei Lüfterringe, Anschlussblende und PCIe-Kontakte
   auf klare Darstellung und passende Auswahl prüfen.
 
-Reparaturen bleiben manuell bestätigt. Das Diagnoseinventar ist keine
+Änderungsaufträge bleiben bestätigt. Die einzige eng begrenzte automatische
+Reparatur ist der DNS-Cache-Assistent nach doppeltem Opt-in.
+Das Diagnoseinventar ist keine
 Funktionsprüfung jeder installierten Anwendung.
 
 ## Separate Tests

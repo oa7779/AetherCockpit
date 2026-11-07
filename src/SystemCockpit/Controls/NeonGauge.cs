@@ -17,6 +17,8 @@ public sealed class NeonGauge : FrameworkElement
     private static readonly Pen DimLine = CreateDimPen(1);
     private static readonly Pen DimTick = CreateDimPen(4);
     private Pen? _accentPen;
+    private Pen? _haloPen;
+    private Pen? _bloomPen;
 
     private static Pen CreateDimPen(double thickness)
     {
@@ -35,6 +37,8 @@ public sealed class NeonGauge : FrameworkElement
         {
             _accentPen = new Pen(Accent, 4);
             if (_accentPen.CanFreeze) _accentPen.Freeze();
+            _haloPen = GlowPen(Accent, 10, .12);
+            _bloomPen = GlowPen(Accent, 7, .3);
         }
         var lit = double.IsFinite(Level) ? (int)Math.Ceiling(Math.Clamp(Level, 0, 100) / 100 * 40) : 0;
         dc.DrawEllipse(null, DimLine, center, radius - 15, radius - 15);
@@ -42,9 +46,23 @@ public sealed class NeonGauge : FrameworkElement
         {
             var angle = (140 + i * 260d / 39) * Math.PI / 180;
             Point At(double distance) => new(center.X + Math.Cos(angle) * distance, center.Y + Math.Sin(angle) * distance);
+            if (i < lit)
+            {
+                dc.DrawLine(_haloPen, At(radius - 9), At(radius));
+                dc.DrawLine(_bloomPen, At(radius - 9), At(radius));
+            }
             dc.DrawLine(i < lit ? _accentPen : DimTick, At(radius - 9), At(radius));
         }
         dc.DrawLine(DimLine, new(center.X - radius / 2, center.Y + radius / 2),
             new(center.X + radius / 2, center.Y + radius / 2));
+    }
+
+    private static Pen GlowPen(Brush accent, double thickness, double opacity)
+    {
+        var brush = accent.CloneCurrentValue();
+        brush.Opacity *= opacity;
+        var pen = new Pen(brush, thickness) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round };
+        if (pen.CanFreeze) pen.Freeze();
+        return pen;
     }
 }

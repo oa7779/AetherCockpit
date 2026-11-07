@@ -310,7 +310,7 @@ internal static class ProfessionalWorkflowTests
                     "Every task route names a real compiled destination");
             }
             finally { modules.Close(); Pump(); }
-            var root = (Grid)main.Content;
+            var root = (FrameworkElement)main.Content;
             main.Content = null;
             var host = new Window { Content = root, DataContext = main.Model, Width = 1100, Height = 760, ShowInTaskbar = false };
             host.Resources.MergedDictionaries.Add(main.Resources);

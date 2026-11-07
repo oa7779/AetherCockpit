@@ -36,11 +36,17 @@ internal static class ScreensaverTests
         Check(typeof(SaverWindow).GetMethod("ShowAudioError",
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic) is null,
             "Screensaver scene no longer exposes a music error display");
+        Check(typeof(SaverWindow).GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            .All(field => field.FieldType != typeof(System.Windows.Media.MediaPlayer) &&
+                field.FieldType != typeof(System.Media.SoundPlayer)),
+            "Neon screensaver window owns no audio playback object");
+        count += NeonEffects();
         foreach (var args in new[] { new[] { "/p" }, new[] { "/p:0" }, new[] { "/p:-1" }, new[] { "/unknown" } })
         {
             try { SaverArguments.Parse(args); Check(false, "Invalid saver argument accepted"); }
             catch (ArgumentException) { Check(true, "Invalid saver argument rejected"); }
         }
+
         var now = DateTimeOffset.UtcNow;
         var frame = new BoardFeedFrame(now, HardwareBoardTests.Example, "42", "31", "--", "12", null, "--", true,
             [new("/nvme/0/temperature/0", "SSD", "Composite", "Temperature", 36, "C"),
@@ -130,6 +136,36 @@ internal static class ScreensaverTests
         Check(received.Cpu == "42" && received.Hardware.Devices.Length == frame.Hardware.Devices.Length,
             "Same-user local named pipe transports board and readings without starting sensors");
         return count;
+    }
+
+    internal static int NeonEffects()
+    {
+        var window = new SaverWindow(new System.Drawing.Rectangle(0, 0, 800, 600));
+        try
+        {
+            if (window.Content is not System.Windows.Documents.AdornerDecorator decorator ||
+                decorator.Child is not System.Windows.Controls.Grid panel ||
+                panel.Children.OfType<System.Windows.Controls.Border>().Single() is not { IsHitTestVisible: false } frame ||
+                !SystemCockpit.Controls.FrameGlow.GetVisible(frame))
+                throw new InvalidOperationException("Saver needs a non-interactive, static neon frame inside its own adorner layer.");
+            var hardware = HardwareBoardTests.Example;
+            var feed = new BoardFeedFrame(DateTimeOffset.UtcNow, hardware, "--", "--", "--", "--", null, "--", false);
+            window.Present(hardware, feed, "SYNTHETIC");
+            if (SystemCockpit.Controls.FrameGlow.GetEnabled(frame) ||
+                ((System.Windows.Media.LinearGradientBrush)window.Background).GradientStops.Any(stop => stop.HasAnimatedProperties) ||
+                panel.Children.OfType<System.Windows.Controls.StackPanel>().Single().RenderTransform.HasAnimatedProperties)
+                throw new InvalidOperationException("Disabled motion must not start neon/background/header clocks.");
+            window.Present(hardware, feed with { Motion = true }, "SYNTHETIC");
+            if (SystemCockpit.Controls.FrameGlow.GetEnabled(frame) ||
+                ((System.Windows.Media.LinearGradientBrush)window.Background).GradientStops.Any(stop => stop.HasAnimatedProperties))
+                throw new InvalidOperationException("A detached preview must not start neon clocks before loading.");
+            var text = panel.Children.OfType<System.Windows.Controls.StackPanel>().Single()
+                .Children.OfType<System.Windows.Controls.TextBlock>().Last().Text;
+            if (!text.Contains("GPU --%") || !text.Contains("UP --") || !text.Contains("CPU-TEMP --"))
+                throw new InvalidOperationException("Decorative neon must never turn unavailable readings into invented values.");
+            return 4;
+        }
+        finally { window.Close(); }
     }
 
     internal static int Ui(string? screenshot)

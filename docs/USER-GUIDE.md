@@ -111,6 +111,11 @@ eine eindeutige Modellzuordnung.
 
 ### Animation
 
+Schoner, Hauptfenster und Dashboard verwenden verstärkte Neon-Halos,
+Pulslicht und Energiebewegung. Bei ausgeschalteter Bewegung bleiben
+statische Leuchteffekte und Messwerte erhalten. Sichtbarkeit und
+Windows-Animationseinstellungen begrenzen die laufenden Effekte.
+
 Der Bildschirmschoner verwendet und verwaltet keine Musikdateien.
 Eine frühere Audiokonfiguration wird weder gelesen noch aktualisiert.
 Vorhandene externe Dateien bleiben unverändert.

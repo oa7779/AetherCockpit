@@ -169,6 +169,8 @@ internal sealed class JsonManagerStore : IManagerStore
                 return false;
             if (_devices[index].State == "approved")
                 return true;
+            if (_devices[index].State == "revoked")
+                return false;
             _devices[index] = _devices[index] with { State = "approved" };
             await SaveDevicesAsync(cancellationToken);
             return true;
@@ -177,6 +179,20 @@ internal sealed class JsonManagerStore : IManagerStore
         {
             _gate.Release();
         }
+    }
+
+    public async Task<bool> RevokeDeviceAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var index = _devices.FindIndex(device => device.Id == id);
+            if (index < 0) return false;
+            _devices[index] = _devices[index] with { State = "revoked" };
+            await SaveDevicesAsync(cancellationToken);
+            return true;
+        }
+        finally { _gate.Release(); }
     }
 
     public async Task<ReportMetadataResponse> AddReportAsync(Guid deviceId, DateTimeOffset capturedAt,

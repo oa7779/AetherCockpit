@@ -117,9 +117,47 @@ Neue handlungsrelevante Befunde lösen einen Tray-Hinweis aus; ein Klick öffnet
 die Assistenten. Unveränderte Befunde werden innerhalb des laufenden Monitors
 nicht erneut gemeldet. Nach Neustart kann ein Befund wieder erscheinen.
 
-Es gibt keinen automatischen Reparaturmodus. Das Inventar ist keine
+Diese lokale Hintergrunddiagnose repariert nicht automatisch. Der separat
+eingerichtete Verwaltungsdienst kann den eng begrenzten DNS-Assistenten
+nach lokalem und zentralem Opt-in ausführen.
+[Zentrale Verwaltung](CENTRAL-MANAGEMENT.md). Das Inventar ist keine
 Funktionsprüfung aller Anwendungen und keine Prüfung auf die jeweils
 neueste Treiberversion.
+
+## Erweiterte Werkzeugassistenten
+
+Der zusätzliche Windows-Werkzeugbereich bietet 25 feste Aktionen in der
+AETHER-Konsole. Zuerst Aktion und Voraussetzungen ansehen; fehlende Programme
+oder PowerShell-Cmdlets werden als Fehler gemeldet, nicht nachinstalliert.
+Verändernde Aktionen verlangen eine Bestätigung; der Einsteigermodus
+gibt Systemänderungen nicht frei.
+
+| Bereich | Werkzeuge und Prüfungen |
+|---|---|
+| Systemdateien | SFC `/verifyonly`, DISM CheckHealth/ScanHealth; bestätigte DISM-/SFC-Reparaturen |
+| Windows Update | Suche über die vorhandene Updatequelle und einzeln bestätigte Installation mit GUID-/Revisions-/Lizenzabgleich |
+| Geräte und Versionen | PnP-Status, signierte Treiberversionen und PnPUtil-Treiberbestand |
+| Speicher und Start | Windows-Storage-Status, BitLocker-Status ohne Recovery-Schlüssel, lesende BCD-Anzeige |
+| Netzwerk | Adapter, DNS, Verbindungskonfiguration, Resolverprüfung und bestätigtes Cacheleeren |
+| Überwachung | Ereignisse, Dienste, Aufgaben, Prozesse/Leistungsdaten, Firewallstatus und vorhandene ETW-Sitzungen |
+| Schutz und Energie | Defender-Status und Windows-Energiedaten |
+
+Ausgabe und Abbruch bleiben in der Konsole sichtbar. Die gemeinsame Ausführung
+begrenzt normale Ausgaben auf 65.536 Zeichen und läuft höchstens 30 Minuten.
+Ein beendeter Prozess ist kein Nachweis einer vollständigen Windows-Reparatur.
+
+Sysinternals und Windows ADK sind optionale Ergänzungen: vorhandene Werkzeuge
+lokal öffnen oder die offizielle Bezugsseite aufrufen. AETHER installiert diese
+Pakete nicht und akzeptiert keine Toollizenz automatisch. Interaktive Programme
+werden nicht als unsichtbarer Dienstauftrag gestartet.
+Nicht jede Windows-Edition oder Version liefert dieselben Werkzeuge.
+Windows 11 ab 24H2 wird deshalb über tatsächliche Verfügbarkeit geprüft,
+nicht über eine erfundene vollständige Werkzeugliste.
+
+Treiberangebote und installierte Versionen getrennt vergleichen. Neue Treiber
+gezielt über Windows Update oder den Gerätehersteller auswählen; das Treiberdatum
+allein beweist keinen Upgradebedarf. Die vorhandene identitätsgebundene
+Windows-Updateinstallation und WinGet-Abläufe bleiben separat bestätigt.
 
 ## Wartungspläne
 

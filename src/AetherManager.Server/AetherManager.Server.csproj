@@ -6,8 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Product>AETHER Management Server</Product>
+    <Company>Olaf Weins</Company>
+    <Authors>Olaf Weins</Authors>
+    <Copyright>Copyright (c) 2026 Olaf Weins</Copyright>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AetherOperations.Shared\AetherOperations.Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.14" />
   </ItemGroup>

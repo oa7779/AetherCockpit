@@ -64,6 +64,12 @@ internal static class ManagerEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized);
 
+        admin.MapPost("/devices/{id:guid}/revoke", async Task<IResult> (Guid id, IManagementService service,
+            CancellationToken token) => await service.SetDeviceApprovalAsync(id, false, token)
+                ? TypedResults.NoContent() : TypedResults.NotFound())
+            .WithSummary("Block device reporting and further management actions")
+            .Produces(StatusCodes.Status204NoContent).Produces(StatusCodes.Status404NotFound);
+
         admin.MapGet("/reports", GetReportsAsync)
             .WithName("GetReports")
             .WithSummary("List recent diagnostic reports")
@@ -138,9 +144,9 @@ internal static class ManagerEndpoints
         return device is null ? TypedResults.NotFound() : TypedResults.Ok(device);
     }
 
-    private static async Task<IResult> ApproveDeviceAsync(Guid id, IManagerStore store,
+    private static async Task<IResult> ApproveDeviceAsync(Guid id, IManagementService service,
         CancellationToken cancellationToken) =>
-        await store.ApproveDeviceAsync(id, cancellationToken)
+        await service.SetDeviceApprovalAsync(id, true, cancellationToken)
             ? TypedResults.NoContent()
             : TypedResults.NotFound();
 
