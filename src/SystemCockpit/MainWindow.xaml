@@ -49,12 +49,12 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="DashboardGraphTemplate">
-            <Border Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
+            <Border Tag="chart-panel" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
                 <StackPanel>
                     <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
                     <DockPanel Margin="0,4"><TextBlock DockPanel.Dock="Right" Text="{Binding Unit}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/><controls:LedDisplay Text="{Binding NumericValue}" Accent="{Binding Accent}" Height="30" HorizontalAlignment="Left" Width="128"/></DockPanel>
                     <Viewbox Height="45" Stretch="Fill">
-                        <Canvas Width="280" Height="56" Background="#0A0717">
+                        <Canvas Tag="chart-canvas" Width="280" Height="56" Background="#0A0717">
                             <Line X1="0" Y1="28" X2="280" Y2="28" Stroke="#2D2248"/>
                             <Line X1="0" Y1="56" X2="280" Y2="56" Stroke="#2D2248"/>
                             <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="7" Opacity="0.12"/>
@@ -68,7 +68,7 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="CompactCoreTemplate">
-            <Border Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
+            <Border Tag="chart-panel" Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
                 <Grid ToolTip="{Binding Detail}">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="5"/></Grid.RowDefinitions>
                     <DockPanel>
@@ -76,7 +76,7 @@
                         <TextBlock Text="{Binding Title}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="10" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                     </DockPanel>
                     <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,3">
-                        <Canvas Width="180" Height="56" Background="#071711">
+                        <Canvas Tag="chart-canvas" Width="180" Height="56" Background="#071711">
                             <Line X1="0" X2="180" Y1="28" Y2="28" Stroke="#19432B"/>
                             <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="7" Opacity="0.12"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                             <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="4" Opacity="0.3"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
@@ -88,7 +88,7 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="CompactDiskTemplate">
-            <Border Background="#120711" BorderBrush="#FF576E" BorderThickness="1" Margin="3" Padding="8" Height="92" CornerRadius="6">
+            <Border Tag="chart-panel" Background="#120711" BorderBrush="#FF576E" BorderThickness="1" Margin="3" Padding="8" Height="92" CornerRadius="6">
                 <Grid ToolTip="{Binding Detail}">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="6"/></Grid.RowDefinitions>
                     <DockPanel>
@@ -96,7 +96,7 @@
                         <controls:LedDisplay DockPanel.Dock="Right" Text="{Binding NumericValue}" Accent="#FF354A" Width="96" Height="28"/>
                         <TextBlock Text="{Binding Title}" Foreground="#FF576E" FontFamily="Consolas" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </DockPanel>
-                    <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,4"><Canvas Width="280" Height="56" Background="#08060C">
+                    <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,4"><Canvas Tag="chart-canvas" Width="280" Height="56" Background="#08060C">
                         <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#392027"/>
                         <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="7" Opacity="0.12"/>
                         <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="4" Opacity="0.3"/>
@@ -127,7 +127,7 @@
                     <TextBlock Text="A E T H E R" Foreground="#24FFE3" FontFamily="Consolas" FontSize="25" FontWeight="Bold">
                         <TextBlock.Effect><DropShadowEffect Color="#24FFE3" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></TextBlock.Effect>
                     </TextBlock>
-                    <TextBlock Text="NEON WAVE / GLASS CONTROL" Foreground="#F56AFF" FontFamily="Consolas" FontSize="10" Margin="0,8,0,14"/>
+                    <TextBlock x:Name="NeonDesignTagline" Text="NEON WAVE / GLASS CONTROL" Foreground="#F56AFF" FontFamily="Consolas" FontSize="10" Margin="0,8,0,14"/>
                     <Border Background="#D45CFF" Height="12" CornerRadius="6,0,0,6" Margin="0,0,0,5"/>
                     <Border Background="#4294FF" Height="7" CornerRadius="4,0,0,4" Margin="22,0,0,18"/>
                     <TextBlock Text="{loc:DesktopLabel Main.Areas}" FontFamily="Consolas" FontSize="10" Foreground="#32D5FF" Margin="0,0,0,12"/>

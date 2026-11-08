@@ -21,6 +21,7 @@
   <data name="Desktop.Settings.PreferenceSaved" xml:space="preserve"><value>Gespeichert. Die aktuelle Sitzung wird nicht umgestaltet.</value></data>
   <data name="Desktop.Settings.SaveFailed" xml:space="preserve"><value>Die Einstellung konnte nicht gespeichert werden.</value></data>
   <data name="Desktop.Settings.DisplayMode" xml:space="preserve"><value>TAG / NACHT / Hauptfenster und Mainframe</value></data>
+  <data name="Desktop.Settings.ModernDisplayMode"><value>Windows Modern folgt automatisch der Windows-App-Farbeinstellung. Die Tag-/Nacht-Auswahl gilt nur für die anderen Designs und bleibt gespeichert.</value></data>
   <data name="Desktop.Settings.Auto" xml:space="preserve"><value>Automatisch: Tag 07–19 Uhr (lokale Zeit)</value></data>
   <data name="Desktop.Settings.Day" xml:space="preserve"><value>Immer Tag</value></data>
   <data name="Desktop.Settings.Night" xml:space="preserve"><value>Immer Nacht</value></data>

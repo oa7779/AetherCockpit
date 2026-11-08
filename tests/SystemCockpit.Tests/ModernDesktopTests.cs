@@ -405,6 +405,16 @@ internal static class ModernDesktopTests
                 instrumentPanel.Children.Add(gauge); instrumentPanel.Children.Add(led); instrumentPanel.Children.Add(pie);
                 var disabledInput = new TextBox { Name = "SyntheticDisabledInput", Text = "Nicht verfügbar", IsEnabled = false };
                 instrumentPanel.Children.Add(disabledInput);
+                var syntheticHistory = new SensorChartHistory();
+                var syntheticTime = new DateTimeOffset(2026, 11, 8, 12, 0, 0, TimeSpan.Zero);
+                syntheticHistory.Add(syntheticTime, SensorChartTests.Readings());
+                syntheticHistory.Add(syntheticTime.AddSeconds(2), SensorChartTests.Readings(42));
+                var sensorPlot = new SensorPlot
+                {
+                    Width = 310,
+                    Group = syntheticHistory.Groups.First()
+                };
+                instrumentPanel.Children.Add(sensorPlot);
                 var instruments = new Window { Content = instrumentPanel, Width = 320, Height = 320 };
                 var saveAttempts = 0;
                 var desktopSettings = new DesktopSettingsWindow(model, _ => saveAttempts++, () => { });
@@ -423,6 +433,21 @@ internal static class ModernDesktopTests
                     CheckUi(ReferenceEquals(disabledInput.Foreground, app.Resources["ModernTextDisabled"]) &&
                         ReferenceEquals(disabledInput.Background, app.Resources["ModernDisabledBackground"]),
                         "Disabling a text input restores the semantic disabled pair");
+                    instruments.UpdateLayout();
+                    foreach (var custom in new FrameworkElement[] { gauge, led, pie, sensorPlot })
+                    {
+                        var drawing = VisualTreeHelper.GetDrawing(custom);
+                        CheckUi(drawing is not null && DrawingBrushes(drawing).All(brush =>
+                            brush is SolidColorBrush solid &&
+                            new[] { "ModernAccent", "ModernBorder", "ModernSelection", "ModernTextPrimary",
+                                "ModernTextSecondary", "SceneBackdrop", "ModernWarning" }.Any(key =>
+                                    solid.Color == ((SolidColorBrush)app.Resources[key]).Color)),
+                            $"Modern {modeName} actual {custom.GetType().Name} drawing contains only semantic neutral/accent brushes");
+                    }
+                    CheckUi(VisualTreeHelper.GetDrawing(sensorPlot) is DrawingGroup plotDrawing &&
+                        DrawingBrushes(plotDrawing).OfType<SolidColorBrush>().Any(brush =>
+                            brush.Color == ((SolidColorBrush)app.Resources["SceneBackdrop"]).Color),
+                        "Actual SensorPlot drawing paints the palette scene background");
                     CheckUi(network.Title == DesktopUiText.Get("Network.Title") &&
                         firstRun.Title == DesktopUiText.Get("FirstRun.Title") &&
                         ((CheckBox)firstRun.FindName("AcceptCheck")).Content as string == DesktopUiText.Get("FirstRun.Accept") &&
@@ -487,6 +512,29 @@ internal static class ModernDesktopTests
             DesktopScreensaverPolicy.IsEnabled(neonModel.Settings),
             "Returning to default German Neon preserves the landscape, stopped-motion toggle and saver eligibility");
         neonBoard.Shutdown();
+        var neonSidebar = new SidebarWindow(neonModel, neonModel.Settings,
+            _ => throw new InvalidOperationException("Neon regression must not save settings."), synthetic: true);
+        var neonMain = new MainWindow(neonModel.Settings);
+        var neonBoot = new BootWindow();
+        try
+        {
+            neonSidebar.Show(); neonMain.Show(); neonBoot.Show();
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            var neonPanels = VisualElements(neonSidebar).OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
+            CheckUi(neonPanels.Length > 0 && neonPanels.All(item =>
+                item.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#60152239")),
+                "Neon xBar retains its exact original translucent chart-panel color");
+            CheckUi(VisualElements(neonMain).OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).Any(item =>
+                item.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#0A0717")) &&
+                ((TextBlock)neonMain.FindName("NeonDesignTagline")).Visibility == Visibility.Visible &&
+                VisualElements(neonMain).OfType<TextBlock>().Any(item => item.Text == "System Observatory" && item.FontFamily.Source == "Consolas"),
+                "Neon dashboard preserves its original chart background, decorative tagline and monospaced heading");
+            CheckUi(((FrameworkElement)neonBoot.FindName("PerspectiveDecoration")).Visibility == Visibility.Visible &&
+                ((ProgressBar)neonBoot.FindName("BootProgress")).Background is SolidColorBrush bootTrack &&
+                bootTrack.Color == (Color)ColorConverter.ConvertFromString("#38204E"),
+                "Neon boot preserves the perspective decoration and purple progress track");
+        }
+        finally { neonSidebar.Close(); neonMain.Close(); neonBoot.CloseAfterStartup(); }
         return assertions;
 
         void CaptureMajorSurfaces(string modeName, CockpitModel model)
@@ -509,16 +557,40 @@ internal static class ModernDesktopTests
                 var pages = (TabControl)main.FindName("Pages");
                 pages.SelectedItem = pages.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Superadmin"));
                 Capture(main, "superadmin");
+                var workbench = (AdminWorkbench)main.FindName("Workbench");
+                CheckUi(VisualElements(workbench).OfType<TextBlock>().All(text => text.FontFamily.Source == "Segoe UI"),
+                    "Realized nested AdminWorkbench uses Segoe UI headings and body text");
+                var restorePreview = VisualElements(workbench).OfType<Button>().First();
+                restorePreview.IsEnabled = false;
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(ReferenceEquals(restorePreview.Foreground, app.Resources["ModernTextDisabled"]) &&
+                    restorePreview.Template.FindName("Frame", restorePreview) is Border restoreFrame &&
+                    ReferenceEquals(restoreFrame.Background, app.Resources["ModernDisabledBackground"]),
+                    "Disabled nested admin button uses a readable neutral disabled frame and foreground");
+                CheckUi(VisualElements(restorePreview).OfType<TextBlock>().All(text =>
+                    ReferenceEquals(text.Foreground, app.Resources["ModernTextDisabled"])),
+                    "Actual disabled admin button caption inherits the disabled text palette");
+                restorePreview.IsEnabled = true;
                 var tabs = (TabControl)control.FindName("Modules");
                 tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Einstellungen"));
                 Capture(control, "control-center-settings");
                 tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Wartung"));
                 Capture(control, "control-center-admin");
                 Capture(desktop, "desktop-settings");
+                CheckUi(VisualElements(desktop).OfType<ComboBox>().Single(item => item.Name == "DisplayModeSelector").IsEnabled == false &&
+                    VisualElements(desktop).OfType<TextBlock>().Any(item => item.Text == DesktopText.Get("Desktop.Settings.ModernDisplayMode")),
+                    "Modern day/night preference is disabled with an explanation, not an ignored enabled input");
                 Capture(sidebar, "xbar");
                 Capture(gadget, "gadget");
                 boot.Report("SYNTHETISCHE VORSCHAU / keine Hardwareabfrage", 65);
                 Capture(boot, "boot");
+                CheckUi(((FrameworkElement)boot.FindName("PerspectiveDecoration")).Visibility == Visibility.Collapsed &&
+                    ((FrameworkElement)boot.FindName("Sweep")).Visibility == Visibility.Collapsed &&
+                    boot.FindName("BootProgress") is ProgressBar progress &&
+                    ReferenceEquals(progress.Background, app.Resources["ModernSelection"]) &&
+                    progress.Template.FindName("PART_Track", progress) is Border track &&
+                    ReferenceEquals(track.Background, app.Resources["ModernSelection"]),
+                    "Modern boot hides the perspective grid and sweep and paints a neutral progress track");
                 Capture(firstRun, "first-run");
                 Capture(confirmation, "action-confirmation");
                 CheckUi(!confirmation.Confirm.IsEnabled && confirmation.Consent.IsChecked != true,
@@ -537,6 +609,29 @@ internal static class ModernDesktopTests
                 Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
                 surface.UpdateLayout();
                 var elements = VisualElements(surface).ToArray();
+                var chartCanvases = elements.OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).ToArray();
+                var chartPanels = elements.OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
+                if (name is "dashboard-navigation" or "xbar" or "gadget")
+                    CheckUi(chartCanvases.Length > 0 && chartPanels.Length > 0,
+                        $"Modern {modeName} {name} assertions inspect actual realized chart canvases and panels");
+                foreach (var chart in chartCanvases)
+                {
+                    CheckUi(ReferenceEquals(chart.Background, app.Resources["SceneBackdrop"]),
+                        $"Modern {modeName} {name} chart canvas paints the semantic scene background, actual={DescribeBrush(chart.Background)}");
+                    CheckUi(chart.Children.OfType<System.Windows.Shapes.Line>().All(line =>
+                        ReferenceEquals(line.Stroke, app.Resources["ModernBorder"])) &&
+                        chart.Children.OfType<System.Windows.Shapes.Polyline>().Where(line => line.Visibility == Visibility.Visible)
+                            .All(line => ReferenceEquals(line.Stroke, app.Resources["ModernAccent"]) && line.StrokeThickness <= 2),
+                        $"Modern {modeName} {name} actual chart gridlines and single traces use neutral border/accent without halo duplicates");
+                }
+                foreach (var panel in chartPanels)
+                    CheckUi(ReferenceEquals(panel.Background, app.Resources["GlossPanel"]) &&
+                        ReferenceEquals(panel.BorderBrush, app.Resources["ModernBorder"]),
+                        $"Modern {modeName} {name} actual chart panel uses neutral surface/border, " +
+                        $"background={DescribeBrush(panel.Background)}, border={DescribeBrush(panel.BorderBrush)}");
+                CheckUi(elements.OfType<TextBlock>().Where(text => text.IsVisible).All(text =>
+                    text.FontFamily.Source == "Segoe UI" && text.Text != "NEON WAVE / GLASS CONTROL"),
+                    $"Modern {modeName} {name} visible authored headings/body use Segoe UI and omit the neon design tagline");
                 CheckUi(elements.All(element => element.Effect is null &&
                     !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element)),
                     $"Modern {modeName} {name} contains no neon glow effects");
@@ -584,6 +679,20 @@ internal static class ModernDesktopTests
     }
     private static string DescribeBrush(Brush brush) =>
         brush is SolidColorBrush solid ? $"{solid.Color} (opacity={solid.Opacity})" : brush?.ToString() ?? "<null>";
+
+    private static IEnumerable<Brush> DrawingBrushes(Drawing drawing)
+    {
+        if (drawing is DrawingGroup group)
+            foreach (var child in group.Children)
+                foreach (var brush in DrawingBrushes(child)) yield return brush;
+        if (drawing is GeometryDrawing geometry)
+        {
+            if (geometry.Brush is not null) yield return geometry.Brush;
+            if (geometry.Pen?.Brush is not null) yield return geometry.Pen.Brush;
+        }
+        if (drawing is GlyphRunDrawing glyph && glyph.ForegroundBrush is not null)
+            yield return glyph.ForegroundBrush;
+    }
 
         private static double Contrast(SolidColorBrush foreground, SolidColorBrush background)
         {

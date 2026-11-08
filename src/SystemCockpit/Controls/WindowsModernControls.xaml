@@ -14,6 +14,7 @@
                             BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
                             CornerRadius="5" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}"
                                           VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -25,7 +26,9 @@
                             <Setter TargetName="Frame" Property="BorderBrush" Value="{DynamicResource ModernAccent}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Frame" Property="Opacity" Value="0.5"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
+                            <Setter TargetName="Frame" Property="Background" Value="{DynamicResource ModernDisabledBackground}"/>
+                            <Setter TargetName="Frame" Property="BorderBrush" Value="{DynamicResource ModernBorder}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -33,6 +36,25 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NeonButton}"/>
+    <Style TargetType="{x:Type ProgressBar}">
+        <Setter Property="Background" Value="{DynamicResource ModernSelection}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ModernAccent}"/>
+        <Setter Property="Template">
+            <Setter.Value><ControlTemplate TargetType="ProgressBar">
+                <Grid>
+                    <Border x:Name="PART_Track" Background="{TemplateBinding Background}" CornerRadius="3"/>
+                    <Border x:Name="PART_Indicator" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left" CornerRadius="3"/>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsIndeterminate" Value="True">
+                        <Setter TargetName="PART_Indicator" Property="Width"
+                                Value="{Binding ActualWidth, ElementName=PART_Track}"/>
+                        <Setter TargetName="PART_Indicator" Property="Opacity" Value="0.6"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate></Setter.Value>
+        </Setter>
+    </Style>
     <Style x:Key="NeonTextBox" TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="{DynamicResource ModernInput}"/>
         <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
@@ -43,7 +65,6 @@
     </Style>
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource NeonTextBox}"/>
     <Style TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
     </Style>
     <Style TargetType="{x:Type Window}">

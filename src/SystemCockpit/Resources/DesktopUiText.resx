@@ -20,7 +20,7 @@
   <data name="FirstRun.FeaturePackages" xml:space="preserve"><value>- Paket-Center: Installieren, Aktualisieren und Deinstallieren mit exakten IDs und Bestätigung.</value></data>
   <data name="FirstRun.FeatureCommands" xml:space="preserve"><value>- Befehls-Katalog: 103 Windows-Befehle mit Risikoanzeige und Einsteiger-/Expertenmodus, CRT-Konsole.</value></data>
   <data name="FirstRun.FeatureOperations" xml:space="preserve"><value>- Superadmin und Operations: statusbasierte Verwaltung und Wartungspläne mit Vorschau und Einzelbestätigung.</value></data>
-  <data name="FirstRun.FeatureTools" xml:space="preserve"><value>- Netzwerkwerkzeuge, Downloadtest, Shellbag-Analyse, vier Skins und lokale Hilfe.</value></data>
+  <data name="FirstRun.FeatureTools" xml:space="preserve"><value>- Netzwerkwerkzeuge, Downloadtest, Shellbag-Analyse, Designauswahl und lokale Hilfe.</value></data>
   <data name="FirstRun.SafetyHeading" xml:space="preserve"><value>GRUNDREGEL</value></data>
   <data name="FirstRun.Safety" xml:space="preserve"><value>Geführte Änderungen benötigen deine Bestätigung. Die freie Administratorkonsole startet dagegen mit Enter direkt. Einzelplatz bleibt ohne Managerkontakt; Serverberichte verlangen Anmeldung, manuelle Freigabe und getrenntes Übertragungs-Opt-in.</value></data>
   <data name="FirstRun.LicenseNotice" xml:space="preserve"><value>Bitte lies die Endnutzer-Lizenzvereinbarung. Zur Nutzung ist die Zustimmung erforderlich.</value></data>

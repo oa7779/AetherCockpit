@@ -21,7 +21,14 @@ public partial class BootWindow : Window
     public BootWindow()
     {
         InitializeComponent();
-        if (SystemParameters.ClientAreaAnimation)
+        if (SkinCatalog.IsModern)
+        {
+            PerspectiveDecoration.Visibility = Visibility.Collapsed;
+            ScanlineDecoration.Visibility = Visibility.Collapsed;
+            ConsoleReflection.Visibility = Visibility.Collapsed;
+            Sweep.Visibility = Visibility.Collapsed;
+        }
+        else if (SystemParameters.ClientAreaAnimation)
             ((System.Windows.Media.TranslateTransform)Sweep.RenderTransform).BeginAnimation(
                 System.Windows.Media.TranslateTransform.XProperty,
                 new DoubleAnimation(-120, 980, TimeSpan.FromSeconds(2.8)) { RepeatBehavior = RepeatBehavior.Forever });

@@ -16,7 +16,7 @@
         <Grid.RowDefinitions><RowDefinition Height="230"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
         <Grid ClipToBounds="True">
             <Grid.Background><RadialGradientBrush><GradientStop Color="#482055"/><GradientStop Color="#080517" Offset="1"/></RadialGradientBrush></Grid.Background>
-            <Viewbox Stretch="Fill" Opacity="0.6"><Canvas Width="900" Height="220">
+            <Viewbox x:Name="PerspectiveDecoration" Stretch="Fill" Opacity="0.6"><Canvas Width="900" Height="220">
                 <Path Data="M0,220 L450,60 L900,220 M90,220 L450,60 M200,220 L450,60 M310,220 L450,60 M590,220 L450,60 M700,220 L450,60 M810,220 L450,60 M0,190 L900,190 M70,150 L830,150 M170,110 L730,110 M270,85 L630,85"
                       Stroke="#FF35CB" StrokeThickness="1"/>
             </Canvas></Viewbox>
@@ -41,8 +41,8 @@
                          IsReadOnly="True" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"
                          VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:DesktopLabel Boot.AccessibleConsole}"
                          TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
-                <Border Background="{StaticResource BootScanlines}" IsHitTestVisible="False"/>
-                <Border Height="65" VerticalAlignment="Top" IsHitTestVisible="False">
+                <Border x:Name="ScanlineDecoration" Background="{StaticResource BootScanlines}" IsHitTestVisible="False"/>
+                <Border x:Name="ConsoleReflection" Height="65" VerticalAlignment="Top" IsHitTestVisible="False">
                     <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#18FFFFFF"/><GradientStop Color="#00FFFFFF" Offset="1"/></LinearGradientBrush></Border.Background>
                 </Border>
             </Grid>

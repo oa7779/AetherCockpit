@@ -20,7 +20,7 @@
   <data name="FirstRun.FeaturePackages" xml:space="preserve"><value>- Package center: install, update and uninstall with exact IDs and confirmation.</value></data>
   <data name="FirstRun.FeatureCommands" xml:space="preserve"><value>- Command catalog: 103 Windows commands with risk indicators, beginner/expert modes and a CRT console.</value></data>
   <data name="FirstRun.FeatureOperations" xml:space="preserve"><value>- Superadmin and Operations: state-based administration and maintenance plans with preview and individual confirmation.</value></data>
-  <data name="FirstRun.FeatureTools" xml:space="preserve"><value>- Network tools, download test, Shellbag analysis, four skins and local help.</value></data>
+  <data name="FirstRun.FeatureTools" xml:space="preserve"><value>- Network tools, download test, Shellbag analysis, appearance selection and local help.</value></data>
   <data name="FirstRun.SafetyHeading" xml:space="preserve"><value>GROUND RULE</value></data>
   <data name="FirstRun.Safety" xml:space="preserve"><value>Guided changes require your confirmation. The free administrator console runs directly on Enter. Standalone mode does not contact a manager; server reports require enrollment, manual approval and separate transmission opt-in.</value></data>
   <data name="FirstRun.LicenseNotice" xml:space="preserve"><value>Please read the end-user license agreement. Acceptance is required to use AETHER.</value></data>

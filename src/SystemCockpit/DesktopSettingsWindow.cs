@@ -104,7 +104,7 @@ internal sealed class DesktopSettingsWindow : Window
         language.SelectionChanged += (_, _) => StorePreferences();
 
         panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.DisplayMode"), Foreground = Accent() });
-        var mode = new ComboBox { ItemsSource = new[]
+        var mode = new ComboBox { Name = "DisplayModeSelector", IsEnabled = !modern, ItemsSource = new[]
         {
             new Choice("auto", DesktopText.Get("Desktop.Settings.Auto")),
             new Choice("day", DesktopText.Get("Desktop.Settings.Day")),
@@ -113,9 +113,16 @@ internal sealed class DesktopSettingsWindow : Window
             SelectedValue = model.Settings.DisplayMode, Margin = new Thickness(0, 6, 0, 12) };
         mode.SelectionChanged += (_, _) =>
         {
+            if (modern) return;
             if (mode.SelectedValue is string value) save(model.Settings with { DisplayMode = value });
         };
         panel.Children.Add(mode);
+        if (modern) panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Desktop.Settings.ModernDisplayMode"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 12)
+        });
 
         void Toggle(string title, bool value, Func<CockpitSettings, bool, CockpitSettings> update)
         {

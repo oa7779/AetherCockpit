@@ -81,6 +81,7 @@ public partial class MainWindow : Window
                 });
         });
         DataContext = _model;
+        if (SkinCatalog.IsModern) NeonDesignTagline.Visibility = Visibility.Collapsed;
         _model.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(CockpitModel.CleanupFilter))

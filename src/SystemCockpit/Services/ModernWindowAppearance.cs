@@ -2,6 +2,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Documents;
+using System.Windows.Threading;
+using System.Windows.Data;
 
 namespace SystemCockpit.Services;
 
@@ -32,7 +35,7 @@ internal static class ModernWindowAppearance
             element.Effect = null;
             SystemCockpit.Controls.FrameGlow.SetVisible(element, false);
             SystemCockpit.Controls.FrameGlow.SetEnabled(element, false);
-            if (element is Control styled && styled is Button or ComboBox or ComboBoxItem or TabItem or DataGrid)
+            if (element is Control styled && styled is Button or ComboBox or ComboBoxItem or TabItem or DataGrid or ProgressBar)
             {
                 if (Application.Current.TryFindResource(styled.GetType()) is Style modernStyle &&
                     !ReferenceEquals(styled.Style, modernStyle))
@@ -49,11 +52,26 @@ internal static class ModernWindowAppearance
             }
             if (element is SystemCockpit.Controls.SensorPlot plot)
                 plot.SetResourceReference(SystemCockpit.Controls.SensorPlot.PaletteBrushProperty, "ModernAccent");
-            if (element is TextBlock text && !IsSemanticTextBrush(text.Foreground))
-                text.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
+            if (element is TextBlock text)
+            {
+                text.FontFamily = new FontFamily("Segoe UI");
+                if (CaptionOwner(text) is { } captionOwner)
+                {
+                    text.Style = (Style)Application.Current.FindResource(typeof(TextBlock));
+                    text.SetBinding(TextBlock.ForegroundProperty, new Binding(nameof(Control.Foreground)) { Source = captionOwner });
+                }
+                else
+                {
+                    ApplyAuthoredTextBrush(text, TextBlock.ForegroundProperty, text.Foreground);
+                    foreach (var run in text.Inlines.OfType<Run>())
+                        ApplyAuthoredTextBrush(run, TextElement.ForegroundProperty, run.Foreground);
+                }
+            }
             if (element is Control control && control.TemplatedParent is not ComboBox)
             {
-                if (control is ComboBox or ComboBoxItem)
+                if (control is not TextBox { IsReadOnly: true } and not RichTextBox)
+                    control.FontFamily = new FontFamily("Segoe UI");
+                if (control is ComboBox or ComboBoxItem or Button)
                 {
                     control.ClearValue(Control.ForegroundProperty);
                     control.ClearValue(Control.BackgroundProperty);
@@ -68,10 +86,11 @@ internal static class ModernWindowAppearance
                     control.IsEnabledChanged += InputEnabledChanged;
                     control.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
                 }
-                else if (control is Button)
+                else if (control is ProgressBar)
                 {
-                    control.SetResourceReference(Control.BackgroundProperty, "GlossButton");
-                    control.SetResourceReference(Control.BorderBrushProperty, "ButtonBorder");
+                    control.SetResourceReference(Control.BackgroundProperty, "ModernSelection");
+                    control.SetResourceReference(Control.ForegroundProperty, "ModernAccent");
+                    control.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
                 }
                 else if (control is ListBox or DataGrid)
                 {
@@ -79,22 +98,23 @@ internal static class ModernWindowAppearance
                     control.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
                 }
             }
-            if (element is Border border && border.TemplatedParent is null)
+            if (element is Border border && IsAuthoredVisual(border))
             {
                 if (HasPaintedBackground(border.Background))
                     border.SetResourceReference(Border.BackgroundProperty, "GlossPanel");
                 if (border.BorderBrush is not null)
                     border.SetResourceReference(Border.BorderBrushProperty, "ModernBorder");
             }
-            else if (element is Panel panel && panel.TemplatedParent is null && HasPaintedBackground(panel.Background))
+            else if (element is Panel panel && IsAuthoredVisual(panel) &&
+                (HasPaintedBackground(panel.Background) || Equals(panel.Tag, "chart-canvas")))
                 panel.SetResourceReference(Panel.BackgroundProperty, "SceneBackdrop");
-            if (element is Shape shape && shape.TemplatedParent is null)
+            if (element is Shape shape && IsAuthoredVisual(shape))
             {
                 if (shape is Polyline && shape.StrokeThickness > 2 && shape.Opacity < 0.5)
                     shape.Visibility = Visibility.Collapsed;
                 var modernTag = shape.Tag as string ?? "";
                 shape.SetResourceReference(Shape.StrokeProperty,
-                    modernTag.StartsWith("modern-schema-flow:", StringComparison.Ordinal)
+                    shape is Polyline || modernTag.StartsWith("modern-schema-flow:", StringComparison.Ordinal)
                         ? "ModernAccent" : "ModernBorder");
                 if (shape.Fill is not null)
                     shape.SetResourceReference(Shape.FillProperty,
@@ -106,6 +126,36 @@ internal static class ModernWindowAppearance
     private static bool IsSemanticTextBrush(Brush brush) =>
         new[] { "ModernTextPrimary", "ModernTextSecondary", "ModernWarning", "ModernPositive", "ModernTextDisabled" }
             .Any(key => ReferenceEquals(brush, Application.Current.TryFindResource(key)));
+
+    private static bool IsAuthoredVisual(FrameworkElement element) =>
+        element.TemplatedParent is null or ContentPresenter;
+
+    private static Control? CaptionOwner(DependencyObject element)
+    {
+        for (var parent = VisualTreeHelper.GetParent(element); parent is not null;
+            parent = VisualTreeHelper.GetParent(parent))
+        {
+            if (parent is Button or ComboBoxItem or ComboBox) return (Control)parent;
+            if (parent is Window or UserControl) break;
+        }
+        return null;
+    }
+
+    private static void ApplyAuthoredTextBrush(FrameworkContentElement element, DependencyProperty property, Brush brush)
+    {
+        if (!IsSemanticTextBrush(brush))
+            element.SetResourceReference(property, IsWarningBrush(brush) ? "ModernWarning" : "ModernTextPrimary");
+    }
+
+    private static void ApplyAuthoredTextBrush(FrameworkElement element, DependencyProperty property, Brush brush)
+    {
+        if (!IsSemanticTextBrush(brush))
+            element.SetResourceReference(property, IsWarningBrush(brush) ? "ModernWarning" : "ModernTextPrimary");
+    }
+
+    private static bool IsWarningBrush(Brush brush) =>
+        brush is SolidColorBrush solid && (solid.Color == Colors.Gold ||
+            solid.Color == Color.FromRgb(255, 184, 108));
 
     private static bool HasPaintedBackground(Brush? brush) =>
         brush is not null && brush is not SolidColorBrush { Color.A: 0 };
@@ -130,6 +180,12 @@ internal static class ModernWindowAppearance
         if (sender is Window window) Apply(window);
         else if (sender is FrameworkElement element && ReferenceEquals(e.OriginalSource, sender))
             ApplyElement(element);
+        if (sender is Window or UserControl && sender is FrameworkElement root && ReferenceEquals(e.OriginalSource, sender))
+            root.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+            {
+                if (!SkinCatalog.IsModern || !root.IsLoaded) return;
+                foreach (var descendant in Descendants(root)) ApplyElement(descendant);
+            });
     }
 
     private static IEnumerable<FrameworkElement> Descendants(DependencyObject root)
