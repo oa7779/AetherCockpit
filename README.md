@@ -9,14 +9,19 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Aktuelle Beta: 0.7.0-beta.37**
+**Aktuelle Beta: 0.7.0-beta.38**
 
-**Ungeprüfte Vorabversion:** Der neue Beta-37-Testlauf wurde durch Windows
-Code Integrity blockiert (`0x800711C7`). Der Versionsbuild war fehlerfrei;
-die neuen Programmpakete sind nicht laufzeitgeprüft. Nur in einer
-freigegebenen Testumgebung einsetzen.
+**Prüfstatus:** Windows-CI prüft Build, Konsolenassertions und synthetische
+Desktopansichten. Hardwarebetrieb, Installation und Intune-Verteilung sind
+nicht durch diese Tests abgedeckt. Die Pakete sind weiterhin unsigniert.
 
-Beta 37 verwendet schwarze Nacht- und blaue Tag-Hintergründe in Hauptfenster,
+Beta 38 ergänzt **Windows Modern** als wählbare neutrale Desktopoberfläche.
+Hell und dunkel folgen Windows; das animierte **System-Schema** ersetzt dort
+das Mainframe. In diesem Design ist der AETHER-Bildschirmschoner deaktiviert.
+Retro-Neon und Deutsch bleiben Standard; Englisch ist noch nicht auswählbar.
+Der Designwechsel wird nach der Installation mit einem App-Neustart übernommen.
+
+Retro-Neon verwendet schwarze Nacht- und blaue Tag-Hintergründe in Hauptfenster,
 Mainframe und Bildschirmschoner. Neonfarben und Glow bleiben erhalten.
 Die Funktionen sind nach Aufgaben geordnet, Mainframe-Zeichnung
 und Gerätedetails getrennt. GPU-Lüfter sitzen auf der sichtbaren Kühlerseite;
@@ -27,7 +32,7 @@ und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
 HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Beta-37-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.37)
+[Beta-38-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38)
 · [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
 · [Versionsgeschichte](CHANGELOG.md)
 
@@ -59,6 +64,8 @@ Die [Funktionsübersicht](docs/FEATURES.md) beschreibt den vollständigen Umfang
 Glasrahmen, LED-Ziffern und abschaltbare Animation prägen die Oberfläche.
 Das anklickbare Mainboard ist schematisch: Leiterbahnen und Lüfter illustrieren
 die Szene, echte Messwerte stehen daneben.
+Windows Modern verwendet neutrale Karten, Segoe UI und dezente Animation
+ohne Neon-Effekte. [Design wechseln](docs/USER-GUIDE.md#windows-modern).
 
 ### Einblicke in Beta 37
 

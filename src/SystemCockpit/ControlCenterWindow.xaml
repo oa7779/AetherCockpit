@@ -193,7 +193,7 @@
             <TabItem Header="{loc:DesktopLabel Module.Wartung}" Tag="Wartung" ToolTip="{loc:DesktopLabel Module.MaintenanceTip}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="14">
                     <TextBlock x:Name="CommandCatalogHeading" Text="{loc:DesktopLabel Ui.AdminCatalogHeading}" Foreground="#24FFE3" FontSize="19"/>
-                    <TextBlock Text="{loc:DesktopLabel Layout.CommandsNotice}" Margin="0,6,0,6"/>
+                    <TextBlock x:Name="CommandCatalogNotice" Text="{loc:DesktopLabel Layout.CommandsNotice}" Margin="0,6,0,6"/>
                     <WrapPanel>
                         <CheckBox x:Name="ExpertToggle" Content="{loc:DesktopLabel Ui.ExpertMode}" Foreground="#FFB86C" VerticalAlignment="Center"
                                   Checked="ExpertModeChanged" Unchecked="ExpertModeChanged"

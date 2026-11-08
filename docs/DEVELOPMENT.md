@@ -74,7 +74,7 @@ steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.37`, Dateiversion `0.7.0.37`,
+aktuell `0.7.0-beta.38`, Dateiversion `0.7.0.38`,
 Assembly-Version `0.7.0.0`.
 
 `build\AetherCockpit.iss` muss dazu passen: `AppVersion`, `PublishDir`,
@@ -100,9 +100,9 @@ Der Host heißt in der Ausgabe `AetherMainboard.scr`, der Discovery-Starter
 `Aether.scr`. Beide teilen die Cockpit-Runtime.
 
 Der Ausgabeordner wird aus der Profilversion gebildet:
-`dist\AetherCockpit-0.7.0-beta.37-win-x64`.
+`dist\AetherCockpit-0.7.0-beta.38-win-x64`.
 **Existiert er bereits, bricht das Skript ab.** Das ist im aktuellen
-Workspace der Fall. Vorhandene Releases nicht überschreiben.
+Workspace vor dem ersten Beta-38-Publish zu prüfen. Vorhandene Releases nicht überschreiben.
 Für eine spätere Ausgabe Versionsänderung und neuen Zielpfad als eigenen
 Release-Schritt planen. Der Publish kopiert den optionalen Clientdienst unter
 `ManagedClient` und seine Einrichtungs-/Lebenszyklusskripte ins Paket.
@@ -113,7 +113,7 @@ Das separate selbstenthaltene Serverpaket erzeugen:
 powershell -NoProfile -File .\build\Publish-Manager.ps1
 ```
 
-Ziel: `dist\AetherManager-0.7.0-beta.37-win-x64`. Auch dieses Skript verweigert
+Ziel: `dist\AetherManager-0.7.0-beta.38-win-x64`. Auch dieses Skript verweigert
 vorhandene Ausgaben. Die Dienstassistenten werden zur Buildprüfung nicht ausgeführt.
 
 Nach Erzeugung des passenden Setups das Intune-Paket separat bauen:
@@ -132,7 +132,7 @@ Setup als Quelle und verweigert vorhandene versionsbezogene Intune-Ausgaben.
 Für einen neu erzeugten, noch nicht archivierten Release:
 
 ```powershell
-$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.37-win-x64).Path
+$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.38-win-x64).Path
 [System.IO.Compression.ZipFile]::CreateFromDirectory($release, "$release.zip")
 $iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
 if (-not (Test-Path -LiteralPath $iscc)) {
@@ -140,10 +140,10 @@ if (-not (Test-Path -LiteralPath $iscc)) {
 }
 & $iscc .\build\AetherCockpit.iss
 Get-FileHash "$release.zip" -Algorithm SHA256
-Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe -Algorithm SHA256
+Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe -Algorithm SHA256
 ```
 
-Die obigen Namen beschreiben Beta 37; vorhandene ZIP-/Setup-Dateien vorher
+Die obigen Namen beschreiben Beta 38; vorhandene ZIP-/Setup-Dateien vorher
 nicht überschreiben. `ISCC` schützt bestehende Ausgaben nicht wie das
 Publishskript. Prüfsummen als `.sha256` mit Hash und Dateiname speichern.
 ZIP-Einträge, Größen und SHA256 jeweils gegen den Publish-Ordner vergleichen.

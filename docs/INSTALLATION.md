@@ -1,8 +1,8 @@
 # Installation
 
-Beta 37 ist eine ungeprüfte Vorabversion: Windows Code Integrity hat den
-neuen Testlauf mit `0x800711C7` blockiert. Die Pakete sind nicht laufzeitgeprüft;
-nur in einer freigegebenen Testumgebung einsetzen. Schutzrichtlinien erhalten.
+Beta 38 wird mit Windows-CI und synthetischen Desktopprüfungen getestet.
+Eine Installation auf dem Zielrechner und der Hardwarebetrieb sind davon
+nicht abgedeckt. Die Pakete bleiben unsigniert; Schutzrichtlinien erhalten.
 
 ## Voraussetzungen
 
@@ -24,16 +24,16 @@ Der Bildschirmschoner läuft dagegen ohne UAC; siehe [Benutzerhandbuch](USER-GUI
 ## Download und Prüfsumme
 
 Veröffentlichte Pakete stehen bei den
-[Beta-37-Downloads](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.37).
+[Beta-38-Downloads](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38).
 Vor dem Start die
 SHA256-Prüfsumme mit der zugehörigen `.sha256`-Datei vergleichen:
 
-Beispiel für die Beta-37-Dateien:
+Beispiel für die Beta-38-Dateien:
 
 ```powershell
-Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe -Algorithm SHA256
-Get-FileHash .\AetherCockpit-0.7.0-beta.37-win-x64.zip -Algorithm SHA256
-Get-FileHash .\AetherManager-0.7.0-beta.37-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe -Algorithm SHA256
+Get-FileHash .\AetherCockpit-0.7.0-beta.38-win-x64.zip -Algorithm SHA256
+Get-FileHash .\AetherManager-0.7.0-beta.38-win-x64.zip -Algorithm SHA256
 ```
 
 Die Beta-Pakete sind nicht signiert. SmartScreen oder Schutzsoftware können
@@ -146,11 +146,11 @@ Verzeichnisbereinigung.
 
 ## Silent-Installation
 
-Die folgende Kommandozeile verwendet das aktuelle Beta-37-Setup.
+Die folgende Kommandozeile verwendet das aktuelle Beta-38-Setup.
 Bei einem veröffentlichten Download dessen tatsächlichen Dateinamen einsetzen.
 
 ```powershell
-.\AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+.\AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 ```
 
 Ohne `/AutostartConsent=1` wird keine neue erhöhte Aufgabe eingerichtet.

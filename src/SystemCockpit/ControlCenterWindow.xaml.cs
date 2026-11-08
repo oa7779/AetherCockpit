@@ -106,6 +106,12 @@ public partial class ControlCenterWindow : Window
         if (!SkinCatalog.IsModern) return;
         CommandCatalogHeading.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
         CommandCatalogHeading.FontFamily = new System.Windows.Media.FontFamily("Segoe UI");
+        foreach (var text in new[] { CommandCatalogNotice, CommandDescription, CommandWhenUseful })
+            text.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
+        foreach (var text in new[] { ModeHint, OsCompat })
+            text.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextSecondary");
+        foreach (var text in new[] { CommandRisk, CommandImpact, CommandCaution, Status })
+            text.SetResourceReference(TextBlock.ForegroundProperty, "ModernWarning");
         CommandList.Style = (Style)Application.Current.FindResource(typeof(ListBox));
         CommandList.SetResourceReference(Control.BackgroundProperty, "SceneBackdrop");
         CommandList.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
@@ -684,7 +690,8 @@ public partial class ControlCenterWindow : Window
     {
         CommandDescription.Text = command.Description;
         CommandRisk.Text = command.RiskBadge;
-        CommandRisk.Foreground = command.RiskAccent;
+        if (SkinCatalog.IsModern) CommandRisk.SetResourceReference(TextBlock.ForegroundProperty, "ModernWarning");
+        else CommandRisk.Foreground = command.RiskAccent;
         CommandImpact.Text = command.Impact;
         var (whenUseful, caution) = AdminCommandCatalog.Guidance(command.Category);
         CommandWhenUseful.Text = "SINNVOLL: " + whenUseful;

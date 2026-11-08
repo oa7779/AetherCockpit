@@ -61,7 +61,7 @@ Containerstruktur, MAC, IV, SHA256 des entschlüsselten Quell-ZIPs und
 SHA256 des einzigen darin enthaltenen Setups müssen stimmen.
 
 ```powershell
-powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.37\AetherCockpit-Setup-0.7.0-beta.37-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe
+powershell -NoProfile -File .\tests\Verify-IntunePackage.ps1 -Package .\dist\intune\0.7.0-beta.38\AetherCockpit-Setup-0.7.0-beta.38-win-x64.intunewin -Setup .\dist\AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe
 ```
 
 Die Prüfung verwendet einen temporären Fixtureordner und entfernt ihn danach.

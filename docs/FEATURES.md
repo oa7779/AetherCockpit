@@ -1,7 +1,7 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand Beta 37; sie enthält keine Versionsgeschichte.
+beschreibt den aktuellen Quellstand Beta 38; sie enthält keine Versionsgeschichte.
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 ## Beobachtung und Darstellung
@@ -14,8 +14,13 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
 | Desktop | Sechs xBar-Diagrammgruppen, Gadgets mit Position und Deckkraft, Tray, Temperatur-Overlay und Multi-Monitor-Bildschirmschoner |
-| Oberfläche | Vier Skins, Tag-/Nachtmodus, unabhängige Sekundenanzeige, LED-Instrumente, Animation ein/aus, aufgabenbezogene Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
+| Oberfläche | Retro-Neon als Standard, optionale Skins und Windows Modern nach Windows-Hell-/Dunkelwahl, unabhängige Sekundenanzeige, Animation ein/aus, aufgabenbezogene Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
 | Neon-Effekte | Verstärkte Halos, Pulslicht und Energiebewegung in Schoner, Hauptfenster und Dashboard; Bewegung abschaltbar |
+
+Windows Modern verwendet ein animiertes **System-Schema**, neutrale Diagramme,
+Gadgets und xBar. In diesem Modus ist der AETHER-Bildschirmschoner gesperrt.
+Die Desktopoberfläche bleibt deutsch; Englisch wird noch nicht angeboten.
+Serveroberfläche und Installer erhalten in diesem Schritt kein neues Design.
 
 Sensoren werden nur angezeigt, wenn sie der Provider meldet. Das Mainboard ist
 keine elektrische Topologie; Gruppenmaxima und dynamische Skalen sind

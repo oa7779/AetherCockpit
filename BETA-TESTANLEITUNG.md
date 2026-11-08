@@ -1,11 +1,10 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.37**
+**Beta: 0.7.0-beta.38**
 
-**Ungeprüfte Vorabversion:** Der Beta-37-Testlauf ist durch Windows Code
-Integrity blockiert (`0x800711C7`). Die Pakete sind nicht laufzeitgeprüft.
-Nur in einer freigegebenen Testumgebung einsetzen; Schutzrichtlinien
-nicht deaktivieren oder umgehen.
+Windows-CI prüft die Konsolenrunner und synthetische Desktopansichten.
+Installation, Hardwarebetrieb und Intune-Verteilung benötigen eigene
+Tests. Die Pakete sind unsigniert; Schutzrichtlinien nicht deaktivieren.
 
 Diese Anleitung hilft beim Nachstellen von Bedien- und Darstellungsfehlern.
 Sie verlangt keine Reparatur oder Änderung eines produktiven Rechners.
@@ -36,6 +35,9 @@ werden genutzt. Wichtige Daten vor verändernden Tests sichern.
    ausblenden, über das Tray wieder öffnen und vollständig beenden.
 7. Erneut starten und prüfen, ob Positionen und Einstellungen erhalten bleiben.
 8. Hilfe und Diagnoseexport öffnen; Vorschau und Schwärzung prüfen.
+9. Windows Modern wählen und den App-Neustart bestätigen. Helle/dunkle
+   Windows-App-Einstellung, System-Schema, Animation, xBar und Gadgets prüfen.
+   Der AETHER-Schoner darf in Modern nicht starten.
 
 Gemischte DPI, mehrere Monitore und Explorer-Neustart sind besonders
 relevant für Fensterposition und Gadgets. Windows kann Fokuswechsel
@@ -43,7 +45,7 @@ und Benachrichtigungen begrenzen.
 
 ## Aktueller Testschwerpunkt
 
-Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-37-Stand.
+Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-38-Stand.
 Installationsversion und Prüfsumme vor dem Test vergleichen; das Intune-Paket
 auf einem dafür vorgesehenen Gerät separat abnehmen.
 

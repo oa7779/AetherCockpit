@@ -660,6 +660,25 @@ internal static class ModernDesktopTests
                 if (name == "control-center-admin")
                 {
                     var heading = (TextBlock)control.FindName("CommandCatalogHeading");
+                    foreach (var (textName, resource) in new[]
+                    {
+                        ("CommandCatalogHeading", "ModernTextPrimary"),
+                        ("CommandCatalogNotice", "ModernTextPrimary"),
+                        ("CommandDescription", "ModernTextPrimary"),
+                        ("CommandWhenUseful", "ModernTextPrimary"),
+                        ("ModeHint", "ModernTextSecondary"), ("OsCompat", "ModernTextSecondary"),
+                        ("CommandRisk", "ModernWarning"), ("CommandImpact", "ModernWarning"),
+                        ("CommandCaution", "ModernWarning"), ("Status", "ModernWarning")
+                    })
+                    {
+                        var body = (TextBlock)control.FindName(textName);
+                        var backdrop = RealizedBackground(body);
+                        CheckUi(ReferenceEquals(body.Foreground, app.Resources[resource]) &&
+                            body.Foreground is SolidColorBrush foreground && backdrop is SolidColorBrush background &&
+                            Contrast(foreground, background) >= 4.5,
+                            $"Modern {modeName} catalog text {textName} must use {resource} with >=4.5 contrast on its realized ancestor: " +
+                            $"foreground={DescribeBrush(body.Foreground)}, background={DescribeBrush(backdrop)}, {DescribeVisual(body)}");
+                    }
                     var catalog = (ListBox)control.FindName("CommandList");
                     var splitter = (GridSplitter)control.FindName("TerminalSplitter");
                     CheckUi(ReferenceEquals(heading.Foreground, app.Resources["ModernTextPrimary"]) &&
@@ -760,6 +779,22 @@ internal static class ModernDesktopTests
     }
     private static string DescribeBrush(Brush brush) =>
         brush is SolidColorBrush solid ? $"{solid.Color} (opacity={solid.Opacity})" : brush?.ToString() ?? "<null>";
+
+    private static Brush RealizedBackground(DependencyObject element)
+    {
+        for (var parent = VisualTreeHelper.GetParent(element); parent is not null; parent = VisualTreeHelper.GetParent(parent))
+        {
+            Brush? brush = parent switch
+            {
+                Panel panel => panel.Background,
+                Border border => border.Background,
+                Control control => control.Background,
+                _ => null
+            };
+            if (brush is SolidColorBrush { Color.A: 255, Opacity: 1 }) return brush;
+        }
+        throw new InvalidOperationException("No opaque realized ancestor background for catalog text.");
+    }
 
     private static string DescribeVisual(FrameworkElement element)
     {

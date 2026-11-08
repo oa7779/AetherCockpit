@@ -9,6 +9,20 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.38
+
+- Wählbares Windows Modern mit neutralen Desktopfenstern, Diagrammen,
+  Gadgets, xBar und Konsolenansichten; Hell-/Dunkelmodus folgt Windows.
+- Animiertes System-Schema mit Geräteauswahl statt Neon-Mainframe.
+  Bewegung respektiert Sichtbarkeit, Animationsschalter und Windows.
+- Im Modern-Modus kein AETHER-Bildschirmschoner; gespeicherte Auswahl
+  sperrt auch direkte SCR-Starts und beendet laufende Schonersitzungen.
+- Designwechsel nach bestätigtem Neustart; Retro-Neon bleibt Standard.
+- Sprachressourcen vorbereitet. Unvollständiges Englisch wird nicht
+  angeboten; die Desktopoberfläche bleibt deutsch.
+- Synthetische Hell-/Dunkel- und Neon-Regressionsprüfungen sowie
+  Screenshots der zentralen Desktopansichten ergänzt.
+
 ## 0.7.0-beta.37
 
 - Quellstand auf GitHub verfügbar, noch kein Beta-37-Release veröffentlicht.

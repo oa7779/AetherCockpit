@@ -2,14 +2,14 @@
 
 ## Paketstand
 
-Aktuelles Win32-Paket: **0.7.0-beta.37**.
-`AetherCockpit-Setup-0.7.0-beta.37-win-x64.intunewin` wird aus dem
-gleichnamigen Beta-37-Setup erzeugt und mit SHA256-Prüfsumme auf
-[GitHub](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.37) veröffentlicht.
-Lokale Ausgabe: `dist\intune\0.7.0-beta.37`.
-Beta 37 ist eine ungeprüfte Vorabversion: Der neue Testlauf ist durch Windows
-Code Integrity blockiert. Paketintegrität ersetzt keine Installations- oder
-Laufzeitprüfung. Kein produktiver Intune-Rollout; nur autorisierte Testumgebungen.
+Aktuelles Win32-Paket: **0.7.0-beta.38**.
+`AetherCockpit-Setup-0.7.0-beta.38-win-x64.intunewin` wird aus dem
+gleichnamigen Beta-38-Setup erzeugt und mit SHA256-Prüfsumme auf
+[GitHub](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38) veröffentlicht.
+Lokale Ausgabe: `dist\intune\0.7.0-beta.38`.
+Der Desktopquellstand wird in Windows-CI geprüft. Die Intune-Paketintegrität
+ersetzt keine Installation oder Prüfung auf verwalteten Zielgeräten.
+Vor einem produktiven Rollout eine autorisierte Testgruppe verwenden.
 Die alten Beta-27-/28-Pakete und ihr historisches Begleitblatt bleiben unverändert.
 
 ## Neues Paket vorbereiten
@@ -42,10 +42,10 @@ Erststart-Assistenten aus.
 
 ### Installation
 
-Intune-Befehlszeile für das Beta-37-Paket:
+Intune-Befehlszeile für das Beta-38-Paket:
 
 ```text
-AetherCockpit-Setup-0.7.0-beta.37-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
+AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
 ```
 
 Die vorausgewählte Autostart-Aufgabe wird ohne Zustimmung übersprungen
@@ -84,15 +84,15 @@ Benötigte Daten vorher sichern.
 
 ### Erkennung
 
-Für Beta 37:
+Für Beta 38:
 
 | Regel | Wert |
 |---|---|
 | Dateipfad | `C:\Program Files\AETHER System Control` |
 | Datei | `SystemCockpit.exe` |
-| Versionsvergleich | größer oder gleich `0.7.0.37`, 64-Bit-Zuordnung |
+| Versionsvergleich | größer oder gleich `0.7.0.38`, 64-Bit-Zuordnung |
 | Alternativer Registry-Pfad | `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7B0C30A1-7DB4-45B7-A872-F94664465F40}_is1` |
-| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.37`, 64-Bit-Zuordnung |
+| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.38`, 64-Bit-Zuordnung |
 
 Die Registry-Erkennung muss für jede neue Beta auf deren Versionszeichenfolge
 angepasst werden. Installationsziel kann abweichen; eine Dateiregel
