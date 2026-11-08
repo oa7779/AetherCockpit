@@ -2,10 +2,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using AetherOperations;
+using AetherManager.Server.Middleware;
 
 namespace AetherManager.Server.Services;
 
-internal sealed class ManagementService(string root, IManagerStore devices) : IManagementService
+internal sealed class ManagementService(string root, IManagerStore devices, IHttpContextAccessor? context = null) : IManagementService
 {
     private readonly string _path = Path.Combine(root, "management.json");
     private readonly SemaphoreSlim _gate = new(1, 1);
@@ -210,7 +211,7 @@ internal sealed class ManagementService(string root, IManagerStore devices) : IM
         state.Devices.Add(status);
     }
 
-    private static ManagedJob Queue(State state, Guid id, string action, bool automatic, WindowsUpdateSelection? update = null)
+    private ManagedJob Queue(State state, Guid id, string action, bool automatic, WindowsUpdateSelection? update = null)
     {
         if (state.Jobs.Count >= 10000 || state.Jobs.Count(item => item.Job.DeviceId == id && item.Job.State == "queued") >= 100)
             throw new InvalidOperationException("The durable job store is full; archive completed history before adding jobs.");
@@ -223,11 +224,15 @@ internal sealed class ManagementService(string root, IManagerStore devices) : IM
     private static void Replace(State state, JobEntry original, JobEntry replacement) =>
         state.Jobs[state.Jobs.IndexOf(original)] = replacement;
 
-    private static void Audit(State state, Guid id, Guid? job, string message)
+    private void Audit(State state, Guid id, Guid? job, string message)
     {
         if (state.Audit.Count >= 100000)
             throw new InvalidOperationException("The audit store is full; archive it before further changes.");
-        state.Audit.Add(new ManagementAuditEntry(DateTimeOffset.UtcNow, id, job, message));
+        var actor = context?.HttpContext is { } http
+            ? http.Items[AdminTokenFilter.ActorKey]?.ToString() ??
+                (http.Items[DeviceTokenFilter.DeviceContextKey] is EnrolledDevice device ? $"device:{device.Id}" : "unknown")
+            : "internal";
+        state.Audit.Add(new ManagementAuditEntry(DateTimeOffset.UtcNow, id, job, $"{message} · actor={actor}"));
     }
 
     private static string Hash(string value) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)));

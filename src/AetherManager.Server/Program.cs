@@ -59,6 +59,16 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, token) =>
+        await TypedResults.Problem(statusCode: 429, title: "Rate limit reached; try again later").ExecuteAsync(context.HttpContext);
+    // A single bounded limiter prevents arbitrary IP/user keys from growing a login partition table.
+    options.AddFixedWindowLimiter("login", options =>
+    {
+        options.PermitLimit = 20;
+        options.Window = TimeSpan.FromMinutes(1);
+        options.QueueLimit = 0;
+        options.AutoReplenishment = true;
+    });
     options.AddPolicy("enrollment", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions
@@ -86,6 +96,15 @@ builder.Services.AddRateLimiter(options =>
             QueueLimit = 0,
             AutoReplenishment = true
         }));
+    options.AddPolicy("device-management", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 1200,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+            AutoReplenishment = true
+        }));
 });
 var dataRoot = Environment.GetEnvironmentVariable("AETHER_MANAGER_DATA");
 if (string.IsNullOrWhiteSpace(dataRoot))
@@ -96,7 +115,14 @@ if (string.IsNullOrWhiteSpace(dataRoot))
 }
 builder.Services.AddSingleton<IManagerStore>(_ => new JsonManagerStore(dataRoot));
 builder.Services.AddSingleton<IManagementService>(services =>
-    new ManagementService(dataRoot, services.GetRequiredService<IManagerStore>()));
+    new ManagementService(dataRoot, services.GetRequiredService<IManagerStore>(), services.GetRequiredService<IHttpContextAccessor>()));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IAccountService>(services => new LocalAccountService(dataRoot, services.GetRequiredService<TimeProvider>()));
+builder.Services.AddSingleton<ServerMonitoringService>();
+builder.Services.AddSingleton<IServerMonitoringService>(services => services.GetRequiredService<ServerMonitoringService>());
+builder.Services.AddHostedService(services => services.GetRequiredService<ServerMonitoringService>());
+builder.Services.AddSingleton<IFleetService, FleetService>();
 builder.Services.AddSingleton<AdminTokenFilter>();
 builder.Services.AddSingleton<DeviceTokenFilter>();
 builder.Services.AddHostedService<ReportRetentionWorker>();
@@ -118,8 +144,11 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapOpenApi();
 await app.Services.GetRequiredService<IManagerStore>().InitializeAsync(app.Lifetime.ApplicationStopping);
+await app.Services.GetRequiredService<IAccountService>().InitializeAsync(app.Lifetime.ApplicationStopping);
 app.MapManagerEndpoints();
 app.MapManagementEndpoints();
+app.MapAccountEndpoints();
+app.MapFleetEndpoints();
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     var store = app.Services.GetRequiredService<IManagerStore>();

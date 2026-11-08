@@ -11,6 +11,7 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         logger.LogError(exception, "Unhandled AETHER Manager request failure");
         var status = exception switch
         {
+            BadHttpRequestException request => request.StatusCode,
             ArgumentException => StatusCodes.Status400BadRequest,
             KeyNotFoundException => StatusCodes.Status404NotFound,
             InvalidOperationException => StatusCodes.Status409Conflict,
@@ -24,7 +25,7 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
             Detail = status == 500 ? "The request could not be completed." :
                 "Check the device state, permissions, action identifier and request limits.",
             Instance = httpContext.Request.Path
-        }, cancellationToken);
+        }, options: null, contentType: "application/problem+json", cancellationToken: cancellationToken);
         return true;
     }
 }

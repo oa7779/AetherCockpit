@@ -10,13 +10,15 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace AetherManager.Tests;
 
-internal static class Runner
+internal static partial class Runner
 {
     private static int _assertions;
 
-    private static async Task<int> Main()
+    private static async Task<int> Main(string[] args)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AetherManagerTest-" + Guid.NewGuid().ToString("N"));
+        if (args.Length > 0) return await ServeFixtureAsync(args);
+        var root = Path.Combine(Directory.GetCurrentDirectory(), "tests", ".manager-test-runs", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
         try
         {
             var token = CancellationToken.None;
@@ -90,6 +92,8 @@ internal static class Runner
             foreach (var url in new[] { "http://aether.example.net/", "https://user:pass@example.net/", "https://example.net/path", "https://example.net/?q=x" })
                 await Reject<InvalidDataException>(() => Task.FromResult(new ClientConfiguration(url, id, "").ServerUri()));
             await VerifyTlsAsync(root);
+            await VerifyAccountsAsync(Path.Combine(root, "account-unit"));
+            await VerifyFleetAsync(Path.Combine(root, "fleet-unit"));
             Console.WriteLine($"PASS {_assertions} management assertions; no Windows action executed.");
             return 0;
         }
@@ -128,9 +132,16 @@ internal static class Runner
         start.ArgumentList.Add(Path.Combine(repository, "src", "AetherManager.Server", "bin", "Release", "net10.0", "AetherManager.Server.dll"));
         start.ArgumentList.Add("--contentRoot");
         start.ArgumentList.Add(Path.Combine(repository, "src", "AetherManager.Server"));
+        foreach (var name in start.Environment.Keys.Where(name => name.StartsWith("AETHER_MANAGER_", StringComparison.OrdinalIgnoreCase) ||
+            name.StartsWith("ASPNETCORE_Kestrel__", StringComparison.OrdinalIgnoreCase) || name.StartsWith("Kestrel__", StringComparison.OrdinalIgnoreCase)).ToArray())
+            start.Environment.Remove(name);
         start.Environment["AETHER_MANAGER_URLS"] = $"https://localhost:{port}";
         start.Environment["AETHER_MANAGER_DATA"] = Path.Combine(root, "tls-server-data");
         start.Environment["AETHER_MANAGER_CERT_THUMBPRINT"] = "";
+        start.Environment["AETHER_MANAGER_LEGACY_ADMIN_API"] = "false";
+        start.Environment["ASPNETCORE_ENVIRONMENT"] = "Production";
+        start.Environment["DOTNET_ENVIRONMENT"] = "Production";
+        start.Environment["ASPNETCORE_ALLOWEDHOSTS"] = "localhost";
         start.Environment["ASPNETCORE_Kestrel__Certificates__Default__Path"] = certificatePath;
         start.Environment["ASPNETCORE_Kestrel__Certificates__Default__Password"] = password;
         using var process = Process.Start(start) ?? throw new InvalidOperationException("TLS fixture server failed to start.");
@@ -140,6 +151,7 @@ internal static class Runner
         {
             using var handler = new HttpClientHandler
             {
+                UseCookies = false,
                 ServerCertificateCustomValidationCallback = (message, cert, _, _) =>
                     message.RequestUri?.Host == "localhost" && cert?.Thumbprint == certificate.Thumbprint
             };
@@ -160,6 +172,7 @@ internal static class Runner
             Check((await pinned.GetStringAsync(url + "/")).Contains("Zentralverwaltung"), "Web administration works over HTTPS");
             using var unauthorized = await pinned.GetAsync(url + "/api/v1/admin/management/actions");
             Check(unauthorized.StatusCode == HttpStatusCode.Unauthorized, "TLS management endpoint still requires authentication");
+            await VerifyAccountApiAsync(pinned, url, Path.Combine(root, "tls-server-data"));
         }
         finally
         {

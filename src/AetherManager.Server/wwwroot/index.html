@@ -4,12 +4,26 @@
 <title>AETHER · Zentralverwaltung</title><link rel="stylesheet" href="management.css">
 <script src="management.js" defer></script></head>
 <body>
-<header><h1>AETHER <span>Zentralverwaltung</span></h1><p>Geräte · Diagnose · kontrollierte Reparaturen</p></header>
-<section id="login"><label>Administrator-Token <input id="token" type="password" autocomplete="off"></label>
-<button id="connect">Verbinden</button><p>Token bleibt nur im Arbeitsspeicher dieser Seite. Netzwerkzugriff ausschließlich über HTTPS.</p></section>
+<header><h1>AETHER <span>Zentralverwaltung</span></h1><p>Infrastruktur · Beobachtung · bestätigte Administration</p>
+<label>Design <select id="theme"><option value="neon">AETHER Retro-Neon</option><option value="modern-auto">Windows Modern · Browserpräferenz</option><option value="modern-light">Windows Modern · Hell</option><option value="modern-dark">Windows Modern · Dunkel</option></select></label></header>
+<section id="login"><h2>Lokales AETHER-Konto</h2><form id="login-form">
+<label>Benutzername <input id="username" autocomplete="username" required maxlength="64"></label>
+<label>Passwort <input id="password" type="password" autocomplete="current-password" required maxlength="256"></label>
+<button id="connect" type="submit">Anmelden</button></form>
+<p>Administrator, Operator oder Reader · HTTPS erforderlich. Sitzungen enden nach 30 Minuten und lassen sich sperren.
+Die erste Kontoanlage führt der Serveradministrator einmalig über das geschützte Administrator-Token aus, nicht in dieser Oberfläche.</p></section>
 <p id="status" role="status"></p>
 <main id="workspace" hidden>
-<nav><button id="refresh">Aktualisieren</button><button id="enrollment">Einmalcode erzeugen</button><button id="logout">Abmelden</button></nav>
+<nav><span id="identity"></span><button id="refresh">Aktualisieren</button><button id="enrollment">Einmalcode erzeugen</button><button id="logout">Abmelden</button></nav>
+<section><h2>Serverzustand · echte Messungen</h2><div id="server" class="metrics"></div><p id="sample-time"></p></section>
+<section><h2>Flotte · logische Geräteansicht</h2><p>Jeder Knoten ist eine tatsächlich angemeldete Installation, keine physische Netzwerktopologie.
+Frisch = Heartbeat höchstens 120 Sekunden alt. Veraltet oder nie beobachtet bedeutet nicht „offline“.
+Berichtsmetadaten gelten nach einer Stunde als veraltet; der Bericht bleibt lesbar.</p>
+<div class="fleet-controls"><label>Suchen <input id="search" type="search" placeholder="Rechnername, Version oder ID" maxlength="255"></label>
+<label>Filter <select id="fleet-filter"><option value="all">Alle Geräte</option><option value="fresh">Frischer Heartbeat</option><option value="stale">Veralteter Heartbeat</option><option value="never-observed">Kein Heartbeat</option><option value="pending">Freigabe ausstehend</option><option value="approved">Freigegeben</option><option value="revoked">Gesperrt</option></select></label>
+<label>Geräte pro Seite <select id="page-size"><option value="48">48</option><option value="24">24</option></select></label>
+<button id="previous">Zurück</button><span id="page-info" aria-live="polite"></span><button id="next">Weiter</button></div>
+<canvas id="fleet-map" aria-label="Logische Geräteübersicht. Geräte sind über die folgende Rechnerliste auswählbar." role="img"></canvas></section>
 <div class="layout">
 <section><h2>Rechner</h2><div id="devices"></div></section>
 <section><h2 id="device-title">Gerät auswählen</h2><pre id="device-detail"></pre>
@@ -24,7 +38,15 @@
 <section id="update-plan" hidden><h2>Updateangebote · einzelne Freigabe</h2><div id="updates"></div><pre id="update-eula"></pre><button id="install-update" disabled>Dieses Update und seine Lizenz bestätigen</button></section>
 </div>
 <section><h2>Auditverlauf</h2><pre id="audit"></pre></section>
+<section id="users-section" hidden><h2>Lokale Benutzer und Sitzungen</h2>
+<p>Änderungen an Rolle, Sperre oder Passwort widerrufen alle Sitzungen des Kontos. Der letzte aktive Administrator bleibt erhalten.</p>
+<form id="create-user"><label>Benutzername <input id="new-username" required minlength="3" maxlength="64" autocomplete="off"></label>
+<label>Einmalig sicher übergebenes Passwort / Passphrase (14–256 Zeichen) <input id="new-password" type="password" required minlength="14" maxlength="256" autocomplete="new-password"></label>
+<label>Rolle <select id="new-role"><option>Reader</option><option>Operator</option><option>Administrator</option></select></label><button type="submit">Benutzer anlegen</button></form>
+<div id="users"></div><h3>Aktive Sitzungen</h3><div id="sessions"></div></section>
 </main>
 <footer>Keine freie Fernkonsole. Verfügbare Werkzeuge werden auf dem Zielgerät geprüft.
-Laufende Aufträge werden bei Verbindungsverlust nicht erneut gestartet. Updates, Treiber und Neustarts sind keine automatischen Reparaturen.</footer>
+Laufende Aufträge werden bei Verbindungsverlust nicht erneut gestartet. Updates, Treiber und Neustarts sind keine automatischen Reparaturen.
+Nur der angezeigte feste Aktionskatalog ist remote verfügbar. Desktop-Gadgets, Mainboard, Bildschirmschoner, lokale Wartungspläne,
+Dateivorschau und interaktive Windows-Assistenten bleiben lokal; diese Seite stellt sie nicht als Fernfunktionen dar.</footer>
 </body></html>

@@ -1,0 +1,68 @@
+@baseUrl = {{$processEnv AETHER_MANAGER_TEST_URL}}
+@csrf = copy-from-session-response
+@accountId = copy-from-account-response
+@sessionId = copy-from-session-response
+
+### One-time bootstrap: HTTPS administrative tool only, not a browser. Never save credentials in this file.
+POST {{baseUrl}}/api/v1/auth/bootstrap
+Authorization: Bearer {{$processEnv AETHER_ADMIN_TOKEN}}
+Content-Type: application/json
+
+{"username":"initial-admin","password":"{{$processEnv AETHER_ACCOUNT_PASSWORD}}","role":"Administrator"}
+
+### HTTPS login; HTTP client must retain the secure cookie
+POST {{baseUrl}}/api/v1/auth/login
+Origin: {{baseUrl}}
+X-Aether-Login: 1
+Content-Type: application/json
+
+{"username":"initial-admin","password":"{{$processEnv AETHER_ACCOUNT_PASSWORD}}"}
+
+### Current identity / absolute expiry / CSRF token
+GET {{baseUrl}}/api/v1/auth/session
+
+### Fleet, actual observations and server sample
+GET {{baseUrl}}/api/v1/admin/fleet
+
+### Users (Administrator only)
+GET {{baseUrl}}/api/v1/admin/accounts
+
+### User metadata
+GET {{baseUrl}}/api/v1/admin/accounts/{{accountId}}
+
+### Create Reader; only run intentionally against an isolated test server
+POST {{baseUrl}}/api/v1/admin/accounts
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+Content-Type: application/json
+
+{"username":"test-reader","password":"{{$processEnv AETHER_READER_PASSWORD}}","role":"Reader"}
+
+### Change role / disable / optional password reset; revokes all sessions; last admin safeguarded
+PUT {{baseUrl}}/api/v1/admin/accounts/{{accountId}}
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+Content-Type: application/json
+
+{"role":"Reader","disabled":false}
+
+### Active session metadata
+GET {{baseUrl}}/api/v1/admin/sessions
+
+### Explicit session revocation
+POST {{baseUrl}}/api/v1/admin/sessions/{{sessionId}}/revoke
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+
+### Account security audit (readable by signed-in roles)
+GET {{baseUrl}}/api/v1/admin/account-audit
+
+### CSRF failure: expect Problem Details 403
+POST {{baseUrl}}/api/v1/admin/enrollment-codes
+Origin: {{baseUrl}}
+X-Aether-CSRF: invalid
+
+### Logout revokes the current server-side session
+POST {{baseUrl}}/api/v1/auth/logout
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}

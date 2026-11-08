@@ -17,6 +17,7 @@ internal interface IManagerStore
     Task<(DeviceResponse Device, string Token)?> EnrollAsync(CreateEnrollmentRequest request, CancellationToken cancellationToken);
     Task<EnrolledDevice?> FindDeviceAsync(string token, CancellationToken cancellationToken);
     Task<DeviceResponse[]> GetDevicesAsync(CancellationToken cancellationToken);
+    Task<ReportMetadataResponse[]> GetLatestReportsAsync(CancellationToken cancellationToken);
     Task<bool> ApproveDeviceAsync(Guid id, CancellationToken cancellationToken);
     Task<bool> RevokeDeviceAsync(Guid id, CancellationToken cancellationToken);
     Task<ReportMetadataResponse> AddReportAsync(Guid deviceId, DateTimeOffset capturedAt, JsonElement report,

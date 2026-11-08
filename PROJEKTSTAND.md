@@ -2,6 +2,17 @@
 
 ## Stand
 
+Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
+kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der
+bestehenden HTTPS-/Clientbasis; animierte Ansicht für 40+ Geräte, lesende
+Serverüberwachung, Neon als Standard und neutrale Windows-Modern-Alternative.
+Der Nutzer hat lokale AETHER-Konten mit Administrator-/Operator-/Leserrollen
+gewählt. Keine freie Fernkonsole; zentrale Aktionen bleiben im kontrollierten
+Katalog mit bisherigen Geräte- und Änderungsfreigaben. Desktopfunktionen
+ohne sichere Remoteanbindung werden nicht als zentral ausführbar ausgegeben.
+Implementierung, Rollen- und Flottenprüfungen laufen; noch keine neue Version
+oder Behauptung einer produktionsfertigen Netzwerkverwaltung.
+
 Beta 38 veröffentlicht: Windows Modern zunächst deutsch,
 Retro-Neon bleibt Standard. Englisch-Auswahl entfernt, Ressourcen als
 Entwicklungsstand erhalten. Neutrale Hell-/Dunkelansichten, animiertes
