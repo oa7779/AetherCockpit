@@ -2,7 +2,7 @@
 
 ## Stand
 
-Beta 38 zur Veröffentlichung freigegeben: Windows Modern zunächst deutsch,
+Beta 38 veröffentlicht: Windows Modern zunächst deutsch,
 Retro-Neon bleibt Standard. Englisch-Auswahl entfernt, Ressourcen als
 Entwicklungsstand erhalten. Neutrale Hell-/Dunkelansichten, animiertes
 System-Schema, Schoner-Sperre und bestätigter Neustart implementiert.
@@ -14,6 +14,21 @@ Keine lokale Schutzrichtlinie verändert; keine Hardware-/Installationstests.
 Der Nutzer hat getrennte Beta-38-Pakete mit Setup, Portable, Server,
 Intune und Screenshots beauftragt. Pakete stammen aus diesem Windows-CI-Lauf;
 SignPath-Annahme steht aus, Dateien bleiben unsigniert.
+Veröffentlicht am 08.11.2026 um 16:10:04 UTC (17:10:04 lokal):
+[Beta 38](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38).
+Prerelease, Beta 36 bleibt Latest. Tag und getesteter Paketquellcommit:
+`4208eb5f5923cd8511ff9ee431ff56e3f179084b`.
+33 Release-Assets mit Dateigröße und GitHub-SHA256-Digest gegen lokale
+Dateien verifiziert: vier Pakete, vier Einzelprüfsummen, Gesamtmanifest,
+Intune-Anleitung, Build-Herkunft und 22 Screenshots.
+Intune MAC/IV, entschlüsselter ZIP-SHA256 und byteidentisches Setup geprüft.
+2691 vor diesem Import vorhandene dist-Dateien unverändert erhalten;
+die zuvor fehlende ältere Historie bleibt weiterhin ungeklärt.
+Setup-Dateiversion und beide Desktopassemblies 0.7.0.38.
+README und Repositorybeschreibung aktualisiert; Galerie zeigt Bilder direkt
+aus dem Repository. GitHub-README-Blob gegen lokalen Git-Blob geprüft.
+Paketdokumente entsprechen dem CI-Buildzeitpunkt; GitHub-Dokumentation enthält
+die abschließenden Prüfergebnisse. Arbeitsbranch nach Fast-forward `main`.
 
 Neuer Auftrag am 08.11.2026: zusätzlicher Desktopmodus „Windows Modern“
 mit neutralen Oberflächen und Hell-/Dunkelwahl nach Windows-Einstellung.
@@ -31,7 +46,7 @@ unvollständige Englisch-Auswahl darf noch nicht angeboten werden.
 Sprachressourcen bleiben Entwicklungsarbeit; die freigegebene Oberfläche
 bleibt zunächst deutsch. Die synthetische Modern-Laufzeitprüfung ist inzwischen bestanden.
 
-Beta 37 in Vorbereitung: Nacht-Hintergründe schwarz
+Vorheriger, nicht als Release veröffentlichter Beta-37-Stand: Nacht-Hintergründe schwarz
 statt blau/violett, Tag-Hintergründe blau. Hauptfenster, Mainframe-Himmel,
 Rastergrund, Binärberge und Schonerhintergrund angepasst; farbige Neonlinien
 und Glow bleiben erhalten. Der Nutzer hat alle Pakete und GitHub-Aktualisierung

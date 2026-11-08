@@ -101,8 +101,8 @@ Der Host heißt in der Ausgabe `AetherMainboard.scr`, der Discovery-Starter
 
 Der Ausgabeordner wird aus der Profilversion gebildet:
 `dist\AetherCockpit-0.7.0-beta.38-win-x64`.
-**Existiert er bereits, bricht das Skript ab.** Das ist im aktuellen
-Workspace vor dem ersten Beta-38-Publish zu prüfen. Vorhandene Releases nicht überschreiben.
+**Existiert er bereits, bricht das Skript ab.** Beta 38 liegt im aktuellen
+Workspace bereits vor. Vorhandene Releases nicht überschreiben.
 Für eine spätere Ausgabe Versionsänderung und neuen Zielpfad als eigenen
 Release-Schritt planen. Der Publish kopiert den optionalen Clientdienst unter
 `ManagedClient` und seine Einrichtungs-/Lebenszyklusskripte ins Paket.
