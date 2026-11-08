@@ -63,7 +63,9 @@ internal static class ModernWindowAppearance
                     control.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
                 if (control is TextBox or PasswordBox)
                 {
-                    control.SetResourceReference(Control.BackgroundProperty, "ModernInput");
+                    ApplyInputPalette(control);
+                    control.IsEnabledChanged -= InputEnabledChanged;
+                    control.IsEnabledChanged += InputEnabledChanged;
                     control.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
                 }
                 else if (control is Button)
@@ -107,6 +109,20 @@ internal static class ModernWindowAppearance
 
     private static bool HasPaintedBackground(Brush? brush) =>
         brush is not null && brush is not SolidColorBrush { Color.A: 0 };
+
+    private static void ApplyInputPalette(Control control)
+    {
+        control.SetResourceReference(Control.ForegroundProperty,
+            control.IsEnabled ? "ModernTextPrimary" : "ModernTextDisabled");
+        control.SetResourceReference(Control.BackgroundProperty,
+            control.IsEnabled ? "ModernInput" : "ModernDisabledBackground");
+    }
+
+    private static void InputEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (SkinCatalog.IsModern && sender is Control control)
+            ApplyInputPalette(control);
+    }
 
     private static void WindowLoaded(object sender, RoutedEventArgs e)
     {

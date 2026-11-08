@@ -372,10 +372,17 @@ internal static class ModernDesktopTests
                     zoom.Template.FindName("Frame", zoom) is Border disabledFrame &&
                     ReferenceEquals(disabledFrame.Background, app.Resources["ModernDisabledBackground"]),
                     "Disabled Modern ComboBox uses readable semantic disabled colors");
+                CheckUi(zoom.Template.FindName("PART_EditableTextBox", zoom) is TextBox disabledEditor &&
+                    ReferenceEquals(disabledEditor.Foreground, app.Resources["ModernTextDisabled"]) &&
+                    ReferenceEquals(disabledEditor.Background, app.Resources["ModernDisabledBackground"]),
+                    "Disabled Modern ComboBox editor uses the same semantic disabled pair as its frame");
                 zoom.IsEnabled = true;
                 CheckUi(Contrast((SolidColorBrush)app.Resources["ModernTextPrimary"],
                     (SolidColorBrush)app.Resources["ModernInput"]) >= 4.5,
                     "Modern input/text palette meets 4.5:1 contrast in both light and dark mode");
+                CheckUi(Contrast((SolidColorBrush)app.Resources["ModernTextDisabled"],
+                    (SolidColorBrush)app.Resources["ModernDisabledBackground"]) >= 4.5,
+                    "Modern disabled input/text palette meets 4.5:1 contrast in both light and dark mode");
                 CaptureMajorSurfaces(modeName, model);
                 CheckUi(!SystemParameters.ClientAreaAnimation ||
                     board.SceneAnimating && board.FlowAnimating && flows.All(item => item.HasAnimatedProperties) &&
@@ -396,6 +403,8 @@ internal static class ModernDesktopTests
                 var pie = new DrivePie { Width = 90, Height = 90, FreePercent = null };
                 var instrumentPanel = new StackPanel();
                 instrumentPanel.Children.Add(gauge); instrumentPanel.Children.Add(led); instrumentPanel.Children.Add(pie);
+                var disabledInput = new TextBox { Name = "SyntheticDisabledInput", Text = "Nicht verfügbar", IsEnabled = false };
+                instrumentPanel.Children.Add(disabledInput);
                 var instruments = new Window { Content = instrumentPanel, Width = 320, Height = 320 };
                 var saveAttempts = 0;
                 var desktopSettings = new DesktopSettingsWindow(model, _ => saveAttempts++, () => { });
@@ -403,6 +412,17 @@ internal static class ModernDesktopTests
                 {
                     network.Show(); firstRun.Show(); instruments.Show(); desktopSettings.Show();
                     Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                    CheckUi(ReferenceEquals(disabledInput.Foreground, app.Resources["ModernTextDisabled"]) &&
+                        ReferenceEquals(disabledInput.Background, app.Resources["ModernDisabledBackground"]),
+                        "Standalone disabled text inputs use the semantic disabled pair");
+                    disabledInput.IsEnabled = true;
+                    CheckUi(ReferenceEquals(disabledInput.Foreground, app.Resources["ModernTextPrimary"]) &&
+                        ReferenceEquals(disabledInput.Background, app.Resources["ModernInput"]),
+                        "Re-enabling a text input restores the semantic enabled pair");
+                    disabledInput.IsEnabled = false;
+                    CheckUi(ReferenceEquals(disabledInput.Foreground, app.Resources["ModernTextDisabled"]) &&
+                        ReferenceEquals(disabledInput.Background, app.Resources["ModernDisabledBackground"]),
+                        "Disabling a text input restores the semantic disabled pair");
                     CheckUi(network.Title == DesktopUiText.Get("Network.Title") &&
                         firstRun.Title == DesktopUiText.Get("FirstRun.Title") &&
                         ((CheckBox)firstRun.FindName("AcceptCheck")).Content as string == DesktopUiText.Get("FirstRun.Accept") &&
@@ -523,10 +543,20 @@ internal static class ModernDesktopTests
                 CheckUi(ReferenceEquals(surface.Foreground, app.Resources["ModernTextPrimary"]) &&
                     ReferenceEquals(surface.Background, app.Resources["WindowBackdrop"]),
                     $"Modern {modeName} {name} uses semantic window/text palette");
-                CheckUi(elements.OfType<TextBox>().All(text =>
-                    ReferenceEquals(text.Foreground, app.Resources["ModernTextPrimary"]) &&
-                    ReferenceEquals(text.Background, app.Resources["ModernInput"])),
-                    $"Modern {modeName} {name} text inputs retain semantic contrast");
+                foreach (var text in elements.OfType<TextBox>())
+                {
+                    var foregroundKey = text.IsEnabled ? "ModernTextPrimary" : "ModernTextDisabled";
+                    var backgroundKey = text.IsEnabled ? "ModernInput" : "ModernDisabledBackground";
+                    CheckUi(ReferenceEquals(text.Foreground, app.Resources[foregroundKey]) &&
+                        ReferenceEquals(text.Background, app.Resources[backgroundKey]) &&
+                        text.Foreground is SolidColorBrush foreground && text.Background is SolidColorBrush background &&
+                        Contrast(foreground, background) >= 4.5,
+                        $"Modern {modeName} {name} text inputs retain semantic contrast: " +
+                        $"type={text.GetType().FullName}, name={text.Name}, enabled={text.IsEnabled}, visible={text.IsVisible}, " +
+                        $"templatedParent={text.TemplatedParent?.GetType().FullName}, " +
+                        $"foreground={DescribeBrush(text.Foreground)}, background={DescribeBrush(text.Background)}, " +
+                        $"expected={foregroundKey}/{backgroundKey}");
+                }
                 if (outputDirectory is not null)
                 {
                     var bitmap = new RenderTargetBitmap(Math.Max(1, (int)Math.Ceiling(surface.ActualWidth)),
@@ -552,6 +582,9 @@ internal static class ModernDesktopTests
             foreach (var descendant in VisualElements(child)) yield return descendant;
         }
     }
+    private static string DescribeBrush(Brush brush) =>
+        brush is SolidColorBrush solid ? $"{solid.Color} (opacity={solid.Opacity})" : brush?.ToString() ?? "<null>";
+
         private static double Contrast(SolidColorBrush foreground, SolidColorBrush background)
         {
             static double Luminance(Color color)

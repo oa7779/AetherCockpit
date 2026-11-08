@@ -115,6 +115,7 @@
                             <Setter Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
                             <Setter TargetName="Frame" Property="Background" Value="{DynamicResource ModernDisabledBackground}"/>
                             <Setter TargetName="PART_EditableTextBox" Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Background" Value="{DynamicResource ModernDisabledBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
