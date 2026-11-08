@@ -1,8 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:loc="clr-namespace:SystemCockpit.Services" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:SystemCockpit.Controls">
     <Style x:Key="UnavailableLabel" TargetType="TextBlock">
-        <Setter Property="Text" Value="Nicht verfuegbar"/>
+        <Setter Property="Text" Value="{loc:DesktopLabel Layout.Unavailable}"/>
         <Setter Property="Foreground" Value="#9D92B5"/>
         <Setter Property="FontSize" Value="9"/>
         <Setter Property="Visibility" Value="Collapsed"/>
@@ -62,7 +62,7 @@
                                    HorizontalAlignment="Center" Margin="0,5" ToolTip="{Binding UsageSummary}"/>
                 <TextBlock Text="{Binding UsageSummary}" HorizontalAlignment="Center" FontFamily="Consolas" FontSize="11"/>
                 <TextBlock HorizontalAlignment="Center" Margin="0,5,0,0" FontSize="10">
-                    <Run Text="Belegt" Foreground="#A84FFF"/><Run Text="  /  "/><Run Text="Frei" Foreground="#24FFE3"/>
+                    <Run Text="{loc:DesktopLabel Layout.Used}" Foreground="#A84FFF"/><Run Text="  /  "/><Run Text="{loc:DesktopLabel Layout.Free}" Foreground="#24FFE3"/>
                 </TextBlock>
             </StackPanel>
         </Border>

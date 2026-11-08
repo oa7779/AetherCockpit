@@ -28,4 +28,13 @@
     <SolidColorBrush x:Key="SceneBackdrop" Color="#080516"/>
     <SolidColorBrush x:Key="ButtonBorder" Color="#914ADB"/>
     <SolidColorBrush x:Key="ButtonBorderAlt" Color="#D45CFF"/>
+    <SolidColorBrush x:Key="ModernTextPrimary" Color="#DCEAF7"/>
+    <SolidColorBrush x:Key="ModernTextSecondary" Color="#B7A7CD"/>
+    <SolidColorBrush x:Key="ModernAccent" Color="#24FFE3"/>
+    <SolidColorBrush x:Key="ModernBorder" Color="#7944B5"/>
+    <SolidColorBrush x:Key="ModernInput" Color="#1A1230"/>
+    <SolidColorBrush x:Key="ModernSelection" Color="#314151"/>
+    <SolidColorBrush x:Key="ModernHover" Color="#242047"/>
+    <SolidColorBrush x:Key="ModernPositive" Color="#39FF68"/>
+    <SolidColorBrush x:Key="ModernWarning" Color="#FFCE54"/>
 </ResourceDictionary>

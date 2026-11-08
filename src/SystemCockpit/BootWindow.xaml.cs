@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using SystemCockpit.Services;
 
 namespace SystemCockpit;
 
@@ -43,7 +44,7 @@ public partial class BootWindow : Window
 
     public async Task FinishAsync(bool hasWarnings)
     {
-        Report(hasWarnings ? "[READY / HINWEISE] Cockpit bereit; fehlende Werte sind kein Erfolg." : "[READY] Initialisierung abgeschlossen.", 100);
+        Report(DesktopUiText.Get(hasWarnings ? "Boot.ReadyWarnings" : "Boot.Ready"), 100);
         if (hasWarnings)
         {
             ContinueButton.Visibility = Visibility.Visible;
@@ -69,6 +70,6 @@ public partial class BootWindow : Window
         e.Cancel = true;
         _stop.Cancel();
         _timer.Stop();
-        BootStatus.Text = "ABBRUCH / Laufende Initialisierung wird beendet ...";
+        BootStatus.Text = DesktopUiText.Get("Boot.Cancel");
     }
 }

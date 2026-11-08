@@ -1,8 +1,9 @@
 <Window x:Class="SystemCockpit.ControlCenterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:SystemCockpit.Services"
         xmlns:services="clr-namespace:SystemCockpit.Services"
-        Title="AETHER | Systemkontrolle | Olaf Weins" Width="1180" Height="1000" MinWidth="980" MinHeight="680"
+        Title="{loc:DesktopLabel ControlCenter.Title}" Width="1180" Height="1000" MinWidth="980" MinHeight="680"
         Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7" WindowStartupLocation="CenterOwner" Icon="Assets/aether.ico">
     <Window.Resources>
         <ResourceDictionary>
@@ -55,100 +56,100 @@
     <Grid Margin="22">
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition x:Name="ModuleRow" Height="*"/><RowDefinition Height="6"/><RowDefinition x:Name="TerminalRow" Height="300" MinHeight="180"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
         <StackPanel Margin="0,0,0,14">
-            <TextBlock Text="AETHER // ZENTRALE SYSTEMKONTROLLE" Foreground="#D45CFF" FontFamily="Consolas" FontSize="24"/>
-            <TextBlock Text="Autor: Olaf Weins // ADMINISTRATOR // Freie Konsole: Enter startet direkt, ohne weitere Bestaetigung." Foreground="#32D5FF" Margin="0,8,0,0"/>
+            <TextBlock Text="{loc:DesktopLabel ControlCenter.Header}" Foreground="#D45CFF" FontFamily="Consolas" FontSize="24"/>
+            <TextBlock Text="{loc:DesktopLabel ControlCenter.AdminNotice}" Foreground="#32D5FF" Margin="0,8,0,0"/>
             <Border BorderBrush="#6940A8" BorderThickness="1" CornerRadius="8" Background="#140E2C" Padding="10,6" Margin="0,10,0,0">
                 <WrapPanel>
-                    <Button x:Name="CcBack" Content="&#9664; ZURUECK" Click="CcBackClicked" IsEnabled="False" Margin="0,0,8,0"
-                            ToolTip="Zum vorherigen Modul zurueck - auch per Maus-Zurueck-Taste oder Alt+Pfeil links"/>
-                    <Button x:Name="CcForward" Content="VOR &#9654;" Click="CcForwardClicked" IsEnabled="False" Margin="0,0,8,0"
-                            ToolTip="Wieder vorwaerts - auch per Maus-Vor-Taste oder Alt+Pfeil rechts"/>
-                    <Button Content="&#8962; HAUPTFENSTER" Click="CcHomeClicked" Margin="0,0,8,0"
-                            ToolTip="Zum Hauptfenster (Cockpit) wechseln; dieses Fenster bleibt offen"/>
-                    <Button Content="FUNKTION FINDEN" Click="TaskCenterClicked" Margin="0,0,8,0" ToolTip="Gemeinsamer Arbeitsplatz / Strg+K"/>
-                    <Button Content="AUSGABE EIN/AUS" Click="ToggleTerminalClicked" Margin="0,0,8,0" ToolTip="Mehr Platz fuer Listen. Bei einem Auftrag wird die Ausgabe automatisch sichtbar."/>
-                    <TextBlock x:Name="CcTrail" Text="SYSTEMKONTROLLE &#9656; SMART" Foreground="#24FFE3" FontFamily="Consolas"
+                    <Button x:Name="CcBack" Content="{loc:DesktopLabel Navigation.BackButton}" Click="CcBackClicked" IsEnabled="False" Margin="0,0,8,0"
+                            ToolTip="{loc:DesktopLabel ControlCenter.BackTip}"/>
+                    <Button x:Name="CcForward" Content="{loc:DesktopLabel Navigation.ForwardButton}" Click="CcForwardClicked" IsEnabled="False" Margin="0,0,8,0"
+                            ToolTip="{loc:DesktopLabel Navigation.ForwardTip}"/>
+                    <Button Content="{loc:DesktopLabel ControlCenter.Home}" Click="CcHomeClicked" Margin="0,0,8,0"
+                            ToolTip="{loc:DesktopLabel ControlCenter.HomeTip}"/>
+                    <Button Content="{loc:DesktopLabel Main.Find}" Click="TaskCenterClicked" Margin="0,0,8,0" ToolTip="{loc:DesktopLabel ControlCenter.FindTip}"/>
+                    <Button Content="{loc:DesktopLabel Terminal.Toggle}" Click="ToggleTerminalClicked" Margin="0,0,8,0" ToolTip="{loc:DesktopLabel Terminal.ToggleTip}"/>
+                    <TextBlock x:Name="CcTrail" Text="{loc:DesktopLabel ControlCenter.InitialTrail}" Foreground="#24FFE3" FontFamily="Consolas"
                                VerticalAlignment="Center" Margin="10,0,0,0"
-                               ToolTip="Aktuelles Modul. Zurueck/Vor folgen deinem Besuchsverlauf wie im Browser."/>
+                               ToolTip="{loc:DesktopLabel ControlCenter.TrailTip}"/>
                 </WrapPanel>
             </Border>
         </StackPanel>
         <TabControl x:Name="Modules" Grid.Row="1" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" SelectionChanged="ModuleChanged">
-            <TabItem Header="SMART" ToolTip="Vollstaendige smartctl-Diagnose, Fehlerlogs und bestaetigte Selbsttests je Laufwerk">
+            <TabItem Header="SMART" Tag="SMART" ToolTip="{loc:DesktopLabel Module.SmartTip}">
                 <StackPanel Margin="14">
-                    <TextBlock Text="SMART / ATA / NVMe / Fehler- und Selbsttestlogs" FontSize="19" Foreground="#24FFE3"/>
-                    <TextBlock Text="Offizielles smartctl benoetigt. Diagnose zeigt alle JSON-Rohdaten einschliesslich Firmware/Seriennummer. Keine Lebensdauerprognose. Tests beeinflussen I/O; Unterstuetzung ist laufwerkabhaengig." Margin="0,8,0,12"/>
-                    <Button Content="SMART-Geraete erkennen" Click="SmartScanClicked" HorizontalAlignment="Left"/>
-                    <ComboBox x:Name="SmartDevices" AutomationProperties.Name="SMART-Geraet"/>
-                    <WrapPanel><Button Content="Diagnose / Faehigkeiten / Logs lesen" Click="SmartReadClicked"/>
-                        <Button Content="SMART JSON speichern" Click="SaveSmartClicked"/></WrapPanel>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SmartHeading}" FontSize="19" Foreground="#24FFE3"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SmartNotice}" Margin="0,8,0,12"/>
+                    <Button Content="{loc:DesktopLabel Layout.SmartScan}" Click="SmartScanClicked" HorizontalAlignment="Left"/>
+                    <ComboBox x:Name="SmartDevices" AutomationProperties.Name="{loc:DesktopLabel Layout.SmartDevice}"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Layout.ReadSmartLogs}" Click="SmartReadClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.SmartSave}" Click="SaveSmartClicked"/></WrapPanel>
                     <WrapPanel>
                         <ComboBox x:Name="SmartOperation" Width="200" SelectedIndex="0">
                             <ComboBoxItem Content="short"/><ComboBoxItem Content="long"/><ComboBoxItem Content="conveyance"/>
                             <ComboBoxItem Content="selective"/><ComboBoxItem Content="abort"/><ComboBoxItem Content="aam"/><ComboBoxItem Content="apm"/>
                         </ComboBox>
-                        <TextBox x:Name="SmartArgument" Width="230" ToolTip="selective: LBA-Start-Ende; aam: 128..254; apm: 1..254" AutomationProperties.Name="SMART-Aktionsparameter"/>
-                        <Button Content="SMART-Aktion ausfuehren" Click="SmartExecuteClicked"/>
+                        <TextBox x:Name="SmartArgument" Width="230" ToolTip="{loc:DesktopLabel Ui.SmartArgumentHint}" AutomationProperties.Name="{loc:DesktopLabel Ui.SmartParameter}"/>
+                        <Button Content="{loc:DesktopLabel Layout.SmartExecute}" Click="SmartExecuteClicked"/>
                     </WrapPanel>
-                    <TextBlock Text="Selektiv: Start-Ende in LBA. AAM/APM veraendern Geraeteverhalten und sind meist nur fuer ATA verfuegbar. Abort beendet einen Laufwerkstest, nicht die App. Fortschritt anschliessend neu lesen." Foreground="#A8A4C5"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SmartOperationsNotice}" Foreground="#A8A4C5"/>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Netzwerk" ToolTip="Ping, LAN-Scan, WLAN, Captive Portal und Speedtest - alles nur nach Freigabe">
+            <TabItem Header="{loc:DesktopLabel Module.Netzwerk}" Tag="Netzwerk" ToolTip="{loc:DesktopLabel Module.NetworkTip}">
                 <StackPanel Margin="14">
-                    <TextBlock Text="LAN / WLAN / Verbindungskontrolle" Foreground="#24FFE3" FontSize="19"/>
-                    <WrapPanel><TextBox x:Name="PingHost" Width="260" Text="1.1.1.1" AutomationProperties.Name="Ping-Ziel"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.NetworkHeading}" Foreground="#24FFE3" FontSize="19"/>
+                    <WrapPanel><TextBox x:Name="PingHost" Width="260" Text="1.1.1.1" AutomationProperties.Name="{loc:DesktopLabel Ui.PingTarget}"/>
                         <Button Content="Ping" Click="PingClicked"/><Button Content="Router-Ping" Click="RouterPingClicked"/>
-                        <Button Content="Captive Portal pruefen" Click="PortalClicked"/></WrapPanel>
+                        <Button Content="{loc:DesktopLabel Layout.PortalCheck}" Click="PortalClicked"/></WrapPanel>
                     <WrapPanel>
-                        <TextBox x:Name="SpeedtestMiB" Width="80" Text="25" ToolTip="Testgroesse 1..200 MiB" AutomationProperties.Name="Speedtest-Testgroesse MiB"/>
+                        <TextBox x:Name="SpeedtestMiB" Width="80" Text="25" ToolTip="{loc:DesktopLabel Ui.TestSize}" AutomationProperties.Name="{loc:DesktopLabel Ui.SpeedSize}"/>
                         <Button Content="Speedtest Download" Click="SpeedtestClicked"/>
-                        <TextBlock Text="Download-Durchsatz einer HTTPS-Verbindung zu speed.cloudflare.com; nur nach Freigabe, kein Upload-Test." Foreground="#A8A4C5" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <TextBlock Text="{loc:DesktopLabel Layout.SpeedNotice}" Foreground="#A8A4C5" VerticalAlignment="Center" Margin="8,0,0,0"/>
                     </WrapPanel>
-                    <WrapPanel><TextBox x:Name="LanRange" Width="260" Text="192.168.1.0/24" AutomationProperties.Name="LAN-Netz"/>
-                        <Button Content="Privates LAN scannen" Click="LanScanClicked"/>
-                        <CheckBox x:Name="AutoLan" Content="Auto-Scan alle 60s" Foreground="#24FFE3" VerticalAlignment="Center" Checked="AutoLanChanged" Unchecked="AutoLanChanged"/>
+                    <WrapPanel><TextBox x:Name="LanRange" Width="260" Text="192.168.1.0/24" AutomationProperties.Name="{loc:DesktopLabel Ui.LanNetwork}"/>
+                        <Button Content="{loc:DesktopLabel Ui.ScanPrivateLan}" Click="LanScanClicked"/>
+                        <CheckBox x:Name="AutoLan" Content="{loc:DesktopLabel Ui.AutoScan}" Foreground="#24FFE3" VerticalAlignment="Center" Checked="AutoLanChanged" Unchecked="AutoLanChanged"/>
                     </WrapPanel>
-                    <TextBlock Text="Scan nur im eigenen/freigegebenen Netz: RFC1918 /24 bis /30, 16 parallele ICMP-Abfragen. Keine Portscans. Nicht antwortende Geraete bleiben unbekannt. MAC aus ARP; Hersteller nur mit importierter OUI-CSV." Margin="0,0,0,10"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.LanNotice}" Margin="0,0,0,10"/>
                     <WrapPanel>
-                        <Button Content="WLAN Netze" Tag="wlan" Click="ActionClicked"/>
-                        <Button Content="WLAN Profile" Tag="wlan-profiles" Click="ActionClicked"/>
-                        <Button Content="ARP / MAC lesen" Tag="neighbors" Click="ActionClicked"/>
-                        <Button Content="ARP-Cache leeren" Tag="arp" Click="ActionClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.WifiNetworks}" Tag="wlan" Click="ActionClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.WifiProfiles}" Tag="wlan-profiles" Click="ActionClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.ReadArp}" Tag="neighbors" Click="ActionClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.ArpClear}" Tag="arp" Click="ActionClicked"/>
                         <Button Content="Bluetooth" Tag="bluetooth" Click="ActionClicked"/>
                     </WrapPanel>
                     <DataGrid x:Name="LanGrid" Height="190"><DataGrid.Columns>
-                        <DataGridTextColumn Header="ADRESSE" Binding="{Binding Address}" Width="*"/>
+                        <DataGridTextColumn Header="{loc:DesktopLabel Ui.AddressColumn}" Binding="{Binding Address}" Width="*"/>
                         <DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="*"/>
                         <DataGridTextColumn Header="MS" Binding="{Binding Milliseconds}" Width="*"/>
                         <DataGridTextColumn Header="MAC" Binding="{Binding Mac}" Width="*"/>
-                        <DataGridTextColumn Header="OUI HERSTELLER" Binding="{Binding Manufacturer}" Width="2*"/>
+                        <DataGridTextColumn Header="{loc:DesktopLabel Layout.OuiManufacturer}" Binding="{Binding Manufacturer}" Width="2*"/>
                         <DataGridTextColumn Header="DETAIL" Binding="{Binding Detail}" Width="2*"/>
                     </DataGrid.Columns></DataGrid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Pakete" ToolTip="Paket-Center: WinGet-Listen, Suche und Aktionen mit exakten IDs und vollstaendiger Bestaetigungsliste">
+            <TabItem Header="{loc:DesktopLabel Module.Pakete}" Tag="Pakete" ToolTip="{loc:DesktopLabel Module.PackagesTip}">
                 <Grid Margin="14">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Paket-Center / WinGet" Foreground="#24FFE3" FontSize="19"/>
-                        <TextBlock Text="Listen, Suche und Aktionen laufen ueber die lokale WinGet-Installation. Aktionen verwenden ausschliesslich exakte Paket-IDs (--exact) und werden vor dem Start mit vollstaendiger ID-Liste bestaetigt. Eintraege ohne eindeutig lesbare ID (abgeschnittene Spalten) sind nicht aktionierbar." Margin="0,6,0,6"/>
+                        <TextBlock Text="{loc:DesktopLabel Ui.PackageCenter}" Foreground="#24FFE3" FontSize="19"/>
+                        <TextBlock Text="{loc:DesktopLabel Layout.PackagesNotice}" Margin="0,6,0,6"/>
                         <WrapPanel>
-                            <Button Content="Installierte Pakete" Tag="list" Click="PackagesLoadClicked"/>
-                            <Button Content="Verfuegbare Updates" Tag="upgrade" Click="PackagesLoadClicked"/>
-                            <TextBox x:Name="PackageSearch" Width="240" ToolTip="Suchbegriff fuer winget search" AutomationProperties.Name="Paketsuche"/>
-                            <Button Content="Suchen" Tag="search" Click="PackagesLoadClicked"/>
+                            <Button Content="{loc:DesktopLabel Layout.InstalledPackages}" Tag="list" Click="PackagesLoadClicked"/>
+                            <Button Content="{loc:DesktopLabel Layout.AvailableUpdates}" Tag="upgrade" Click="PackagesLoadClicked"/>
+                            <TextBox x:Name="PackageSearch" Width="240" ToolTip="{loc:DesktopLabel Layout.PackageSearchTip}" AutomationProperties.Name="{loc:DesktopLabel Layout.PackageSearch}"/>
+                            <Button Content="{loc:DesktopLabel Layout.Search}" Tag="search" Click="PackagesLoadClicked"/>
                         </WrapPanel>
                         <WrapPanel>
-                            <Button Content="Auswahl installieren" Tag="install" Click="PackageActionClicked"/>
-                            <Button Content="Auswahl aktualisieren" Tag="upgrade" Click="PackageActionClicked"/>
-                            <Button Content="Alle aktualisieren" Tag="upgrade-all" Click="PackageActionClicked"/>
-                            <Button Content="Auswahl deinstallieren" Tag="uninstall" Click="PackageActionClicked" BorderBrush="#FF354A"/>
+                            <Button Content="{loc:DesktopLabel Layout.InstallSelection}" Tag="install" Click="PackageActionClicked"/>
+                            <Button Content="{loc:DesktopLabel Layout.UpgradeSelection}" Tag="upgrade" Click="PackageActionClicked"/>
+                            <Button Content="{loc:DesktopLabel Layout.UpgradeAll}" Tag="upgrade-all" Click="PackageActionClicked"/>
+                            <Button Content="{loc:DesktopLabel Layout.UninstallSelection}" Tag="uninstall" Click="PackageActionClicked" BorderBrush="#FF354A"/>
                         </WrapPanel>
                         <WrapPanel>
-                            <Button Content="Paketdetails lesen" Click="PackageDetailsClicked" ToolTip="winget show mit exakter ID und gemeldeter Quelle; kann die Quelle kontaktieren"/>
-                            <Button Content="Paketliste exportieren" Click="PackageExportClicked" ToolTip="Auswahl, sonst geladene Liste. Nur vollstaendige IDs mit bekannter Quelle; kein Installerbackup."/>
-                            <Button Content="Paketliste importieren / Vorschau" Click="PackageImportClicked" ToolTip="Lokale AETHER-Paketliste lesen; installiert nichts. Versionen sind keine Versionssperren."/>
-                            <Button Content="UniGetUI / weitere Manager (extern)" Click="ExternalPackagesClicked" ToolTip="Bewusst ausgewaehlte Installation starten; keine native Scoop-/Chocolatey-Verwaltung in AETHER"/>
+                            <Button Content="{loc:DesktopLabel Layout.PackageDetails}" Click="PackageDetailsClicked" ToolTip="{loc:DesktopLabel Layout.PackageDetailsTip}"/>
+                            <Button Content="{loc:DesktopLabel Ui.PackageExport}" Click="PackageExportClicked" ToolTip="{loc:DesktopLabel Layout.PackageExportTip}"/>
+                            <Button Content="{loc:DesktopLabel Layout.PackageImport}" Click="PackageImportClicked" ToolTip="{loc:DesktopLabel Layout.PackageImportTip}"/>
+                            <Button Content="{loc:DesktopLabel Ui.OtherManagers}" Click="ExternalPackagesClicked" ToolTip="{loc:DesktopLabel Layout.ExternalPackagesTip}"/>
                         </WrapPanel>
                     </StackPanel>
                     <DataGrid x:Name="PackagesGrid" Grid.Row="1" MinHeight="160" SelectionMode="Extended" SelectionUnit="FullRow">
@@ -156,45 +157,45 @@
                             <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="2*"/>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="2*"/>
                             <DataGridTextColumn Header="VERSION" Binding="{Binding Version}" Width="*"/>
-                            <DataGridTextColumn Header="VERFUEGBAR" Binding="{Binding Available}" Width="*"/>
-                            <DataGridTextColumn Header="QUELLE" Binding="{Binding Source}" Width="*"/>
-                            <DataGridTextColumn Header="AKTIONIERBAR" Binding="{Binding ActionableDisplay}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Available}" Binding="{Binding Available}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Source}" Binding="{Binding Source}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.ActionableColumn}" Binding="{Binding ActionableDisplay}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock x:Name="PackagesInfo" Grid.Row="2" Foreground="#32D5FF" TextWrapping="Wrap" Margin="0,8,0,0"
-                               Text="Noch keine Liste geladen. Alle aktualisieren nutzt die zuletzt geladene Update-Liste."/>
+                               Text="{loc:DesktopLabel Layout.PackageInitial}"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Auftraege" ToolTip="Begrenzter Sitzungsverlauf ohne sensible Anzeigen oder freie Konsolenbefehle">
+            <TabItem Header="{loc:DesktopLabel Module.Auftraege}" Tag="Auftraege" ToolTip="{loc:DesktopLabel Module.JobsTip}">
                 <Grid Margin="14">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <TextBlock Text="AUFTRAEGE / letzte 200 Eintraege dieser Sitzung. Pakete laufen nacheinander. Kein automatischer Wiederholungsversuch; Abbruch macht erfolgte Aenderungen nicht rueckgaengig. Sensible Anzeigen und freie Befehle bleiben ausgeschlossen." Foreground="#24FFE3" Margin="0,0,0,10"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.JobsNotice}" Foreground="#24FFE3" Margin="0,0,0,10"/>
                     <DataGrid x:Name="JobsGrid" Grid.Row="1">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ZEIT" Binding="{Binding Created, StringFormat=HH:mm:ss}" Width="85"/>
-                            <DataGridTextColumn Header="AUFTRAG" Binding="{Binding Label}" Width="2*"/>
-                            <DataGridTextColumn Header="STATUS" Binding="{Binding State}" Width="170"/>
-                            <DataGridTextColumn Header="ERGEBNIS / GRENZEN" Binding="{Binding Detail}" Width="3*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Time}" Binding="{Binding Created, StringFormat=HH:mm:ss}" Width="85"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Job}" Binding="{Binding Label}" Width="2*"/>
+                            <DataGridTextColumn Header="STATUS" Binding="{Binding StateDisplay}" Width="170"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.ResultLimits}" Binding="{Binding Detail}" Width="3*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Wartung" ToolTip="Befehlskatalog mit Risikoanzeige und Einsteiger-/Expertenmodus, gefuehrte Windows-Aktionen, Zertifikate">
+            <TabItem Header="{loc:DesktopLabel Module.Wartung}" Tag="Wartung" ToolTip="{loc:DesktopLabel Module.MaintenanceTip}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="14">
-                    <TextBlock Text="VERWALTUNG / BEFEHLE / PARAMETER" Foreground="#24FFE3" FontSize="19"/>
-                    <TextBlock Text="Befehl anklicken: in Konsoleneingabe kopieren. Parameter anklicken: an der Schreibposition einfuegen. Platzhalter ersetzen; Enter startet direkt. Verfuegbarkeit haengt von Windows, installierten Modulen und Toolversionen ab." Margin="0,6,0,6"/>
+                    <TextBlock Text="{loc:DesktopLabel Ui.AdminCatalogHeading}" Foreground="#24FFE3" FontSize="19"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.CommandsNotice}" Margin="0,6,0,6"/>
                     <WrapPanel>
-                        <CheckBox x:Name="ExpertToggle" Content="Expertenmodus" Foreground="#FFB86C" VerticalAlignment="Center"
+                        <CheckBox x:Name="ExpertToggle" Content="{loc:DesktopLabel Ui.ExpertMode}" Foreground="#FFB86C" VerticalAlignment="Center"
                                   Checked="ExpertModeChanged" Unchecked="ExpertModeChanged"
-                                  ToolTip="AUS = Einsteiger: nur lesende Befehle, freie Konsole gesperrt. AN = Experte: voller Katalog, Enter fuehrt direkt aus."/>
+                                  ToolTip="{loc:DesktopLabel Layout.ExpertTip}"/>
                         <TextBlock x:Name="ModeHint" Foreground="#A8A4C5" Margin="12,0,0,0" VerticalAlignment="Center"/>
                     </WrapPanel>
                     <TextBlock x:Name="OsCompat" Foreground="#A8A4C5" Margin="0,2,0,6"/>
-                    <TextBox x:Name="CommandSearch" TextChanged="CommandSearchChanged" AutomationProperties.Name="Befehlssuche" ToolTip="Befehl, Kategorie, Parameter oder Funktion suchen"/>
+                    <TextBox x:Name="CommandSearch" TextChanged="CommandSearchChanged" AutomationProperties.Name="{loc:DesktopLabel Layout.CommandSearch}" ToolTip="{loc:DesktopLabel Layout.CommandSearchTip}"/>
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <ListBox x:Name="CommandList" Height="180" Background="#15102D" Foreground="#24FFE3" BorderBrush="#7944B5"
-                                 SelectionChanged="CommandSelected" AutomationProperties.Name="Administrationsbefehle"
+                                 SelectionChanged="CommandSelected" AutomationProperties.Name="{loc:DesktopLabel Ui.AdminCommands}"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListBox.ItemTemplate><DataTemplate>
                                 <StackPanel Margin="3">
@@ -209,7 +210,7 @@
                         </ListBox>
                         <ScrollViewer Grid.Column="1" Height="180" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
                             <StackPanel>
-                                <TextBlock x:Name="CommandDescription" Text="Befehl auswaehlen."/>
+                                <TextBlock x:Name="CommandDescription" Text="{loc:DesktopLabel Layout.SelectCommand}"/>
                                 <TextBlock x:Name="CommandRisk" FontWeight="Bold" Margin="0,6,0,0"/>
                                 <TextBlock x:Name="CommandImpact" Foreground="#FFB86C" Margin="0,2,0,2"/>
                                 <TextBlock x:Name="CommandWhenUseful" Foreground="#39FF68" TextWrapping="Wrap" Margin="0,2,0,0"/>
@@ -223,182 +224,183 @@
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
-                    <TextBlock Text="Mehr Befehle/Optionen: Get-Command, Get-Help BEFEHL -Full, Get-Command BEFEHL -Syntax sowie winget --help / dism /? / sfc /?. Keine Liste kann alle optionalen Windows-Module vorwegnehmen." Foreground="#A8A4C5" Margin="0,8"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.CommandHelp}" Foreground="#A8A4C5" Margin="0,8"/>
                     <Separator/>
-                    <TextBlock Text="WINDOWS TOOL LAB / FESTE ASSISTENTEN" Foreground="#24FFE3" FontSize="18"/>
-                    <TextBlock Text="Feste geprüfte Aktionen: kein freier Scripttext. Jede Änderung verlangt Einzelbestätigung. Verfügbarkeit hängt von Build, Edition, Modulen und Rechten ab. Keine automatische lokale Reparatur." Foreground="#A8A4C5"/>
-                    <ComboBox x:Name="ManagedActions" ItemsSource="{x:Static services:ManagedActionTools.All}" DisplayMemberPath="Name" SelectedIndex="0" AutomationProperties.Name="Sichere Windows-Werkzeuge"/>
+                    <TextBlock Text="{loc:DesktopLabel Ui.WindowsToolLab}" Foreground="#24FFE3" FontSize="18"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.ManagedNotice}" Foreground="#A8A4C5"/>
+                    <ComboBox x:Name="ManagedActions" ItemsSource="{x:Static services:ManagedActionTools.All}" DisplayMemberPath="Name" SelectedIndex="0" AutomationProperties.Name="{loc:DesktopLabel Layout.SafeWindowsTools}"/>
                     <TextBlock Foreground="#FFB86C">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Text" Value="{Binding SelectedItem.Risk, ElementName=ManagedActions}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SelectedItem.Action.Id, ElementName=ManagedActions}" Value="windows-update-install">
-                                        <Setter Property="Text" Value="ÄNDERND: exakt ausgewähltes Windows-/Treiberupdate installieren; Expertenmodus, vollständige Suche und EULA-Einzelzustimmung erforderlich. Vorher sichern. Teiländerungen bleiben bei Abbruch; kein automatischer Neustart."/>
+                                        <Setter Property="Text" Value="{loc:DesktopLabel Safety.UpdateInstallRisk}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
                     <WrapPanel>
-                        <Button Content="Aktion prüfen / ausführen" Click="ManagedActionClicked"/>
-                        <Button Content="Updates / Treiber manuell auswählen" Click="UpdateSettingsClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.ManagedExecute}" Click="ManagedActionClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.UpdateSettings}" Click="UpdateSettingsClicked"/>
                     </WrapPanel>
-                    <TextBlock Text="GEPRÜFTE EINZELAUSWAHL / WINDOWS + TREIBER" Foreground="#D45CFF" Margin="0,8,0,0"/>
-                    <TextBlock Text="ÄNDERND: Installation nur im Expertenmodus, nach vollständiger Suche und Zustimmung zur exakten EULA. Genau eine GUID/Revision; Quelle und Lizenz werden erneut geprüft. Keine automatische Treiberwahl oder Neustarts. Abbruch ist kein Rollback." Foreground="#FFB86C"/>
-                    <Button Content="Vollständige Update-/Treiberangebote suchen" Click="TypedUpdateSearchClicked" HorizontalAlignment="Left"/>
-                    <TextBlock x:Name="UpdatePlanStatus" Text="Noch keine vollständige Suche. Auswahl verfällt nach einer Stunde oder neuer Suche." Foreground="#A8A4C5"/>
-                    <ComboBox x:Name="ReviewedUpdates" DisplayMemberPath="Display" SelectionChanged="ReviewedUpdateSelected" AutomationProperties.Name="Genau ein geprüftes Windows- oder Treiberupdate"/>
-                    <TextBox x:Name="UpdateOfferDetails" IsReadOnly="True" Height="180" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Exakte Updateidentität und vollständiger Lizenztext"/>
-                    <CheckBox x:Name="UpdateEulaAcceptance" Content="Ich habe den exakten Lizenztext dieses ausgewählten Updates gelesen und akzeptiere ihn." Foreground="#FFB86C"/>
-                    <Button Content="Genau dieses Update prüfen / Installation bestätigen" Click="TypedUpdateInstallClicked" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.ReviewedUpdateHeading}" Foreground="#D45CFF" Margin="0,8,0,0"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.ReviewedUpdateNotice}" Foreground="#FFB86C"/>
+                    <Button Content="{loc:DesktopLabel Layout.SearchUpdates}" Click="TypedUpdateSearchClicked" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="UpdatePlanStatus" Text="{loc:DesktopLabel Layout.UpdateInitial}" Foreground="#A8A4C5"/>
+                    <ComboBox x:Name="ReviewedUpdates" DisplayMemberPath="Display" SelectionChanged="ReviewedUpdateSelected" AutomationProperties.Name="{loc:DesktopLabel Layout.ReviewedUpdateSelect}"/>
+                    <TextBox x:Name="UpdateOfferDetails" IsReadOnly="True" Height="180" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:DesktopLabel Layout.UpdateIdentity}"/>
+                    <CheckBox x:Name="UpdateEulaAcceptance" Content="{loc:DesktopLabel Layout.UpdateEulaAcceptance}" Foreground="#FFB86C"/>
+                    <Button Content="{loc:DesktopLabel Layout.ReviewedUpdateInstall}" Click="TypedUpdateInstallClicked" HorizontalAlignment="Left"/>
                     <TextBlock Text="OPTIONAL / MICROSOFT SYSINTERNALS + ADK" Foreground="#D45CFF" Margin="0,8,0,0"/>
-                    <ComboBox x:Name="OptionalTools" ItemsSource="{x:Static services:ManagedActionTools.OptionalTools}" DisplayMemberPath="Display" SelectedIndex="0" AutomationProperties.Name="Optionale Microsoft-Werkzeuge"/>
+                    <ComboBox x:Name="OptionalTools" ItemsSource="{x:Static services:ManagedActionTools.OptionalTools}" DisplayMemberPath="Display" SelectedIndex="0" AutomationProperties.Name="{loc:DesktopLabel Ui.OptionalTools}"/>
                     <WrapPanel>
-                        <Button Content="Lokale Datei-Verfügbarkeit prüfen" Click="OptionalToolAvailabilityClicked"/>
-                        <Button Content="Offizielle Download-/Hilfeseite" Click="OptionalToolDownloadClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.OptionalAvailability}" Click="OptionalToolAvailabilityClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.OfficialPage}" Click="OptionalToolDownloadClicked"/>
                     </WrapPanel>
-                    <TextBlock Text="Keine Installation, kein externer Toolstart, keine automatische EULA-Annahme. Gefundene Dateien sind kein Vertrauens-/Versionsnachweis. WinGet/Pakete und bisherige Assistenten bleiben unverändert." Foreground="#A8A4C5"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.OptionalNotice}" Foreground="#A8A4C5"/>
                     <Separator/>
-                    <TextBlock Text="Bisherige gefuehrte Windows-Aktionen (mit Bestaetigung)" Foreground="#24FFE3"/>
-                    <ComboBox x:Name="MaintenanceActions" AutomationProperties.Name="Windows-Wartungsaktion"/>
-                    <Button Content="Gewaehlte Windows-Aktion starten" Click="MaintenanceClicked" HorizontalAlignment="Left"/>
-                    <Button Content="Explorer kontrolliert neu starten" Click="ExplorerClicked" HorizontalAlignment="Left"/>
-                    <Button Content="Delivery Optimization Cache bereinigen" Click="DeliveryClicked" HorizontalAlignment="Left"/>
-                    <WrapPanel><Button Content="Zertifikate / Root-CAs pruefen" Click="CertificatesClicked"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.GuidedActions}" Foreground="#24FFE3"/>
+                    <ComboBox x:Name="MaintenanceActions" AutomationProperties.Name="{loc:DesktopLabel Ui.MaintenanceAction}"/>
+                    <Button Content="{loc:DesktopLabel Layout.StartSelectedAction}" Click="MaintenanceClicked" HorizontalAlignment="Left"/>
+                    <Button Content="{loc:DesktopLabel Layout.RestartExplorer}" Click="ExplorerClicked" HorizontalAlignment="Left"/>
+                    <Button Content="{loc:DesktopLabel Layout.DeliveryCleanup}" Click="DeliveryClicked" HorizontalAlignment="Left"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Layout.Certificates}" Click="CertificatesClicked"/>
                         <Button Content="WHEA / Kernel / Bugchecks" Click="StabilityClicked"/></WrapPanel>
-                    <TextBlock Text="Reparaturen aendern Windows. DISM kann Windows Update kontaktieren. Keine Defender-Abschaltung. Abbruch beendet den gestarteten Befehlsprozess; Reparaturen koennen bereits Teilaktionen ausgefuehrt haben. Vorher sichern." Foreground="#A8A4C5"/>
-                    <Button Content="Aktionsprotokoll oeffnen" Click="OpenJournalClicked" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.RepairNotice}" Foreground="#A8A4C5"/>
+                    <Button Content="{loc:DesktopLabel Ui.JournalOpen}" Click="OpenJournalClicked" HorizontalAlignment="Left"/>
                 </StackPanel></ScrollViewer>
             </TabItem>
-            <TabItem Header="Autostart" ToolTip="Run-Eintraege reversibel deaktivieren/aktivieren; Original wird vorher gesichert">
+            <TabItem Header="{loc:DesktopLabel Module.Autostart}" Tag="Autostart" ToolTip="{loc:DesktopLabel Module.StartupTip}">
                 <StackPanel Margin="14">
-                    <TextBlock Text="Autostart / reversible Registry-Verwaltung" Foreground="#24FFE3" FontSize="19"/>
-                    <TextBlock Text="64-Bit HKCU/HKLM Run-Zeichenfolgen. Deaktivierung sichert den exakten Wert vor Entfernung; Aktivierung verweigert Konflikte. Weitere Aufgaben/Dienste im Windows-Task-Manager verwalten." Margin="0,8,0,12"/>
-                    <Button Content="Autostarts einlesen" Click="StartupReadClicked" HorizontalAlignment="Left"/>
-                    <TextBox x:Name="StartupSearch" TextChanged="StartupSearchChanged" AutomationProperties.Name="Autostartfilter" ToolTip="Name, HKCU/HKLM oder vollstaendigen Befehl lokal filtern; kein erneutes Einlesen"/>
-                    <DataGrid x:Name="StartupEntries" Height="140" SelectionMode="Single" SelectionChanged="StartupSelected" AutomationProperties.Name="Autostarteintrag">
+                    <TextBlock Text="{loc:DesktopLabel Ui.StartupHeading}" Foreground="#24FFE3" FontSize="19"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.StartupNotice}" Margin="0,8,0,12"/>
+                    <Button Content="{loc:DesktopLabel Ui.StartupRead}" Click="StartupReadClicked" HorizontalAlignment="Left"/>
+                    <TextBox x:Name="StartupSearch" TextChanged="StartupSearchChanged" AutomationProperties.Name="{loc:DesktopLabel Ui.StartupFilter}" ToolTip="{loc:DesktopLabel Layout.StartupFilterTip}"/>
+                    <DataGrid x:Name="StartupEntries" Height="140" SelectionMode="Single" SelectionChanged="StartupSelected" AutomationProperties.Name="{loc:DesktopLabel Layout.StartupEntry}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="AKTIV" Binding="{Binding Enabled}" Width="60"/>
-                            <DataGridTextColumn Header="QUELLE" Binding="{Binding Hive}" Width="65"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Active}" Binding="{Binding Enabled}" Width="60"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Source}" Binding="{Binding Hive}" Width="65"/>
                             <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="BEFEHL" Binding="{Binding Command}" Width="3*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Command}" Binding="{Binding Command}" Width="3*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox x:Name="StartupDetails" IsReadOnly="True" TextWrapping="Wrap" Height="60" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Vollstaendiger Autostartbefehl"/>
-                    <WrapPanel><Button Content="Ausgewaehlten Autostart deaktivieren" Tag="off" Click="StartupChangeClicked"/>
-                        <Button Content="Gesicherten Autostart aktivieren" Tag="on" Click="StartupChangeClicked"/></WrapPanel>
+                    <TextBox x:Name="StartupDetails" IsReadOnly="True" TextWrapping="Wrap" Height="60" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:DesktopLabel Layout.StartupCommand}"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Layout.DisableStartup}" Tag="off" Click="StartupChangeClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.EnableStartup}" Tag="on" Click="StartupChangeClicked"/></WrapPanel>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Spuren" ToolTip="Shellbag-Analyse: Explorer-Ordnerspuren nur lesend, Unbekanntes bleibt unbekannt">
+            <TabItem Header="{loc:DesktopLabel Module.Spuren}" Tag="Spuren" ToolTip="{loc:DesktopLabel Module.TracesTip}">
                 <Grid Margin="14">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Shellbag-Analyse / Explorer-Ordnerspuren (nur lesend)" Foreground="#24FFE3" FontSize="19"/>
-                        <TextBlock Text="Windows merkt sich Ansichtseinstellungen besuchter Ordner in der Registry (BagMRU) - auch fuer inzwischen geloeschte Ordner. Diese Analyse liest HKCU ausschliesslich lesend. Die Namensdekodierung ist Best Effort: nicht dekodierbare Elemente werden ausdruecklich als unbekannt angezeigt, nie erfunden. AETHER bietet bewusst keine Shellbag-Loeschung an." Margin="0,6,0,6"/>
-                        <Button Content="Shellbags lesen (HKCU)" Click="ShellbagsClicked" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{loc:DesktopLabel Layout.ShellbagsHeading}" Foreground="#24FFE3" FontSize="19"/>
+                        <TextBlock Text="{loc:DesktopLabel Layout.ShellbagsNotice}" Margin="0,6,0,6"/>
+                        <Button Content="{loc:DesktopLabel Layout.ReadShellbags}" Click="ShellbagsClicked" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <DataGrid x:Name="ShellbagGrid" Grid.Row="1" MinHeight="160">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="PFAD (BEST EFFORT)" Binding="{Binding Name}" Width="3*"/>
-                            <DataGridTextColumn Header="ART" Binding="{Binding Kind}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.PathColumn}" Binding="{Binding Name}" Width="3*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Kind}" Binding="{Binding Kind}" Width="*"/>
                             <DataGridTextColumn Header="SLOT" Binding="{Binding Slot}" Width="60"/>
-                            <DataGridTextColumn Header="SCHLUESSEL ZULETZT GESCHRIEBEN" Binding="{Binding WrittenDisplay}" Width="*"/>
-                            <DataGridTextColumn Header="REGISTRY-QUELLE" Binding="{Binding KeyPath}" Width="2*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.KeyWritten}" Binding="{Binding WrittenDisplay}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.RegistrySource}" Binding="{Binding KeyPath}" Width="2*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock x:Name="ShellbagInfo" Grid.Row="2" Foreground="#32D5FF" TextWrapping="Wrap" Margin="0,8,0,0"
-                               Text="Noch nicht gelesen. Der Zeitstempel gehoert zum Registry-Schluessel, nicht zwingend zum letzten Ordnerbesuch."/>
+                               Text="{loc:DesktopLabel Layout.ShellbagInitial}"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Logs / Gaming" ToolTip="Messlogs ansehen/vergleichen, PresentMon-Frame-Telemetrie auswerten">
+            <TabItem Header="{loc:DesktopLabel Ui.LogsTab}" Tag="Logs / Gaming" ToolTip="{loc:DesktopLabel Module.LogsTip}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="14">
-                    <TextBlock Text="Messlog-Viewer / Vergleich / Frame-Telemetrie" Foreground="#24FFE3" FontSize="19"/>
-                    <WrapPanel><Button Content="JSONL Messlog oeffnen" Click="OpenLogClicked"/>
-                        <Button Content="Mit zweitem Messlog vergleichen" Click="CompareLogClicked"/></WrapPanel>
-                    <ComboBox x:Name="LogSeries" SelectionChanged="LogSeriesChanged" AutomationProperties.Name="Log-Messreihe"/>
+                    <TextBlock Text="{loc:DesktopLabel Ui.LogViewerHeading}" Foreground="#24FFE3" FontSize="19"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Ui.OpenJsonl}" Click="OpenLogClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.CompareLog}" Click="CompareLogClicked"/></WrapPanel>
+                    <ComboBox x:Name="LogSeries" SelectionChanged="LogSeriesChanged" AutomationProperties.Name="{loc:DesktopLabel Ui.LogSeries}"/>
                     <Viewbox Height="110" Stretch="Fill"><Canvas Width="800" Height="110">
                         <Polyline x:Name="LogCurve" Stroke="#24FFE3" StrokeThickness="2"/>
                     </Canvas></Viewbox>
                     <TextBlock x:Name="LogSummary" Margin="0,8,0,10" Foreground="#32D5FF"/>
                     <DataGrid x:Name="LogPoints" Height="110"><DataGrid.Columns>
-                        <DataGridTextColumn Header="ZEITSTEMPEL" Binding="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" Width="2*"/>
-                        <DataGridTextColumn Header="MESSWERT" Binding="{Binding Value}" Width="*"/>
+                        <DataGridTextColumn Header="{loc:DesktopLabel Layout.Timestamp}" Binding="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" Width="2*"/>
+                        <DataGridTextColumn Header="{loc:DesktopLabel Layout.Reading}" Binding="{Binding Value}" Width="*"/>
                     </DataGrid.Columns></DataGrid>
                     <WrapPanel>
-                        <TextBox x:Name="GameProcess" Width="200" Text="Spiel.exe" AutomationProperties.Name="Spielprozess"/>
-                        <TextBox x:Name="CaptureSeconds" Width="80" Text="60" AutomationProperties.Name="Capture-Sekunden"/>
+                        <TextBox x:Name="GameProcess" Width="200" Text="Spiel.exe" AutomationProperties.Name="{loc:DesktopLabel Ui.GameProcess}"/>
+                        <TextBox x:Name="CaptureSeconds" Width="80" Text="60" AutomationProperties.Name="{loc:DesktopLabel Layout.CaptureSeconds}"/>
                         <Button Content="PresentMon Capture" Click="CaptureClicked"/>
-                        <Button Content="Frame-CSV auswerten" Click="FrameCsvClicked"/>
-                        <Button Content="Frame-CSV vergleichen" Click="CompareFramesClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.AnalyzeFrames}" Click="FrameCsvClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.CompareFrameCsv}" Click="CompareFramesClicked"/>
                     </WrapPanel>
-                    <TextBlock Text="Externe PresentMon-Console benoetigt, kein eigener Dienst. ETW-Capture fuer gewaehlten Prozess. CSV-Auswertung pro Swapchain: AVG FPS, P99 Framezeit und 1%-low. Keine Vermischung verschiedener Renderketten." Foreground="#A8A4C5"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.PresentMonNotice}" Foreground="#A8A4C5"/>
                 </StackPanel></ScrollViewer>
             </TabItem>
-            <TabItem Header="Einstellungen" ToolTip="Warnschwellen, Aufzeichnungsintervall, Werkzeugpfade und OUI-Datenbank">
+            <TabItem Header="{loc:DesktopLabel Module.Einstellungen}" Tag="Einstellungen" ToolTip="{loc:DesktopLabel Module.SettingsTip}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="14">
-                    <TextBlock Text="Warnschwellen / Sensorprofil / Werkzeuge" Foreground="#24FFE3" FontSize="19"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SettingsHeading}" Foreground="#24FFE3" FontSize="19"/>
                     <WrapPanel>
-                        <Button Content="Desktop-Gadgets / Transparenz / Parameter" Click="DesktopSettingsClicked"/>
-                        <Button Content="Netzwerkueberwachung / Paketmitschnitt" Click="NetworkMonitorClicked"/>
+                        <Button Content="{loc:DesktopLabel Ui.DesktopSettings}" Click="DesktopSettingsClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.NetworkMonitor}" Click="NetworkMonitorClicked"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <StackPanel Width="160"><TextBlock Text="CPU Warnung C"/><TextBox x:Name="CpuThreshold"/></StackPanel>
-                        <StackPanel Width="160"><TextBlock Text="GPU Warnung C"/><TextBox x:Name="GpuThreshold"/></StackPanel>
-                        <StackPanel Width="160"><TextBlock Text="Storage Warnung C"/><TextBox x:Name="StorageThreshold"/></StackPanel>
-                        <StackPanel Width="160"><TextBlock Text="Freier Speicher %"/><TextBox x:Name="FreeThreshold"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Ui.CpuWarning}"/><TextBox x:Name="CpuThreshold"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Ui.GpuWarning}"/><TextBox x:Name="GpuThreshold"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Ui.StorageWarning}"/><TextBox x:Name="StorageThreshold"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Layout.FreeSpace}"/><TextBox x:Name="FreeThreshold"/></StackPanel>
                     </WrapPanel>
                     <WrapPanel>
-                        <StackPanel Width="160"><TextBlock Text="ATX Toleranz %"/><TextBox x:Name="VoltageThreshold"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Ui.AtxTolerance}"/><TextBox x:Name="VoltageThreshold"/></StackPanel>
                         <StackPanel Width="160"><TextBlock Text="CMOS Minimum V"/><TextBox x:Name="CmosThreshold"/></StackPanel>
-                        <StackPanel Width="160"><TextBlock Text="Logintervall s"/><TextBox x:Name="RecordSeconds"/></StackPanel>
+                        <StackPanel Width="160"><TextBlock Text="{loc:DesktopLabel Ui.LogInterval}"/><TextBox x:Name="RecordSeconds"/></StackPanel>
                     </WrapPanel>
-                    <TextBlock Text="smartctl.exe / offizielles smartmontools"/>
-                    <WrapPanel><TextBox x:Name="SmartPath" Width="660"/><Button Content="smartctl auswaehlen" Tag="smart" Click="ToolPathClicked"/></WrapPanel>
+                    <TextBlock Text="{loc:DesktopLabel Ui.SmartTool}"/>
+                    <WrapPanel><TextBox x:Name="SmartPath" Width="660"/><Button Content="{loc:DesktopLabel Layout.SelectSmartctl}" Tag="smart" Click="ToolPathClicked"/></WrapPanel>
                     <TextBlock Text="PresentMon Console EXE"/>
-                    <WrapPanel><TextBox x:Name="PresentPath" Width="660"/><Button Content="PresentMon auswaehlen" Tag="present" Click="ToolPathClicked"/></WrapPanel>
-                    <TextBlock Text="Optionale IEEE MA-L/OUI-CSV fuer Herstellerzuordnung (offline)"/>
-                    <WrapPanel><TextBox x:Name="OuiPath" Width="660"/><Button Content="OUI-CSV auswaehlen" Click="OuiPathClicked"/></WrapPanel>
+                    <WrapPanel><TextBox x:Name="PresentPath" Width="660"/><Button Content="{loc:DesktopLabel Layout.SelectPresentMon}" Tag="present" Click="ToolPathClicked"/></WrapPanel>
+                    <TextBlock Text="{loc:DesktopLabel Layout.OuiNotice}"/>
+                    <WrapPanel><TextBox x:Name="OuiPath" Width="660"/><Button Content="{loc:DesktopLabel Layout.SelectOui}" Click="OuiPathClicked"/></WrapPanel>
                     <Separator Margin="0,14"/>
-                    <TextBlock Text="Zentrale Verwaltung / Diagnoseberichte" Foreground="#24FFE3" FontSize="17"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.ManagementReports}" Foreground="#24FFE3" FontSize="17"/>
                     <StackPanel Margin="0,6,0,8">
-                        <TextBlock Text="Betriebsmodus" Foreground="#A8A4C5"/>
-                        <RadioButton x:Name="StandaloneMode" GroupName="ManagerMode" Content="Einzelplatz - nur lokale Diagnose und Einstellungen" Checked="ManagerModeChanged"/>
-                        <RadioButton x:Name="ManagedClientMode" GroupName="ManagerMode" Content="Server-Client - mit zentraler Geraeteanmeldung" Checked="ManagerModeChanged"/>
+                        <TextBlock Text="{loc:DesktopLabel Ui.ClientMode}" Foreground="#A8A4C5"/>
+                        <RadioButton x:Name="StandaloneMode" GroupName="ManagerMode" Content="{loc:DesktopLabel Layout.Standalone}" Checked="ManagerModeChanged"/>
+                        <RadioButton x:Name="ManagedClientMode" GroupName="ManagerMode" Content="{loc:DesktopLabel Layout.ManagedClient}" Checked="ManagerModeChanged"/>
                     </StackPanel>
-                    <TextBlock Text="Geraeteanmeldung verbraucht einen Einmalcode. Berichte enthalten Windows-Ereignisse der letzten 24h, Geraete, Adapter, installierte Apps und Treiber. Uebertragung startet erst nach Freigabe und ausdruecklicher Aktivierung." Foreground="#A8A4C5" TextWrapping="Wrap" Margin="0,6,0,8"/>
-                    <TextBlock Text="Server-URL (HTTP nur localhost; LAN nur mit HTTPS)"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.EnrollmentNotice}" Foreground="#A8A4C5" TextWrapping="Wrap" Margin="0,6,0,8"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.ServerUrl}"/>
                     <TextBox x:Name="ManagerServerUrl" Width="620" HorizontalAlignment="Left"/>
-                    <CheckBox x:Name="ManagerReportingToggle" Content="Nach Freigabe beim App-Start und danach stuendlich Diagnoseberichte senden" Margin="0,8,0,4"/>
+                    <CheckBox x:Name="ManagerReportingToggle" Content="{loc:DesktopLabel Layout.ReportingConsent}" Margin="0,8,0,4"/>
                     <WrapPanel>
-                        <PasswordBox x:Name="ManagerEnrollmentCode" Width="300" AutomationProperties.Name="Einmaliger Zentralverwaltungs-Anmeldecode"/>
-                        <Button x:Name="EnrollManagerButton" Content="Geraet einmalig anmelden" Click="EnrollManagerClicked"/>
+                        <PasswordBox x:Name="ManagerEnrollmentCode" Width="300" AutomationProperties.Name="{loc:DesktopLabel Ui.EnrollmentCode}"/>
+                        <Button x:Name="EnrollManagerButton" Content="{loc:DesktopLabel Layout.Enroll}" Click="EnrollManagerClicked"/>
                     </WrapPanel>
-                    <TextBlock x:Name="ManagerStatus" Text="Nicht angemeldet. Keine zentrale Verbindung aktiv." Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,6,0,8"/>
-                    <TextBlock Text="Skin / Fensteroberflaeche"/>
+                    <TextBlock x:Name="ManagerStatus" Text="{loc:DesktopLabel Layout.ManagementInitial}" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,6,0,8"/>
+                    <TextBlock Text="{loc:DesktopLabel Ui.SkinSurface}"/>
+                    <TextBlock Text="{loc:DesktopLabel Language.ReleaseNotice}" TextWrapping="Wrap" Margin="0,4,0,8"/>
                     <WrapPanel>
-                        <ComboBox x:Name="SkinSelect" Width="340" DisplayMemberPath="Display" SelectionChanged="SkinChanged" AutomationProperties.Name="Skin-Auswahl"
-                                  ToolTip="Styling von Hintergruenden, Panels, Leisten und Buttons. Neon-Inhaltsakzente bleiben erhalten (dunkle Skins)."/>
-                        <TextBlock Text="Wirkt sofort auf alle offenen Fenster und wird gespeichert. Retro-Neon ist das Original; der Erststart-Assistent laeuft immer im Original." Foreground="#A8A4C5" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <ComboBox x:Name="SkinSelect" Width="340" DisplayMemberPath="Display" SelectionChanged="SkinChanged" AutomationProperties.Name="{loc:DesktopLabel Layout.SkinSelection}"
+                                  ToolTip="{loc:DesktopLabel Layout.SkinTip}"/>
+                        <TextBlock x:Name="SkinHint" Text="{loc:DesktopLabel Layout.PreferencesNotice}" Foreground="#A8A4C5" TextWrapping="Wrap" VerticalAlignment="Center" Margin="8,0,0,0"/>
                     </WrapPanel>
-                    <WrapPanel><Button Content="Einstellungen speichern" Click="SaveSettingsClicked"/>
-                        <Button Content="Sensor-Spannungen / Drosselung pruefen" Click="SensorChecksClicked"/></WrapPanel>
-                    <TextBlock Text="Fehlende Thermal-/Throttling-Sensoren bleiben unbekannt. Hohe Temperatur allein beweist keine Drosselung. Fuer VCore/DRAM keine erfundenen Sollwerte. Werkzeuge werden nicht automatisch heruntergeladen oder als Admin installiert." Foreground="#A8A4C5"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Layout.SaveSettings}" Click="SaveSettingsClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.SensorChecks}" Click="SensorChecksClicked"/></WrapPanel>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SensorLimits}" Foreground="#A8A4C5"/>
                 </StackPanel></ScrollViewer>
             </TabItem>
-            <TabItem Header="Schluessel" ToolTip="WLAN-/BitLocker-/OEM-Schluessel nur auf Klick nach Warndialog; Anzeige verschwindet beim Tabwechsel">
+            <TabItem Header="{loc:DesktopLabel Module.Schluessel}" Tag="Schluessel" ToolTip="{loc:DesktopLabel Module.KeysTip}">
                 <StackPanel Margin="14">
-                    <TextBlock Text="Sensible lokale Anzeige / nur auf ausdruecklichen Klick" Foreground="#D45CFF" FontSize="19"/>
-                    <TextBlock Text="WLAN-, BitLocker- und OEM-Schluessel sind Geheimnisse. Nicht teilen, nicht aufzeichnen, nicht exportieren. Ausgabe wird bei Tabwechsel und Schliessen entfernt; keine Garantie fuer Bildschirm-/Speicherforensik." Margin="0,12,0,16"/>
-                    <TextBox x:Name="WifiProfile" Width="350" HorizontalAlignment="Left" AutomationProperties.Name="WLAN-Profil fuer Schluessel"/>
-                    <WrapPanel><Button Content="WLAN-Profil lokal anzeigen" Tag="wifi" Click="SecretClicked"/>
-                        <Button Content="BitLocker Recovery lokal anzeigen" Tag="bitlocker" Click="SecretClicked"/>
-                        <Button Content="OEM Windows-Key lokal anzeigen" Tag="windows-key" Click="SecretClicked"/></WrapPanel>
-                    <Button Content="Sensible Ausgabe sofort entfernen" Click="ClearOutputClicked" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SensitiveHeading}" Foreground="#D45CFF" FontSize="19"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.SecretsNotice}" Margin="0,12,0,16"/>
+                    <TextBox x:Name="WifiProfile" Width="350" HorizontalAlignment="Left" AutomationProperties.Name="{loc:DesktopLabel Layout.SecretProfile}"/>
+                    <WrapPanel><Button Content="{loc:DesktopLabel Layout.ShowWifiSecret}" Tag="wifi" Click="SecretClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.ShowBitLockerSecret}" Tag="bitlocker" Click="SecretClicked"/>
+                        <Button Content="{loc:DesktopLabel Layout.ShowOemSecret}" Tag="windows-key" Click="SecretClicked"/></WrapPanel>
+                    <Button Content="{loc:DesktopLabel Layout.ClearSecrets}" Click="ClearOutputClicked" HorizontalAlignment="Left"/>
                 </StackPanel>
             </TabItem>
         </TabControl>
-        <GridSplitter x:Name="TerminalSplitter" Grid.Row="2" Height="6" HorizontalAlignment="Stretch" Background="#6940A8" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" ToolTip="Konsolenhoehe aendern"/>
+        <GridSplitter x:Name="TerminalSplitter" Grid.Row="2" Height="6" HorizontalAlignment="Stretch" Background="#6940A8" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" ToolTip="{loc:DesktopLabel Layout.ConsoleHeight}"/>
         <Border x:Name="TerminalFrame" Grid.Row="3" CornerRadius="22" BorderBrush="#71847B" BorderThickness="3" Padding="10" Margin="0,6,0,8">
             <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#637369" Offset="0"/><GradientStop Color="#1B2621" Offset="0.12"/>
@@ -409,9 +411,9 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <DockPanel Margin="0,0,0,8">
                         <WrapPanel DockPanel.Dock="Right">
-                            <CheckBox x:Name="CrtEffects" Content="CRT-Glas" IsChecked="True" Foreground="#7BFFA6" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <CheckBox x:Name="CrtEffects" Content="{loc:DesktopLabel Ui.CrtGlass}" IsChecked="True" Foreground="#7BFFA6" VerticalAlignment="Center" Margin="0,0,12,0"/>
                             <CheckBox x:Name="FollowOutput" Content="Autoscroll" IsChecked="True" Foreground="#7BFFA6" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                            <Button x:Name="ExpandTerminalButton" Content="Konsole vergroessern" Click="ExpandTerminalClicked" Margin="0" Padding="8,3"/>
+                            <Button x:Name="ExpandTerminalButton" Content="{loc:DesktopLabel Terminal.Expand}" Click="ExpandTerminalClicked" Margin="0" Padding="8,3"/>
                         </WrapPanel>
                         <TextBlock Text="AETHER VT // PHOSPHOR TERMINAL" Foreground="#62FF91" FontFamily="Consolas" FontWeight="Bold"/>
                     </DockPanel>
@@ -419,10 +421,10 @@
                         <TextBox x:Name="Output" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
                                  Background="#000000" Foreground="#7BFFA6" BorderThickness="0" Padding="8"
                                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas"
-                                 FontSize="14" Margin="0" AutomationProperties.Name="Aktionsausgabe"
+                                 FontSize="14" Margin="0" AutomationProperties.Name="{loc:DesktopLabel Layout.ActionOutput}"
                                  TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
                                  UseLayoutRounding="True" SnapsToDevicePixels="True"
-                                 Text="AETHER VT READY / Olaf Weins&#10;Verwaltung: Befehl/Parameter waehlen oder unten frei eingeben.&#10;Enter fuehrt direkt mit Administratorrechten aus."/>
+                                 Text="{loc:DesktopLabel Layout.ConsoleInitial}"/>
                         <Grid IsHitTestVisible="False">
                             <Grid.Style><Style TargetType="Grid"><Setter Property="Visibility" Value="Collapsed"/>
                                 <Style.Triggers><DataTrigger Binding="{Binding IsChecked, ElementName=CrtEffects}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
@@ -440,19 +442,19 @@
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <TextBlock Text="PS ADMIN &gt;" Foreground="#7BFFA6" FontFamily="Consolas" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBox x:Name="CommandInput" Grid.Column="1" Background="#000000" Foreground="#7BFFA6" FontFamily="Consolas"
-                                 Margin="0" Padding="6" KeyDown="CommandInputKeyDown" AutomationProperties.Name="Konsolenbefehl"
-                                 ToolTip="Windows PowerShell 5.1. Enter: direkt starten. Pfeil hoch/runter: Verlauf. Pro Befehl eine neue Sitzung; keine interaktive Standardeingabe."/>
+                                 Margin="0" Padding="6" KeyDown="CommandInputKeyDown" AutomationProperties.Name="{loc:DesktopLabel Ui.ConsoleCommand}"
+                                 ToolTip="{loc:DesktopLabel Layout.PowerShellNotice}"/>
                         <TextBox x:Name="CommandTimeout" Grid.Column="2" Text="120" Width="55" Margin="8,0" Padding="6"
-                                 ToolTip="Zeitlimit in Minuten (1 bis 1440)" AutomationProperties.Name="Befehlszeitlimit Minuten"/>
+                                 ToolTip="{loc:DesktopLabel Layout.TimeoutTip}" AutomationProperties.Name="{loc:DesktopLabel Layout.Timeout}"/>
                         <Button Grid.Column="3" Content="Start / Enter" Click="ShellRunClicked" Margin="0" Padding="8,3"/>
                     </Grid>
-                    <TextBlock x:Name="TerminalInfo" Grid.Row="3" Text="IDLE / PowerShell 5.1 / neue Sitzung pro Befehl / Zeitlimit in Minuten" Foreground="#62B97C" FontFamily="Consolas" Margin="0,8,0,0" FontSize="11"/>
+                    <TextBlock x:Name="TerminalInfo" Grid.Row="3" Text="{loc:DesktopLabel Layout.TerminalIdle}" Foreground="#62B97C" FontFamily="Consolas" Margin="0,8,0,0" FontSize="11"/>
                 </Grid>
             </Border>
         </Border>
         <DockPanel Grid.Row="4">
-            <Button Content="Laufende Aktion abbrechen" Click="CancelClicked" DockPanel.Dock="Right"/>
-            <TextBlock x:Name="Status" Text="Bereit. Keine Aktion automatisch gestartet." Foreground="#32D5FF" VerticalAlignment="Center"/>
+            <Button Content="{loc:DesktopLabel Ui.CancelRunningAction}" Click="CancelClicked" DockPanel.Dock="Right"/>
+            <TextBlock x:Name="Status" Text="{loc:DesktopLabel Layout.ControlReady}" Foreground="#32D5FF" VerticalAlignment="Center"/>
         </DockPanel>
     </Grid>
 </Window>

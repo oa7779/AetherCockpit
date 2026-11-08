@@ -23,7 +23,7 @@ public sealed class MetricCard(string title, string unit, string accent) : Obser
     public string Unit { get; } = unit;
     public Brush Accent { get; } = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
     private string _value = "--";
-    private string _detail = "Messung wird vorbereitet";
+    private string _detail = Services.DesktopUiText.Get("Common.PreparingMeasurement");
     private PointCollection _trace = [];
     private double _level;
     public string Value { get => _value; set => Set(ref _value, value); }
@@ -36,8 +36,8 @@ public sealed record SensorReading(string Id, string Hardware, string Name, stri
     double? Value, string Unit)
 {
     public string Display => Value is { } value && double.IsFinite(value)
-        ? $"{value:0.##} {Unit}" + (Services.SensorSemantics.IsTemperatureLimit(this) ? " (Grenzwert, keine Ist-Temperatur)" : "")
-        : "Nicht verfuegbar";
+        ? $"{value:0.##} {Unit}" + (Services.SensorSemantics.IsTemperatureLimit(this) ? Services.DesktopUiText.Get("Sensor.TemperatureLimitSuffix") : "")
+        : Services.DesktopUiText.Get("Common.Unavailable");
 }
 
 public sealed record Check(string Name, string Value, string State, string Detail, double? FreePercent = null)
@@ -45,8 +45,8 @@ public sealed record Check(string Name, string Value, string State, string Detai
     public double? UsedPercent => FreePercent is { } free && double.IsFinite(free) && free is >= 0 and <= 100
         ? 100 - free : null;
     public string UsageSummary => UsedPercent is { } used
-        ? $"{used:0.0} % belegt / {FreePercent:0.0} % frei"
-        : "Nicht verfuegbar";
+        ? Services.DesktopUiText.Format("Drive.Usage", used, FreePercent)
+        : Services.DesktopUiText.Get("Common.Unavailable");
     public Brush Accent => State switch
     {
         "ok" => Brushes.MediumAquamarine,

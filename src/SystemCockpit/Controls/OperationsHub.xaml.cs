@@ -53,7 +53,7 @@ public partial class OperationsHub : UserControl
         Stop();
     }
     public void OpenWindowsAssistants() =>
-        Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Header, "Windows-Assistenten"));
+        Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Windows-Assistenten"));
     private void Stop()
     {
         if (_maintenance)
@@ -72,7 +72,7 @@ public partial class OperationsHub : UserControl
     }
     private void TemplateClicked(object sender, RoutedEventArgs e)
     {
-        if (Templates.SelectedItem is ComboBoxItem { Content: string name }) ApplyTemplate(name);
+        if (Templates.SelectedItem is ComboBoxItem { Tag: string name }) ApplyTemplate(name);
     }
     private void ClearPlanClicked(object sender, RoutedEventArgs e) { foreach (var task in _tasks) task.Selected = false; }
     private void TaskSelected(object sender, SelectionChangedEventArgs e)
@@ -115,7 +115,7 @@ public partial class OperationsHub : UserControl
     private void RepairPlanPrepareClicked(object sender, RoutedEventArgs e)
     {
         ApplyTemplate("Windows reparieren");
-        Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Header, "Wartungsplan"));
+        Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Wartungsplan"));
         Write("[VORBEREITET / NICHT AUSGEFUEHRT] Windows-Reparaturplan. Erst Vorschau pruefen und danach den Plan sowie jeden Aenderungsschritt einzeln bestaetigen.\n");
     }
     private void BackgroundReportClicked(object sender, RoutedEventArgs e)
@@ -146,19 +146,20 @@ public partial class OperationsHub : UserControl
         var folder = CreateRun("diagnostic-agents");
         Save(folder, "Agentenbericht.json", report);
         foreach (var finding in report.Findings)
-            Write($"[{finding.Severity}] {finding.Agent}: {finding.Summary}\n  Befund: {finding.Evidence}\n  Naechster Schritt: {finding.Recommendation}\n");
+            Write(DesktopUiText.Format("Diagnostic.ReportFinding", finding.SeverityDisplay, finding.AgentDisplay,
+                finding.Summary, finding.Evidence, finding.Recommendation));
         Write($"[LOKALER BERICHT] {Path.Combine(folder, "Agentenbericht.json")}\n");
     });
     private List<(MaintenanceAction Action, string Script)> BuildPlan()
     {
         var selected = _tasks.Where(t => t.Selected).Select(t => t.Action).ToList();
-        if (selected.Count == 0) throw new ArgumentException("Mindestens eine Aufgabe ankreuzen.");
-        if (selected.Any(a => a.Id == "cleanup")) throw new ArgumentException("Temp-Bereinigung separat im Cleaner: Dateivorschau und Checkboxen erforderlich.");
+        if (selected.Count == 0) throw new ArgumentException(DesktopUiText.Get("Plan.SelectTask"));
+        if (selected.Any(a => a.Id == "cleanup")) throw new ArgumentException(DesktopUiText.Get("Plan.CleanerSeparate"));
         if (selected.Any(a => a.Id == "defenderFull") && selected.Any(a => a.Id == "defenderQuick"))
-            throw new ArgumentException("Schnellscan ODER Vollscan auswaehlen.");
+            throw new ArgumentException(DesktopUiText.Get("Plan.ScanChoice"));
         var updates = _updates.Where(u => u.Selected).Select(u => u.Update).ToList();
         if (selected.Any(a => a.Id == "windowsInstall") && LicenseConsent.IsChecked != true)
-            throw new ArgumentException("Angekreuzte Update-EULAs lesen und ausdruecklich akzeptieren.");
+            throw new ArgumentException(DesktopUiText.Get("Plan.AcceptEula"));
         return selected.Select(a => (a, MaintenancePlans.Build(a, updates, PackageIds.Text))).ToList();
     }
     private void PlanPreviewClicked(object sender, RoutedEventArgs e) => RunAsync("Wartungsvorschau", _ =>
@@ -174,12 +175,13 @@ public partial class OperationsHub : UserControl
     {
         var plan = BuildPlan();
         SystemActions.RequireAdmin();
-        if (!Confirm($"Lokales Ziel: {Environment.MachineName}\n{string.Join("\n", plan.Select(p => p.Action.Name))}\n\nIn dieser Reihenfolge starten? Veraendernde Schritte werden einzeln nochmals bestaetigt. Beim ersten Fehler stoppt der Plan."))
-            throw new OperationCanceledException("Plan nicht freigegeben.");
+        if (!Confirm(DesktopUiText.Format("Plan.Confirm", Environment.MachineName,
+            string.Join("\n", plan.Select(p => p.Action.Name)))))
+            throw new OperationCanceledException(DesktopUiText.Get("Plan.NotApproved"));
         var requiresRestore = RequireRestorePoint.IsChecked == true;
         if (plan.Any(p => p.Action.Changes) && !requiresRestore &&
-            !Confirm("Ohne Wiederherstellungspunkt fortfahren? Dieser ist kein Dateibackup. Vorher Daten extern sichern."))
-            throw new OperationCanceledException("Ungesicherte Wartung nicht freigegeben.");
+            !Confirm(DesktopUiText.Get("Plan.NoRestoreConsent")))
+            throw new OperationCanceledException(DesktopUiText.Get("Plan.NoRestoreDeclined"));
         _maintenance = true;
         _stopAfterStep = false;
         Directory.CreateDirectory(_root);
@@ -203,7 +205,8 @@ public partial class OperationsHub : UserControl
             }
             try
             {
-                if (step.Action.Changes && !Confirm($"{step.Action.Name}\n{step.Action.Description}\nZiel: {Environment.MachineName}\n\nJetzt diesen Aenderungsschritt ausfuehren?"))
+                if (step.Action.Changes && !Confirm(DesktopUiText.Format("Plan.StepConsent",
+                    step.Action.Name, step.Action.Description, Environment.MachineName)))
                 {
                     _stopAfterStep = true;
                     results.Add(new(step.Action.Name, "NICHT FREIGEGEBEN", "", started, DateTimeOffset.Now));
@@ -308,7 +311,7 @@ public partial class OperationsHub : UserControl
     private async void UpdateSearchClicked(object sender, RoutedEventArgs e) => await RunAsync("Windows-Updatesuche / konfigurierte Microsoft-/WSUS-Quelle", async token =>
     {
         SystemActions.RequireAdmin();
-        if (!Confirm("Windows-Updatequelle laut bestehender Richtlinie kontaktieren und Softwareupdates suchen? Keine Installation."))
+        if (!Confirm(DesktopUiText.Get("Plan.UpdateSearchConsent")))
             throw new OperationCanceledException();
         _updates.Clear();
         LicenseConsent.IsChecked = false;
@@ -335,7 +338,7 @@ public partial class OperationsHub : UserControl
     private async void IndexMeasureClicked(object sender, RoutedEventArgs e) => await RunAsync("WinSAT-Messung", async token =>
     {
         SystemActions.RequireAdmin();
-        if (!Confirm("Vorschau: WinSAT.exe formal\nBelastet CPU, RAM, Grafik und Systemdatentraeger, kann Bildschirmdarstellung beeinflussen. Anwendungen vorher speichern/schliessen. Windows schreibt Bewertungsdateien. KEINE automatische Messung beim Boot.\n\nJetzt starten?"))
+        if (!Confirm(DesktopUiText.Get("Plan.BenchmarkConsent")))
             throw new OperationCanceledException();
         var run = CreateRun("winsat");
         await Execute(PerformanceIndex.BenchmarkScript, token, run);
@@ -347,7 +350,7 @@ public partial class OperationsHub : UserControl
     {
         var target = new ManagedDevice(Host.Text, UseHttps.IsChecked == true);
         if (_devices.Any(d => d.Host.Equals(target.Host, StringComparison.OrdinalIgnoreCase))) throw new ArgumentException("Ziel bereits eingetragen.");
-        if (!target.Https && !Confirm("HTTP/Negotiate in Arbeitsgruppen kann TrustedHosts voraussetzen. AETHER aendert diese NICHT. HTTPS ist bevorzugt. HTTP-Ziel bewusst eintragen?"))
+        if (!target.Https && !Confirm(DesktopUiText.Get("Plan.HttpConsent")))
             throw new OperationCanceledException();
         ManagedDevices.Save(Path.Combine(_root, "targets.json"), _devices.Append(target));
         _devices.Add(target);
@@ -357,7 +360,7 @@ public partial class OperationsHub : UserControl
     private void RemoveDeviceClicked(object sender, RoutedEventArgs e) => RunAsync("Ziel entfernen", _ =>
     {
         if (Devices.SelectedItem is not ManagedDevice device) throw new ArgumentException("Zielzeile markieren.");
-        if (!Confirm($"Nur {device.Host} aus AETHER entfernen? Geraet selbst bleibt unveraendert.")) throw new OperationCanceledException();
+        if (!Confirm(DesktopUiText.Format("Plan.RemoveTargetConsent", device.Host))) throw new OperationCanceledException();
         ManagedDevices.Save(Path.Combine(_root, "targets.json"), _devices.Where(d => d != device));
         _devices.Remove(device);
         return Task.CompletedTask;
@@ -376,8 +379,8 @@ public partial class OperationsHub : UserControl
     private async void DeviceRunClicked(object sender, RoutedEventArgs e) => await RunAsync("Geraetediagnose", async token =>
     {
         var targets = SelectedDevices();
-        if (!Confirm("Nur diese Ziele kontaktieren?\n" + string.Join("\n", targets.Select(t => t.Host + " / " + t.Transport)) +
-            "\nAktuelles Admin-Konto / Negotiate. Keine Aenderungen, keine WinRM-Einrichtung. Erfasste Inventar-/Ereignisdaten werden lokal protokolliert."))
+        if (!Confirm(DesktopUiText.Format("Plan.RemoteConsent",
+            string.Join("\n", targets.Select(t => t.Host + " / " + t.Transport)))))
             throw new OperationCanceledException();
         var run = CreateRun("devices");
         Save(run, "Targets.json", targets.Select(t => new { t.Host, t.Transport }));
@@ -428,7 +431,8 @@ public partial class OperationsHub : UserControl
         using var process = Process.Start(new ProcessStartInfo(folder) { UseShellExecute = true });
         return Task.CompletedTask;
     });
-    private bool Confirm(string text) => MessageBox.Show(Window.GetWindow(this), text, "AETHER / bewusste Freigabe", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
+    private bool Confirm(string text) => MessageBox.Show(Window.GetWindow(this), text, DesktopUiText.Get("Plan.ConfirmTitle"),
+        MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
     private void Write(string text)
     {
         _lastOutput = DateTimeOffset.Now;

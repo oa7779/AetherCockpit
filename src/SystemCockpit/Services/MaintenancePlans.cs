@@ -7,7 +7,7 @@ public sealed class MaintenanceChoice(MaintenanceAction action) : Observable
 {
     public MaintenanceAction Action { get; } = action;
     public string Name => Action.Name;
-    public string Kind => Action.Changes ? "AENDERUNG" : "DIAGNOSE";
+    public string Kind => DesktopUiText.Get(Action.Changes ? "Plan.Change" : "Plan.Diagnostic");
     public string Description => Action.Description;
     private bool _selected;
     public bool Selected { get => _selected; set => Set(ref _selected, value); }
@@ -36,7 +36,13 @@ public static class MaintenancePlans
     private static string Native(string exe, string arguments) =>
         (exe == "sfc.exe" ? "sfc" : $"& \"$env:WINDIR\\System32\\{exe}\"") +
         $" {arguments}; if($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010){{throw \"{exe} Exit $LASTEXITCODE\"}}; if($LASTEXITCODE -eq 3010){{'NEUSTART ERFORDERLICH / nicht automatisch ausgefuehrt'}}; $global:LASTEXITCODE=0";
-    public static IReadOnlyList<MaintenanceAction> Catalog { get; } =
+    public static IReadOnlyList<MaintenanceAction> Catalog => Definitions.Select(action => action with
+    {
+        Name = DesktopUiText.Get("Maintenance." + action.Id + ".Name"),
+        Description = DesktopUiText.Get("Maintenance." + action.Id + ".Description")
+    }).ToArray();
+
+    private static IReadOnlyList<MaintenanceAction> Definitions { get; } =
     [
         new("inventory", "System- und Sicherheitsinventar", false, "Hardware/Windows/Defender lesen; keine Schutzabschaltung.",
             """

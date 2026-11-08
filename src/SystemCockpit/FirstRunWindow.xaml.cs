@@ -30,13 +30,13 @@ public partial class FirstRunWindow : Window
         StepInventory.Visibility = step == 2 ? Visibility.Visible : Visibility.Collapsed;
         StepLabel.Text = step switch
         {
-            0 => "Schritt 1 von 3 - Willkommen",
-            1 => "Schritt 2 von 3 - Lizenzvereinbarung",
-            _ => "Schritt 3 von 3 - Rechner-Inventar"
+            0 => DesktopUiText.Get("FirstRun.StepIntro"),
+            1 => DesktopUiText.Get("FirstRun.StepLicense"),
+            _ => DesktopUiText.Get("FirstRun.StepInventory")
         };
         BackButton.Visibility = step == 0 ? Visibility.Collapsed : Visibility.Visible;
         DeclineButton.Visibility = step == 2 ? Visibility.Collapsed : Visibility.Visible;
-        NextButton.Content = step switch { 0 => "Weiter zur Lizenz", 1 => "Akzeptieren und weiter", _ => "Cockpit starten" };
+        NextButton.Content = DesktopUiText.Get(step switch { 0 => "FirstRun.NextLicense", 1 => "FirstRun.AcceptContinue", _ => "FirstRun.Start" });
         if (step == 1) NextButton.IsEnabled = AcceptCheck.IsChecked == true;
         else NextButton.IsEnabled = step != 2 || Inventory.HasCompleted && !Inventory.IsBusy;
         UpdateInventoryGate();
@@ -48,7 +48,7 @@ public partial class FirstRunWindow : Window
         if (_step == 2)
         {
             NextButton.IsEnabled = Inventory.HasCompleted && !Inventory.IsBusy;
-            NextButton.Content = Inventory.IsBusy ? "Rechner wird untersucht ..." : "Cockpit starten";
+            NextButton.Content = DesktopUiText.Get(Inventory.IsBusy ? "FirstRun.Reading" : "FirstRun.Start");
         }
     }
 

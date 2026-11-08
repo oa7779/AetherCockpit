@@ -55,6 +55,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet .\tests\AetherManager.Tests\bin\Release\net10.0-windows\AetherManager.Tests.dll
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --desktop-language-smoke
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Publish client and server
         run: |
@@ -62,6 +64,21 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & .\build\Publish-Manager.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify desktop presentation
+        env:
+          AETHER_SCREENSHOT_DIR: ${{ runner.temp }}\AetherDesktopScreenshots
+        run: |
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --desktop-modern-smoke
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload desktop screenshots
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aether-desktop-screenshots-${{ github.run_id }}
+          path: ${{ runner.temp }}\AetherDesktopScreenshots\*.png
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run assertions against published assemblies
         run: |

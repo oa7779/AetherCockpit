@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SystemCockpit.Services;
 
 namespace SystemCockpit;
 
@@ -12,33 +13,36 @@ public partial class MainWindow
     {
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
-            ("Übersicht", [("Cockpit", "Cockpit", false), ("Prozesse / Leistung", "Taskmanager", false)]),
-            ("Hardware", [("Mainframe / Board", "Mainboard", false), ("Sensoren", "Sensoren", false),
-                ("Laufwerke", "Laufwerke", false), ("SMART ↗", "SMART", true)]),
-            ("Diagnose", [("Windows-Diagnose", "Diagnose", false), ("Schutzstatus", "Sicherheit", false),
-                ("Ereignisse", "Ereignisse", false), ("Netzwerk / Tests ↗", "Netzwerk", true),
-                ("Messauswertung", "Messauswertung", false), ("Logs / Gaming ↗", "Logs / Gaming", true)]),
-            ("Wartung", [("Cleaner", "Cleaner", false), ("Assistenten / Pläne", "Operations", false),
-                ("Windows-Werkzeuge ↗", "Wartung", true), ("Pakete / Updates ↗", "Pakete", true)]),
-            ("Verwaltung", [("Systemverwaltung", "Superadmin", false), ("Autostart ↗", "Autostart", true),
-                ("Aufträge ↗", "Auftraege", true), ("Ordnerspuren ↗", "Spuren", true), ("Schlüssel ↗", "Schluessel", true)]),
-            ("Hilfe", [("Anleitung / Suche", "Hilfe", false), ("Parameter / Server ↗", "Einstellungen", true)])
+            ("Navigation.Overview", [("Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
+            ("Navigation.Hardware", [("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
+                ("Navigation.Drives", "Laufwerke", false), ("SMART ↗", "SMART", true)]),
+            ("Navigation.Diagnostics", [("Navigation.WindowsDiagnostics", "Diagnose", false), ("Navigation.Protection", "Sicherheit", false),
+                ("Navigation.Events", "Ereignisse", false), ("Navigation.NetworkTests", "Netzwerk", true),
+                ("Navigation.Measurements", "Messauswertung", false), ("Logs / Gaming ↗", "Logs / Gaming", true)]),
+            ("Navigation.Maintenance", [("Cleaner", "Cleaner", false), ("Navigation.Plans", "Operations", false),
+                ("Navigation.WindowsTools", "Wartung", true), ("Navigation.Packages", "Pakete", true)]),
+            ("Navigation.Administration", [("Navigation.SystemAdministration", "Superadmin", false), ("Navigation.Startup", "Autostart", true),
+                ("Navigation.Jobs", "Auftraege", true), ("Navigation.Traces", "Spuren", true), ("Navigation.Keys", "Schluessel", true)]),
+            ("Navigation.Help", [("Navigation.HelpSearch", "Hilfe", false), ("Navigation.Parameters", "Einstellungen", true)])
         ];
         foreach (var (group, items) in groups)
         {
             var panel = new StackPanel { Margin = new Thickness(0, 6, 0, 2) };
-            var expander = new Expander { Header = group, Content = panel, IsExpanded = group == "Übersicht",
+            var groupCaption = DesktopUiText.Get(group);
+            var expander = new Expander { Header = groupCaption, Content = panel, IsExpanded = group == "Navigation.Overview",
                 Foreground = Brushes.Turquoise, Margin = new Thickness(0, 0, 0, 6) };
             NavigationGroups.Children.Add(expander);
             foreach (var (caption, route, external) in items)
             {
-                var button = new Button { Content = caption, Tag = route, HorizontalContentAlignment = HorizontalAlignment.Left,
+                var displayedCaption = SkinCatalog.IsModern && route == "Mainboard"
+                    ? DesktopText.Get("Navigation.SystemSchema")
+                    : caption.StartsWith("Navigation.", StringComparison.Ordinal) ? DesktopUiText.Get(caption) : caption;
+                var button = new Button { Content = displayedCaption, Tag = route, HorizontalContentAlignment = HorizontalAlignment.Left,
                     Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(7, 7, 7, 7), FontSize = 11,
-                    ToolTip = external ? "Öffnet das Modul in der Systemkontrolle; startet keine Aktion." :
-                        "Öffnet den Bereich im Hauptfenster; startet keine Aktion." };
+                    ToolTip = DesktopUiText.Get(external ? "Navigation.ExternalTooltip" : "Navigation.InternalTooltip") };
                 if (external) button.Click += ControlCenterNavigate; else button.Click += Navigate;
                 panel.Children.Add(button);
-                _navigation.Add((group, route, external, button, expander));
+                _navigation.Add((groupCaption, route, external, button, expander));
                 if (route == "Cockpit") RegisterName("CockpitNav", button);
             }
         }
@@ -47,7 +51,7 @@ public partial class MainWindow
 
     private string UpdateNavigation(string route)
     {
-        var group = "Übersicht";
+        var group = DesktopUiText.Get("Navigation.Overview");
         foreach (var item in _navigation)
         {
             var selected = !item.External && item.Route == route;

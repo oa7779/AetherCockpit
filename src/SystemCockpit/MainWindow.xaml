@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SystemCockpit.Controls"
+        xmlns:loc="clr-namespace:SystemCockpit.Services"
         Title="AETHER | System Observatory | Olaf Weins" Width="1440" Height="940" MinWidth="1060" MinHeight="680"
         Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7" FontFamily="Segoe UI" WindowStartupLocation="CenterScreen" Icon="Assets/aether.ico">
     <Window.Resources>
@@ -129,20 +130,20 @@
                     <TextBlock Text="NEON WAVE / GLASS CONTROL" Foreground="#F56AFF" FontFamily="Consolas" FontSize="10" Margin="0,8,0,14"/>
                     <Border Background="#D45CFF" Height="12" CornerRadius="6,0,0,6" Margin="0,0,0,5"/>
                     <Border Background="#4294FF" Height="7" CornerRadius="4,0,0,4" Margin="22,0,0,18"/>
-                    <TextBlock Text="AUFGABEN / BEREICHE" FontFamily="Consolas" FontSize="10" Foreground="#32D5FF" Margin="0,0,0,12"/>
-                    <Button Content="FUNKTION FINDEN" Click="TaskCenterClicked" HorizontalContentAlignment="Left" Margin="0,0,0,12" ToolTip="Arbeitsplatz mit Suchfunktion und gefuehrten Arbeitsablaeufen (Strg+K). Oeffnet nur Bereiche, startet keine Aktion."/>
+                    <TextBlock Text="{loc:DesktopLabel Main.Areas}" FontFamily="Consolas" FontSize="10" Foreground="#32D5FF" Margin="0,0,0,12"/>
+                    <Button Content="{loc:DesktopLabel Main.Find}" Click="TaskCenterClicked" HorizontalContentAlignment="Left" Margin="0,0,0,12" ToolTip="{loc:DesktopLabel Main.FindTip}"/>
                     <StackPanel x:Name="NavigationGroups"/>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
-                    <Button Content="Darstellung / Desktop" Click="DisplaySettingsClicked" HorizontalContentAlignment="Left"
-                            ToolTip="Tag-/Nachtmodus, Transparenz, Gadgets und Hintergrunddiagnose einstellen."/>
-                    <CheckBox Content="Scanner-Animation" ToolTip="Scanner, Neon-Energiepfade und Pulsieren ein/aus. Statisches Neon bleibt sichtbar; Windows-Animationseinstellungen werden beachtet." IsChecked="{Binding MotionEnabled}"/>
+                    <Button Content="{loc:DesktopLabel Main.Desktop}" Click="DisplaySettingsClicked" HorizontalContentAlignment="Left"
+                            ToolTip="{loc:DesktopLabel Main.DesktopTip}"/>
+                    <CheckBox Content="{loc:DesktopLabel Main.Motion, ModernKey=Main.ModernMotion}" ToolTip="{loc:DesktopLabel Main.MotionTip, ModernKey=Main.ModernMotionTip}" IsChecked="{Binding MotionEnabled}"/>
                     <TextBlock Text="{Binding AccessStatus}" Foreground="#32D5FF" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" Margin="0,6,0,8"/>
-                    <TextBlock Text="ADMIN / UAC beim Start" Foreground="#24FFE3" FontSize="11" Margin="0,0,0,14"/>
+                    <TextBlock Text="{loc:DesktopLabel Main.Admin}" Foreground="#24FFE3" FontSize="11" Margin="0,0,0,14"/>
                     <Border BorderBrush="#6940A8" BorderThickness="1" CornerRadius="16,3,16,3" Padding="12">
                         <StackPanel>
                             <TextBlock Text="LOCAL FIRST" Foreground="#5DE5D0" FontSize="11"/>
-                            <TextBlock Text="Einzelplatz ohne Serverkontakt. Berichte nur nach Freigabe und ausdruecklichem Opt-in." TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="{loc:DesktopLabel Main.LocalNotice}" TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,8,0,0"/>
                         </StackPanel>
                     </Border>
                     <TextBlock Text="NATIVE / WINDOWS / v0.7" Foreground="#A8A4C5" FontFamily="Consolas" FontSize="10" Margin="0,16,0,0"/>
@@ -156,37 +157,37 @@
             <Grid Margin="0,0,0,8">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="DEIN SYSTEM. DEINE KOMMANDOBRUECKE." Foreground="#24FFE3" FontFamily="Consolas" FontSize="11"/>
+                    <TextBlock Text="{loc:DesktopLabel Main.Tagline}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="11"/>
                     <TextBlock Text="System Observatory" Foreground="#DCA4FF" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding SystemIdentity}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" MaxWidth="760" HorizontalAlignment="Left"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="16,0,0,0">
-                    <controls:LedDisplay Text="{Binding SystemClock}" Accent="#FF354A" Width="180" Height="32" ToolTip="Lokale Windows-Zeit / Aktualisierung mit Live-Messung"/>
+                    <controls:LedDisplay Text="{Binding SystemClock}" Accent="#FF354A" Width="180" Height="32" ToolTip="{loc:DesktopLabel Main.ClockTip}"/>
                     <TextBlock Text="{Binding SystemUptime}" Foreground="#F56AFF" FontFamily="Consolas" HorizontalAlignment="Right" Margin="0,2,0,4"/>
                     <TextBlock Text="{Binding LiveStatus}" Foreground="#24FFE3" FontFamily="Consolas" HorizontalAlignment="Right" Margin="0,2,0,8"/>
-                    <Button Content="Status aktualisieren" Click="RefreshClicked" IsEnabled="{Binding CanRefresh}"/>
+                    <Button Content="{loc:DesktopLabel Main.Refresh}" Click="RefreshClicked" IsEnabled="{Binding CanRefresh}"/>
                 </StackPanel>
             </Grid>
             <Border Grid.Row="1" BorderBrush="#6940A8" BorderThickness="1" CornerRadius="8" Background="#140E2C" Padding="8,3" Margin="0,0,0,8">
                 <DockPanel>
-                    <Button x:Name="NavBack" Content="&#9664; ZURUECK" Click="NavBackClicked" IsEnabled="False" Margin="0,0,8,0" Padding="8,3" FontSize="11"
-                            ToolTip="Zur vorherigen Ansicht zurueck - auch per Maus-Zurueck-Taste oder Alt+Pfeil links"/>
-                    <Button x:Name="NavForward" Content="VOR &#9654;" Click="NavForwardClicked" IsEnabled="False" Margin="0,0,8,0" Padding="8,3" FontSize="11"
-                            ToolTip="Wieder vorwaerts - auch per Maus-Vor-Taste oder Alt+Pfeil rechts"/>
+                    <Button x:Name="NavBack" Content="{loc:DesktopLabel Navigation.BackButton}" Click="NavBackClicked" IsEnabled="False" Margin="0,0,8,0" Padding="8,3" FontSize="11"
+                            ToolTip="{loc:DesktopLabel Navigation.BackTip}"/>
+                    <Button x:Name="NavForward" Content="{loc:DesktopLabel Navigation.ForwardButton}" Click="NavForwardClicked" IsEnabled="False" Margin="0,0,8,0" Padding="8,3" FontSize="11"
+                            ToolTip="{loc:DesktopLabel Navigation.ForwardTip}"/>
                     <Button Content="&#8962; COCKPIT" Click="NavHomeClicked" Margin="0,0,8,0" Padding="8,3" FontSize="11"
-                            ToolTip="Direkt zur Hauptebene (Cockpit)"/>
-                    <Button Content="? HILFE" Click="NavHelpClicked" DockPanel.Dock="Right" Padding="8,3" FontSize="11"
-                            ToolTip="Durchsuchbares Hilfe-Center oeffnen"/>
-                    <TextBlock x:Name="NavTrail" Text="HAUPTEBENE &#9656; COCKPIT" Foreground="#24FFE3" FontFamily="Consolas" FontSize="12"
+                            ToolTip="{loc:DesktopLabel Navigation.CockpitTip}"/>
+                    <Button Content="{loc:DesktopLabel Navigation.HelpButton}" Click="NavHelpClicked" DockPanel.Dock="Right" Padding="8,3" FontSize="11"
+                            ToolTip="{loc:DesktopLabel Navigation.HelpTip}"/>
+                    <TextBlock x:Name="NavTrail" Text="{loc:DesktopLabel Navigation.InitialTrail}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="12"
                                VerticalAlignment="Center" Margin="10,0,0,0"
-                               ToolTip="Aktuelle Position. Zurueck/Vor folgen deinem Besuchsverlauf wie im Browser."/>
+                               ToolTip="{loc:DesktopLabel Navigation.TrailTip}"/>
                 </DockPanel>
             </Border>
             <TabControl x:Name="Pages" Grid.Row="2" SelectionChanged="PageChanged" Background="Transparent" Foreground="#E1EAF7" BorderThickness="0" Padding="0">
                 <TabControl.Resources>
                     <Style TargetType="TabItem"><Setter Property="Visibility" Value="Collapsed"/></Style>
                 </TabControl.Resources>
-                <TabItem Header="Cockpit" ToolTip="Live-Instrumente: CPU, RAM, GPU, Netzwerk, Temperaturen und Systempuls">
+                <TabItem Header="Cockpit" Tag="Cockpit" ToolTip="{loc:DesktopLabel Module.CockpitTip}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,12" Padding="12">
@@ -200,7 +201,7 @@
                                             <Grid DataContext="{Binding Cards[0]}">
                                                 <controls:NeonGauge Level="{Binding Level}" Accent="#39FF68"/>
                                                 <StackPanel VerticalAlignment="Center">
-                                                    <TextBlock Text="CPU GESAMT / %" Foreground="#39FF68" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{loc:DesktopLabel Main.CpuTotal}" Foreground="#39FF68" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
                                                     <controls:LedDisplay Text="{Binding Value}" Accent="#39FF68" Height="36" Width="120" Margin="0,4"/>
                                                 </StackPanel>
                                             </Grid>
@@ -209,12 +210,12 @@
                                         <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="4"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     </ItemsControl>
                                     </Grid>
-                                    <WrapPanel><TextBlock Text="CPU TEMPERATUR: " Foreground="#FFCE54"/><TextBlock Text="{Binding CpuTemperature}" Foreground="#39FF68"/><TextBlock Text="   PACKAGE-LEISTUNG: " Foreground="#FFCE54"/><TextBlock Text="{Binding CpuPower}" Foreground="#39FF68"/></WrapPanel>
-                                    <TextBlock Text="ALLE LOGISCHEN CPU-KERNE / 0..100% / 2s" Foreground="#24FFE3" FontFamily="Consolas" Margin="0,6"/>
+                                    <WrapPanel><TextBlock Text="{loc:DesktopLabel Main.CpuTemperature}" Foreground="#FFCE54"/><TextBlock Text="{Binding CpuTemperature}" Foreground="#39FF68"/><TextBlock Text="{loc:DesktopLabel Main.PackagePower}" Foreground="#FFCE54"/><TextBlock Text="{Binding CpuPower}" Foreground="#39FF68"/></WrapPanel>
+                                    <TextBlock Text="{loc:DesktopLabel Main.CpuCores}" Foreground="#24FFE3" FontFamily="Consolas" Margin="0,6"/>
                                     <ItemsControl x:Name="CockpitCoreOverview" ItemsSource="{Binding CoreGraphs}" ItemTemplate="{StaticResource CompactCoreTemplate}" Height="288">
                                         <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="{Binding CoreColumns}"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     </ItemsControl>
-                                    <TextBlock Text="PHYSISCHE DATENTRAEGER / READ, WRITE, AKTIVZEIT, QUEUE / 15s" Foreground="#FF576E" FontFamily="Consolas" Margin="0,8"/>
+                                    <TextBlock Text="{loc:DesktopLabel Main.PhysicalDisks}" Foreground="#FF576E" FontFamily="Consolas" Margin="0,8"/>
                                     <ItemsControl ItemsSource="{Binding DiskGraphs}" ItemTemplate="{StaticResource CompactDiskTemplate}">
                                         <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="4"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     </ItemsControl>
@@ -251,7 +252,7 @@
                                             </Rectangle>
                                         </Canvas>
                                     </Viewbox>
-                                    <TextBlock Grid.Column="2" Text="VISUAL SCANNER / KEIN NETZSCAN" Foreground="#32D5FF" FontFamily="Consolas" FontSize="10" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{loc:DesktopLabel Layout.VisualScanner}" Foreground="#32D5FF" FontFamily="Consolas" FontSize="10" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
                             <ItemsControl x:Name="MetricCards" ItemsSource="{Binding Cards}">
@@ -285,19 +286,19 @@
                                 <StackPanel>
                                     <TextBlock Text="TASKMANAGER / LIVE PERFORMANCE" Foreground="#24FFE3" FontFamily="Consolas" FontSize="19"/>
                                     <TextBlock Text="{Binding DashboardStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
-                                    <Expander Header="NETZWERK / RX UND TX JE AKTIVEM ADAPTER" Foreground="#32D5FF" Margin="0,8">
+                                    <Expander Header="{loc:DesktopLabel Ui.NetworkHeading}" Foreground="#32D5FF" Margin="0,8">
                                         <ItemsControl ItemsSource="{Binding AdapterGraphs}" ItemTemplate="{StaticResource DashboardGraphTemplate}" Margin="0,10">
                                             <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                         </ItemsControl>
                                     </Expander>
-                                    <Expander Header="VOLUMES / BELEGUNGSBALKEN UND VERLAUF" Foreground="#4294FF" Margin="0,8" IsExpanded="True">
+                                    <Expander Header="{loc:DesktopLabel Layout.VolumeHistory}" Foreground="#4294FF" Margin="0,8" IsExpanded="True">
                                         <ItemsControl ItemsSource="{Binding VolumeGraphs}" ItemTemplate="{StaticResource DashboardGraphTemplate}" Margin="0,10">
                                             <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                         </ItemsControl>
                                     </Expander>
-                                    <Expander Header="SENSOREN / ALLE GEMELDETEN KANAELE MIT GRAPH UND BALKEN" Foreground="#D45CFF" Margin="0,8">
+                                    <Expander Header="{loc:DesktopLabel Ui.SensorsHeading}" Foreground="#D45CFF" Margin="0,8">
                                         <StackPanel>
-                                            <TextBlock Text="Sensorzugriff unten separat aktivieren. Unlesbare Werte: --, nicht 0. Nichtprozentwerte nutzen dynamische Skalen, keine Warn-/Gesundheitsscores." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
+                                            <TextBlock Text="{loc:DesktopLabel Layout.SensorAccessNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
                                             <ItemsControl ItemsSource="{Binding SensorGraphs}" ItemTemplate="{StaticResource DashboardGraphTemplate}">
                                                 <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="4"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                             </ItemsControl>
@@ -307,12 +308,12 @@
                             </Border>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,16">
                                 <StackPanel>
-                                    <TextBlock Text="PROZESSMONITOR / CPU / RAM / I/O" FontFamily="Consolas" Foreground="#24FFE3" FontSize="19"/>
-                                    <TextBlock Text="CPU: Anteil an gesamter logischer CPU-Kapazitaet im Messintervall. RAM: Working Set, gemeinsame Seiten werden mehrfach gezaehlt. I/O: Prozesszaehler inklusive Datei/Geraet/Netzwerk, keine SSD-Bandbreite. Spalten anklicken zum Sortieren." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
-                                    <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged}" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="8" Margin="0,0,0,8" AutomationProperties.Name="Prozessfilter" ToolTip="Name, PID oder Status filtern"/>
+                                    <TextBlock Text="{loc:DesktopLabel Ui.ProcessMonitorHeading}" FontFamily="Consolas" Foreground="#24FFE3" FontSize="19"/>
+                                    <TextBlock Text="{loc:DesktopLabel Layout.ProcessAccounting}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
+                                    <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged}" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="8" Margin="0,0,0,8" AutomationProperties.Name="{loc:DesktopLabel Ui.ProcessFilter}" ToolTip="{loc:DesktopLabel Ui.ProcessFilterTipAlt}"/>
                                     <DataGrid x:Name="DashboardProcesses" ItemsSource="{Binding ProcessView}" Height="330" EnableRowVirtualization="True">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="PROZESS" Binding="{Binding Name}" Width="2*"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.ProcessColumn}" Binding="{Binding Name}" Width="2*"/>
                                             <DataGridTextColumn Header="PID" Binding="{Binding Id}" Width="75"/>
                                             <DataGridTemplateColumn Header="CPU %" SortMemberPath="CpuPercent" Width="110">
                                                 <DataGridTemplateColumn.CellTemplate><DataTemplate><Grid>
@@ -340,7 +341,7 @@
                                 <StackPanel>
                                     <TextBlock Text="EVENTMONITOR / SYSTEM + APPLICATION" FontFamily="Consolas" Foreground="#D45CFF" FontSize="19"/>
                                     <TextBlock Text="{Binding EventStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
-                                    <TextBlock Text="24H / STUNDENBUCKETS / nur die maximal 400 gelieferten Ereignisse, kein vollstaendiges Ereignisaufkommen" Foreground="#32D5FF" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                    <TextBlock Text="{loc:DesktopLabel Layout.EventBuckets}" Foreground="#32D5FF" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                     <ItemsControl ItemsSource="{Binding EventBuckets}" Height="115" Margin="0,0,0,12">
                                         <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="24"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate><DataTemplate>
@@ -363,24 +364,24 @@
                                     </ItemsControl>
                                     <Grid>
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="200"/></Grid.ColumnDefinitions>
-                                        <TextBox Text="{Binding EventFilter, UpdateSourceTrigger=PropertyChanged}" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="8" Margin="0,4,8,10" AutomationProperties.Name="Ereignisfilter" ToolTip="Quelle, Ereignis-ID, Kanal oder Nachricht filtern"/>
-                                        <ComboBox Grid.Column="1" SelectedIndex="{Binding EventSeverity}" AutomationProperties.Name="Ereignisstufe">
-                                            <ComboBoxItem Content="Alle Stufen"/><ComboBoxItem Content="Kritisch / Fehler"/><ComboBoxItem Content="Warnung"/><ComboBoxItem Content="Information"/>
+                                        <TextBox Text="{Binding EventFilter, UpdateSourceTrigger=PropertyChanged}" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="8" Margin="0,4,8,10" AutomationProperties.Name="{loc:DesktopLabel Ui.EventFilter}" ToolTip="{loc:DesktopLabel Layout.EventFilter}"/>
+                                        <ComboBox Grid.Column="1" SelectedIndex="{Binding EventSeverity}" AutomationProperties.Name="{loc:DesktopLabel Ui.EventLevel}">
+                                            <ComboBoxItem Content="{loc:DesktopLabel Ui.AllLevels}"/><ComboBoxItem Content="{loc:DesktopLabel Layout.CriticalErrors}"/><ComboBoxItem Content="{loc:DesktopLabel Ui.Warning}"/><ComboBoxItem Content="Information"/>
                                         </ComboBox>
                                     </Grid>
                                     <DataGrid x:Name="DashboardEvents" ItemsSource="{Binding EventView}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Height="260" SelectionMode="Single">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="ZEIT" Binding="{Binding LocalTime, StringFormat=MM-dd HH:mm:ss}" Width="140"/>
-                                            <DataGridTextColumn Header="STUFE" Binding="{Binding Severity}" Width="110"/>
-                                            <DataGridTextColumn Header="KANAL" Binding="{Binding Log}" Width="105"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Time}" Binding="{Binding LocalTime, StringFormat=MM-dd HH:mm:ss}" Width="140"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.LevelColumn}" Binding="{Binding Severity}" Width="110"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.ChannelColumn}" Binding="{Binding Log}" Width="105"/>
                                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
-                                            <DataGridTextColumn Header="QUELLE" Binding="{Binding Provider}" Width="2*"/>
-                                            <DataGridTextColumn Header="NACHRICHT" Binding="{Binding Message}" Width="3*"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Layout.Source}" Binding="{Binding Provider}" Width="2*"/>
+                                            <DataGridTextColumn Header="{loc:DesktopLabel Ui.MessageColumn}" Binding="{Binding Message}" Width="3*"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                    <TextBlock Text="EREIGNISDETAIL / Auswahl oben / maximal 2000 Zeichen pro Nachricht" Foreground="#32D5FF" FontFamily="Consolas" Margin="0,12,0,6"/>
+                                    <TextBlock Text="{loc:DesktopLabel Layout.EventDetailNotice}" Foreground="#32D5FF" FontFamily="Consolas" Margin="0,12,0,6"/>
                                     <TextBox x:Name="DashboardEventDetail" Text="{Binding SelectedEvent.Message, Mode=OneWay}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Height="130"
-                                             VerticalScrollBarVisibility="Auto" Background="#080516" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="10" AutomationProperties.Name="Ereignisdetails"/>
+                                             VerticalScrollBarVisibility="Auto" Background="#080516" Foreground="#E1EAF7" BorderBrush="#7944B5" Padding="10" AutomationProperties.Name="{loc:DesktopLabel Ui.EventDetails}"/>
                                 </StackPanel>
                             </Border>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
@@ -391,7 +392,7 @@
                                     <StackPanel Grid.Column="2"><TextBlock Text="CPU / PACKAGE POWER" Foreground="#7F9DBA" FontSize="11"/><TextBlock Text="{Binding CpuPower}" FontSize="23" Margin="0,8,0,0"/></StackPanel>
                                 </Grid>
                                     <TextBlock Text="{Binding CpuSensorDetail}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,0"/>
-                                    <Button Content="CPU-/Sensorproviderbericht lesen" Click="SensorReportClicked" HorizontalAlignment="Left" Margin="0,8"/>
+                                    <Button Content="{loc:DesktopLabel Layout.ReadSensorReport}" Click="SensorReportClicked" HorizontalAlignment="Left" Margin="0,8"/>
                                 </StackPanel>
                             </Border>
                             <ItemsControl ItemsSource="{Binding Instruments}" Margin="0,0,0,12">
@@ -409,38 +410,38 @@
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                 <Border Style="{StaticResource Panel}" Margin="0,0,18,0">
                                     <StackPanel>
-                                        <TextBlock Text="SYSTEMPULS" FontSize="17" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{loc:DesktopLabel Ui.SystemPulse}" FontSize="17" Margin="0,0,0,8"/>
                                         <TextBlock Text="{Binding SecuritySummary}" Foreground="#8ABBD3" TextWrapping="Wrap" Margin="0,0,0,14"/>
                                         <ItemsControl ItemsSource="{Binding Alerts}" ItemTemplate="{StaticResource CheckTemplate}"/>
-                                        <TextBlock Text="Hinweise sind erklaerbar, nicht diagnostisch: Kein erfundener Health-Score, keine Lebensdauerprognose, kein Malware-Freiheitsversprechen." Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12"/>
+                                        <TextBlock Text="{loc:DesktopLabel Layout.HealthNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="1" Style="{StaticResource Panel}">
                                     <StackPanel>
-                                        <TextBlock Text="DATENKONTROLLE" FontSize="17" Margin="0,0,0,10"/>
-                                        <CheckBox x:Name="SensorToggle" Content="Hardware-Sensoren / beim Boot initialisiert" Checked="SensorsChanged" Unchecked="SensorsChanged"/>
+                                        <TextBlock Text="{loc:DesktopLabel Ui.DataControl}" FontSize="17" Margin="0,0,0,10"/>
+                                        <CheckBox x:Name="SensorToggle" Content="{loc:DesktopLabel Ui.SensorBoot}" Checked="SensorsChanged" Unchecked="SensorsChanged"/>
                                         <TextBlock Text="{Binding SensorStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,14"/>
-                                        <CheckBox x:Name="HistoryToggle" Content="Messverlauf lokal aufzeichnen" Checked="HistoryChanged" Unchecked="HistoryChanged"/>
+                                        <CheckBox x:Name="HistoryToggle" Content="{loc:DesktopLabel Layout.RecordHistory}" Checked="HistoryChanged" Unchecked="HistoryChanged"/>
                                         <TextBlock Text="{Binding HistoryStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12"/>
-                                        <TextBlock Text="Live-Kurven: bis zu 90 Messpunkte. JSONL-Intervall konfigurierbar (Standard 5s), max. 7 Dateien / 16 MiB pro Tag. Aufzeichnung ist standardmaessig aus." Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,12,0,16"/>
-                                        <Button Content="Lokalen Datenordner oeffnen" Click="OpenHistoryClicked" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{loc:DesktopLabel Ui.HistoryNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,12,0,16"/>
+                                        <Button Content="{loc:DesktopLabel Layout.OpenDataFolder}" Click="OpenHistoryClicked" HorizontalAlignment="Left"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Mainboard" ToolTip="Virtuelles Retro-Mainboard mit lokal erkannten Komponenten und logischen Verbindungen">
+                <TabItem Header="{loc:DesktopLabel Module.Mainboard, ModernKey=Module.SystemSchema}" Tag="Mainboard" ToolTip="{loc:DesktopLabel Module.BoardTip, ModernKey=Module.SchemaTip}">
                     <controls:HardwareBoardView x:Name="HardwareBoard"/>
                 </TabItem>
-                <TabItem Header="Taskmanager" ToolTip="Prozesse mit maschinennormiertem CPU-Anteil und Graphen fuer jeden logischen Kern">
+                <TabItem Header="{loc:DesktopLabel Module.Taskmanager}" Tag="Taskmanager" ToolTip="{loc:DesktopLabel Module.ProcessesTip}">
                     <Border Style="{StaticResource Panel}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="1.3*"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                         <StackPanel>
-                            <TextBlock Text="TASKMANAGER / EINGEBETTET / LIVE" FontFamily="Consolas" Foreground="#24FFE3" FontSize="22"/>
+                            <TextBlock Text="{loc:DesktopLabel Ui.TaskManagerHeading}" FontFamily="Consolas" Foreground="#24FFE3" FontSize="22"/>
                             <TextBlock Text="{Binding DashboardStatus}" Foreground="{StaticResource Muted}" Margin="0,8" TextWrapping="Wrap"/>
-                            <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged}" Foreground="#E1EAF7" Background="#15102D" Padding="8" ToolTip="Name / PID / Status filtern"/>
+                            <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged}" Foreground="#E1EAF7" Background="#15102D" Padding="8" ToolTip="{loc:DesktopLabel Ui.ProcessFilterTip}"/>
                         </StackPanel>
                         <ItemsControl Grid.Row="1" x:Name="TaskmanagerCoreOverview" ItemsSource="{Binding CoreGraphs}" ItemTemplate="{StaticResource CompactCoreTemplate}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,6">
                             <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="{Binding CoreColumns}"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
@@ -459,166 +460,166 @@
                             </DataGrid.Columns>
                         </DataGrid>
                         <WrapPanel Grid.Row="3">
-                            <Button Content="Auswahl / Prozessdetails" Click="ProcessDetailsClicked" Margin="0,10,8,0"/>
-                            <Button Content="Prozesse / Prioritaet / Beenden" Tag="processes" Click="ManagementClicked" Margin="0,10,8,0"/>
-                            <Button Content="Dienste eingebettet verwalten" Tag="services" Click="ManagementClicked" Margin="0,10,8,0"/>
-                            <Button Content="Aufgaben eingebettet verwalten" Tag="tasks" Click="ManagementClicked" Margin="0,10,8,0"/>
+                            <Button Content="{loc:DesktopLabel Layout.ProcessDetails}" Click="ProcessDetailsClicked" Margin="0,10,8,0"/>
+                            <Button Content="{loc:DesktopLabel Ui.ProcessesHeading}" Tag="processes" Click="ManagementClicked" Margin="0,10,8,0"/>
+                            <Button Content="{loc:DesktopLabel Ui.ServicesEmbedded}" Tag="services" Click="ManagementClicked" Margin="0,10,8,0"/>
+                            <Button Content="{loc:DesktopLabel Ui.TaskManagerEmbedded}" Tag="tasks" Click="ManagementClicked" Margin="0,10,8,0"/>
                         </WrapPanel>
                     </Grid>
                     </Border>
                 </TabItem>
-                <TabItem Header="Sensoren" ToolTip="Live-Verlaufskurven nach Hardware und Einheit; umschaltbare Detailmatrix mit Grenzwerten">
+                <TabItem Header="{loc:DesktopLabel Module.Sensoren}" Tag="Sensoren" ToolTip="{loc:DesktopLabel Module.SensorsTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,0,18">
-                            <TextBlock Text="Sensor-Matrix / Live-Diagramme" FontSize="24"/>
-                            <Button Content="Warnschwellen / ATX / Drosselung" Tag="Einstellungen" Click="ControlCenterNavigate" HorizontalAlignment="Left" Margin="0,10,0,0" ToolTip="Springt direkt zu den Einstellungen der Systemkontrolle"/>
-                            <Button Content="Sichtbare Sensoren als CSV-Snapshot" Click="ExportSensorsClicked" HorizontalAlignment="Left" ToolTip="Momentaufnahme der gefilterten Detailmatrix, inklusive gekennzeichneter Grenzwerte und leerer fehlender Werte"/>
+                            <TextBlock Text="{loc:DesktopLabel Ui.SensorMatrixHeading}" FontSize="24"/>
+                            <Button Content="{loc:DesktopLabel Layout.SensorSettings}" Tag="Einstellungen" Click="ControlCenterNavigate" HorizontalAlignment="Left" Margin="0,10,0,0" ToolTip="{loc:DesktopLabel Layout.SensorSettingsTip}"/>
+                            <Button Content="{loc:DesktopLabel Ui.SensorExport}" Click="ExportSensorsClicked" HorizontalAlignment="Left" ToolTip="{loc:DesktopLabel Layout.MatrixSnapshot}"/>
                             <TextBlock Text="{Binding SensorStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,8"/>
-                            <TextBox Text="{Binding SensorFilter, UpdateSourceTrigger=PropertyChanged}" Background="#142438" Foreground="#DCEAF7" BorderBrush="#29425C" Padding="10" ToolTip="Diagramme und Detailmatrix nach Hardware, Name, Typ, Einheit oder Sensor-ID filtern" AutomationProperties.Name="Sensorfilter"/>
+                            <TextBox Text="{Binding SensorFilter, UpdateSourceTrigger=PropertyChanged}" Background="#142438" Foreground="#DCEAF7" BorderBrush="#29425C" Padding="10" ToolTip="{loc:DesktopLabel Ui.SensorFilterTip}" AutomationProperties.Name="{loc:DesktopLabel Ui.SensorFilter}"/>
                         </StackPanel>
                         <controls:SensorChartsView x:Name="SensorCharts" Grid.Row="1"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Laufwerke" ToolTip="Windows Storage Health und Speicherplatz; vollstaendiges SMART im Modul SMART der Systemkontrolle">
+                <TabItem Header="{loc:DesktopLabel Module.Laufwerke}" Tag="Laufwerke" ToolTip="{loc:DesktopLabel Module.DrivesTip}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="Storage Observatory" FontSize="24"/>
-                            <Button Content="SMART-Diagnose und Laufwerkstests" Tag="SMART" Click="ControlCenterNavigate" HorizontalAlignment="Left" Margin="0,10,0,0" ToolTip="Springt direkt zum SMART-Modul der Systemkontrolle"/>
-                            <TextBlock Text="Windows Storage Health und freier Speicher. Vollstaendiges NVMe-SMART und herstellerspezifische Diagnosen sind damit nicht garantiert; fehlende Detailwerte bleiben sichtbar." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,18"/>
-                            <TextBlock Text="PHYSISCHE LAUFWERKE" Foreground="#5DE5D0" Margin="0,0,0,12"/>
+                            <Button Content="{loc:DesktopLabel Layout.SmartTests}" Tag="SMART" Click="ControlCenterNavigate" HorizontalAlignment="Left" Margin="0,10,0,0" ToolTip="{loc:DesktopLabel Ui.SmartJump}"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.StorageNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,18"/>
+                            <TextBlock Text="{loc:DesktopLabel Ui.PhysicalDrives}" Foreground="#5DE5D0" Margin="0,0,0,12"/>
                             <ItemsControl ItemsSource="{Binding Disks}" ItemTemplate="{StaticResource CheckTemplate}"/>
-                            <TextBlock Text="VOLUMES / SPEICHERPLATZ" Foreground="#5DE5D0" Margin="0,18,0,12"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.Volumes}" Foreground="#5DE5D0" Margin="0,18,0,12"/>
                             <ItemsControl ItemsSource="{Binding Volumes}" ItemTemplate="{StaticResource CheckTemplate}"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Messauswertung" ToolTip="MIN/MAX/AVG-Statistik, JSONL-Aufzeichnung, Logvergleich und CSV-Export">
+                <TabItem Header="{loc:DesktopLabel Module.Messauswertung}" Tag="Messauswertung" ToolTip="{loc:DesktopLabel Module.MeasurementsTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,0,18">
-                            <TextBlock Text="Messauswertung / MIN - MAX - AVG" FontSize="24" Foreground="#24FFE3" FontFamily="Consolas"/>
-                            <Button Content="Log-Viewer / Gaming / Vergleich" Click="OpenControlCenterClicked" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+                            <TextBlock Text="{loc:DesktopLabel Ui.StatisticsHeading}" FontSize="24" Foreground="#24FFE3" FontFamily="Consolas"/>
+                            <Button Content="{loc:DesktopLabel Ui.LogViewerTab}" Click="OpenControlCenterClicked" HorizontalAlignment="Left" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding SessionStatus}" Foreground="{StaticResource Muted}" Margin="0,8,0,12"/>
                             <WrapPanel>
-                                <Button Content="Neue Messsitzung" Click="ResetStatisticsClicked" Margin="0,0,12,0"/>
-                                <Button Content="Sitzung anhalten / fortsetzen" Click="PauseStatisticsClicked" Margin="0,0,12,0"/>
-                                <Button Content="Sichtbare Auswertung als CSV exportieren" Click="ExportStatisticsClicked"/>
+                                <Button Content="{loc:DesktopLabel Ui.NewSession}" Click="ResetStatisticsClicked" Margin="0,0,12,0"/>
+                                <Button Content="{loc:DesktopLabel Layout.PauseSession}" Click="PauseStatisticsClicked" Margin="0,0,12,0"/>
+                                <Button Content="{loc:DesktopLabel Ui.StatisticsExport}" Click="ExportStatisticsClicked"/>
                             </WrapPanel>
-                            <TextBlock Text="Sitzungsstatistik im RAM, keine FPS-Messung und kein synthetischer Benchmark. Sensorluecken werden nicht als 0 gemittelt." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,12,0,0"/>
-                            <TextBox Text="{Binding StatisticsFilter, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NeonTextBox}" AutomationProperties.Name="Statistikfilter" ToolTip="Hardware, Messreihe oder Einheit filtern; CSV exportiert nur sichtbare Reihen" Margin="0,8"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.SessionNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+                            <TextBox Text="{Binding StatisticsFilter, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NeonTextBox}" AutomationProperties.Name="{loc:DesktopLabel Ui.StatisticsFilter}" ToolTip="{loc:DesktopLabel Layout.SessionFilter}" Margin="0,8"/>
                         </StackPanel>
                         <DataGrid Grid.Row="1" ItemsSource="{Binding StatisticsView}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="KOMPONENTE" Binding="{Binding Hardware}" Width="2*"/>
-                                <DataGridTextColumn Header="MESSREIHE" Binding="{Binding Name}" Width="2*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Inventory.Component}" Binding="{Binding Hardware}" Width="2*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Ui.SeriesColumn}" Binding="{Binding Name}" Width="2*"/>
                                 <DataGridTextColumn Header="MIN" Binding="{Binding MinDisplay}" Width="*"/>
                                 <DataGridTextColumn Header="MAX" Binding="{Binding MaxDisplay}" Width="*"/>
                                 <DataGridTextColumn Header="AVG" Binding="{Binding AvgDisplay}" Width="*"/>
-                                <DataGridTextColumn Header="PUNKTE" Binding="{Binding Count}" Width="*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Ui.PointsColumn}" Binding="{Binding Count}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Diagnose" ToolTip="Lesende Windows-Pruefungen, Speicherdiagnose-Ergebnisse, Diagnose-Export und Schnellzugriffe">
+                <TabItem Header="{loc:DesktopLabel Module.Diagnose}" Tag="Diagnose" ToolTip="{loc:DesktopLabel Module.DiagnosticsTip}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="Diagnose &amp; Systemkontrolle" FontSize="24" Foreground="#32D5FF" FontFamily="Consolas"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.DiagnoseControl}" FontSize="24" Foreground="#32D5FF" FontFamily="Consolas"/>
                             <WrapPanel Margin="0,12,0,12">
-                                <Button Content="Windows-Diagnose &amp; Problemlösung" Click="OpenWindowsAssistantsClicked" Margin="0,0,8,0" ToolTip="Oeffnet die getrennten Windows-Assistenten fuer Systemdateien, Updates, Netzwerk und Geraete/Treiber"/>
-                                <Button Content="Erweiterte Systemkontrolle" Click="OpenControlCenterClicked" Margin="0,0,8,0" ToolTip="SMART, Pakete, Netzwerk, Wartungskatalog, Spuren, Einstellungen und Schluessel"/>
-                                <Button Content="Speicherdiagnose-Ergebnisse" Click="MemoryDiagnosticsClicked" Margin="0,0,8,0" ToolTip="Vorhandene Ergebnisse der Windows-Speicherdiagnose aus dem System-Ereignislog lesen; startet keinen RAM-Test"/>
-                                <Button Content="Diagnosebericht exportieren" Click="ExportDiagnosticsClicked" ToolTip="Textbericht mit Vorschau; persoenliche Angaben werden auf Wunsch geschwaerzt"/>
-                                <Button Content="Rechner-Inventar" Click="InventoryClicked" ToolTip="Lokales Inventar aus Hardware und installierter Software anzeigen und speichern"/>
+                                <Button Content="{loc:DesktopLabel Layout.WindowsDiagnostics}" Click="OpenWindowsAssistantsClicked" Margin="0,0,8,0" ToolTip="{loc:DesktopLabel Layout.AssistantsTip}"/>
+                                <Button Content="{loc:DesktopLabel Ui.AdvancedControl}" Click="OpenControlCenterClicked" Margin="0,0,8,0" ToolTip="{loc:DesktopLabel Layout.ControlCenterTip}"/>
+                                <Button Content="{loc:DesktopLabel Layout.MemoryResults}" Click="MemoryDiagnosticsClicked" Margin="0,0,8,0" ToolTip="{loc:DesktopLabel Layout.MemoryResultsTip}"/>
+                                <Button Content="{loc:DesktopLabel Layout.ExportReport}" Click="ExportDiagnosticsClicked" ToolTip="{loc:DesktopLabel Layout.ExportReportTip}"/>
+                                <Button Content="{loc:DesktopLabel Layout.Inventory}" Click="InventoryClicked" ToolTip="{loc:DesktopLabel Layout.InventoryTip}"/>
                             </WrapPanel>
                             <TextBlock Text="{Binding ProbeStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,12"/>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                                 <StackPanel>
-                                    <TextBlock Text="WINDOWS / DIREKTE WERKZEUGE" Foreground="#D45CFF" FontFamily="Consolas" Margin="0,0,0,12"/>
+                                    <TextBlock Text="{loc:DesktopLabel Ui.WindowsToolsHeading}" Foreground="#D45CFF" FontFamily="Consolas" Margin="0,0,0,12"/>
                                     <WrapPanel>
                                         <Button Content="Task-Manager" Tag="taskmgr" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Geraete-Manager" Tag="devices" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Datentraegerverwaltung" Tag="disks" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Ereignisanzeige" Tag="events" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Windows Sicherheit" Tag="security" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Autostart verwalten" Tag="startup" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Layout.DeviceManager}" Tag="devices" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Ui.DiskManagement}" Tag="disks" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Ui.EventViewer}" Tag="events" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Layout.WindowsSecurity}" Tag="security" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Ui.StartupManage}" Tag="startup" Click="OpenToolClicked" Margin="0,0,8,8"/>
                                         <Button Content="Windows Update" Tag="updates" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Netzwerk / WLAN" Tag="network" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Aufgabenplanung" Tag="tasks" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="Dienste" Tag="services" Click="OpenToolClicked" Margin="0,0,8,8"/>
-                                        <Button Content="GodMode-Ordner" Tag="godmode" Click="OpenToolClicked" Margin="0,0,8,8"
-                                                ToolTip="Windows-Ansicht 'Alle Aufgaben'. Auf Windows-Builds ohne diese Ansicht oeffnet sich stattdessen Alle Systemsteuerungselemente - mit Hinweis in der Fusszeile."/>
-                                        <Button Content="AETHER xBar AN/AUS" Tag="xbar" Click="OpenToolClicked" Margin="0,0,8,8"
-                                                ToolTip="App-, Datei-, Ordner- und Laufwerkszugriff, Live-Widgets und bestaetigungspflichtige Windows-Aktionen"/>
+                                        <Button Content="{loc:DesktopLabel Ui.NetworkWifi}" Tag="network" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Ui.TaskScheduler}" Tag="tasks" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Ui.Services}" Tag="services" Click="OpenToolClicked" Margin="0,0,8,8"/>
+                                        <Button Content="{loc:DesktopLabel Layout.GodMode}" Tag="godmode" Click="OpenToolClicked" Margin="0,0,8,8"
+                                                ToolTip="{loc:DesktopLabel Layout.AllTasksTip}"/>
+                                        <Button Content="{loc:DesktopLabel Ui.XbarToggle}" Tag="xbar" Click="OpenToolClicked" Margin="0,0,8,8"
+                                                ToolTip="{loc:DesktopLabel Layout.AdminAccess}"/>
                                     </WrapPanel>
-                                    <TextBlock Text="Oeffnet die originalen Windows-Werkzeuge. Aenderungen dort erfolgen unter deiner Kontrolle. Keine Hintergrund-Reparaturen, keine Schutzabschaltung." Foreground="{StaticResource Muted}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{loc:DesktopLabel Layout.WindowsToolsNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
                             <ItemsControl ItemsSource="{Binding Diagnostics}" ItemTemplate="{StaticResource CheckTemplate}"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Sicherheit" ToolTip="Lesender Schutzstatus: Defender, Firewall, BitLocker, Secure Boot, TPM, Updates">
+                <TabItem Header="{loc:DesktopLabel Module.Sicherheit}" Tag="Sicherheit" ToolTip="{loc:DesktopLabel Module.SecurityTip}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="Sicherheit &amp; Windows-Telemetrie" FontSize="24"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.SecurityTelemetry}" FontSize="24"/>
                             <TextBlock Text="{Binding ProbeStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,10"/>
-                            <TextBlock Text="Gruen: gemeldete Pruefung bestanden. Orange: Hinweis. Grau: Information oder unbekannt. Nicht lesbar bedeutet niemals sicher. Diese Ansicht ersetzt kein Sicherheitsprodukt." Foreground="#8ABBD3" TextWrapping="Wrap" Margin="0,0,0,18"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.SecurityLegend}" Foreground="#8ABBD3" TextWrapping="Wrap" Margin="0,0,0,18"/>
                             <ItemsControl ItemsSource="{Binding Checks}" ItemTemplate="{StaticResource CheckTemplate}"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Cleaner" ToolTip="Vorschau mit Bewertung, explizite Checkbox-Auswahl, endgueltiges Loeschen nur nach Bestaetigung">
+                <TabItem Header="Cleaner" Tag="Cleaner" ToolTip="{loc:DesktopLabel Module.CleanerTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,0,16">
-                            <TextBlock Text="Cleaner / Vorschau vor Kontrolle" FontSize="24" Foreground="#D45CFF" FontFamily="Consolas"/>
-                            <TextBlock Text="Nur gewaehlte Kategorie, Dateien aelter als 7 Tage. Keine Downloads, Cookies, Lesezeichen oder Offline-Medien. Keine Ordnerloeschung. System-/Diagnosecaches nur bewusst im Expertenmodus." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,12"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.CleanerHeading}" FontSize="24" Foreground="#D45CFF" FontFamily="Consolas"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.CleanerNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,12"/>
                             <WrapPanel IsEnabled="{Binding CanClean}" Margin="0,0,0,12">
                                 <ComboBox x:Name="CacheLevel" Width="180" SelectedIndex="0" SelectionChanged="CacheLevelChanged" Margin="0,0,12,0">
-                                    <ComboBoxItem Content="Schnell"/><ComboBoxItem Content="Standard"/><ComboBoxItem Content="Tief"/><ComboBoxItem Content="Experte"/>
+                                    <ComboBoxItem Content="{loc:DesktopLabel Ui.Fast}"/><ComboBoxItem Content="Standard"/><ComboBoxItem Content="{loc:DesktopLabel Ui.Deep}"/><ComboBoxItem Content="{loc:DesktopLabel Ui.Expert}"/>
                                 </ComboBox>
-                                <ComboBox x:Name="CacheTargets" Width="520" SelectionChanged="CacheTargetChanged" AutomationProperties.Name="Cache-Kategorie"/>
+                                <ComboBox x:Name="CacheTargets" Width="520" SelectionChanged="CacheTargetChanged" AutomationProperties.Name="{loc:DesktopLabel Ui.CacheCategory}"/>
                             </WrapPanel>
                             <WrapPanel>
-                                <Button Content="Grosse Dateien finden / nur lesen" Click="StorageAnalysisClicked" Margin="0,0,12,0"/>
-                                <Button Content="Temp-Dateien pruefen" Click="ScanCleanupClicked" IsEnabled="{Binding CanClean}" Margin="0,0,12,0"/>
-                                <Button Content="Sichtbare ankreuzen" Tag="visible" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
-                                <Button Content="Keine ankreuzen" Tag="none" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
-                                <Button Content="Markierte Zeilen ankreuzen" Tag="rows" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
-                                <Button Content="Angekreuzte Dateien loeschen" Click="DeleteCleanupClicked" IsEnabled="{Binding CanClean}" BorderBrush="#FF354A" Margin="0,0,12,0"/>
-                                <Button Content="Abbrechen" Click="CancelCleanupClicked"/>
+                                <Button Content="{loc:DesktopLabel Layout.FindLargeFiles}" Click="StorageAnalysisClicked" Margin="0,0,12,0"/>
+                                <Button Content="{loc:DesktopLabel Layout.CheckTemp}" Click="ScanCleanupClicked" IsEnabled="{Binding CanClean}" Margin="0,0,12,0"/>
+                                <Button Content="{loc:DesktopLabel Ui.CheckVisible}" Tag="visible" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
+                                <Button Content="{loc:DesktopLabel Layout.UncheckAll}" Tag="none" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
+                                <Button Content="{loc:DesktopLabel Ui.CheckMarked}" Tag="rows" Click="CleanupSelectionClicked" IsEnabled="{Binding CanClean}" Margin="0,0,8,0"/>
+                                <Button Content="{loc:DesktopLabel Layout.DeleteChecked}" Click="DeleteCleanupClicked" IsEnabled="{Binding CanClean}" BorderBrush="#FF354A" Margin="0,0,12,0"/>
+                                <Button Content="{loc:DesktopLabel Ui.Cancel}" Click="CancelCleanupClicked"/>
                             </WrapPanel>
                             <TextBlock Text="{Binding CleanupStatus}" Foreground="#32D5FF" TextWrapping="Wrap" Margin="0,12,0,0"/>
-                            <TextBlock x:Name="CleanupSelectionStatus" Text="0 Dateien angekreuzt / 0 MiB. Zeilenmarkierung loescht nichts." Foreground="#39FF68" TextWrapping="Wrap" Margin="0,5"/>
-                            <TextBox Text="{Binding CleanupFilter, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NeonTextBox}" AutomationProperties.Name="Cleaner-Pfadfilter" ToolTip="Nur Ansicht filtern. Versteckte angekreuzte Dateien bleiben ausgewaehlt; Keine ankreuzen leert die gesamte Auswahl." Margin="0,8"/>
+                            <TextBlock x:Name="CleanupSelectionStatus" Text="{loc:DesktopLabel Layout.CleanerInitial}" Foreground="#39FF68" TextWrapping="Wrap" Margin="0,5"/>
+                            <TextBox Text="{Binding CleanupFilter, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NeonTextBox}" AutomationProperties.Name="{loc:DesktopLabel Ui.CleanerFilter}" ToolTip="{loc:DesktopLabel Layout.CleanerFilterNotice}" Margin="0,8"/>
                         </StackPanel>
                         <DataGrid x:Name="CleanupGrid" Grid.Row="1" ItemsSource="{Binding CleanupView}" SelectionMode="Extended" SelectionUnit="FullRow">
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="LOESCHEN?" Width="90"><DataGridTemplateColumn.CellTemplate><DataTemplate>
-                                    <CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding DataContext.CanClean, RelativeSource={RelativeSource AncestorType=DataGrid}}" Checked="CleanupChecked" Unchecked="CleanupChecked" HorizontalAlignment="Center" ToolTip="Nur angekreuzte Dateien werden nach Bestaetigung geloescht"/>
+                                <DataGridTemplateColumn Header="{loc:DesktopLabel Layout.DeleteQuestion}" Width="90"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                    <CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding DataContext.CanClean, RelativeSource={RelativeSource AncestorType=DataGrid}}" Checked="CleanupChecked" Unchecked="CleanupChecked" HorizontalAlignment="Center" ToolTip="{loc:DesktopLabel Layout.DeleteCheckboxTip}"/>
                                 </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
-                                <DataGridTextColumn Header="GEPRUEFTE DATEI / ZEILENMARKIERUNG IST KEINE LOESCHFREIGABE" Binding="{Binding Path}" Width="4*"/>
-                                <DataGridTextColumn Header="GROESSE" Binding="{Binding SizeDisplay}" Width="*"/>
-                                <DataGridTextColumn Header="GEAENDERT (UTC)" Binding="{Binding LastWriteUtc, StringFormat=yyyy-MM-dd HH:mm}" Width="*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Layout.CheckedFile}" Binding="{Binding Path}" Width="4*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Ui.SizeColumn}" Binding="{Binding SizeDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="{loc:DesktopLabel Layout.ModifiedUtc}" Binding="{Binding LastWriteUtc, StringFormat=yyyy-MM-dd HH:mm}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Ereignisse" ToolTip="Windows-Ereignisprotokolle: Kanal und Zeitraum waehlen, Details eingebettet lesen"><Border Style="{StaticResource Panel}"><controls:EventBrowser x:Name="EmbeddedEvents"/></Border></TabItem>
-                <TabItem Header="Superadmin" ToolTip="Statusbasierte Verwaltung: Dienste, Aufgaben, Firewall, Pakete, Benutzer - mit Vorschau, Einzelbestaetigung und Ruecknahme"><Border Style="{StaticResource Panel}"><controls:AdminWorkbench x:Name="Workbench"/></Border></TabItem>
-                <TabItem Header="Operations" ToolTip="Wartungsplaene, Windows-Updates und Arbeitsgruppen-Geraete - einzeln bestaetigt und protokolliert"><Border Style="{StaticResource Panel}"><controls:OperationsHub x:Name="Operations"/></Border></TabItem>
-                <TabItem Header="Hilfe" ToolTip="Durchsuchbare Anleitung: Schritt-fuer-Schritt je Modul, Sicherheitsregeln und Grenzen">
+                <TabItem Header="{loc:DesktopLabel Module.Ereignisse}" Tag="Ereignisse" ToolTip="{loc:DesktopLabel Module.EventsTip}"><Border Style="{StaticResource Panel}"><controls:EventBrowser x:Name="EmbeddedEvents"/></Border></TabItem>
+                <TabItem Header="Superadmin" Tag="Superadmin" ToolTip="{loc:DesktopLabel Module.AdminTip}"><Border Style="{StaticResource Panel}"><controls:AdminWorkbench x:Name="Workbench"/></Border></TabItem>
+                <TabItem Header="Operations" Tag="Operations" ToolTip="{loc:DesktopLabel Module.OperationsTip}"><Border Style="{StaticResource Panel}"><controls:OperationsHub x:Name="Operations"/></Border></TabItem>
+                <TabItem Header="{loc:DesktopLabel Module.Hilfe}" Tag="Hilfe" ToolTip="{loc:DesktopLabel Module.HelpTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,0,12">
-                            <TextBlock Text="Hilfe-Center" FontSize="24"/>
-                            <TextBlock Text="Lokale, durchsuchbare Hilfe zu jedem Modul: was es tut, wie du es Schritt fuer Schritt benutzt und wo die Grenzen liegen. Keine Online-Verbindung, keine Telemetrie." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,10"/>
-                            <TextBox x:Name="HelpSearch" TextChanged="HelpSearchChanged" Background="#142438" Foreground="#DCEAF7" BorderBrush="#29425C" Padding="10" ToolTip="Thema, Modul oder Stichwort suchen, z.B. 'Update', 'Temperatur', 'Loeschen'" AutomationProperties.Name="Hilfesuche"/>
+                            <TextBlock Text="{loc:DesktopLabel Ui.HelpCenter}" FontSize="24"/>
+                            <TextBlock Text="{loc:DesktopLabel Layout.HelpNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,10"/>
+                            <TextBox x:Name="HelpSearch" TextChanged="HelpSearchChanged" Background="#142438" Foreground="#DCEAF7" BorderBrush="#29425C" Padding="10" ToolTip="{loc:DesktopLabel Layout.HelpSearch}" AutomationProperties.Name="{loc:DesktopLabel Layout.HelpSearchName}"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="340"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                            <ListBox x:Name="HelpList" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#29425C" SelectionChanged="HelpSelected" AutomationProperties.Name="Hilfethemen" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox x:Name="HelpList" Background="#15102D" Foreground="#E1EAF7" BorderBrush="#29425C" SelectionChanged="HelpSelected" AutomationProperties.Name="{loc:DesktopLabel Ui.HelpTopics}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                 <ListBox.ItemTemplate><DataTemplate>
                                     <StackPanel Margin="3">
                                         <TextBlock Text="{Binding Module}" Foreground="#D45CFF" FontSize="11"/>
@@ -629,7 +630,7 @@
                             <Border Grid.Column="1" Style="{StaticResource Panel}" Margin="14,0,0,0">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <StackPanel>
-                                        <TextBlock x:Name="HelpTitle" FontSize="19" Foreground="#24FFE3" Text="Thema links auswaehlen." TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="HelpTitle" FontSize="19" Foreground="#24FFE3" Text="{loc:DesktopLabel Layout.SelectHelp}" TextWrapping="Wrap"/>
                                         <TextBlock x:Name="HelpBody" Foreground="#DCEAF7" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="14" LineHeight="22"/>
                                     </StackPanel>
                                 </ScrollViewer>

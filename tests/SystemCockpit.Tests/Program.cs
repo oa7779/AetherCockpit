@@ -12,6 +12,7 @@ internal static class Program
     {
         try
         {
+            DesktopText.Configure("de");
             if (args.Length == 2 && args[0] == "--feed-server") return ScreensaverTests.PipeServer(args[1]);
             if (args.Length == 2 && args[0] == "--feed-client") return ScreensaverTests.PipeClient(args[1]);
             // Produktfenster beziehen die Theme-Brushes aus den App-Ressourcen;
@@ -22,6 +23,24 @@ internal static class Program
                 {
                     Source = new Uri($"pack://application:,,,/SystemCockpit;component/{source}")
                 });
+            if (args.Contains("--desktop-language-smoke"))
+            {
+                var assertions = ModernDesktopTests.Run();
+                Console.WriteLine($"PASS: {assertions} authored desktop resource and compatibility assertions.");
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Contains("--desktop-ui-smoke") || args.Contains("--desktop-modern-smoke"))
+            {
+                var index = Array.IndexOf(args, args.Contains("--desktop-modern-smoke")
+                    ? "--desktop-modern-smoke" : "--desktop-ui-smoke");
+                var screenshotDirectory = index + 1 < args.Length && !args[index + 1].StartsWith("--", StringComparison.Ordinal)
+                    ? args[index + 1] : Environment.GetEnvironmentVariable("AETHER_SCREENSHOT_DIR");
+                var assertions = ModernDesktopTests.UiSmoke(screenshotDirectory);
+                Console.WriteLine($"PASS: {assertions} German Windows Modern light/dark and Neon compatibility smoke assertions.");
+                host.Shutdown();
+                return 0;
+            }
             if (args.Contains("--board-render-profile"))
             {
                 var index = Array.IndexOf(args, "--board-render-profile");
@@ -48,6 +67,7 @@ internal static class Program
                 _assertions += ModuleTests.InventoryUi(index >= 0 && index + 1 < args.Length ? args[index + 1] : null);
             }
             _assertions += DesktopFeatureTests.Run();
+            _assertions += ModernDesktopTests.Run();
             _assertions += SettingsUpgradeTests.Run();
             _assertions += HardwareBoardTests.Run();
             _assertions += ScreensaverTests.Run();

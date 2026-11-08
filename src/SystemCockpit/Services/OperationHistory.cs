@@ -7,7 +7,12 @@ public sealed class OperationEntry(string label) : Observable
     public string Label { get; } = label;
     public DateTimeOffset Created { get; } = DateTimeOffset.Now;
     private string _state = "NICHT GESTARTET", _detail = "";
-    public string State { get => _state; internal set => Set(ref _state, value); }
+    public string State
+    {
+        get => _state;
+        internal set { Set(ref _state, value); OnPropertyChanged(nameof(StateDisplay)); }
+    }
+    public string StateDisplay => DesktopUiText.Get("Job." + State);
     public string Detail { get => _detail; internal set => Set(ref _detail, value); }
 }
 
@@ -20,7 +25,7 @@ public sealed class OperationHistory
         if (Entries.Count >= Capacity)
         {
             var finished = Entries.LastOrDefault(e => e.State is not ("LAEUFT" or "NICHT GESTARTET"))
-                ?? throw new InvalidOperationException("Auftragslimit erreicht; laufende Auftraege werden nicht entfernt.");
+                ?? throw new InvalidOperationException(DesktopUiText.Get("Job.Capacity"));
             Entries.Remove(finished);
         }
         var entry = new OperationEntry(label);

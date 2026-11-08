@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="WindowBackdrop" Color="#F3F3F3"/>
+    <SolidColorBrush x:Key="SceneBackdrop" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="GlossPanel" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="GlassRim" Color="#D7D7D7"/>
+    <SolidColorBrush x:Key="GlossButton" Color="#F7F7F7"/>
+    <SolidColorBrush x:Key="ChromeSidebar" Color="#F0F0F0"/>
+    <SolidColorBrush x:Key="ButtonBorder" Color="#C8C8C8"/>
+    <SolidColorBrush x:Key="ButtonBorderAlt" Color="#A0A0A0"/>
+    <SolidColorBrush x:Key="ModernTextPrimary" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="ModernTextSecondary" Color="#5C5C5C"/>
+    <SolidColorBrush x:Key="ModernAccent" Color="#0067C0"/>
+    <SolidColorBrush x:Key="ModernBorder" Color="#D1D1D1"/>
+    <SolidColorBrush x:Key="ModernInput" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ModernSelection" Color="#DCEEFF"/>
+    <SolidColorBrush x:Key="ModernHover" Color="#EAEAEA"/>
+    <SolidColorBrush x:Key="ModernPositive" Color="#237A3B"/>
+    <SolidColorBrush x:Key="ModernWarning" Color="#8A5A00"/>
+</ResourceDictionary>

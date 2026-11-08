@@ -8,6 +8,10 @@ namespace SystemCockpit.Controls;
 
 public sealed class SensorPlot : FrameworkElement
 {
+    public static readonly DependencyProperty PaletteBrushProperty = DependencyProperty.Register(
+        nameof(PaletteBrush), typeof(Brush), typeof(SensorPlot),
+        new FrameworkPropertyMetadata(Brushes.Turquoise, FrameworkPropertyMetadataOptions.AffectsRender));
+    public Brush PaletteBrush { get => (Brush)GetValue(PaletteBrushProperty); set => SetValue(PaletteBrushProperty, value); }
     public static readonly DependencyProperty GroupProperty = DependencyProperty.Register(nameof(Group),
         typeof(SensorChartGroup), typeof(SensorPlot), new FrameworkPropertyMetadata(null,
             FrameworkPropertyMetadataOptions.AffectsRender, GroupChanged));
@@ -57,7 +61,9 @@ public sealed class SensorPlot : FrameworkElement
         base.OnRender(dc);
         if (Group is not { } group || ActualWidth < 150) return;
         var plot = new Rect(76, 15, Math.Max(1, ActualWidth - 94), 170);
-        dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(8, 7, 23)), null, new Rect(RenderSize));
+        var modern = SkinCatalog.IsModern;
+        dc.DrawRectangle(modern ? (Brush)FindResource("SceneBackdrop") :
+            new SolidColorBrush(Color.FromRgb(8, 7, 23)), null, new Rect(RenderSize));
         var selected = group.Series.Where(s => s.IsSelected && s.MatchesFilter).ToArray();
         var values = selected.SelectMany(s => s.Points).Where(p => p.Time >= group.Start)
             .Select(p => p.Value).OfType<double>().Where(double.IsFinite).ToArray();
@@ -68,14 +74,16 @@ public sealed class SensorPlot : FrameworkElement
         for (var index = 0; index <= 4; index++)
         {
             var y = plot.Top + index * plot.Height / 4;
-            dc.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(43, 30, 66)), 1), new(plot.Left, y), new(plot.Right, y));
+            dc.DrawLine(new Pen(modern ? (Brush)FindResource("ModernBorder") :
+                new SolidColorBrush(Color.FromRgb(43, 30, 66)), 1), new(plot.Left, y), new(plot.Right, y));
             Label(dc, (maximum - index * (maximum - minimum) / 4).ToString("0.##", CultureInfo.CurrentCulture),
                 2, y - 7, Brushes.LightSteelBlue, 11);
         }
         for (var index = 0; index <= 6; index++)
         {
             var x = plot.Left + index * plot.Width / 6;
-            dc.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(29, 22, 46)), 1), new(x, plot.Top), new(x, plot.Bottom));
+            dc.DrawLine(new Pen(modern ? (Brush)FindResource("ModernBorder") :
+                new SolidColorBrush(Color.FromRgb(29, 22, 46)), 1), new(x, plot.Top), new(x, plot.Bottom));
         }
         dc.PushClip(new RectangleGeometry(plot));
         foreach (var series in selected)
@@ -89,21 +97,23 @@ public sealed class SensorPlot : FrameworkElement
                         context.BeginFigure(segment[0], false, false);
                         context.PolyLineTo(segment.Skip(1).ToArray(), true, false);
                     }
-                    dc.DrawGeometry(null, new Pen(series.Accent, 1.6), geometry);
+                    dc.DrawGeometry(null, new Pen(modern ? PaletteBrush : series.Accent, 1.6), geometry);
                 }
-                foreach (var point in segment) dc.DrawEllipse(series.Accent, null, point, 1.7, 1.7);
+                foreach (var point in segment) dc.DrawEllipse(modern ? PaletteBrush : series.Accent, null, point, 1.7, 1.7);
             }
         dc.Pop();
         Label(dc, group.Start.ToLocalTime().ToString("HH:mm:ss"), plot.Left, 192, Brushes.LightSteelBlue, 11);
         Label(dc, group.End.ToLocalTime().ToString("HH:mm:ss"), plot.Right - 67, 192, Brushes.LightSteelBlue, 11);
-        Label(dc, group.Unit.Length == 0 ? "ohne Einheit / eigene Skala" : group.Unit + " / eigene Skala",
+        Label(dc, group.Unit.Length == 0 ? DesktopUiText.Get("Chart.NoUnitScale") : DesktopUiText.Format("Chart.UnitScale", group.Unit),
             plot.Left + 90, 192, Brushes.Turquoise, 11);
         if (values.Length == 0)
-            Label(dc, selected.Length == 0 ? "Sensoren unten auswaehlen" : "Keine verfuegbaren Messwerte im Verlauf",
+            Label(dc, DesktopUiText.Get(selected.Length == 0 ? "Chart.SelectSensors" : "Chart.NoReadings"),
                 plot.Left + 12, 86, Brushes.Gold, 13);
     }
 
     private void Label(DrawingContext dc, string text, double x, double y, Brush brush, int size) =>
         dc.DrawText(new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-            new Typeface("Consolas"), size, brush, VisualTreeHelper.GetDpi(this).PixelsPerDip), new(x, y));
+            new Typeface(SkinCatalog.IsModern ? "Segoe UI" : "Consolas"), size,
+            SkinCatalog.IsModern ? (Brush)FindResource("ModernTextSecondary") : brush,
+            VisualTreeHelper.GetDpi(this).PixelsPerDip), new(x, y));
 }

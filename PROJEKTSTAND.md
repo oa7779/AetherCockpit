@@ -2,6 +2,23 @@
 
 ## Stand
 
+Neuer Auftrag am 08.11.2026: zusätzlicher Desktopmodus „Windows Modern“
+mit neutralen Oberflächen und Hell-/Dunkelwahl nach Windows-Einstellung.
+Retro-Neon bleibt Standard. Im Modern-Modus heißt das Mainframe
+„System-Schema“, erhält eine sachliche Schemazeichnung und bietet keinen
+Bildschirmschoner. Deutsch bleibt Standard; Englisch soll alle vom Desktop-
+Cockpit erzeugten Oberflächentexte einschließlich Dialogen, Gadgets, xBar
+und Assistenten umfassen. Externe Werkzeugausgaben bleiben im Original.
+Der Nutzer hat einen bestätigten App-Neustart nach Design-/Sprachwahl
+gewählt. Serveroberfläche und Installer werden später umgestellt.
+Implementierung und Prüfungen laufen; noch keine Behauptung vollständiger
+Abdeckung und keine neuen Releasepakete.
+Nach der Übersetzungsprüfung hat der Nutzer den Umfang geändert:
+zuerst Windows Modern vollständig prüfen und veröffentlichen. Die
+unvollständige Englisch-Auswahl darf noch nicht angeboten werden.
+Sprachressourcen bleiben Entwicklungsarbeit; die freigegebene Oberfläche
+bleibt zunächst deutsch. Modern-Laufzeitprüfung steht noch aus.
+
 Beta 37 in Vorbereitung: Nacht-Hintergründe schwarz
 statt blau/violett, Tag-Hintergründe blau. Hauptfenster, Mainframe-Himmel,
 Rastergrund, Binärberge und Schonerhintergrund angepasst; farbige Neonlinien
@@ -54,7 +71,8 @@ zusätzlich 836 STA-Assertions gegen die publizierten Assemblies.
 Client-/Server-ZIPs, Setup, Hashmanifest und Herkunft als unsigniertes
 CI-Artefakt erzeugt. Keine grafischen Tests, Intune-Paketierung oder
 Installation in diesem Lauf; lokale Code-Integrity-Sperre bleibt bestehen.
-`main`, Releasetags und bestehende GitHub-Releases unverändert.
+Zu diesem CI-Prüfzeitpunkt waren `main`, Releasetags und bestehende
+GitHub-Releases unverändert.
 Git verwendet nun die vom Nutzer freigegebene GitHub-CLI-Anmeldung mit
 Workflow-Berechtigung.
 

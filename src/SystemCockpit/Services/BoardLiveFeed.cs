@@ -24,6 +24,7 @@ public static class BoardLiveFeed
 
     internal static async Task ServeAsync(CockpitModel model, Dispatcher dispatcher, CancellationToken token)
     {
+        if (!DesktopScreensaverPolicy.LiveFeedEnabled) return;
         BoardSnapshot? hardware = null;
         var refresh = DateTimeOffset.MinValue;
         while (!token.IsCancellationRequested)

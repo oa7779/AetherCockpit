@@ -23,6 +23,12 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
 
     internal void Start()
     {
+        if (!DesktopScreensaverPolicy.IsCurrentUserEnabled())
+        {
+            Trace.TraceInformation("AETHER screensaver stopped because Windows Modern is selected.");
+            app.Shutdown();
+            return;
+        }
         var screens = arguments.Mode == SaverMode.Preview
             ? new[] { Screen.PrimaryScreen ?? throw new InvalidOperationException("Kein Bildschirm vorhanden.") }
             : Screen.AllScreens;
@@ -31,7 +37,7 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
             var window = new SaverWindow(screen.Bounds, arguments.Parent);
             _windows.Add(window);
             window.Closed += (_, _) => Stop();
-            window.Present(Empty, null, "HARDWARE WIRD LOKAL GELESEN / KEINE LIVE-MESSWERTE");
+            window.Present(Empty, null, DesktopUiText.Get("Saver.Loading"));
             window.Show();
         }
         if (arguments.Mode != SaverMode.Preview)
@@ -44,8 +50,8 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
         _poll = PollAsync();
     }
 
-    internal static BoardSnapshot Empty => new([], "Hardware noch nicht verfuegbar",
-        "Internetstatus nicht verfuegbar", []);
+    internal static BoardSnapshot Empty => new([], DesktopUiText.Get("Saver.HardwarePending"),
+        DesktopUiText.Get("Saver.InternetUnknown"), []);
 
     internal static bool SameHardware(BoardSnapshot a, BoardSnapshot b) =>
         a.Board == b.Board && a.Internet == b.Internet && a.Devices.SequenceEqual(b.Devices) &&
@@ -57,8 +63,13 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
         var fallbackRead = false;
         while (!_stop.IsCancellationRequested)
         {
+            if (!DesktopScreensaverPolicy.IsCurrentUserEnabled())
+            {
+                await app.Dispatcher.InvokeAsync(Stop);
+                break;
+            }
             BoardFeedFrame? frame = null;
-            var status = "AETHER NICHT VERBUNDEN / HARDWARE-MOMENTAUFNAHME / KEINE LIVE-MESSWERTE";
+            var status = DesktopUiText.Get("Saver.Disconnected");
             try
             {
                 using var deadline = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
@@ -75,7 +86,7 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
             {
                 Trace.TraceWarning("AETHER Bildschirmschoner-Livefeed: {0}", ex.Message);
                 frame = null;
-                status += " / " + (ex is OperationCanceledException ? "Verbindung nicht verfuegbar" : ex.Message);
+                status += " / " + (ex is OperationCanceledException ? DesktopUiText.Get("Saver.ConnectionUnavailable") : ex.Message);
             }
             if (frame is null && !fallbackRead)
             {
@@ -91,6 +102,11 @@ internal sealed class SaverSession(Application app, SaverArguments arguments) : 
                 }
             }
             if (_stop.IsCancellationRequested) break;
+            if (!DesktopScreensaverPolicy.IsCurrentUserEnabled())
+            {
+                await app.Dispatcher.InvokeAsync(Stop);
+                break;
+            }
             await app.Dispatcher.InvokeAsync(() =>
             {
                 if (!_stop.IsCancellationRequested)

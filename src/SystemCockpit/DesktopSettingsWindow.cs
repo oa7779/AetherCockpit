@@ -7,30 +7,116 @@ namespace SystemCockpit;
 
 internal sealed class DesktopSettingsWindow : Window
 {
+    private sealed record Choice(string Id, string Name);
+
     internal DesktopSettingsWindow(CockpitModel model, Action<CockpitSettings> save, Action network)
     {
-        Title = "AETHER / Desktop, Transparenz und Parameter";
-        Width = 620;
-        Height = 720;
+        Title = DesktopText.Get("Desktop.Settings.Title");
+        Width = 680;
+        Height = 760;
+        MinHeight = 600;
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Background = new SolidColorBrush(Color.FromRgb(12, 9, 32));
         Foreground = Brushes.White;
-        WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        WindowAppearance.Apply(this);
+        var modern = SkinCatalog.IsModern;
+        Brush Accent() => modern ? (Brush)FindResource("ModernAccent") : Brushes.Turquoise;
         var panel = new StackPanel { Margin = new Thickness(20) };
         Content = new ScrollViewer { Content = panel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
-        panel.Children.Add(new TextBlock { Text = "DESKTOP / GADGETS", FontSize = 23, Foreground = Brushes.Turquoise });
-        panel.Children.Add(new TextBlock { Text = "Copyright (c) 2026 Olaf Weins", Margin = new Thickness(0, 8, 0, 16) });
-        panel.Children.Add(new TextBlock { Text = "TAG / NACHT / Hauptfenster, Mainframe und Schoner", Foreground = Brushes.Turquoise });
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.Header"), FontSize = 23, Foreground = Accent() });
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.Copyright"), Margin = new Thickness(0, 8, 0, 16) });
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.Appearance"), Foreground = Accent() });
+
+        var skin = new ComboBox
+        {
+            ItemsSource = SkinCatalog.All,
+            DisplayMemberPath = nameof(SkinInfo.Display),
+            SelectedValuePath = nameof(SkinInfo.Id),
+            SelectedValue = SkinCatalog.CanonicalId(model.Settings.Skin),
+            Margin = new Thickness(0, 6, 0, 6)
+        };
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.Skin"), Margin = new Thickness(0, 8, 0, 2) });
+        panel.Children.Add(skin);
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Skin.WindowsModernDescription"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 8)
+        });
+        var language = new ComboBox
+        {
+            ItemsSource = new[]
+            {
+                new Choice("de", DesktopText.Get("Language.German"))
+            },
+            DisplayMemberPath = nameof(Choice.Name),
+            SelectedValuePath = nameof(Choice.Id),
+            SelectedValue = "de",
+            IsEnabled = false,
+            Margin = new Thickness(0, 0, 0, 6)
+        };
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.Language"), Margin = new Thickness(0, 8, 0, 2) });
+        panel.Children.Add(language);
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopUiText.Get("Language.ReleaseNotice"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 8)
+        });
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Desktop.Settings.RestartNote"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 12)
+        });
+        var preferenceStatus = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
+        panel.Children.Add(preferenceStatus);
+        var storingPreferences = false;
+        void StorePreferences()
+        {
+            if (storingPreferences || !IsLoaded || skin.SelectedValue is not string skinId || language.SelectedValue is not string languageId) return;
+            storingPreferences = true;
+            try
+            {
+                var next = model.Settings with { Skin = SkinCatalog.CanonicalId(skinId), Language = languageId };
+                if (next.Skin == model.Settings.Skin && next.Language == model.Settings.Language) return;
+                save(next);
+                if (model.Settings != next)
+                {
+                    preferenceStatus.Text = DesktopText.Get("Desktop.Settings.SaveFailed");
+                    skin.SelectedValue = model.Settings.Skin;
+                    language.SelectedValue = model.Settings.Language;
+                    return;
+                }
+                preferenceStatus.Text = DesktopText.Get("Desktop.Settings.PreferenceSaved");
+                if (DesktopRestart.Confirm(this))
+                    DesktopRestart.RestartIfConfirmed(true, DesktopRestart.RestartApplication);
+            }
+            catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or ArgumentException)
+            {
+                preferenceStatus.Text = DesktopText.Get("Desktop.Settings.SaveFailed") + " " + ex.Message;
+                skin.SelectedValue = model.Settings.Skin;
+                language.SelectedValue = model.Settings.Language;
+            }
+            finally { storingPreferences = false; }
+        }
+        skin.SelectionChanged += (_, _) => StorePreferences();
+        language.SelectionChanged += (_, _) => StorePreferences();
+
+        panel.Children.Add(new TextBlock { Text = DesktopText.Get("Desktop.Settings.DisplayMode"), Foreground = Accent() });
         var mode = new ComboBox { ItemsSource = new[]
         {
-            new { Id = "auto", Name = "Automatisch: Tag 07–19 Uhr (lokale Zeit)" },
-            new { Id = "day", Name = "Immer Tag" }, new { Id = "night", Name = "Immer Nacht" }
-        }, DisplayMemberPath = "Name", SelectedValuePath = "Id", SelectedValue = model.Settings.DisplayMode,
-            Margin = new Thickness(0, 6, 0, 12) };
+            new Choice("auto", DesktopText.Get("Desktop.Settings.Auto")),
+            new Choice("day", DesktopText.Get("Desktop.Settings.Day")),
+            new Choice("night", DesktopText.Get("Desktop.Settings.Night"))
+        }, DisplayMemberPath = nameof(Choice.Name), SelectedValuePath = nameof(Choice.Id),
+            SelectedValue = model.Settings.DisplayMode, Margin = new Thickness(0, 6, 0, 12) };
         mode.SelectionChanged += (_, _) =>
         {
             if (mode.SelectedValue is string value) save(model.Settings with { DisplayMode = value });
         };
         panel.Children.Add(mode);
+
         void Toggle(string title, bool value, Func<CockpitSettings, bool, CockpitSettings> update)
         {
             var box = new CheckBox { Content = title, IsChecked = value, Margin = new Thickness(0, 5, 0, 5) };
@@ -39,40 +125,68 @@ internal sealed class DesktopSettingsWindow : Window
         }
         void OpacityControl(string title, double value, Func<CockpitSettings, double, CockpitSettings> update)
         {
-            panel.Children.Add(new TextBlock { Text = title + " / Deckkraft 20-100 %", Margin = new Thickness(0, 12, 0, 2) });
+            panel.Children.Add(new TextBlock
+            {
+                Text = title + " / " + DesktopText.Get("Desktop.Settings.Opacity"),
+                Margin = new Thickness(0, 12, 0, 2)
+            });
             var slider = new Slider { Minimum = 0.2, Maximum = 1, Value = value, TickFrequency = 0.05 };
             var label = new TextBlock { Text = value.ToString("P0") };
             slider.ValueChanged += (_, e) => { label.Text = e.NewValue.ToString("P0"); save(update(model.Settings, e.NewValue)); };
             panel.Children.Add(slider);
             panel.Children.Add(label);
         }
-        OpacityControl("Hauptfenster", model.Settings.AppOpacity, (s, v) => s with { AppOpacity = v });
-        OpacityControl("xBar", model.Settings.SidebarOpacity, (s, v) => s with { SidebarOpacity = v });
-        OpacityControl("Alle Gadgets (einzeln auch am Gadget regelbar)", model.Settings.GadgetOpacity, (s, v) => s with
+        OpacityControl(DesktopText.Get("Desktop.Settings.MainWindow"), model.Settings.AppOpacity,
+            (s, v) => s with { AppOpacity = v });
+        OpacityControl(DesktopText.Get("Desktop.Settings.XBar"), model.Settings.SidebarOpacity,
+            (s, v) => s with { SidebarOpacity = v });
+        OpacityControl(DesktopText.Get("Desktop.Settings.Gadgets"), model.Settings.GadgetOpacity, (s, v) => s with
         {
             GadgetOpacity = v, GadgetLayouts = s.GadgetLayouts.Select(layout => layout with { Opacity = v }).ToList()
         });
-        Toggle("Desktop-Gadgets anzeigen (unabhaengig vom Hauptfenster)", model.Settings.GadgetsEnabled,
+        Toggle(DesktopText.Get("Desktop.Settings.GadgetsEnabled"), model.Settings.GadgetsEnabled,
             (s, v) => s with { GadgetsEnabled = v });
         panel.Children.Add(new TextBlock
         {
-            Text = "Windows-Ereignisse, Geraete, Adapter, installierte Apps und Treiber alle 30 Minuten lesend pruefen. Der neueste Bericht bleibt lokal. Es werden keine Reparaturen ausgefuehrt. Bei Windows-Anmeldung laeuft die Pruefung nur, wenn die separat genehmigte AETHER-Autostart-Aufgabe eingerichtet ist.",
-            TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 4)
+            Text = DesktopText.Get("Desktop.Settings.BackgroundDescription"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 10, 0, 4)
         });
-        Toggle("Hintergrunddiagnose aktivieren / alle 30 Minuten", model.Settings.BackgroundDiagnosticsEnabled,
+        Toggle(DesktopText.Get("Desktop.Settings.BackgroundDiagnostics"), model.Settings.BackgroundDiagnosticsEnabled,
             (s, v) => s with { BackgroundDiagnosticsEnabled = v });
-        panel.Children.Add(new TextBlock { Text = "PARAMETER / fuer Gadgets und xBar", Foreground = Brushes.Turquoise, Margin = new Thickness(0, 15, 0, 5) });
-        Toggle("CPU", model.Settings.SidebarWidgetCpu, (s, v) => s with { SidebarWidgetCpu = v });
-        Toggle("RAM", model.Settings.SidebarWidgetMemory, (s, v) => s with { SidebarWidgetMemory = v });
-        Toggle("GPU", model.Settings.SidebarWidgetGpu, (s, v) => s with { SidebarWidgetGpu = v });
-        Toggle("Temperaturen: CPU, GPU, SSD", model.Settings.SidebarWidgetTemperatures, (s, v) => s with { SidebarWidgetTemperatures = v });
-        Toggle("Netzwerk: Download / Upload", model.Settings.SidebarWidgetNetwork, (s, v) => s with { SidebarWidgetNetwork = v });
-        Toggle("Laufwerke: Belegt-/Frei-Torten", model.Settings.SidebarWidgetDrives, (s, v) => s with { SidebarWidgetDrives = v });
-        panel.Children.Add(new TextBlock { Text = "Am Gadget-Titel ziehen. Position und Deckkraft werden gespeichert. Minimieren, Wiederherstellen und Beenden ueber das AETHER-Symbol bei der Uhr.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 10) });
-        var button = new Button { Content = "Netzwerkueberwachung / Npcap / Alarme",
-            Style = (Style)FindResource("NeonButton"), Padding = new Thickness(10) };
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Desktop.Settings.WidgetParameters"),
+            Foreground = Accent(), Margin = new Thickness(0, 15, 0, 5)
+        });
+        Toggle(DesktopText.Get("Desktop.Settings.Cpu"), model.Settings.SidebarWidgetCpu, (s, v) => s with { SidebarWidgetCpu = v });
+        Toggle(DesktopText.Get("Desktop.Settings.Memory"), model.Settings.SidebarWidgetMemory, (s, v) => s with { SidebarWidgetMemory = v });
+        Toggle(DesktopText.Get("Desktop.Settings.Gpu"), model.Settings.SidebarWidgetGpu, (s, v) => s with { SidebarWidgetGpu = v });
+        Toggle(DesktopText.Get("Desktop.Settings.Temperatures"), model.Settings.SidebarWidgetTemperatures,
+            (s, v) => s with { SidebarWidgetTemperatures = v });
+        Toggle(DesktopText.Get("Desktop.Settings.Network"), model.Settings.SidebarWidgetNetwork,
+            (s, v) => s with { SidebarWidgetNetwork = v });
+        Toggle(DesktopText.Get("Desktop.Settings.Drives"), model.Settings.SidebarWidgetDrives,
+            (s, v) => s with { SidebarWidgetDrives = v });
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Desktop.Settings.GadgetHelp"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 10, 0, 10)
+        });
+        var button = new Button
+        {
+            Content = DesktopText.Get("Desktop.Settings.NetworkButton"),
+            Style = (Style)FindResource("NeonButton"),
+            Padding = new Thickness(10)
+        };
         button.Click += (_, _) => network();
         panel.Children.Add(button);
-        panel.Children.Add(new TextBlock { Text = "Aenderungen werden sofort lokal gespeichert. Autostart-Aufgabe nur ueber das installierte Setup einrichten oder entfernen.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 10) });
+        panel.Children.Add(new TextBlock
+        {
+            Text = DesktopText.Get("Desktop.Settings.ChangesSaved"),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 10, 0, 10)
+        });
     }
 }

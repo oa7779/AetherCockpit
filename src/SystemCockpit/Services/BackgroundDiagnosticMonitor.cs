@@ -54,14 +54,14 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
                 lock (_sync) _activeCycle = cycle;
                 try
                 {
-                    statusChanged("Hintergrunddiagnose: Windows, Ereignisse, Geraete, Adapter und Apps werden lesend geprueft.");
+                    statusChanged(DesktopUiText.Get("Background.Checking"));
                     var json = await CommandRunner.PowerShellAsync(DiagnosticAssistants.CollectionScript, cycle.Token);
                     cycle.Token.ThrowIfCancellationRequested();
                     var report = DiagnosticAssistants.Analyze(DiagnosticAssistants.Parse(json));
                     SaveLatestReport(report);
                     _lastFailure = null;
                     var newFindings = FindNewActionableFindings(report.Findings, _activeFindingKeys);
-                    statusChanged($"Hintergrunddiagnose: {report.Findings.Length} Befunde im aktuellen Bericht; Reparaturen bleiben manuell.");
+                    statusChanged(DesktopUiText.Format("Background.FindingCount", report.Findings.Length));
                     if (newFindings.Length > 0)
                         notify(NotificationText(newFindings));
                 }
@@ -74,11 +74,11 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
                     InvalidOperationException or TimeoutException or JsonException or InvalidDataException)
                 {
                     Trace.TraceError("AETHER Hintergrunddiagnose: {0}", ex);
-                    statusChanged("Hintergrunddiagnose fehlgeschlagen: " + ex.Message);
+                    statusChanged(DesktopUiText.Format("Background.Failure", ex.Message));
                     if (!string.Equals(_lastFailure, ex.Message, StringComparison.Ordinal))
                     {
                         _lastFailure = ex.Message;
-                        notify("Hintergrunddiagnose fehlgeschlagen. Details stehen im AETHER-Status.");
+                        notify(DesktopUiText.Get("Background.FailureNotice"));
                     }
                 }
                 finally
@@ -111,8 +111,8 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
 
     internal static string NotificationText(IReadOnlyCollection<DiagnosticFinding> findings)
     {
-        var examples = string.Join("; ", findings.Take(2).Select(finding => $"{finding.Agent}: {finding.Summary}"));
-        var text = $"Neue Befunde: {findings.Count}. {examples} Reparatur nur nach Freigabe.";
+        var examples = string.Join("; ", findings.Take(2).Select(finding => $"{finding.AgentDisplay}: {finding.Summary}"));
+        var text = DesktopUiText.Format("Background.Notification", findings.Count, examples);
         return text.Length <= 240 ? text : text[..237] + "...";
     }
 

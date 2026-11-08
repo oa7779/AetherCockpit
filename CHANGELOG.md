@@ -11,8 +11,9 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 
 ## 0.7.0-beta.37
 
-- Als ungeprüfte Vorabversion veröffentlicht; neuer Laufzeittest durch Windows
-  Code Integrity blockiert. Prüfstatus in den Test- und Installationsanleitungen.
+- Quellstand auf GitHub verfügbar, noch kein Beta-37-Release veröffentlicht.
+  Lokaler Laufzeittest durch Windows Code Integrity blockiert; separater
+  CI-Grundlauf bestanden. Prüfstatus in der Testanleitung.
 - Nacht-Hintergründe in Hauptfenster, Mainframe und Bildschirmschoner sind
   schwarz statt blau/violett. Tag-Hintergründe bleiben blau.
 - Mainframe-Himmel, Rastergrund, Binärberge und Gerätedetails folgen der

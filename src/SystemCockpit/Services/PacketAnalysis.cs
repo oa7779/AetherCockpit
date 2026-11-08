@@ -10,7 +10,7 @@ internal static class PacketAnalysis
 {
     public static PacketSummary Parse(ReadOnlySpan<byte> packet, int wireLength, DateTimeOffset time)
     {
-        string source = "?", destination = "?", protocol = "Ethernet / unvollstaendig";
+        string source = "?", destination = "?", protocol = DesktopUiText.Get("Packet.EthernetIncomplete");
         var sourcePort = 0;
         var destinationPort = 0;
         var syn = false;
@@ -20,7 +20,7 @@ internal static class PacketAnalysis
         var type = BinaryPrimitives.ReadUInt16BigEndian(packet[12..]);
         for (var i = 0; i < 2 && type is 0x8100 or 0x88A8; i++)
         {
-            if (packet.Length < offset + 4) return new(time, source, destination, "VLAN / gekuerzt", 0, 0, wireLength, false, false);
+            if (packet.Length < offset + 4) return new(time, source, destination, DesktopUiText.Get("Packet.VlanTruncated"), 0, 0, wireLength, false, false);
             type = BinaryPrimitives.ReadUInt16BigEndian(packet[(offset + 2)..]);
             offset += 4;
         }
@@ -29,13 +29,13 @@ internal static class PacketAnalysis
         if (type == 0x0800)
         {
             if (packet.Length < offset + 20 || packet[offset] >> 4 != 4)
-                return new(time, source, destination, "IPv4 / gekuerzt", 0, 0, wireLength, false, false);
+                return new(time, source, destination, DesktopUiText.Get("Packet.Ipv4Truncated"), 0, 0, wireLength, false, false);
             var header = (packet[offset] & 15) * 4;
             if (header < 20 || packet.Length < offset + header)
-                return new(time, source, destination, "IPv4 / ungueltig", 0, 0, wireLength, false, false);
+                return new(time, source, destination, DesktopUiText.Get("Packet.Ipv4Invalid"), 0, 0, wireLength, false, false);
             var total = BinaryPrimitives.ReadUInt16BigEndian(packet[(offset + 2)..]);
             if (total < header)
-                return new(time, source, destination, "IPv4 / ungueltige Laenge", 0, 0, wireLength, false, false);
+                return new(time, source, destination, DesktopUiText.Get("Packet.Ipv4Length"), 0, 0, wireLength, false, false);
             packet = packet[..Math.Min(packet.Length, offset + total)];
             source = new IPAddress(packet.Slice(offset + 12, 4)).ToString();
             destination = new IPAddress(packet.Slice(offset + 16, 4)).ToString();
@@ -46,7 +46,7 @@ internal static class PacketAnalysis
         else if (type == 0x86DD)
         {
             if (packet.Length < offset + 40 || packet[offset] >> 4 != 6)
-                return new(time, source, destination, "IPv6 / gekuerzt", 0, 0, wireLength, false, false);
+                return new(time, source, destination, DesktopUiText.Get("Packet.Ipv6Truncated"), 0, 0, wireLength, false, false);
             source = new IPAddress(packet.Slice(offset + 8, 16)).ToString();
             destination = new IPAddress(packet.Slice(offset + 24, 16)).ToString();
             next = packet[offset + 6];
@@ -56,10 +56,10 @@ internal static class PacketAnalysis
             for (var i = 0; i < 8 && next is 0 or 43 or 60 or 44; i++)
             {
                 if (packet.Length < offset + 2)
-                    return new(time, source, destination, "IPv6 / Erweiterung gekuerzt", 0, 0, wireLength, false, false);
+                    return new(time, source, destination, DesktopUiText.Get("Packet.Ipv6Extension"), 0, 0, wireLength, false, false);
                 var length = next == 44 ? 8 : (packet[offset + 1] + 1) * 8;
                 if (packet.Length < offset + length)
-                    return new(time, source, destination, "IPv6 / Erweiterung gekuerzt", 0, 0, wireLength, false, false);
+                    return new(time, source, destination, DesktopUiText.Get("Packet.Ipv6Extension"), 0, 0, wireLength, false, false);
                 if (next == 44) fragmented |= (BinaryPrimitives.ReadUInt16BigEndian(packet[(offset + 2)..]) & 0xFFF8) != 0;
                 next = packet[offset];
                 offset += length;
@@ -81,7 +81,7 @@ internal static class PacketAnalysis
                     dnsFailure = (flags & 0x8000) != 0 && (flags & 15) != 0;
                 }
             }
-            else if (next == 6 && (sourcePort == 443 || destinationPort == 443)) protocol = "TCP / Port 443 (Inhalt nicht analysiert)";
+            else if (next == 6 && (sourcePort == 443 || destinationPort == 443)) protocol = DesktopUiText.Get("Packet.TlsUninspected");
         }
         return new(time, source, destination, protocol, sourcePort, destinationPort, wireLength, syn, dnsFailure);
     }
@@ -112,7 +112,7 @@ internal sealed class PacketAlertRules
             }
             if (ports.Count < settings.SynPortAlertThreshold) ports.Add(packet.DestinationPort);
             if (ports.Count >= settings.SynPortAlertThreshold && _emitted.Add("syn:" + key))
-                return $"Viele TCP-Verbindungsversuche: {key}, mindestens {ports.Count} Zielports / Minute. Indiz, kein Angriffsnachweis.";
+                return DesktopUiText.Format("Packet.SynAlert", key, ports.Count);
         }
         if (packet.DnsFailure)
         {
@@ -121,7 +121,7 @@ internal sealed class PacketAlertRules
             _dnsFailures.TryGetValue(key, out var count);
             _dnsFailures[key] = ++count;
             if (count >= settings.DnsFailureAlertThreshold && _emitted.Add("dns:" + key))
-                return $"Viele DNS-Fehlerantworten fuer {key}: {count} / Minute. Konfiguration oder Stoerung pruefen.";
+                return DesktopUiText.Format("Packet.DnsAlert", key, count);
         }
         return null;
     }

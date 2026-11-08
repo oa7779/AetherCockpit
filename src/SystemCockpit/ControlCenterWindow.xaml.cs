@@ -48,9 +48,9 @@ public partial class ControlCenterWindow : Window
     private void TrailGo(string? header)
     {
         if (header is null || _closing) return;
-        if (_active is not null) { Status.Text = "Modulwechsel erst nach Ende des laufenden Auftrags."; return; }
+        if (_active is not null) { Status.Text = DesktopUiText.Get("ControlCenter.BusyNavigation"); return; }
         _trailNavigating = true;
-        try { Modules.SelectedItem = Modules.Items.Cast<TabItem>().Single(t => Equals(t.Header, header)); }
+        try { Modules.SelectedItem = Modules.Items.Cast<TabItem>().Single(t => Equals(t.Tag, header)); }
         finally { _trailNavigating = false; }
         CcBack.IsEnabled = _trail.CanBack;
         CcForward.IsEnabled = _trail.CanForward;
@@ -82,13 +82,14 @@ public partial class ControlCenterWindow : Window
     public ControlCenterWindow(CockpitModel model)
     {
         InitializeComponent();
+        WindowAppearance.Apply(this);
         _model = model;
         JobsGrid.ItemsSource = _jobs.Entries;
         ExpertToggle.IsChecked = model.Settings.ExpertMode;
         ApplyExpertMode();
-        var initialModule = (Modules.SelectedItem as TabItem)?.Header as string ?? "SMART";
+        var initialModule = (Modules.SelectedItem as TabItem)?.Tag as string ?? "SMART";
         _trail.Visit(initialModule);
-        CcTrail.Text = $"SYSTEMKONTROLLE  \u25B8  {initialModule.ToUpperInvariant()}";
+        CcTrail.Text = DesktopUiText.Format("ControlCenter.Trail", ((Modules.SelectedItem as TabItem)?.Header as string ?? "SMART").ToUpperInvariant());
         OsCompat.Text = $"Erkanntes System: {DetectOs()} | Katalog fuer Windows 10/11; versionsabhaengige Befehle melden fehlende Unterstuetzung selbst.";
         MaintenanceActions.ItemsSource = SystemActions.Catalog.Where(a => a.Id is not ("wlan" or "wlan-profiles" or "neighbors" or "bluetooth" or "arp")).ToList();
         MaintenanceActions.SelectedIndex = 0;
@@ -113,7 +114,7 @@ public partial class ControlCenterWindow : Window
         }
         catch (Exception ex) when (ex is System.Security.SecurityException or IOException or UnauthorizedAccessException)
         {
-            return "Windows-Version nicht lesbar";
+            return DesktopUiText.Get("Center.VersionUnreadable");
         }
     }
 
@@ -128,36 +129,39 @@ public partial class ControlCenterWindow : Window
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
-            Status.Text = $"Modus gilt nur fuer diese Sitzung; nicht gespeichert: {ex.Message}";
+            Status.Text = DesktopUiText.Format("Center.ModeSaveFailed", ex.Message);
             _model.Settings = _model.Settings with { ExpertMode = ExpertToggle.IsChecked == true };
         }
         ApplyExpertMode();
     }
 
-    // Skinwechsel wirkt sofort auf alle offenen Fenster (DynamicResource) und wird direkt gespeichert.
     private void SkinChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!IsLoaded || SkinSelect.SelectedItem is not SkinInfo skin) return;
-        SkinCatalog.Apply(System.Windows.Application.Current, skin.Id);
+        var skinId = SkinCatalog.CanonicalId(skin.Id);
+        if (skinId == _model.Settings.Skin) return;
         try
         {
-            var settings = _model.Settings with { Skin = skin.Id };
+            var settings = _model.Settings with { Skin = skinId };
             settings.Save();
             _model.Settings = settings;
-            Status.Text = $"Skin angewendet und gespeichert: {skin.Display}";
+            Status.Text = DesktopText.Get("Desktop.Settings.PreferenceSaved");
+            if (DesktopRestart.Confirm(this))
+                DesktopRestart.RestartIfConfirmed(true, DesktopRestart.RestartApplication);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
-            _model.Settings = _model.Settings with { Skin = skin.Id };
-            Status.Text = $"Skin angewendet, aber nicht gespeichert: {ex.Message}";
+            SkinSelect.SelectedItem = SkinSelect.Items.Cast<SkinInfo>().FirstOrDefault(item =>
+                item.Id == SkinCatalog.CanonicalId(_model.Settings.Skin));
+            Status.Text = DesktopText.Get("Desktop.Settings.SaveFailed") + " " + ex.Message;
         }
     }
 
     private void ApplyExpertMode()
     {
         ModeHint.Text = _model.Settings.ExpertMode
-            ? "EXPERTE: voller Katalog; Enter fuehrt direkt aus, ohne weitere Bestaetigung."
-            : "EINSTEIGER: nur lesende Befehle sichtbar; freier Konsolenstart ist gesperrt.";
+            ? DesktopUiText.Get("Center.ExpertNotice")
+            : DesktopUiText.Get("Center.BeginnerNotice");
         RefreshCommandList();
     }
 
@@ -174,21 +178,21 @@ public partial class ControlCenterWindow : Window
 
     public void SetBootTranscript(string transcript)
     {
-        if (transcript.Length > 0) AppendTerminal("\n[BOOT JOURNAL / NUR RAM]\n" + transcript);
+        if (transcript.Length > 0) AppendTerminal(DesktopUiText.Get("Center.BootJournal") + transcript);
     }
 
     public void SelectModule(string header)
     {
-        if (_active is not null) { Status.Text = "Modulwechsel erst nach Ende des laufenden Auftrags."; return; }
-        Modules.SelectedItem = Modules.Items.Cast<TabItem>().Single(t => Equals(t.Header, header));
+        if (_active is not null) { Status.Text = DesktopUiText.Get("ControlCenter.BusyNavigation"); return; }
+        Modules.SelectedItem = Modules.Items.Cast<TabItem>().Single(t => Equals(t.Tag, header));
     }
 
     internal void FocusCatalogCommand(string command)
     {
-        if (_active is not null) { Status.Text = "Katalogwechsel erst nach Ende des laufenden Auftrags."; return; }
+        if (_active is not null) { Status.Text = DesktopUiText.Get("ControlCenter.BusyCatalog"); return; }
         CommandSearch.Text = command;
         if (CommandList.Items.Count > 0) CommandList.SelectedIndex = 0;
-        else Status.Text = "Befehl im Einsteigermodus gesperrt. Expertenmodus wird nicht automatisch aktiviert.";
+        else Status.Text = DesktopUiText.Get("ControlCenter.CommandBlocked");
     }
 
     public Task DisplayReadOnlyAsync(string label, Func<CancellationToken, Task<string>> read) =>
@@ -198,12 +202,13 @@ public partial class ControlCenterWindow : Window
     {
         base.OnSourceInitialized(e);
         var result = WindowAppearance.DarkCaption(this);
-        if (result != 0) Status.Text = $"Dunkle Windows-Titelleiste nicht verfuegbar: HRESULT {result:X8}";
+        if (result != 0) Status.Text = DesktopUiText.Format("Center.NativeTitleFailed", result);
     }
 
     private void PopulateSettings()
     {
         var s = _model.Settings;
+        if (SkinHint is not null) SkinHint.Text = DesktopText.Get("Skin.ControlCenterHelp");
         CpuThreshold.Text = s.CpuWarningC.ToString(CultureInfo.CurrentCulture);
         GpuThreshold.Text = s.GpuWarningC.ToString(CultureInfo.CurrentCulture);
         StorageThreshold.Text = s.StorageWarningC.ToString(CultureInfo.CurrentCulture);
@@ -221,17 +226,18 @@ public partial class ControlCenterWindow : Window
         UpdateManagerModeControls();
         ManagerStatus.Text = s.ManagerClientMode
             ? (Application.Current.MainWindow as MainWindow)?.ManagerDeviceTokenAvailable == true
-                ? "Server-Client-Modus. Geraetetoken ist Windows-DPAPI-geschuetzt; Versand nur nach Freigabe und Opt-in."
-                : "Server-Client-Modus. Noch nicht angemeldet; alle Funktionen bleiben lokal."
-            : "Einzelplatz-Modus. Keine Verbindung und keine Datenuebertragung zur Zentrale.";
+                ? DesktopUiText.Get("Center.ManagedProtected")
+                : DesktopUiText.Get("Center.ManagedLocal")
+            : DesktopUiText.Get("Center.Standalone");
         SmartPath.ToolTip = s.SmartctlPath.Length > 0 && !File.Exists(s.SmartctlPath)
-            ? "Gespeicherte EXE fehlt. Pfad neu auswaehlen oder leeren." : SmartPath.Text;
+            ? DesktopUiText.Get("Center.ToolMissing") : SmartPath.Text;
         PresentPath.ToolTip = s.PresentMonPath.Length > 0 && !File.Exists(s.PresentMonPath)
-            ? "Gespeicherte EXE fehlt. Pfad neu auswaehlen oder leeren." : PresentPath.Text;
+            ? DesktopUiText.Get("Center.ToolMissing") : PresentPath.Text;
         var warnings = s.OptionalFileWarnings();
         if (warnings.Count > 0) Status.Text = string.Join("\n", warnings);
-        SkinSelect.ItemsSource = SkinCatalog.All;
-        SkinSelect.SelectedItem = SkinCatalog.All.FirstOrDefault(skin => skin.Id == s.Skin) ?? SkinCatalog.All[0];
+        var skins = SkinCatalog.All;
+        SkinSelect.ItemsSource = skins;
+        SkinSelect.SelectedItem = skins.FirstOrDefault(skin => skin.Id == SkinCatalog.CanonicalId(s.Skin)) ?? skins[0];
     }
 
     private void ManagerModeChanged(object sender, RoutedEventArgs e)
@@ -252,9 +258,9 @@ public partial class ControlCenterWindow : Window
         if (ManagerStatus is not null)
             ManagerStatus.Text = clientMode
                 ? (Application.Current.MainWindow as MainWindow)?.ManagerDeviceTokenAvailable == true
-                    ? "Server-Client-Modus. Geraet angemeldet; Berichte nur nach separater Freigabe."
-                    : "Server-Client-Modus gewaehlt. Noch nicht angemeldet; keine Berichte werden gesendet."
-                : "Einzelplatz-Modus. Keine Verbindung und keine Datenuebertragung zur Zentrale.";
+                    ? DesktopUiText.Get("Center.ManagedRegistered")
+                    : DesktopUiText.Get("Center.ManagedPending")
+                : DesktopUiText.Get("Center.Standalone");
     }
 
     private Task RunAsync(string label, Func<CancellationToken, Task<string>> action,
@@ -262,15 +268,15 @@ public partial class ControlCenterWindow : Window
     {
         if (_active is not null || _closing)
         {
-            Status.Text = "Nicht gestartet: erst laufenden Auftrag beenden oder abbrechen.";
+            Status.Text = DesktopUiText.Get("Job.Busy");
             return Task.CompletedTask;
         }
         if (warning is not null && !(detailedConfirmation
             ? new ActionConfirmationWindow(label, warning) { Owner = this }.ShowDialog() == true
-            : MessageBox.Show(this, warning + "\n\nJetzt ausfuehren?", label,
+            : MessageBox.Show(this, warning + DesktopUiText.Get("Job.ConfirmNow"), label,
                 MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes))
         {
-            Status.Text = "Nicht freigegeben. Keine Aktion ausgefuehrt.";
+            Status.Text = DesktopUiText.Get("Job.NotAuthorized");
             return Task.CompletedTask;
         }
         _operation = ExecuteAsync();
@@ -293,35 +299,35 @@ public partial class ControlCenterWindow : Window
             _terminalTimer.Start();
             AppendTerminal($"AETHER VT / {DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}\n" +
                 $"[START] {label}\n[ACCESS] {(SystemActions.IsAdmin() ? "ADMINISTRATOR" : "STANDARD")}\n" +
-                (sensitive ? "[PRIVAT] Sensible Anzeige; kein Export oder Protokoll.\n" : "[LOCAL] Live-Ausgabe bleibt in dieser Konsole.\n"));
-            Status.Text = $"{label} laeuft ...";
+                DesktopUiText.Get(sensitive ? "Job.PrivateNotice" : "Job.LocalNotice"));
+            Status.Text = DesktopUiText.Format("Job.Running", label);
             try
             {
                 if (admin) SystemActions.RequireAdmin();
                 if (warning is not null && !sensitive) ActionJournal.Append("action-start", new { label });
                 var result = await action(_active.Token);
-                AppendTerminal($"\n[ERGEBNIS]\n{result}\n[ENDE] {label} | Laufzeit {_elapsed.Elapsed:hh\\:mm\\:ss}\n");
-                Status.Text = $"{label} abgeschlossen. Ergebnis beachten.";
+                AppendTerminal(DesktopUiText.Format("Job.Result", result, label, _elapsed.Elapsed));
+                Status.Text = DesktopUiText.Format("Job.Completed", label);
                 if (warning is not null && !sensitive) ActionJournal.Append("action-complete", new { label });
                 if (job is not null)
                 {
                     job.State = "ABGESCHLOSSEN";
-                    job.Detail = "Ohne gemeldeten Ausfuehrungsfehler; Textbefund beachten, kein Gesundheitsnachweis.";
+                    job.Detail = DesktopUiText.Get("Job.CompletedDetail");
                 }
             }
             catch (OperationCanceledException)
             {
-                Status.Text = "Abgebrochen. Bereits ausgefuehrte Systemaktionen bleiben bestehen.";
-                AppendTerminal("\n[ABBRUCH] Teilaktionen/Dateien koennen bereits ausgefuehrt worden sein.\n");
-                if (job is not null) { job.State = "ABGEBROCHEN"; job.Detail = "Teilaktionen koennen bestehen bleiben."; }
+                Status.Text = DesktopUiText.Get("Job.Canceled");
+                AppendTerminal(DesktopUiText.Get("Job.CancelOutput"));
+                if (job is not null) { job.State = "ABGEBROCHEN"; job.Detail = DesktopUiText.Get("Job.CancelDetail"); }
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or Win32Exception or InvalidOperationException
                 or ArgumentException or JsonException or TimeoutException or System.Xml.XmlException
                 or NotSupportedException or System.Net.Http.HttpRequestException or PingException or SecurityException
                 or System.Security.Cryptography.CryptographicException or Microsoft.VisualBasic.FileIO.MalformedLineException)
             {
-                Status.Text = $"{label} fehlgeschlagen: {ex.Message}";
-                AppendTerminal($"\n[FEHLER] {ex.Message}\n");
+                Status.Text = DesktopUiText.Format("Job.Failed", label, ex.Message);
+                AppendTerminal(DesktopUiText.Format("Job.ErrorOutput", ex.Message));
                 if (!sensitive) Trace.TraceError("{0}: {1}", label, ex);
                 if (job is not null) { job.State = "FEHLGESCHLAGEN"; job.Detail = ex.Message; }
             }
@@ -331,7 +337,7 @@ public partial class ControlCenterWindow : Window
                 _active = null;
                 _terminalTimer.Stop();
                 _elapsed.Stop();
-                TerminalInfo.Text = $"ENDE / {_runningLabel} / Laufzeit {_elapsed.Elapsed:hh\\:mm\\:ss} / Ergebnis und Fehler oben beachten";
+                TerminalInfo.Text = DesktopUiText.Format("Job.TerminalEnd", _runningLabel, _elapsed.Elapsed);
                 Modules.IsEnabled = !_closing;
                 ShellControls.IsEnabled = !_closing;
             }
@@ -341,45 +347,44 @@ public partial class ControlCenterWindow : Window
     private SmartService Smart() => new(_model.Settings.SmartctlPath.Length > 0
         ? _model.Settings.SmartctlPath : SmartService.DetectExecutable());
     private SmartDevice SelectedDevice() => SmartDevices.SelectedItem as SmartDevice
-        ?? throw new ArgumentException("SMART-Geraet zuerst erkennen und auswaehlen.");
+        ?? throw new ArgumentException(DesktopUiText.Get("Control.SelectSmart"));
 
     private async void SmartScanClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("SMART-Erkennung", async token =>
+        await RunAsync(DesktopUiText.Get("Control.SmartScan"), async token =>
         {
             _smart = null;
             SmartDevices.ItemsSource = await Smart().ScanAsync(token);
             SmartDevices.SelectedIndex = 0;
-            return SmartDevices.Items.Count == 0 ? "Keine SMART-Geraete gemeldet." : $"{SmartDevices.Items.Count} Geraete erkannt.";
+            return SmartDevices.Items.Count == 0 ? DesktopUiText.Get("Control.SmartNone") :
+                DesktopUiText.Format("Control.SmartCount", SmartDevices.Items.Count);
         });
 
     private async void SmartReadClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("SMART-Diagnose", async token =>
+        await RunAsync(DesktopUiText.Get("Control.SmartRead"), async token =>
         {
             _smart = null;
             _smart = await Smart().ReadAsync(SelectedDevice(), token);
-            return _smart.Summary + "\n\nJSON / FAEHIGKEITEN / LOGS:\n" + _smart.Json;
+            return _smart.Summary + DesktopUiText.Get("Control.SmartRaw") + _smart.Json;
         });
 
     private async void SmartExecuteClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Laufwerksaktion", async token =>
+        await RunAsync(DesktopUiText.Get("Safety.Smart.Title"), async token =>
         {
             var operation = ((ComboBoxItem)SmartOperation.SelectedItem).Content.ToString()!;
             var result = await Smart().ExecuteAsync(SelectedDevice(), operation, SmartArgument.Text, token);
             return result.Summary + "\n" + result.Json;
-        }, "Gewaehlte SMART-Aktion startet/beendet einen Laufwerkstest oder aendert AAM/APM. " +
-            "Tests belasten das Laufwerk, koennen Stunden dauern und laufen nach App-Abbruch weiter. " +
-            "Vorher Daten sichern. Im Laufwerk unterstuetzte Faehigkeiten zuerst lesen.", admin: true);
+        }, DesktopUiText.Get("Safety.Smart.Body"), admin: true);
 
     private async void SaveSmartClicked(object sender, RoutedEventArgs e)
     {
-        if (_smart is null) { Status.Text = "Zuerst gueltige SMART-Diagnose lesen."; return; }
+        if (_smart is null) { Status.Text = DesktopUiText.Get("Control.SmartRequired"); return; }
         var dialog = new SaveFileDialog { Filter = "SMART JSON (*.json)|*.json", FileName = "aether-smart.json" };
         if (dialog.ShowDialog(this) != true) return;
         var json = _smart.Json;
-        await RunAsync("SMART-Export", async token =>
+        await RunAsync(DesktopUiText.Get("Control.SmartExport"), async token =>
         {
             await File.WriteAllTextAsync(dialog.FileName, json, token);
-            return "SMART JSON gespeichert. Datei kann lokale Seriennummern enthalten; nicht ungeprueft teilen.";
+            return DesktopUiText.Get("Control.SmartSaved");
         });
     }
 
@@ -387,22 +392,21 @@ public partial class ControlCenterWindow : Window
     {
         var host = PingHost.Text.Trim();
         await RunAsync("Ping", token => NetworkTools.PingAsync(host, token),
-            $"Sendet ICMP an {host}. Bei Hostnamen wird DNS verwendet. Nur eigene/freigegebene Ziele.");
+            DesktopUiText.Format("Safety.Ping", host));
     }
     private async void RouterPingClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Router-Ping", token => NetworkTools.PingAsync(NetworkTools.DefaultGateway(), token), "Sendet ICMP an das lokal gemeldete Standardgateway.");
+        await RunAsync("Router-Ping", token => NetworkTools.PingAsync(NetworkTools.DefaultGateway(), token),
+            DesktopUiText.Get("Safety.RouterPing"));
 
     private async void SpeedtestClicked(object sender, RoutedEventArgs e)
     {
         if (!int.TryParse(SpeedtestMiB.Text.Trim(), out var mib) || mib is < SpeedTest.MinMiB or > SpeedTest.MaxMiB)
         {
-            Status.Text = $"Speedtest: Testgroesse {SpeedTest.MinMiB} bis {SpeedTest.MaxMiB} MiB als ganze Zahl angeben.";
+            Status.Text = DesktopUiText.Format("Control.SpeedSize", SpeedTest.MinMiB, SpeedTest.MaxMiB);
             return;
         }
         await RunAsync("Speedtest Download", token => SpeedTest.DownloadAsync(mib, token, ProgressOutput(raw: true)),
-            $"Laedt jetzt {mib} MiB Testdaten von https://{SpeedTest.TargetHost} herunter.\n" +
-            "Deine IP-Adresse wird dem Messziel sichtbar; das Datenvolumen zaehlt bei getakteten Verbindungen.\n" +
-            "Eine HTTPS-Verbindung, Zeitlimit 120 s, kein Upload-Test.");
+            DesktopUiText.Format("Safety.SpeedTest", mib, SpeedTest.TargetHost));
     }
 
     private List<WingetRow> _packageRows = [];
@@ -416,9 +420,9 @@ public partial class ControlCenterWindow : Window
         {
             (script, label) = kind switch
             {
-                "list" => (PackageCenter.ListScript, "Paket-Center / installierte Pakete"),
-                "upgrade" => (PackageCenter.UpgradeListScript, "Paket-Center / Updateangebot"),
-                _ => (PackageCenter.SearchScript(PackageSearch.Text), "Paket-Center / Suche")
+                "list" => (PackageCenter.ListScript, DesktopUiText.Get("Package.ListInstalled")),
+                "upgrade" => (PackageCenter.UpgradeListScript, DesktopUiText.Get("Package.ListUpdates")),
+                _ => (PackageCenter.SearchScript(PackageSearch.Text), DesktopUiText.Get("Package.Search"))
             };
         }
         catch (ArgumentException ex) { PackagesInfo.Text = ex.Message; return; }
@@ -426,15 +430,15 @@ public partial class ControlCenterWindow : Window
         {
             var result = await AdminShell.RunAsync(script, TimeSpan.FromMinutes(10), token, ProgressOutput(raw: true));
             if (result.ExitCode != 0)
-                throw new InvalidOperationException($"WinGet Exit {result.ExitCode}. STDERR steht oben.");
+                throw new InvalidOperationException(DesktopUiText.Format("Package.NativeExit", result.ExitCode));
             var rows = PackageCenter.ParseTable(result.Output);
             _packageRows = rows;
             _packageKind = kind;
             PackagesGrid.ItemsSource = rows;
             var blocked = rows.Count(r => !r.Actionable);
-            PackagesInfo.Text = $"{rows.Count} Eintraege geladen | {blocked} ohne eindeutig lesbare ID (nicht aktionierbar)." +
-                (kind == "upgrade" ? " Alle aktualisieren nutzt genau diese Liste." : "");
-            return $"{rows.Count} Tabellenzeilen erkannt. Eintraege mit abgeschnittener ID bleiben bewusst ohne Aktion.";
+            PackagesInfo.Text = DesktopUiText.Format("Package.Loaded", rows.Count, blocked) +
+                (kind == "upgrade" ? DesktopUiText.Get("Package.UpdateListOnly") : "");
+            return DesktopUiText.Format("Package.TableParsed", rows.Count);
         });
     }
 
@@ -444,43 +448,42 @@ public partial class ControlCenterWindow : Window
         var all = action == "upgrade-all";
         var verb = all ? "upgrade" : action;
         if (_packageKind == "stale")
-        { PackagesInfo.Text = "Vor weiteren Paketaktionen Liste neu laden oder Paketliste erneut importieren."; return; }
+        { PackagesInfo.Text = DesktopUiText.Get("Package.Reload"); return; }
         if (_packageKind == "import" && verb != "install")
-        { PackagesInfo.Text = "Import ist eine Wunschliste, keine Ist-Liste. Nur Auswahl installieren ist moeglich; fuer Updates/Entfernen lokale Liste laden."; return; }
+        { PackagesInfo.Text = DesktopUiText.Get("Package.ImportOnlyInstall"); return; }
         if (all && _packageKind != "upgrade")
         {
-            PackagesInfo.Text = "Zuerst 'Verfuegbare Updates' laden: Alle aktualisieren nutzt genau diese angezeigte Liste.";
+            PackagesInfo.Text = DesktopUiText.Get("Package.LoadUpdatesFirst");
             return;
         }
         var chosen = all ? _packageRows : PackagesGrid.SelectedItems.Cast<WingetRow>().ToList();
         if (chosen.GroupBy(r => r.Id, StringComparer.OrdinalIgnoreCase)
             .Any(g => g.Select(r => r.Source).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1))
-        { PackagesInfo.Text = "Gleiche Paket-ID aus mehreren Quellen: Auswahl auf genau eine Quelle je ID eingrenzen."; return; }
+        { PackagesInfo.Text = DesktopUiText.Get("Package.MultipleSources"); return; }
         var skipped = chosen.Count(r => !r.Actionable);
         var actionable = chosen.Where(r => r.Actionable)
             .DistinctBy(r => r.Id, StringComparer.OrdinalIgnoreCase).ToList();
         if (actionable.Count == 0)
         {
-            PackagesInfo.Text = all ? "Keine aktionierbaren Updates in der Liste." :
-                "Keine aktionierbaren Pakete markiert. Zeilen in der Tabelle auswaehlen; AKTIONIERBAR muss 'ja' sein.";
+            PackagesInfo.Text = DesktopUiText.Get(all ? "Package.NoUpdates" : "Package.NoSelection");
             return;
         }
         if (actionable.Count > PackageCenter.MaxIds)
         {
-            PackagesInfo.Text = $"Maximal {PackageCenter.MaxIds} Paket-IDs je Lauf; Auswahl verkleinern.";
+            PackagesInfo.Text = DesktopUiText.Format("Package.Limit", PackageCenter.MaxIds);
             return;
         }
         var ids = actionable.Select(r => r.Id).ToList();
         try { foreach (var row in actionable) _ = PackageCenter.TargetCommandScript(verb, row); }
         catch (ArgumentException ex) { PackagesInfo.Text = ex.Message; return; }
-        var verbText = verb switch { "install" => "INSTALLIEREN", "upgrade" => "AKTUALISIEREN", _ => "DEINSTALLIEREN" };
-        var warning = $"{verbText} ueber WinGet, {ids.Count} exakte Paket-ID(s):\n" +
-            string.Join("\n", actionable.Select(r => $"{r.Id}  ({r.Name}) / Quelle: {(r.Source.Length == 0 ? "nicht gemeldet / WinGet-Zuordnung" : r.Source)}")) +
-            (skipped > 0 ? $"\n{skipped} Eintraege ohne eindeutige ID werden uebersprungen." : "") +
-            "\n\nJede ID laeuft einzeln mit --exact. Quell-/Paketlizenzen werden akzeptiert; " +
-            "Fremdinstaller koennen eigene Fenster zeigen." +
-            (verb == "uninstall" ? "\nDeinstallation entfernt Programme endgueltig." : "");
-        await RunAsync($"Paket-Center / {verbText} ({ids.Count} IDs)",
+        var verbText = DesktopUiText.Get(verb switch { "install" => "Package.InstallVerb", "upgrade" => "Package.UpgradeVerb", _ => "Package.UninstallVerb" });
+        var warning = DesktopUiText.Format("Package.ConsentHeading", verbText, ids.Count) +
+            string.Join("\n", actionable.Select(r => DesktopUiText.Format("Package.Target", r.Id, r.Name,
+                r.Source.Length == 0 ? DesktopUiText.Get("Package.SourceUnknown") : r.Source))) +
+            (skipped > 0 ? DesktopUiText.Format("Package.SkippedTargets", skipped) : "") +
+            DesktopUiText.Get("Package.ConsentDetails") +
+            (verb == "uninstall" ? DesktopUiText.Get("Package.UninstallPermanent") : "");
+        await RunAsync(DesktopUiText.Format("Package.RunTitle", verbText, ids.Count),
             token => RunPackageQueueAsync(verb, actionable, token,
                 (row, active) => AdminShell.RunAsync(PackageCenter.TargetCommandScript(verb, row),
                     TimeSpan.FromMinutes(180), active, ProgressOutput(raw: true)), ActionJournal.Append),
@@ -489,20 +492,19 @@ public partial class ControlCenterWindow : Window
 
     private async void ShellbagsClicked(object sender, RoutedEventArgs e)
     {
-        await RunAsync("Shellbag-Analyse (nur lesend)", async token =>
+        await RunAsync(DesktopUiText.Get("Center.ShellbagTitle"), async token =>
         {
             var entries = await Task.Run(ShellbagAnalyzer.Read, token);
             token.ThrowIfCancellationRequested();
             ShellbagGrid.ItemsSource = entries;
-            ShellbagInfo.Text = $"{entries.Count} Eintraege (Limit {ShellbagAnalyzer.MaxEntries}) | " +
-                $"{entries.Count(entry => !entry.Decoded)} nicht dekodierbar | Zeitstempel = Registry-Schluessel, nicht Ordnerbesuch.";
-            return $"{entries.Count} Shellbag-Eintraege aus HKCU gelesen. Nur lesender Zugriff; nichts wurde veraendert oder geloescht.";
+            ShellbagInfo.Text = DesktopUiText.Format("Center.ShellbagStatus", entries.Count, ShellbagAnalyzer.MaxEntries, entries.Count(entry => !entry.Decoded));
+            return DesktopUiText.Format("Center.ShellbagResult", entries.Count);
         });
     }
 
     private async void PortalClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Captive-Portal-Diagnose", NetworkTools.CaptivePortalAsync,
-            "Sendet eine HTTP-Konnektivitaetsprobe an www.msftconnecttest.com. IP-Adresse wird dort sichtbar. Keine Anmeldung, keine Datenuebertragung aus dem Cockpit.");
+        await RunAsync(DesktopUiText.Get("Center.PortalTitle"), NetworkTools.CaptivePortalAsync,
+            DesktopUiText.Get("Center.PortalConsent"));
     private async void LanScanClicked(object sender, RoutedEventArgs e)
     {
         var cidr = LanRange.Text.Trim();
@@ -511,9 +513,9 @@ public partial class ControlCenterWindow : Window
             LanGrid.ItemsSource = null;
             var devices = await NetworkTools.ScanAsync(cidr, token, ProgressOutput(), _model.Settings.OuiCsvPath);
             LanGrid.ItemsSource = devices;
-            return $"{devices.Count} Antworten/Abfragefehler im Netz {cidr}. Nicht antwortende Geraete sind nicht ausgeschlossen.\n" +
+            return DesktopUiText.Format("Center.LanResult", devices.Count, cidr) +
                 string.Join("\n", devices.Select(d => $"{d.Address}: {d.Status} {d.Milliseconds} ms {d.Detail}"));
-        }, $"Privates Netz {cidr} mit bis zu 254 ICMP-Zielen pruefen. Nur mit Berechtigung im eigenen Netz.");
+        }, DesktopUiText.Format("Center.LanConsent", cidr));
     }
 
     private async void AutoLanChanged(object sender, RoutedEventArgs e)
@@ -524,13 +526,12 @@ public partial class ControlCenterWindow : Window
             _autoStop?.Cancel();
             return;
         }
-        if (!_autoTask.IsCompleted) { Status.Text = "Vorherigen Auto-Scan erst beenden lassen."; AutoLan.IsChecked = false; return; }
+        if (!_autoTask.IsCompleted) { Status.Text = DesktopUiText.Get("Center.AutoLanPrevious"); AutoLan.IsChecked = false; return; }
         var cidr = LanRange.Text.Trim();
         try { NetworkTools.ParseLocalRange(cidr); }
         catch (ArgumentException ex) { Status.Text = ex.Message; AutoLan.IsChecked = false; return; }
-        if (MessageBox.Show(this, $"{cidr} alle 60 Sekunden aktiv mit ICMP pruefen, solange dieses Fenster offen ist? " +
-            "Nur im eigenen/freigegebenen Netz. Mit Abbrechen oder Ausschalten jederzeit stoppen.",
-            "Wiederkehrenden LAN-Scan freigeben", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+        if (MessageBox.Show(this, DesktopUiText.Format("Center.AutoLanConsent", cidr),
+            DesktopUiText.Get("Center.AutoLanTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning,
             MessageBoxResult.No) != MessageBoxResult.Yes) { AutoLan.IsChecked = false; return; }
         _autoStop = new CancellationTokenSource();
         _autoTask = AutoScanAsync(cidr, _autoStop.Token);
@@ -544,7 +545,7 @@ public partial class ControlCenterWindow : Window
             while (!token.IsCancellationRequested && !_closing)
             {
                 if (_active is null)
-                    await RunAsync("Freigegebener Auto-LAN-Scan", async active =>
+                    await RunAsync(DesktopUiText.Get("Center.AutoLanRun"), async active =>
                     {
                         using var linked = CancellationTokenSource.CreateLinkedTokenSource(token, active);
                         var devices = await NetworkTools.ScanAsync(cidr, linked.Token, ouiCsv: _model.Settings.OuiCsvPath);
@@ -554,7 +555,7 @@ public partial class ControlCenterWindow : Window
                 await Task.Delay(TimeSpan.FromSeconds(60), token);
             }
         }
-        catch (OperationCanceledException) when (token.IsCancellationRequested) { Status.Text = "Auto-Scan beendet."; }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { Status.Text = DesktopUiText.Get("Center.AutoLanStopped"); }
         finally
         {
             _autoStop?.Dispose();
@@ -619,19 +620,18 @@ public partial class ControlCenterWindow : Window
 
     private Task ExecuteSystemAction(SystemAction action) => RunAsync(action.Label, async token =>
     {
-        AppendTerminal($"[BEFEHL] \"{action.Executable}\" {string.Join(" ", action.Arguments)}\n" +
-            $"[LIMIT] {action.Timeout.TotalMinutes:0.##} Minuten\n[HINWEIS] {action.Warning}\n" +
+        AppendTerminal(DesktopUiText.Format("Safety.ToolCommand", action.Executable,
+            string.Join(" ", action.Arguments), action.Timeout.TotalMinutes, action.Warning) +
             (action.Id.StartsWith("sfc", StringComparison.Ordinal)
                 ? $"[DETAILLOG] {Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\\Logs\\CBS\\CBS.log\n" :
                 action.Id.StartsWith("dism", StringComparison.Ordinal)
                     ? $"[DETAILLOG] {Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\\Logs\\DISM\\dism.log\n" : "") +
-            "[STREAM] STDOUT live, STDERR gekennzeichnet. Fortschritt wird vom Werkzeug gemeldet, nicht geschaetzt.\n");
+            DesktopUiText.Get("Safety.ToolStream"));
         var result = await CommandRunner.RunAsync(action.Executable, action.Arguments, action.Timeout, token,
             ProgressOutput(raw: true), outputEncoding: action.Id.StartsWith("sfc", StringComparison.Ordinal) ? Encoding.Unicode : null);
         if (result.ExitCode != 0)
-            throw new InvalidOperationException($"Werkzeug Exitcode {result.ExitCode}. STDOUT/STDERR stehen oben. " +
-                "Exit 0 allein beweist keine vollstaendige Reparatur; Abschlussmeldung und Windows-Detailprotokoll beachten.");
-        return $"Exitcode {result.ExitCode}. Abschlussmeldung oben beachten; erfolgreich beendeter Prozess ist kein pauschales Gesundheitsurteil.";
+            throw new InvalidOperationException(DesktopUiText.Format("Control.ToolExitFailed", result.ExitCode));
+        return DesktopUiText.Format("Control.ToolExit", result.ExitCode);
     }, action.Warning, action.Admin);
     private async void ActionClicked(object sender, RoutedEventArgs e)
     {
@@ -707,43 +707,42 @@ public partial class ControlCenterWindow : Window
     {
         if (_active is not null || _closing)
         {
-            Status.Text = "Es laeuft bereits eine Aktion. Erst abschliessen oder abbrechen.";
+            Status.Text = DesktopUiText.Get("Center.ActionRunning");
             return;
         }
         var command = CommandInput.Text.Trim();
         if (command.Length == 0)
         {
-            Status.Text = "Kein Befehl eingegeben. Befehl in der Verwaltung waehlen oder eingeben.";
+            Status.Text = DesktopUiText.Get("Center.CommandEmpty");
             return;
         }
         if (!_model.Settings.ExpertMode)
         {
-            Status.Text = "EINSTEIGER-Modus: freie Konsolenbefehle sind gesperrt. Expertenmodus in der Wartung aktivieren.";
+            Status.Text = DesktopUiText.Get("Center.CommandBlocked");
             return;
         }
         if (!int.TryParse(CommandTimeout.Text, out var minutes) || minutes is < 1 or > 1440)
         {
-            Status.Text = "Zeitlimit muss eine ganze Zahl zwischen 1 und 1440 Minuten sein.";
+            Status.Text = DesktopUiText.Get("Center.CommandTimeout");
             return;
         }
         // Free commands may print secrets. Keep both their history and output out of persistent logs.
         if (_commandHistory.Count == 0 || _commandHistory[^1] != command) _commandHistory.Add(command);
         if (_commandHistory.Count > 100) _commandHistory.RemoveAt(0);
         _historyIndex = _commandHistory.Count;
-        await RunAsync("Administrator-Konsole", async token =>
+        await RunAsync(DesktopUiText.Get("Center.CommandTitle"), async token =>
         {
-            AppendTerminal($"[BEFEHL] {command}\n[SHELL] Windows PowerShell 5.1 / neue Sitzung / keine interaktive Eingabe\n" +
-                "[ACHTUNG] Direkte Ausfuehrung. Veraenderungen bleiben bei Abbruch bestehen.\n");
+            AppendTerminal(DesktopUiText.Format("Center.CommandHeading", command));
             var result = await AdminShell.RunAsync(command, TimeSpan.FromMinutes(minutes), token, ProgressOutput(raw: true));
             if (result.ExitCode != 0)
-                throw new InvalidOperationException($"Befehl Exitcode {result.ExitCode}. Ausgabe/Fehler oben beachten.");
-            return "Exitcode 0. Ergebnis pruefen; dies ist kein pauschaler Reparatur-/Gesundheitsnachweis.";
+                throw new InvalidOperationException(DesktopUiText.Format("Center.CommandExit", result.ExitCode));
+            return DesktopUiText.Get("Center.CommandSuccess");
         }, admin: true, sensitive: true);
         if (!_closing) CommandInput.Focus();
     }
 
     private async void ExplorerClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Explorer-Neustart", async token =>
+        await RunAsync(DesktopUiText.Get("Center.ExplorerTitle"), async token =>
         {
             var session = Process.GetCurrentProcess().SessionId;
             var explorers = Process.GetProcessesByName("explorer");
@@ -763,34 +762,34 @@ public partial class ControlCenterWindow : Window
                 {
                     FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
                     UseShellExecute = true
-                }) ?? throw new InvalidOperationException("Explorer-Neustart fehlgeschlagen.");
+                }) ?? throw new InvalidOperationException(DesktopUiText.Get("Center.ExplorerFailed"));
             }
-            return "Explorer der aktuellen Sitzung neu gestartet. Windows kann die Shell ebenfalls automatisch neu starten.";
-        }, "Explorer-Fenster und Taskleiste der aktuellen Sitzung werden beendet. Laufende Explorer-Dateioperationen vorher abschliessen. Andere Sitzungen werden nicht beendet.");
+            return DesktopUiText.Get("Center.ExplorerResult");
+        }, DesktopUiText.Get("Safety.ExplorerRestart"));
 
     private async void DeliveryClicked(object sender, RoutedEventArgs e) =>
         await RunAsync("Delivery Optimization", token => CommandRunner.PowerShellAsync(
-            "Delete-DeliveryOptimizationCache -Force; 'Windows Delivery Optimization Cache-Bereinigung angefordert.'", token),
-            "Windows-Delivery-Optimization-Cache ueber die offizielle Windows-Schnittstelle loeschen. Kein Dateivorschau-API vorhanden; Cachegroesse wird nicht versprochen. Windows kann Daten erneut herunterladen.", admin: true);
+            DesktopScriptText.Preamble("Center.DeliveryResult") + "Delete-DeliveryOptimizationCache -Force; $aetherDesktopText['Center.DeliveryResult']", token),
+            DesktopUiText.Get("Safety.DeliveryCleanup"), admin: true);
     private async void CertificatesClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Zertifikate", token => Task.Run(() => string.Join("\n", CertificateDiagnostics.Read(token)
+        await RunAsync(DesktopUiText.Get("Center.CertificatesTitle"), token => Task.Run(() => string.Join("\n", CertificateDiagnostics.Read(token)
             .Select(c => $"{c.Name}\n{c.State} | {c.Value}\n{c.Detail}\n")), token));
     private async void StabilityClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Stabilitaetsereignisse", token => CommandRunner.PowerShellAsync(SystemActions.StabilityScript, token));
+        await RunAsync(DesktopUiText.Get("Center.StabilityTitle"), token => CommandRunner.PowerShellAsync(SystemActions.StabilityScript, token));
     private async void OpenJournalClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Aktionsordner", _ =>
+        await RunAsync(DesktopUiText.Get("Center.JournalTitle"), _ =>
         {
             Directory.CreateDirectory(ActionJournal.DirectoryPath);
             using var process = Process.Start(new ProcessStartInfo { FileName = ActionJournal.DirectoryPath, UseShellExecute = true });
-            return Task.FromResult("Aktionsordner geoeffnet. Schluesselinhalte werden hier nicht gespeichert.");
+            return Task.FromResult(DesktopUiText.Get("Center.JournalOpened"));
         });
 
     private async void StartupReadClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Autostarts", _ =>
+        await RunAsync(DesktopUiText.Get("Center.StartupTitle"), _ =>
         {
             _startupRows = _startup.Read();
             RefreshStartup();
-            return Task.FromResult("Autostarts lokal eingelesen; AN/AUS bezieht sich auf den Run-Wert.");
+            return Task.FromResult(DesktopUiText.Get("Center.StartupRead"));
         });
     private List<StartupEntry> _startupRows = [];
     internal static IReadOnlyList<StartupEntry> FilterStartup(IEnumerable<StartupEntry> rows, string query) =>
@@ -813,17 +812,18 @@ public partial class ControlCenterWindow : Window
     }
     private async void StartupChangeClicked(object sender, RoutedEventArgs e)
     {
-        if (StartupEntries.SelectedItem is not StartupEntry entry) { Status.Text = "Autostarteintrag auswaehlen."; return; }
+        if (StartupEntries.SelectedItem is not StartupEntry entry) { Status.Text = DesktopUiText.Get("Control.SelectStartup"); return; }
         var enabled = sender is Button { Tag: "on" };
-        if (entry.Enabled == enabled) { Status.Text = "Nicht geaendert: Eintrag hat bereits den gewaehlten Zustand."; return; }
-        await RunAsync("Autostart aendern", _ =>
+        if (entry.Enabled == enabled) { Status.Text = DesktopUiText.Get("Control.StartupUnchanged"); return; }
+        await RunAsync(DesktopUiText.Get("Control.StartupChange"), _ =>
         {
             _startup.SetEnabled(entry, enabled);
             _startupRows = _startup.Read();
             RefreshStartup();
-            return Task.FromResult($"Autostart {entry.Name} {(enabled ? "aktiviert" : "deaktiviert")}. Sicherung bleibt lokal unter AetherCockpit/Backups.");
-        }, $"{entry.Hive} / {entry.Name} {(enabled ? "aus lokaler Sicherung aktivieren" : "sichern und deaktivieren")}? " +
-            $"Befehl:\n{entry.Command}\nDies aendert den naechsten Benutzerstart. Keine anderen Werte werden geaendert.");
+            return Task.FromResult(DesktopUiText.Format("Control.StartupResult", entry.Name,
+                DesktopUiText.Get(enabled ? "Control.StartupEnabled" : "Control.StartupDisabled")));
+        }, DesktopUiText.Format("Safety.StartupChange", entry.Hive, entry.Name,
+            DesktopUiText.Get(enabled ? "Control.StartupEnable" : "Control.StartupDisable"), entry.Command));
     }
 
     private async void OpenLogClicked(object sender, RoutedEventArgs e)
@@ -870,20 +870,20 @@ public partial class ControlCenterWindow : Window
         }
         LogCurve.Points = points;
         LogPoints.ItemsSource = series.Points;
-        LogSummary.Text = series.Summary + $" | {series.Points[0].Timestamp:g} bis {series.Points[^1].Timestamp:g}. Kurve bei Bedarf ausgeduennt.";
+        LogSummary.Text = series.Summary + DesktopUiText.Format("Center.LogRange", series.Points[0].Timestamp, series.Points[^1].Timestamp);
     }
 
     private async void CaptureClicked(object sender, RoutedEventArgs e)
     {
-        if (!int.TryParse(CaptureSeconds.Text, out var seconds)) { Status.Text = "Capture-Dauer ist keine Ganzzahl."; return; }
+        if (!int.TryParse(CaptureSeconds.Text, out var seconds)) { Status.Text = DesktopUiText.Get("Center.CaptureDuration"); return; }
         var processName = GameProcess.Text.Trim();
         var dialog = new SaveFileDialog { Filter = "PresentMon CSV (*.csv)|*.csv", FileName = $"frames-{DateTime.Now:yyyyMMdd-HHmmss}.csv" };
         if (dialog.ShowDialog(this) != true) return;
         _captureSession = "Aether-" + Guid.NewGuid().ToString("N");
-        await RunAsync("Frame-Capture", async token =>
+        await RunAsync(DesktopUiText.Get("Center.CaptureTitle"), async token =>
         {
             var exe = _model.Settings.PresentMonPath.Length > 0 ? _model.Settings.PresentMonPath : FrameTelemetry.DetectExecutable();
-            if (!File.Exists(exe)) throw new FileNotFoundException("PresentMon Console fehlt. EXE in Einstellungen auswaehlen.");
+            if (!File.Exists(exe)) throw new FileNotFoundException(DesktopUiText.Get("Center.PresentMonMissing"));
             var arguments = FrameTelemetry.CaptureArguments(processName, seconds, dialog.FileName, _captureSession);
             string cleanupHint = "";
             try
@@ -896,22 +896,22 @@ public partial class ControlCenterWindow : Window
                 // Only our unique ETW session is terminated; never interfere with other PresentMon captures.
                 var cleanup = await CommandRunner.RunAsync(exe, ["--session_name", _captureSession, "--terminate_existing_session"],
                     TimeSpan.FromSeconds(10), CancellationToken.None);
-                if (cleanup.ExitCode != 0) cleanupHint = $"\nETW-Aufraeumhinweis: Exit {cleanup.ExitCode}. {cleanup.Output} {cleanup.Error}";
+                if (cleanup.ExitCode != 0) cleanupHint = DesktopUiText.Format("Center.EtwCleanup", cleanup.ExitCode, cleanup.Output, cleanup.Error);
             }
             var summary = FrameTelemetry.Read(dialog.FileName);
-            if (summary.Count == 0) throw new InvalidDataException("Keine gueltigen Frames fuer den Prozess erfasst. Prozessname/Renderaktivitaet pruefen.");
+            if (summary.Count == 0) throw new InvalidDataException(DesktopUiText.Get("Center.CaptureEmpty"));
             _frames = summary;
             return string.Join("\n", summary) + cleanupHint;
-        }, $"{processName} fuer {seconds}s mit lokalem ETW verfolgen und in CSV speichern. Prozess muss laufen. ETW-Rechte/Administrator erforderlich, kein Dienst wird installiert.");
+        }, DesktopUiText.Format("Center.CaptureConsent", processName, seconds));
     }
     private async void FrameCsvClicked(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Filter = "PresentMon CSV (*.csv)|*.csv" };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Frame-Auswertung", async token =>
+        await RunAsync(DesktopUiText.Get("Center.FrameAnalysisTitle"), async token =>
         {
             var summary = await Task.Run(() => FrameTelemetry.Read(dialog.FileName), token);
-            if (summary.Count == 0) throw new InvalidDataException("Keine gueltigen Frames.");
+            if (summary.Count == 0) throw new InvalidDataException(DesktopUiText.Get("Center.FramesEmpty"));
             _frames = summary;
             return string.Join("\n", summary);
         });
@@ -919,22 +919,21 @@ public partial class ControlCenterWindow : Window
 
     private async void CompareFramesClicked(object sender, RoutedEventArgs e)
     {
-        if (_frames is null) { Status.Text = "Erste Frame-CSV laden oder Capture abschliessen."; return; }
+        if (_frames is null) { Status.Text = DesktopUiText.Get("Center.FramesLoadFirst"); return; }
         var first = _frames;
         var dialog = new OpenFileDialog { Filter = "PresentMon CSV (*.csv)|*.csv" };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Frame-Vergleich", token => Task.Run(() =>
+        await RunAsync(DesktopUiText.Get("Center.FrameCompareTitle"), token => Task.Run(() =>
         {
             var second = FrameTelemetry.Read(dialog.FileName);
-            if (second.Count == 0) throw new InvalidDataException("Zweite CSV hat keine gueltigen Frames.");
-            return "ERSTE MESSUNG:\n" + string.Join("\n", first) + "\n\nZWEITE MESSUNG:\n" + string.Join("\n", second) +
-                "\nSwapchain-Adressen koennen zwischen Sitzungen wechseln; keine ungepruefte Vermischung/Zuordnung.";
+            if (second.Count == 0) throw new InvalidDataException(DesktopUiText.Get("Center.FramesSecondEmpty"));
+            return DesktopUiText.Format("Center.FrameComparison", string.Join("\n", first), string.Join("\n", second));
         }, token));
     }
 
     private void ToolPathClicked(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog { Filter = "Offizielles Werkzeug (*.exe)|*.exe" };
+        var dialog = new OpenFileDialog { Filter = DesktopUiText.Get("Center.ToolFilter") };
         if (dialog.ShowDialog(this) != true) return;
         if (sender is Button { Tag: "smart" }) SmartPath.Text = dialog.FileName;
         else PresentPath.Text = dialog.FileName;
@@ -951,8 +950,8 @@ public partial class ControlCenterWindow : Window
         var mainWindow = Application.Current.MainWindow as MainWindow;
         if (reportingEnabled && mainWindow?.ManagerDeviceTokenAvailable != true)
         {
-            MessageBox.Show(this, "Dieses Geraet ist noch nicht angemeldet. Zuerst Server-URL und Einmalcode eingeben und das Geraet registrieren.",
-                "AETHER / Zentralverwaltung", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, DesktopUiText.Get("Center.ManagerUnregistered"),
+                DesktopUiText.Get("Center.ManagerTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
             ManagerReportingToggle.IsChecked = false;
             return;
         }
@@ -960,26 +959,26 @@ public partial class ControlCenterWindow : Window
             !string.Equals(ManagerServerUrl.Text.Trim().TrimEnd('/'),
                 _model.Settings.ManagerServerUrl.Trim().TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
         {
-            MessageBox.Show(this, "Dieses Geraet ist bereits an eine Server-URL gebunden. Ein Serverwechsel wird erst nach sicherem Token-Widerruf unterstuetzt.",
-                "AETHER / Zentralverwaltung", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, DesktopUiText.Get("Center.ManagerBound"),
+                DesktopUiText.Get("Center.ManagerTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
         if (reportingEnabled && !_model.Settings.ManagerReportingEnabled &&
             MessageBox.Show(this,
-                $"Diagnoseberichte an {ManagerServerUrl.Text.Trim()} senden?\n\nEnthalten sind Windows-Ereignisse der letzten 24 Stunden, Geraete, Adapter, installierte Anwendungen, Treiber und Befunde. Versand beim App-Start und danach stuendlich, nur solange AETHER laeuft und der Server das Geraet freigegeben hat.",
-                "AETHER / Ausdrueckliche Freigabe fuer zentrale Berichte",
+                DesktopUiText.Format("Center.ManagerConsent", ManagerServerUrl.Text.Trim()),
+                DesktopUiText.Get("Center.ManagerConsentTitle"),
                 MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
         {
             ManagerReportingToggle.IsChecked = false;
-            Status.Text = "Zentrale Uebertragung nicht aktiviert.";
+            Status.Text = DesktopUiText.Get("Center.ManagerDisabled");
             return;
         }
 
-        await RunAsync("Einstellungen", _ =>
+        await RunAsync(DesktopUiText.Get("Center.SettingsTitle"), _ =>
         {
             static double Number(string text) => double.TryParse(text, NumberStyles.Float, CultureInfo.CurrentCulture, out var value)
-                ? value : throw new ArgumentException("Gueltige Zahl in regionaler Schreibweise eingeben.");
-            if (!int.TryParse(RecordSeconds.Text, out var seconds)) throw new ArgumentException("Gueltiges Sekundenintervall eingeben.");
+                ? value : throw new ArgumentException(DesktopUiText.Get("Center.NumberInvalid"));
+            if (!int.TryParse(RecordSeconds.Text, out var seconds)) throw new ArgumentException(DesktopUiText.Get("Center.IntervalInvalid"));
             var settings = _model.Settings with
             {
                 CpuWarningC = Number(CpuThreshold.Text),
@@ -1019,25 +1018,25 @@ public partial class ControlCenterWindow : Window
             mainWindow?.UpdateManagerReportingSettings(settings);
             UpdateManagerModeControls();
             ManagerStatus.Text = !clientMode
-                ? "Einzelplatz-Modus gespeichert. Keine Serververbindung oder Datenuebertragung."
+                ? DesktopUiText.Get("Center.StandaloneSaved")
                 : reportingEnabled
-                    ? "Server-Client-Modus gespeichert. Berichte starten erst nach manueller Geraetefreigabe."
+                    ? DesktopUiText.Get("Center.ManagedSaved")
                     : mainWindow?.ManagerDeviceTokenAvailable == true
-                        ? "Server-Client-Modus; Geraet angemeldet, Berichte aber deaktiviert."
-                        : "Server-Client-Modus gewaehlt; zuerst am Server anmelden.";
+                        ? DesktopUiText.Get("Center.ManagedReportsOff")
+                        : DesktopUiText.Get("Center.ManagedEnrollFirst");
             var warnings = settings.OptionalFileWarnings();
-            return Task.FromResult("Einstellungen gespeichert. Neue Messungen verwenden die Warnschwellen; Aufzeichnung bleibt separat zustimmungspflichtig." +
-                (warnings.Count == 0 ? "" : "\nWARNUNG: " + string.Join("\n", warnings)));
+            return Task.FromResult(DesktopUiText.Get("Center.SettingsSaved") +
+                (warnings.Count == 0 ? "" : DesktopUiText.Format("Center.SettingsWarnings", string.Join("\n", warnings))));
         });
     }
 
     private async void EnrollManagerClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Geraet bei der Zentralverwaltung anmelden", async token =>
+        await RunAsync(DesktopUiText.Get("Center.EnrollTitle"), async token =>
         {
             var mainWindow = Application.Current.MainWindow as MainWindow
-                ?? throw new InvalidOperationException("Das Cockpit-Hauptfenster ist nicht verfuegbar.");
+                ?? throw new InvalidOperationException(DesktopUiText.Get("Center.MainMissing"));
             if (mainWindow.ManagerDeviceTokenAvailable)
-                throw new InvalidOperationException("Dieses Windows-Benutzerkonto besitzt bereits ein Geraetetoken. Keinen weiteren Einmalcode verbrauchen.");
+                throw new InvalidOperationException(DesktopUiText.Get("Center.TokenExists"));
 
             var settings = _model.Settings with
             {
@@ -1051,12 +1050,12 @@ public partial class ControlCenterWindow : Window
             var result = await mainWindow.EnrollManagerAsync(settings.ManagerServerUrl, ManagerEnrollmentCode.Password, token);
             ManagerEnrollmentCode.Clear();
             UpdateManagerModeControls();
-            ManagerStatus.Text = $"Geraet {result.DeviceId} wartet auf manuelle Freigabe. Berichte sind noch deaktiviert.";
-            return "Geraet angemeldet und Token mit Windows-DPAPI geschuetzt. Freigabe durch den Zentraladministrator erforderlich; Berichte bleiben bis zum gesonderten Opt-in aus.";
-        }, warning: "Der Einmalcode wird an den Server gesendet und nach erfolgreicher Anmeldung verbraucht. Das Geraet bleibt bis zur manuellen Serverfreigabe gesperrt; diese Aktion aktiviert noch keine Berichte.",
+            ManagerStatus.Text = DesktopUiText.Format("Center.EnrollPending", result.DeviceId);
+            return DesktopUiText.Get("Center.Enrolled");
+        }, warning: DesktopUiText.Get("Center.EnrollConsent"),
             sensitive: true);
     private async void SensorChecksClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Sensorprofil", _ => Task.FromResult(string.Join("\n", SensorDiagnostics.Evaluate(_model.Sensors, _model.Settings)
+        await RunAsync(DesktopUiText.Get("Center.SensorProfile"), _ => Task.FromResult(string.Join("\n", SensorDiagnostics.Evaluate(_model.Sensors, _model.Settings)
             .Select(c => $"{c.Name} | {c.State} | {c.Value} | {c.Detail}"))));
     private void DesktopSettingsClicked(object sender, RoutedEventArgs e) =>
         (Application.Current.MainWindow as MainWindow)?.OpenDesktopSettings();
@@ -1066,9 +1065,8 @@ public partial class ControlCenterWindow : Window
     {
         if (sender is not Button { Tag: string kind }) return;
         var profile = WifiProfile.Text;
-        await RunAsync("Sensible lokale Anzeige", token => CommandRunner.PowerShellAsync(SystemActions.SecretScript(kind, profile), token),
-            "GEHEIMNISSE werden nur lokal in dieser Ansicht angezeigt. Bildschirmfreigabe/Recording vorher beenden. " +
-            "Keine Speicherung, kein Export und kein Senden an externe Dienste. Anzeige bewusst freigeben?",
+        await RunAsync(DesktopUiText.Get("Safety.Secrets.Title"), token => CommandRunner.PowerShellAsync(SystemActions.SecretScript(kind, profile), token),
+            DesktopUiText.Get("Safety.Secrets.Body"),
             admin: true, sensitive: true);
     }
     private void ClearOutputClicked(object sender, RoutedEventArgs e)
@@ -1082,15 +1080,15 @@ public partial class ControlCenterWindow : Window
     private void ModuleChanged(object sender, SelectionChangedEventArgs e)
     {
         if (e.Source != Modules || Output is null) return;
-        if (Modules.SelectedItem is TabItem { Header: string header } && CcTrail is not null)
+        if (Modules.SelectedItem is TabItem { Header: string header, Tag: string route } && CcTrail is not null)
         {
-            if (!_trailNavigating) _trail.Visit(header);
-            CcTrail.Text = $"SYSTEMKONTROLLE  \u25B8  {header.ToUpperInvariant()}";
+            if (!_trailNavigating) _trail.Visit(route);
+            CcTrail.Text = DesktopUiText.Format("ControlCenter.Trail", header.ToUpperInvariant());
             CcBack.IsEnabled = _trail.CanBack;
             CcForward.IsEnabled = _trail.CanForward;
-            if (header == "Wartung") SetTerminalVisible(true);
+            if (route == "Wartung") SetTerminalVisible(true);
         }
-        if (_sensitiveOutput || Modules.SelectedItem is TabItem { Header: "Schluessel" })
+        if (_sensitiveOutput || Modules.SelectedItem is TabItem { Tag: "Schluessel" })
         {
             Output.Clear();
             CommandInput.Clear();
@@ -1113,7 +1111,7 @@ public partial class ControlCenterWindow : Window
     private void ToggleTerminalClicked(object sender, RoutedEventArgs e)
     {
         _terminalExpanded = false;
-        ExpandTerminalButton.Content = "Konsole vergroessern";
+        ExpandTerminalButton.Content = DesktopUiText.Get("Terminal.Expand");
         Modules.Visibility = Visibility.Visible;
         ModuleRow.Height = new GridLength(1, GridUnitType.Star);
         SetTerminalVisible(!_terminalVisible);
@@ -1125,7 +1123,7 @@ public partial class ControlCenterWindow : Window
         Modules.Visibility = _terminalExpanded ? Visibility.Collapsed : Visibility.Visible;
         ModuleRow.Height = _terminalExpanded ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
         TerminalRow.Height = _terminalExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(300);
-        if (sender is Button button) button.Content = _terminalExpanded ? "Module anzeigen" : "Konsole vergroessern";
+        if (sender is Button button) button.Content = DesktopUiText.Get(_terminalExpanded ? "Terminal.ShowModules" : "Terminal.Expand");
     }
     private void CancelClicked(object sender, RoutedEventArgs e) { _active?.Cancel(); _autoStop?.Cancel(); }
     private async void OnClosing(object? sender, CancelEventArgs e)

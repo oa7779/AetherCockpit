@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="App.AdminRequired.Body" xml:space="preserve"><value>AETHER benötigt Administratorrechte. Bitte die Windows-UAC-Abfrage beim Programmstart freigeben.</value></data>
+  <data name="App.AdminRequired.Title" xml:space="preserve"><value>AETHER / Administratorrechte erforderlich</value></data>
+  <data name="Desktop.Settings.Title" xml:space="preserve"><value>AETHER / Desktop, Transparenz und Parameter</value></data>
+  <data name="Desktop.Settings.Header" xml:space="preserve"><value>DESKTOP / GADGETS</value></data>
+  <data name="Desktop.Settings.Appearance" xml:space="preserve"><value>FENSTEROBERFLÄCHE UND SPRACHE</value></data>
+  <data name="Desktop.Settings.Copyright" xml:space="preserve"><value>Copyright (c) 2026 Olaf Weins</value></data>
+  <data name="Desktop.Settings.BackgroundDescription" xml:space="preserve"><value>Windows-Ereignisse, Geräte, Adapter, installierte Apps und Treiber alle 30 Minuten lesend prüfen. Der neueste Bericht bleibt lokal. Es werden keine Reparaturen ausgeführt. Bei Windows-Anmeldung läuft die Prüfung nur, wenn die separat genehmigte AETHER-Autostart-Aufgabe eingerichtet ist.</value></data>
+  <data name="Desktop.Settings.Skin" xml:space="preserve"><value>Design</value></data>
+  <data name="Desktop.Settings.Language" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Desktop.Settings.RestartNote" xml:space="preserve"><value>Gespeichertes Design und Sprache werden erst nach einem bestätigten App-Neustart übernommen. Windows Modern folgt den Windows-Apps-Farbeinstellungen (AppsUseLightTheme).</value></data>
+  <data name="Desktop.Settings.RestartPrompt" xml:space="preserve"><value>Die Auswahl wurde gespeichert. Jetzt neu starten, um Design und Sprache anzuwenden? Bei Nein bleibt die aktuelle Sitzung unverändert; die Auswahl gilt beim nächsten Start.</value></data>
+  <data name="Desktop.Settings.RestartTitle" xml:space="preserve"><value>AETHER / Neustart bestätigen</value></data>
+  <data name="Desktop.Settings.RestartYes" xml:space="preserve"><value>Jetzt neu starten</value></data>
+  <data name="Desktop.Settings.RestartNo" xml:space="preserve"><value>Später</value></data>
+  <data name="Desktop.Settings.PreferenceSaved" xml:space="preserve"><value>Gespeichert. Die aktuelle Sitzung wird nicht umgestaltet.</value></data>
+  <data name="Desktop.Settings.SaveFailed" xml:space="preserve"><value>Die Einstellung konnte nicht gespeichert werden.</value></data>
+  <data name="Desktop.Settings.DisplayMode" xml:space="preserve"><value>TAG / NACHT / Hauptfenster und Mainframe</value></data>
+  <data name="Desktop.Settings.Auto" xml:space="preserve"><value>Automatisch: Tag 07–19 Uhr (lokale Zeit)</value></data>
+  <data name="Desktop.Settings.Day" xml:space="preserve"><value>Immer Tag</value></data>
+  <data name="Desktop.Settings.Night" xml:space="preserve"><value>Immer Nacht</value></data>
+  <data name="Desktop.Settings.Opacity" xml:space="preserve"><value>Deckkraft 20–100 %</value></data>
+  <data name="Desktop.Settings.MainWindow" xml:space="preserve"><value>Hauptfenster</value></data>
+  <data name="Desktop.Settings.XBar" xml:space="preserve"><value>xBar</value></data>
+  <data name="Desktop.Settings.Gadgets" xml:space="preserve"><value>Alle Gadgets (einzeln auch am Gadget regelbar)</value></data>
+  <data name="Desktop.Settings.GadgetsEnabled" xml:space="preserve"><value>Desktop-Gadgets anzeigen (unabhängig vom Hauptfenster)</value></data>
+  <data name="Desktop.Settings.BackgroundDiagnostics" xml:space="preserve"><value>Hintergrunddiagnose aktivieren / alle 30 Minuten</value></data>
+  <data name="Desktop.Settings.WidgetParameters" xml:space="preserve"><value>PARAMETER / für Gadgets und xBar</value></data>
+  <data name="Desktop.Settings.Cpu" xml:space="preserve"><value>CPU</value></data>
+  <data name="Desktop.Settings.Memory" xml:space="preserve"><value>RAM</value></data>
+  <data name="Desktop.Settings.Gpu" xml:space="preserve"><value>GPU</value></data>
+  <data name="Desktop.Settings.Temperatures" xml:space="preserve"><value>Temperaturen: CPU, GPU, SSD</value></data>
+  <data name="Desktop.Settings.Network" xml:space="preserve"><value>Netzwerk: Download / Upload</value></data>
+  <data name="Desktop.Settings.Drives" xml:space="preserve"><value>Laufwerke: Belegt-/Frei-Torten</value></data>
+  <data name="Desktop.Settings.GadgetHelp" xml:space="preserve"><value>Am Gadget-Titel ziehen. Position und Deckkraft werden gespeichert. Minimieren, Wiederherstellen und Beenden über das AETHER-Symbol bei der Uhr.</value></data>
+  <data name="Desktop.Settings.NetworkButton" xml:space="preserve"><value>Netzwerküberwachung / Npcap / Alarme</value></data>
+  <data name="Desktop.Settings.ChangesSaved" xml:space="preserve"><value>Änderungen werden sofort lokal gespeichert. Autostart-Aufgabe nur über das installierte Setup einrichten oder entfernen.</value></data>
+  <data name="Skin.Retro" xml:space="preserve"><value>Retro-Neon (Original)</value></data>
+  <data name="Skin.Vista" xml:space="preserve"><value>Vista Aero Glas (dunkel)</value></data>
+  <data name="Skin.Candy" xml:space="preserve"><value>Candy Glossy (dunkel)</value></data>
+  <data name="Skin.WindowsModern" xml:space="preserve"><value>Windows Modern</value></data>
+  <data name="Skin.WindowsModernDescription" xml:space="preserve"><value>Neutrale Windows-11-artige Oberfläche; folgt AppsUseLightTheme und deaktiviert den Bildschirmschoner.</value></data>
+  <data name="Skin.ControlCenterHelp" xml:space="preserve"><value>Die Auswahl wird gespeichert und erst nach bestätigtem Neustart auf alle Desktop-Fenster angewendet. Retro-Neon bleibt der Standard.</value></data>
+  <data name="Language.German" xml:space="preserve"><value>Deutsch</value></data>
+  <data name="Language.English" xml:space="preserve"><value>English</value></data>
+  <data name="Action.Preview" xml:space="preserve"><value>AKTIONSVORSCHAU / noch nichts ausgeführt</value></data>
+  <data name="Action.Consent" xml:space="preserve"><value>Auswahl, Quellen und Auswirkungen geprüft; diese Aktion ausdrücklich freigeben.</value></data>
+  <data name="Action.Confirm" xml:space="preserve"><value>Jetzt bewusst ausführen</value></data>
+  <data name="Action.Cancel" xml:space="preserve"><value>Abbrechen / nichts ausführen</value></data>
+  <data name="Board.Title" xml:space="preserve"><value>AETHER // MAINFRAME 1986</value></data>
+  <data name="Board.Refresh" xml:space="preserve"><value>HARDWARE NEU LESEN</value></data>
+  <data name="Board.InitialStatus" xml:space="preserve"><value>Hardware wird beim ersten Öffnen lokal gelesen.</value></data>
+  <data name="Board.Description" xml:space="preserve"><value>SCHEMATISCHE ANORDNUNG / Bauteile anklicken: Windows-Details rechts. Pfade und Lüfter sind keine Messwerte.</value></data>
+  <data name="Board.SystemSchemaTitle" xml:space="preserve"><value>AETHER / SYSTEM-SCHEMA</value></data>
+  <data name="Board.SystemSchemaDescription" xml:space="preserve"><value>Neutrale schematische Übersicht der lokal erkannten Geräte. Anordnung und Verbindungen sind illustrativ, keine physische Lage oder gemessene Datenpfade.</value></data>
+  <data name="Board.NoDevices" xml:space="preserve"><value>Für diese Kategorie wurden keine Geräte erkannt.</value></data>
+  <data name="Board.SnapshotStatus" xml:space="preserve"><value>{0} Windows-Geräteeinträge einschließlich Audio-Endpunktstatus / Momentaufnahme {1}</value></data>
+  <data name="Board.DeviceCount" xml:space="preserve"><value>{0} / {1} Geräte</value></data>
+  <data name="Board.ReadCancelled" xml:space="preserve"><value>Hardwareabfrage abgebrochen.</value></data>
+  <data name="Board.ReadError" xml:space="preserve"><value>Hardwareübersicht nicht aktualisiert: {0}</value></data>
+  <data name="Board.Category.cpu" xml:space="preserve"><value>CPU / Prozessor</value></data>
+  <data name="Board.Category.ram" xml:space="preserve"><value>RAM / Speicher</value></data>
+  <data name="Board.Category.gpu" xml:space="preserve"><value>GPU / Grafik</value></data>
+  <data name="Board.Category.monitor" xml:space="preserve"><value>Bildschirme / Desktop</value></data>
+  <data name="Board.Category.controller" xml:space="preserve"><value>Controller / Chipsatz</value></data>
+  <data name="Board.Category.network" xml:space="preserve"><value>Netzwerk / Internet</value></data>
+  <data name="Board.Category.usb" xml:space="preserve"><value>USB / externe E/A</value></data>
+  <data name="Board.Category.storage" xml:space="preserve"><value>Speicher / Laufwerke</value></data>
+  <data name="Board.Category.sound" xml:space="preserve"><value>Audio</value></data>
+  <data name="Board.Category.other" xml:space="preserve"><value>Peripherie / System</value></data>
+  <data name="Navigation.SystemSchema" xml:space="preserve"><value>System-Schema</value></data>
+  <data name="Board.LabelStatus" xml:space="preserve"><value>Windows-Status</value></data>
+  <data name="Board.LabelClass" xml:space="preserve"><value>Klasse</value></data>
+  <data name="Board.LabelDevice" xml:space="preserve"><value>Gerät</value></data>
+  <data name="Board.LabelParentId" xml:space="preserve"><value>Windows-Eltern-ID (leer = nicht verfügbar)</value></data>
+  <data name="Board.MotionToggle" xml:space="preserve"><value>Animation: schematische Datenflüsse und aktive Geräte</value></data>
+  <data name="Board.ZoomFit" xml:space="preserve"><value>Board einpassen</value></data>
+  <data name="Board.Zoom75" xml:space="preserve"><value>Board 75 %</value></data>
+  <data name="Board.Zoom100" xml:space="preserve"><value>Board 100 %</value></data>
+  <data name="Board.Zoom125" xml:space="preserve"><value>Board 125 %</value></data>
+  <data name="Board.ZoomTooltip" xml:space="preserve"><value>Einpassen oder Details vergrößern; Zeichnung scrollt unabhängig von der Geräteliste.</value></data>
+  <data name="Board.LiveMetricsNotice" xml:space="preserve"><value>ECHTE LIVE-MESSWERTE / separat, nicht pro Leiterbahn</value></data>
+  <data name="Board.Download" xml:space="preserve"><value>DOWNLOAD</value></data>
+  <data name="Board.Upload" xml:space="preserve"><value>UPLOAD</value></data>
+  <data name="Board.CpuTemperature" xml:space="preserve"><value>CPU-TEMP</value></data>
+  <data name="Board.ActiveDeviceTooltip" xml:space="preserve"><value>Windows meldet eine aktive Nutzungssitzung.</value></data>
+  <data name="Board.DeviceDetailTitle" xml:space="preserve"><value>{0} / {1} Geräteeinträge</value></data>
+  <data name="Assistant.System.Name" xml:space="preserve"><value>Windows-Dateien und Komponenten</value></data>
+  <data name="Assistant.System.Scope" xml:space="preserve"><value>DISM-Komponentenspeicher und Windows-Systemdateien / nur prüfen</value></data>
+  <data name="Assistant.System.NextSteps" xml:space="preserve"><value>Lies DISM- und SFC-Endmeldungen. Bei gemeldeter Beschädigung im Wartungsplan erst DISM /RestoreHealth, danach SFC /scannow als getrennte, jeweils bestätigte Schritte auswählen. Kein Schritt startet automatisch.</value></data>
+  <data name="Assistant.Update.Name" xml:space="preserve"><value>Windows Update und Neustartstatus</value></data>
+  <data name="Assistant.Update.Scope" xml:space="preserve"><value>Update-Dienste, letzte Windows-Update-Ereignisse und Neustartindikatoren / lokal</value></data>
+  <data name="Assistant.Update.NextSteps" xml:space="preserve"><value>Prüfe Dienstestatus, Neustartindikatoren und konkrete Update-Ereignisse. Ein gestoppter Dienst ist nicht automatisch fehlerhaft. Installiere oder starte nichts automatisch; nutze bei Bedarf den Wartungsplan für eine erneute Suche.</value></data>
+  <data name="Assistant.Network.Name" xml:space="preserve"><value>Netzwerk und Internetverbindung</value></data>
+  <data name="Assistant.Network.Scope" xml:space="preserve"><value>Lokale Adapter, IP-/DNS-Konfiguration, Standardgateway und DNS-Auflösung</value></data>
+  <data name="Assistant.Network.NextSteps" xml:space="preserve"><value>Vergleiche Adapterstatus, Adresse, Gateway und DNS-Ausgabe. Ein getrenntes oder virtuelles Interface kann beabsichtigt sein. Bei Fehlern zuerst Kabel/WLAN, Router und DNS-Konfiguration prüfen; AETHER setzt Adapter/IP/DNS nicht automatisch zurück.</value></data>
+  <data name="Assistant.Devices.Name" xml:space="preserve"><value>Geräte und Treiber</value></data>
+  <data name="Assistant.Devices.Scope" xml:space="preserve"><value>PnP-Problemcodes und zugeordnete installierte Windows-Treiber</value></data>
+  <data name="Assistant.Devices.NextSteps" xml:space="preserve"><value>Bei einem Problemcode zuerst Gerät und Code im Gerätemanager prüfen und den passenden Treiber ausschließlich über Windows Update oder die offizielle Geräteherstellerseite beziehen. AETHER ersetzt, entfernt oder installiert keine Treiber automatisch.</value></data>
+  <data name="Screensaver.ModernDisabled" xml:space="preserve"><value>Der AETHER-Bildschirmschoner ist im Design Windows Modern deaktiviert. Wähle ein anderes Design und starte AETHER neu, um den Bildschirmschoner zu verwenden.</value></data>
+  <data name="Tray.NotifyTip" xml:space="preserve"><value>AETHER / Desktop und Netzwerk</value></data>
+  <data name="Tray.Open" xml:space="preserve"><value>AETHER öffnen</value></data>
+  <data name="Tray.Settings" xml:space="preserve"><value>Desktop / Transparenz / Parameter</value></data>
+  <data name="Tray.Network" xml:space="preserve"><value>Netzwerküberwachung</value></data>
+  <data name="Tray.GadgetsToggle" xml:space="preserve"><value>Gadgets minimieren / wiederherstellen</value></data>
+  <data name="Tray.GadgetsClose" xml:space="preserve"><value>Gadgets schließen</value></data>
+  <data name="Tray.Exit" xml:space="preserve"><value>AETHER vollständig beenden</value></data>
+  <data name="Tray.GadgetsDisabled" xml:space="preserve"><value>Desktop-Gadgets deaktiviert: {0} In Einstellungen erneut aktivierbar.</value></data>
+  <data name="Tray.NetworkNotice" xml:space="preserve"><value>AETHER / Netzwerkhinweis</value></data>
+  <data name="Tray.DiagnosticsNotice" xml:space="preserve"><value>AETHER / Hintergrunddiagnose</value></data>
+  <data name="Safety.RestartNow.Title" xml:space="preserve"><value>Neustart bestätigen</value></data>
+  <data name="Safety.RestartNow.Body" xml:space="preserve"><value>Das gespeicherte Design und die Sprache werden erst nach einem Neustart angewendet. Möchten Sie AETHER jetzt neu starten? Andernfalls bleibt die Auswahl für den nächsten Start gespeichert.</value></data>
+  <data name="Safety.RestartNow.Confirm" xml:space="preserve"><value>Jetzt neu starten</value></data>
+  <data name="Safety.RestartNow.Defer" xml:space="preserve"><value>Später</value></data>
+</root>

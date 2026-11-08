@@ -32,6 +32,11 @@ public partial class HardwareBoardView
     {
         var storage = Find("storage");
         DriveCount = storage.Devices.Count(IsDrive);
+        if (SkinCatalog.IsModern)
+        {
+            DrawModernSchema(snapshot);
+            return;
+        }
         var depth = Math.Max(560, 65 + Math.Ceiling(DriveCount / 4.0) * 118);
         BoardSurface = new(0, 0, DriveCount > 0 ? 960 : 620, depth);
         _boardOffsetX = Math.Max(0, depth - 560) * .72;

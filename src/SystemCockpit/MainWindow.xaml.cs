@@ -108,7 +108,7 @@ public partial class MainWindow : Window
         {
             _configurationIssue = ex.Message;
             ReportError("Einstellungen/Cache-Katalog", ex);
-            MessageBox.Show(this, ex.Message, "Konfiguration nicht lesbar; Standardwerte bleiben sichtbar", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.ConfigurationUnreadable"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         Loaded += (_, _) =>
         {
@@ -161,7 +161,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             ReportError("Desktop-Einstellungen nicht gespeichert", ex);
-            MessageBox.Show(ex.Message, "AETHER / Einstellungen nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, DesktopUiText.Get("Main.SettingsNotSaved"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -174,14 +174,14 @@ public partial class MainWindow : Window
     public async Task<bool> InitializeHardwareAsync(Action<string, int> report, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        report("[LOAD] WPF / Cockpit / gemeinsame Neon- und Glasressourcen geladen", 8);
-        report(_configurationIssue is null ? "[LOAD] Einstellungen / Cache-Katalog initialisiert; keine Bereinigung gestartet" :
-            $"[WARN] Konfiguration unvollstaendig: {_configurationIssue}", 12);
-        report("[INIT] Windows CPU/RAM/Netzwerk / erste Zaehler-Baseline", 17);
+        report(DesktopUiText.Get(SkinCatalog.IsModern ? "Boot.ModernResourcesLoaded" : "Boot.ResourcesLoaded"), 8);
+        report(_configurationIssue is null ? DesktopUiText.Get("Boot.SettingsLoaded") :
+            DesktopUiText.Format("Boot.ConfigurationWarning", _configurationIssue), 12);
+        report(DesktopUiText.Get("Boot.NativeBaseline"), 17);
         var sample = await Task.Run(_metrics.Read, token);
-        report($"[OK] RAM {sample.MemoryTotalGb:0.0} GB / {sample.Volumes.Count} Volumes", 22);
+        report(DesktopUiText.Format("Boot.Memory", sample.MemoryTotalGb, sample.Volumes.Count), 22);
         report("[INIT] LibreHardwareMonitor / CPU, GPU, RAM, Mainboard, Controller, Storage", 25);
-        report("[HINWEIS] Low-Level-Sensorzugriff kann einen lokalen Treiber laden; Windows-Schutz bleibt unveraendert", 25);
+        report(DesktopUiText.Get("Boot.DriverNotice"), 25);
         var warnings = _configurationIssue is not null;
         await _sensorGate.WaitAsync(token);
         try
@@ -195,16 +195,16 @@ public partial class MainWindow : Window
                 try { SensorToggle.IsChecked = true; }
                 finally { _suppressSensorToggle = false; }
                 var gpu = CockpitModel.SelectGpu(readings);
-                report(gpu.Count > 0 ? $"[GPU] {gpu[0].Hardware} / {gpu.Count} Sensoren" : "[WARN] Keine GPU-Sensoren erkannt", 45);
+                report(gpu.Count > 0 ? DesktopUiText.Format("Boot.Gpu", gpu[0].Hardware, gpu.Count) : DesktopUiText.Get("Boot.NoGpu"), 45);
                 var lineDelay = TimeSpan.FromMilliseconds(Math.Min(24, 3600d / Math.Max(1, readings.Count)));
                 foreach (var reading in readings)
                 {
-                    report($"[{(SensorSemantics.IsTemperatureLimit(reading) ? "LIMIT / KEIN MESSWERT" : "SENSOR")} / {(reading.Value is null ? "UNAVAILABLE" : "OK")}] {reading.Hardware} / {reading.Name} = {reading.Display}", 50);
+                    report($"[{(SensorSemantics.IsTemperatureLimit(reading) ? DesktopUiText.Get("Boot.Limit") : "SENSOR")} / {(reading.Value is null ? "UNAVAILABLE" : "OK")}] {reading.Hardware} / {reading.Name} = {reading.Display}", 50);
                     // Pace already collected results for a readable CRT sequence, not simulated sensor work.
                     await Task.Delay(lineDelay, token);
                 }
                 warnings |= gpu.Count == 0 || CockpitModel.FindGpu(gpu, "Load", "GPU Core")?.Value is null;
-                report($"[RESULT] {readings.Count(s => s.Value is not null)} / {readings.Count} Sensorwerte lesbar. Fehlende Kanaele sind nicht 0.", 60);
+                report(DesktopUiText.Format("Boot.SensorResult", readings.Count(s => s.Value is not null), readings.Count), 60);
                 sample = sample with { Sensors = readings };
             }
             catch (Exception ex) when (ex is Win32Exception or IOException or UnauthorizedAccessException or InvalidOperationException or NotSupportedException)
@@ -212,18 +212,18 @@ public partial class MainWindow : Window
                 warnings = true;
                 _sensorsEnabled = false;
                 await Task.Run(_sensors.Dispose);
-                report($"[WARN] Hardware-Sensorzugriff fehlgeschlagen: {ex.Message}", 60);
+                report(DesktopUiText.Format("Boot.SensorFailed", ex.Message), 60);
                 sample = sample with { SensorError = ex.Message };
                 ReportError("Boot / Hardware-Sensoren", ex);
             }
         }
         finally { _sensorGate.Release(); }
         _model.Apply(sample, _sensorsEnabled);
-        report("[INIT] Prozessmonitor / logische CPU-Zeiten / Commit / Adapter-Baselines", 65);
+        report(DesktopUiText.Get("Boot.PerformanceInit"), 65);
         try
         {
             _model.ApplyDashboard(await Task.Run(_dashboardMetrics.Read, token), sample);
-            report("[OK] Performance-Baselines erfasst; Intervallwerte ab zweiter Messung", 72);
+            report(DesktopUiText.Get("Boot.PerformanceBaseline"), 72);
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
         {
@@ -238,11 +238,14 @@ public partial class MainWindow : Window
             report($"[MODULE / LOADED] {header}", 80);
             await Task.Delay(70, token);
         }
-        foreach (var module in new[] { "SMART", "Netzwerk", "Pakete", $"Wartung / {AdminCommandCatalog.All.Count} Administrationsbefehle", "Autostart", "Spuren", "Logs / Gaming", "Einstellungen", "Schluessel" })
-            report($"[MODULE / ON DEMAND] {module} registriert; Aktionen erst bei Aufruf", 88);
-        report($"[TOOLS] smartctl {(File.Exists(SmartService.DetectExecutable()) ? "vorhanden" : "nicht vorhanden")} / PresentMon {(File.Exists(FrameTelemetry.DetectExecutable()) ? "vorhanden" : "nicht vorhanden")}; keine Tests/Captures gestartet", 92);
-        report("[SCHEDULED] Ereignismonitor / Disk-I/O 15s; Windows-Status 60s. Erste Abfragen nach Cockpitstart.", 95);
-        report("[PRIVACY] Messaufzeichnung / Auto-LAN / Geheimnisabfragen bleiben aus", 97);
+        foreach (var module in new[] { "SMART", DesktopUiText.Get("Module.Netzwerk"), DesktopUiText.Get("Module.Pakete"),
+            DesktopUiText.Format("Boot.Commands", AdminCommandCatalog.All.Count), DesktopUiText.Get("Module.Autostart"),
+            DesktopUiText.Get("Module.Spuren"), "Logs / Gaming", DesktopUiText.Get("Module.Einstellungen"), DesktopUiText.Get("Module.Schluessel") })
+            report(DesktopUiText.Format("Boot.OnDemand", module), 88);
+        report(DesktopUiText.Format("Boot.Tools", DesktopUiText.Get(File.Exists(SmartService.DetectExecutable()) ? "Common.Present" : "Common.Missing"),
+            DesktopUiText.Get(File.Exists(FrameTelemetry.DetectExecutable()) ? "Common.Present" : "Common.Missing")), 92);
+        report(DesktopUiText.Get("Boot.Scheduled"), 95);
+        report(DesktopUiText.Get("Boot.Privacy"), 97);
         return warnings;
     }
 
@@ -315,7 +318,7 @@ public partial class MainWindow : Window
                         {
                             await Task.Run(() => _history.Append(sample), _stop.Token);
                             _lastRecorded = sample.Timestamp;
-                            _model.HistoryStatus = $"Aufzeichnung aktiv | zuletzt {sample.Timestamp:HH:mm:ss}\n{_history.DirectoryPath}";
+                            _model.HistoryStatus = DesktopUiText.Format("Main.HistoryActive", sample.Timestamp, _history.DirectoryPath);
                         }
                         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                         {
@@ -379,7 +382,7 @@ public partial class MainWindow : Window
     private async Task RunProbeAsync()
     {
         _model.CanRefresh = false;
-        _model.ProbeStatus = "Windows-Status wird gelesen ...";
+        _model.ProbeStatus = DesktopUiText.Get("Main.ProbeReading");
         try { _model.ApplyProbe(await _probe.ReadAsync(_stop.Token)); }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }
         catch (Exception ex) when (ex is InvalidOperationException or TimeoutException or System.Text.Json.JsonException or System.Xml.XmlException or Win32Exception or IOException)
@@ -397,26 +400,24 @@ public partial class MainWindow : Window
         if (_closing || !_model.CanClean) return;
         if (_controlCenter is not null && !_controlCenter.PendingOperations.IsCompleted)
         {
-            _model.Footer = "Zuerst die laufende Aktion/den Auto-Scan in der erweiterten Systemkontrolle beenden.";
+            _model.Footer = DesktopUiText.Get("Main.AdminBusy");
             return;
         }
         if (_model.AccessStatus == "ACCESS / ADMINISTRATOR")
         {
-            _model.Footer = "Bereits mit Administratorrechten gestartet.";
+            _model.Footer = DesktopUiText.Get("Main.AdminAlready");
             return;
         }
         if (MessageBox.Show(this,
-            "Die gesamte App mit Administratorrechten neu starten? Windows zeigt die UAC-Abfrage. " +
-            "Die aktuelle Messsitzung im RAM endet; exportiere sie bei Bedarf vorher. Sensoren und Aufzeichnung " +
-            "bleiben nach dem Neustart aus. Windows-Schutzfunktionen werden nicht abgeschaltet.",
-            "Administrator-Modus", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+            DesktopUiText.Get("Main.AdminConsent"),
+            DesktopUiText.Get("Main.AdminTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
         try
         {
             var executable = Path.Combine(AppContext.BaseDirectory, "SystemCockpit.exe");
             var elevated = Process.Start(new ProcessStartInfo
             {
                 FileName = executable, UseShellExecute = true, Verb = "runas", WorkingDirectory = AppContext.BaseDirectory
-            }) ?? throw new InvalidOperationException("Administrator-Neustart konnte nicht gestartet werden.");
+            }) ?? throw new InvalidOperationException(DesktopUiText.Get("Main.AdminStartFailed"));
             elevated.Dispose();
             Close();
         }
@@ -427,7 +428,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
             ReportError("Administrator-Neustart", ex);
-            MessageBox.Show(this, ex.Message, "Neustart fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.RestartFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -435,8 +436,7 @@ public partial class MainWindow : Window
     private void PauseStatisticsClicked(object sender, RoutedEventArgs e)
     {
         _model.RecordStatistics = !_model.RecordStatistics;
-        _model.SessionStatus = _model.RecordStatistics ? "Messsitzung wird fortgesetzt; Pausenwerte werden nicht eingerechnet."
-            : "Messsitzung angehalten. MIN/MAX/AVG eingefroren; Live-Cockpit laeuft weiter.";
+        _model.SessionStatus = DesktopUiText.Get(_model.RecordStatistics ? "Main.SessionResumed" : "Main.SessionPaused");
     }
 
     public static string CsvCell(string value)
@@ -449,7 +449,7 @@ public partial class MainWindow : Window
     private void ExportStatisticsClicked(object sender, RoutedEventArgs e)
     {
         var snapshot = _model.StatisticsView.Cast<Statistic>().ToArray();
-        if (snapshot.Length == 0) { _model.Footer = "Keine sichtbaren Statistikreihen fuer den Export."; return; }
+        if (snapshot.Length == 0) { _model.Footer = DesktopUiText.Get("Main.StatisticsEmpty"); return; }
         var dialog = new SaveFileDialog
         {
             Filter = "CSV-Auswertung (*.csv)|*.csv", FileName = $"Aether-session-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
@@ -463,7 +463,7 @@ public partial class MainWindow : Window
                 s.Count.ToString(CultureInfo.InvariantCulture), s.Minimum.ToString("R", CultureInfo.InvariantCulture),
                 s.Maximum.ToString("R", CultureInfo.InvariantCulture), s.Average.ToString("R", CultureInfo.InvariantCulture))));
             File.WriteAllLines(dialog.FileName, lines, new UTF8Encoding(true));
-            _model.Footer = $"{snapshot.Length} sichtbare Statistikreihen gespeichert: {dialog.FileName}";
+            _model.Footer = DesktopUiText.Format("Main.StatisticsSaved", snapshot.Length, dialog.FileName);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -475,7 +475,7 @@ public partial class MainWindow : Window
     private void ExportSensorsClicked(object sender, RoutedEventArgs e)
     {
         var snapshot = _model.SensorView.Cast<SensorReading>().ToArray();
-        if (snapshot.Length == 0) { _model.Footer = "Keine sichtbaren Sensorzeilen fuer den Export."; return; }
+        if (snapshot.Length == 0) { _model.Footer = DesktopUiText.Get("Main.SensorsEmpty"); return; }
         var dialog = new SaveFileDialog { Filter = "Sensor-Snapshot (*.csv)|*.csv", FileName = "Aether-Sensor-Snapshot.csv" };
         if (dialog.ShowDialog(this) != true) return;
         try
@@ -487,12 +487,12 @@ public partial class MainWindow : Window
                 s.Value is { } v && double.IsFinite(v) ? v.ToString("R", CultureInfo.InvariantCulture) : "",
                 CsvCell(SensorSemantics.IsTemperatureLimit(s) ? "Grenzwert / kein Messwert" : "Messkanal / Luecke ist unbekannt"))));
             File.WriteAllLines(dialog.FileName, lines, new UTF8Encoding(true));
-            _model.Footer = $"{snapshot.Length} sichtbare Sensorzeilen als Momentaufnahme gespeichert; keine fortlaufende Aufzeichnung.";
+            _model.Footer = DesktopUiText.Format("Main.SensorsSaved", snapshot.Length);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             ReportError("Sensor-Snapshot", ex);
-            MessageBox.Show(this, ex.Message, "Sensor-Snapshot nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.SnapshotFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -532,11 +532,11 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
             ReportError("Systemwerkzeug", ex);
-            MessageBox.Show(this, ex.Message, "Werkzeug nicht gestartet", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.ToolFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
-    private void SelectPage(string header) => Pages.SelectedItem = Pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, header));
+    private void SelectPage(string route) => Pages.SelectedItem = Pages.Items.Cast<TabItem>().Single(t => Equals(t.Tag, route));
 
     private void TaskCenterClicked(object sender, RoutedEventArgs e) => OpenTaskCenter();
 
@@ -577,8 +577,8 @@ public partial class MainWindow : Window
         if (topics.Count > 0) HelpList.SelectedIndex = 0;
         else
         {
-            HelpTitle.Text = "Kein Thema gefunden.";
-            HelpBody.Text = "Anderen Suchbegriff versuchen, z.B. 'Update', 'Temperatur', 'Loeschen' oder 'Gaming'.";
+            HelpTitle.Text = DesktopUiText.Get("Main.HelpEmptyTitle");
+            HelpBody.Text = DesktopUiText.Get("Main.HelpEmptyBody");
         }
     }
 
@@ -608,7 +608,7 @@ public partial class MainWindow : Window
         if (_closing) return;
         var preview = new ExportPreviewWindow(DiagnosticExport.Build(_model)) { Owner = this };
         if (preview.ShowDialog() == true && preview.SavedPath is { } path)
-            _model.Footer = $"Diagnosebericht gespeichert: {path}";
+            _model.Footer = DesktopUiText.Format("Main.DiagnosticSaved", path);
     }
 
     private InventoryWindow? _inventory;
@@ -655,7 +655,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException)
         {
             ReportError("GodMode/Systemsteuerung", ex);
-            MessageBox.Show(this, ex.Message, "Ansicht nicht geoeffnet", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.ViewFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -666,7 +666,7 @@ public partial class MainWindow : Window
         _sidebar = new SidebarWindow(_model, _model.Settings, SaveSidebarSettings);
         _sidebar.Closed += (_, _) => { _sidebar = null; if (!_closing) _model.Footer = "AETHER xBar geschlossen."; };
         _sidebar.Show();
-        _model.Footer = "AETHER xBar aktiv: konfigurierbare Live-Diagramme und Laufwerksbelegung als Torten.";
+        _model.Footer = DesktopUiText.Get("Main.XbarActive");
     }
 
     private void SaveSidebarSettings(CockpitSettings settings)
@@ -675,7 +675,7 @@ public partial class MainWindow : Window
         {
             settings.Save();
             _model.Settings = settings;
-            _model.Footer = "AETHER xBar-Einstellungen gespeichert.";
+            _model.Footer = DesktopUiText.Get("Main.XbarSaved");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
@@ -709,7 +709,7 @@ public partial class MainWindow : Window
         if (_closing) return;
         if (TaskmanagerProcesses.SelectedItem is not ProcessMetric process || process.StartTicks <= 0)
         {
-            _model.Footer = "Lesbaren Prozess mit Startzeit auswaehlen. Geschuetzte Prozesse haben keine sicheren Detaildaten.";
+            _model.Footer = DesktopUiText.Get("Main.ProcessSelect");
             return;
         }
         OpenControlCenterClicked(sender, e);
@@ -732,31 +732,31 @@ public partial class MainWindow : Window
         _model.CanClean = false;
         _model.CleanupFiles.Clear();
         _cleanupStop = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
-        _model.CleanupStatus = $"Vorschau laeuft: {_cleaner.Root}";
+        _model.CleanupStatus = DesktopUiText.Format("Cleaner.PreviewRunning", _cleaner.Root);
         try
         {
             if (CacheTargets.SelectedItem is not CacheTarget target)
-                throw new IOException("Zuerst eine vorhandene Cache-Kategorie auswaehlen.");
+                throw new IOException(DesktopUiText.Get("Cleaner.SelectCategory"));
             _cleaner = new TempCleaner(target.Path);
-            if (target.Level >= 2 && MessageBox.Show(this, $"{target.Name}\n{target.Risk}\nNur Vorschau lesen?",
-                "Diagnose-/Systemcache", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            if (target.Level >= 2 && MessageBox.Show(this, DesktopUiText.Format("Cleaner.PreviewConsent", target.Name, target.Risk),
+                DesktopUiText.Get("Cleaner.PreviewTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             {
-                _model.CleanupStatus = "Vorschau nicht freigegeben.";
+                _model.CleanupStatus = DesktopUiText.Get("Cleaner.PreviewDeclined");
                 return;
             }
             var scan = await Task.Run(() => _cleaner.Scan(_cleanupStop.Token));
             foreach (var file in scan.Files) _model.CleanupFiles.Add(file);
             _model.CleanupStatus = CacheCatalog.Assess(target, scan.Files.Count, scan.Files.Sum(f => f.Bytes)) + "\n" +
-                "Noch nichts geloescht. Dateien in der Spalte LOESCHEN? ankreuzen; Zeilenmarkierung allein reicht nicht.\n" + IssueSummary(scan.Issues);
+                DesktopUiText.Get("Cleaner.PreviewComplete") + IssueSummary(scan.Issues);
             UpdateCleanupSelection();
         }
         catch (OperationCanceledException)
         {
-            _model.CleanupStatus = "Vorschau abgebrochen. Keine Dateien geloescht.";
+            _model.CleanupStatus = DesktopUiText.Get("Cleaner.PreviewCanceled");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _model.CleanupStatus = $"Vorschau fehlgeschlagen: {ex.Message}";
+            _model.CleanupStatus = DesktopUiText.Format("Cleaner.PreviewFailed", ex.Message);
             ReportError("Cleaner-Vorschau", ex);
         }
         finally
@@ -774,16 +774,13 @@ public partial class MainWindow : Window
         var selected = _model.CleanupFiles.Where(f => f.Selected).ToList();
         if (selected.Count == 0)
         {
-            _model.CleanupStatus = "Keine Dateien angekreuzt. Erst Vorschau erstellen und LOESCHEN?-Checkboxen aktivieren.";
+            _model.CleanupStatus = DesktopUiText.Get("Cleaner.NoneSelected");
             return;
         }
         if (MessageBox.Show(this,
-            $"{selected.Count} ausgewaehlte Temp-Dateien ({selected.Sum(f => f.Bytes) / 1048576d:0.00} MiB) " +
-            "endgueltig loeschen? Kein Papierkorb und kein Rueckgaengig. Jede Datei wird vor dem Loeschen erneut " +
-            "geprueft. Andere Dateien und alle Ordner bleiben bestehen.\n" +
-            $"Achtung: {selected.Count(f => !_model.CleanupView.Contains(f))} angekreuzte Dateien sind durch den Ansichtsfilter verborgen. " +
-            "Auch diese sind Teil der Loeschung. Zum Pruefen abbrechen und Filter leeren.",
-            "Ausgewaehlte Dateien endgueltig loeschen", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+            DesktopUiText.Format("Cleaner.DeleteConsent", selected.Count, selected.Sum(f => f.Bytes) / 1048576d,
+                selected.Count(f => !_model.CleanupView.Contains(f))),
+            DesktopUiText.Get("Cleaner.DeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning,
             MessageBoxResult.No) != MessageBoxResult.Yes) return;
         _cleanupTask = DeleteCleanupAsync(selected);
         await _cleanupTask;
@@ -797,13 +794,14 @@ public partial class MainWindow : Window
         {
             var result = await Task.Run(() => _cleaner.DeleteSelected(selected, _cleanupStop.Token));
             _model.CleanupFiles.Clear();
-            _model.CleanupStatus = $"{(result.Cancelled ? "Abgebrochen" : "Abgeschlossen")}: {result.Deleted} Dateien geloescht / " +
-                $"{result.Bytes / 1048576d:0.00} MiB. Fuer weitere Aktionen neue Vorschau erstellen.\n" + IssueSummary(result.Issues);
+            _model.CleanupStatus = DesktopUiText.Format("Cleaner.Deleted",
+                DesktopUiText.Get(result.Cancelled ? "Cleaner.Canceled" : "Cleaner.Completed"),
+                result.Deleted, result.Bytes / 1048576d) + IssueSummary(result.Issues);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _model.CleanupFiles.Clear();
-            _model.CleanupStatus = $"Bereinigung fehlgeschlagen: {ex.Message}";
+            _model.CleanupStatus = DesktopUiText.Format("Cleaner.DeleteFailed", ex.Message);
             ReportError("Cleaner", ex);
         }
         finally
@@ -814,9 +812,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private static string IssueSummary(List<string> issues) => issues.Count == 0 ? "Keine Zugriffsfehler."
-        : $"{issues.Count} Fehler/Hinweise:\n" + string.Join("\n", issues.Take(10)) +
-          (issues.Count > 10 ? "\nWeitere Hinweise durch Ausgabelimit nicht angezeigt." : "");
+    private static string IssueSummary(List<string> issues) => issues.Count == 0 ? DesktopUiText.Get("Cleaner.NoAccessErrors")
+        : DesktopUiText.Format("Cleaner.IssueCount", issues.Count) + string.Join("\n", issues.Take(10)) +
+          (issues.Count > 10 ? DesktopUiText.Get("Cleaner.IssueLimit") : "");
 
     private void CancelCleanupClicked(object sender, RoutedEventArgs e) => _cleanupStop?.Cancel();
 
@@ -826,10 +824,10 @@ public partial class MainWindow : Window
         if (CleanupSelectionStatus is null) return;
         var selected = _model.CleanupFiles.Where(f => f.Selected).ToList();
         var hidden = selected.Count(f => !_model.CleanupView.Contains(f));
-        CleanupSelectionStatus.Text = $"{selected.Count} / {_model.CleanupFiles.Count} Dateien angekreuzt / {selected.Sum(f => f.Bytes) / 1048576d:0.00} MiB" +
-            $" / davon {hidden} durch Filter verborgen. Zeilenmarkierung loescht nichts.";
-        if (selected.Count > 0 && _model.CleanupStatus.StartsWith("Keine Dateien angekreuzt.", StringComparison.Ordinal))
-            _model.CleanupStatus = "Auswahl bereit. Angekreuzte Dateien werden erst nach ausdruecklicher Bestaetigung geloescht.";
+        CleanupSelectionStatus.Text = DesktopUiText.Format("Cleaner.Selection", selected.Count, _model.CleanupFiles.Count,
+            selected.Sum(f => f.Bytes) / 1048576d, hidden);
+        if (selected.Count > 0 && _model.CleanupStatus == DesktopUiText.Get("Cleaner.NoneSelected"))
+            _model.CleanupStatus = DesktopUiText.Get("Cleaner.SelectionReady");
     }
     private void CleanupSelectionClicked(object sender, RoutedEventArgs e)
     {
@@ -856,7 +854,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             ReportError("Cache-Katalog", ex);
-            _model.CleanupStatus = $"Cache-Katalog nicht lesbar: {ex.Message}";
+            _model.CleanupStatus = DesktopUiText.Format("Main.CacheUnreadable", ex.Message);
         }
     }
 
@@ -909,11 +907,11 @@ public partial class MainWindow : Window
     private void PageChanged(object sender, SelectionChangedEventArgs e)
     {
         // Innere Listen/Tabs blubbern SelectionChanged hoch; nur echte Seitenwechsel zaehlen.
-        if (!ReferenceEquals(e.Source, Pages) || Pages.SelectedItem is not TabItem { Header: string header }) return;
-        if (!_trailNavigating) _trail.Visit(header);
-        if (header == "Mainboard") HardwareBoard.EnsureLoaded();
+        if (!ReferenceEquals(e.Source, Pages) || Pages.SelectedItem is not TabItem { Tag: string route, Header: string header }) return;
+        if (!_trailNavigating) _trail.Visit(route);
+        if (route == "Mainboard") HardwareBoard.EnsureLoaded();
         if (NavTrail is null) return;
-        NavTrail.Text = $"{UpdateNavigation(header).ToUpperInvariant()}  \u25B8  {header.ToUpperInvariant()}";
+        NavTrail.Text = $"{UpdateNavigation(route).ToUpperInvariant()}  \u25B8  {header.ToUpperInvariant()}";
         NavBack.IsEnabled = _trail.CanBack;
         NavForward.IsEnabled = _trail.CanForward;
     }
@@ -967,11 +965,8 @@ public partial class MainWindow : Window
             using var identity = WindowsIdentity.GetCurrent();
             var admin = new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
             var answer = MessageBox.Show(this,
-                "LibreHardwareMonitor liest Hardware-Sensoren. Bei erhoehten Rechten kann die Bibliothek einen " +
-                "lokalen Low-Level-Treiber laden. Das kann durch Windows-Schutzfunktionen blockiert werden.\n\n" +
-                (admin ? "Die App laeuft bereits mit Administratorrechten." : "Die App laeuft ohne Administratorrechte; einige Werte werden fehlen.") +
-                "\n\nKeine automatische Rechteerhoehung, keine Aenderung von Defender oder Treibersperren. Sensorzugriff aktivieren?",
-                "Optionaler Hardware-Zugriff", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                DesktopUiText.Format("Main.SensorConsent", DesktopUiText.Get(admin ? "Main.SensorAdmin" : "Main.SensorNoAdmin")),
+                DesktopUiText.Get("Main.SensorConsentTitle"), MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.No);
             if (answer != MessageBoxResult.Yes)
             {
                 SensorToggle.IsChecked = false;
@@ -990,7 +985,7 @@ public partial class MainWindow : Window
                     else _sensors.Dispose();
                 }, _stop.Token);
                 _sensorsEnabled = enabled;
-                _model.SensorStatus = enabled ? "Sensoren werden initialisiert ..." : "Sensorzugriff aus. Keine tiefen Hardware-Messungen.";
+                _model.SensorStatus = DesktopUiText.Get(enabled ? "Main.SensorInitializing" : "Main.SensorOff");
             }
             finally { _sensorGate.Release(); }
         }
@@ -1000,7 +995,7 @@ public partial class MainWindow : Window
             _sensorsEnabled = false;
             SensorToggle.IsChecked = false;
             ReportError("Sensorzugriff", ex);
-            _model.SensorStatus = $"Sensorzugriff fehlgeschlagen: {ex.Message}";
+            _model.SensorStatus = DesktopUiText.Format("Main.SensorFailed", ex.Message);
         }
         finally { SensorToggle.IsEnabled = !_closing; }
     }
@@ -1010,8 +1005,8 @@ public partial class MainWindow : Window
         if (!IsLoaded || _closing) return;
         _recording = HistoryToggle.IsChecked == true;
         _lastRecorded = DateTimeOffset.MinValue;
-        _model.HistoryStatus = _recording ? $"Aufzeichnung aktiviert: {_history.DirectoryPath}"
-            : "Aus. Vorhandene Aufzeichnungen bleiben lokal gespeichert.";
+        _model.HistoryStatus = _recording ? DesktopUiText.Format("Main.HistoryEnabled", _history.DirectoryPath)
+            : DesktopUiText.Get("Main.HistoryOff");
     }
 
     private void OpenHistoryClicked(object sender, RoutedEventArgs e)
@@ -1024,7 +1019,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Win32Exception)
         {
             ReportError("Datenordner", ex);
-            MessageBox.Show(this, ex.Message, "Datenordner konnte nicht geoeffnet werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.DataFolderFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

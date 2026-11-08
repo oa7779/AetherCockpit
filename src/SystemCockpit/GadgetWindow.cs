@@ -44,7 +44,7 @@ internal sealed class GadgetWindow : Window
         var panel = new StackPanel();
         var handle = new TextBlock
         {
-            Text = "AETHER / ZIEHEN",
+            Text = DesktopUiText.Get("Gadget.Drag"),
             Foreground = Brushes.MediumTurquoise,
             Margin = new Thickness(10, 5, 10, 0),
             FontSize = 10,
@@ -54,7 +54,7 @@ internal sealed class GadgetWindow : Window
         _chart = new ContentControl { Content = data, ContentTemplate = (DataTemplate)Resources[template] };
         panel.Children.Add(_chart);
         _opacity = new Slider { Minimum = 0.2, Maximum = 1, Value = layout.Opacity,
-            Margin = new Thickness(12, 0, 12, 6), ToolTip = "Deckkraft dieses Gadgets" };
+            Margin = new Thickness(12, 0, 12, 6), ToolTip = DesktopUiText.Get("Gadget.Opacity") };
         panel.Children.Add(_opacity);
         Content = new Border
         {
@@ -147,7 +147,7 @@ internal sealed class GadgetWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
             System.Diagnostics.Trace.TraceError("Gadget-Position: {0}", ex);
-            MessageBox.Show(ex.Message, "Gadget-Position nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(ex.Message, DesktopUiText.Get("Gadget.PositionFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -155,7 +155,7 @@ internal sealed class GadgetWindow : Window
     {
         var error = new Win32Exception(Marshal.GetLastWin32Error());
         System.Diagnostics.Trace.TraceError("Gadget-Mausposition: {0}", error);
-        MessageBox.Show(error.Message, "Gadget konnte nicht verschoben werden");
+        MessageBox.Show(error.Message, DesktopUiText.Get("Gadget.MoveFailed"));
     }
 
     [StructLayout(LayoutKind.Sequential)] private struct NativePoint { public int X, Y; }

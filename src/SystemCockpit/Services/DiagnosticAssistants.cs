@@ -23,12 +23,29 @@ public sealed record DiagnosticFinding(
     string Severity,
     string Summary,
     string Evidence,
-    string Recommendation);
+    string Recommendation)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string AgentDisplay => DesktopUiText.Get(Agent switch
+    {
+        "Anwendungsereignisse" => "Diagnostic.Agent.ApplicationEvents",
+        "Windows-Ereignisse" => "Diagnostic.Agent.WindowsEvents",
+        "Treiber und Geraete" => "Diagnostic.Agent.Devices",
+        "Verbindungen" => "Diagnostic.Agent.Connections",
+        "Anwendungsinventar" => "Diagnostic.Agent.Applications",
+        "Treiberinventar" => "Diagnostic.Agent.Drivers",
+        _ => throw new InvalidOperationException($"Unknown diagnostic agent code '{Agent}'.")
+    });
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string SeverityDisplay => DesktopUiText.Get("Diagnostic.Level." + Severity);
+}
 public sealed record DiagnosticAgentReport(DateTimeOffset CapturedAt, WindowsDiagnosticSnapshot Snapshot, DiagnosticFinding[] Findings);
 
 public static class DiagnosticAssistants
 {
-    public const string CollectionScript = """
+    public static string CollectionScript => "$aetherEventLogError = '" +
+        DesktopUiText.Get("Diagnostic.EventReadFailure").Replace("'", "''", StringComparison.Ordinal) + "'\n" + """
         $ErrorActionPreference='Stop'
         $os=Get-CimInstance Win32_OperatingSystem
         $version=Get-ItemProperty -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
@@ -37,7 +54,7 @@ public static class DiagnosticAssistants
                 $errors=@()
                 $items=@(Get-WinEvent -FilterHashtable @{LogName=$log;StartTime=(Get-Date).AddDays(-1);Level=1,2,3} -MaxEvents 100 -ErrorAction SilentlyContinue -ErrorVariable errors)
                 $unexpected=@($errors | Where-Object FullyQualifiedErrorId -notlike 'NoMatchingEventsFound*')
-                if($unexpected.Count){throw "Ereignisprotokoll $log nicht lesbar: $($unexpected | Out-String)"}
+                if($unexpected.Count){throw ($aetherEventLogError -f $log,($unexpected | Out-String))}
                 foreach($item in $items){
                     [pscustomobject]@{
                         Log=$log
@@ -92,7 +109,7 @@ public static class DiagnosticAssistants
             snapshot.Adapters is null || snapshot.Adapters.Any(a => a is null) ||
             snapshot.Applications is null || snapshot.Applications.Any(a => a is null) ||
             snapshot.Drivers is null || snapshot.Drivers.Any(d => d is null))
-            throw new InvalidDataException("Windows-Diagnose lieferte keinen vollstaendigen Snapshot; Befund bleibt unbekannt.");
+            throw new InvalidDataException(DesktopUiText.Get("Diagnostic.Incomplete"));
         return snapshot;
     }
 
@@ -112,9 +129,9 @@ public static class DiagnosticAssistants
             findings.Add(new(
                 group.Key.Log == "Application" ? "Anwendungsereignisse" : "Windows-Ereignisse",
                 severity,
-                $"{group.Key.Provider} / Ereignis {group.Key.Id}: {group.Count()} Treffer in 24 Stunden",
+                DesktopUiText.Format("Diagnostic.EventSummary", group.Key.Provider, group.Key.Id, group.Count()),
                 sample.Message,
-                "Ereignisdetails und betroffene Anwendung/Geraet pruefen. Keine automatische Reparatur abgeleitet."));
+                DesktopUiText.Get("Diagnostic.EventAdvice")));
         }
 
         foreach (var device in snapshot.Devices.Where(d => d.Problem is > 0 ||
@@ -128,44 +145,46 @@ public static class DiagnosticAssistants
             var severity = device.Problem is > 0 || string.Equals(device.Status, "Error", StringComparison.OrdinalIgnoreCase)
                 ? "HOCH" : statusUnknown ? "UNBEKANNT" : "MITTEL";
             findings.Add(new("Treiber und Geraete", severity,
-                $"{device.Name}: Status {device.Status ?? "nicht gemeldet"}, Problemcode {device.Problem?.ToString() ?? "nicht gemeldet"}",
+                DesktopUiText.Format("Diagnostic.DeviceSummary", device.Name,
+                    device.Status ?? DesktopUiText.Get("Diagnostic.NotReported"),
+                    device.Problem?.ToString() ?? DesktopUiText.Get("Diagnostic.NotReported")),
                 $"{device.Class} / {device.InstanceId}",
                 statusUnknown
-                    ? "Windows lieferte keinen Geraetestatus; daraus wird kein fehlerfreier Zustand abgeleitet."
-                    : "Geraetemanager, Hardwareverbindung und passenden Herstellertreiber pruefen. Treiber werden nicht automatisch ersetzt."));
+                    ? DesktopUiText.Get("Diagnostic.UnknownDeviceAdvice")
+                    : DesktopUiText.Get("Diagnostic.DeviceAdvice")));
         }
 
         if (snapshot.Adapters.Length == 0)
-            findings.Add(new("Verbindungen", "UNBEKANNT", "Windows meldet keine Netzwerkadapter.",
-                "Die Adapterabfrage lieferte keine Eintraege.", "Verbindungsstatus ist nicht verfuegbar; daraus wird kein Fehler oder Reparaturschritt abgeleitet."));
+            findings.Add(new("Verbindungen", "UNBEKANNT", DesktopUiText.Get("Diagnostic.NoAdapters"),
+                DesktopUiText.Get("Diagnostic.NoAdapterEvidence"), DesktopUiText.Get("Diagnostic.NoAdapterAdvice")));
         else if (snapshot.Adapters.Any(a => string.IsNullOrWhiteSpace(a.Status)))
-            findings.Add(new("Verbindungen", "UNBEKANNT", "Mindestens ein Netzwerkadapter hat keinen lesbaren Status.",
-                string.Join("; ", snapshot.Adapters.Select(a => $"{a.Name}: {a.Status ?? "nicht gemeldet"}")),
-                "Adapterdaten pruefen; fehlende Statuswerte werden nicht als fehlerfrei gewertet."));
+            findings.Add(new("Verbindungen", "UNBEKANNT", DesktopUiText.Get("Diagnostic.UnknownAdapter"),
+                string.Join("; ", snapshot.Adapters.Select(a => $"{a.Name}: {a.Status ?? DesktopUiText.Get("Diagnostic.NotReported")}")),
+                DesktopUiText.Get("Diagnostic.UnknownAdapterAdvice")));
         else if (!snapshot.Adapters.Any(a => string.Equals(a.Status, "Up", StringComparison.OrdinalIgnoreCase)))
-            findings.Add(new("Verbindungen", "HINWEIS", "Kein Netzwerkadapter meldet aktuell Status Up.",
+            findings.Add(new("Verbindungen", "HINWEIS", DesktopUiText.Get("Diagnostic.NoUpAdapter"),
                 string.Join("; ", snapshot.Adapters.Select(a => $"{a.Name}: {a.Status}")),
-                "WLAN-/LAN-Verbindung und Adapterzustand pruefen. Deaktivierte, virtuelle und getrennte Adapter koennen beabsichtigt sein."));
+                DesktopUiText.Get("Diagnostic.NoUpAdapterAdvice")));
 
         findings.Add(new("Anwendungsinventar", "INFORMATION",
             snapshot.Applications.Length == 0
-                ? "Installierte Anwendungen konnten nicht ausgewiesen werden."
-                : $"{snapshot.Applications.Length} installierte Anwendungen erfasst.",
-            "Quelle: Windows-Deinstallationsregistrierung; keine Installer gestartet.",
-            "Versionsinventar ist keine Update- oder Sicherheitsbewertung."));
+                ? DesktopUiText.Get("Diagnostic.NoApplications")
+                : DesktopUiText.Format("Diagnostic.ApplicationCount", snapshot.Applications.Length),
+            DesktopUiText.Get("Diagnostic.ApplicationSource"),
+            DesktopUiText.Get("Diagnostic.ApplicationAdvice")));
 
         findings.Add(new("Treiberinventar", "INFORMATION",
             snapshot.Drivers.Length == 0
-                ? "Treiberinventar ist nicht verfuegbar."
-                : $"{snapshot.Drivers.Length} Windows-PnP-Treiber erfasst.",
-            "Quelle: Win32_PnPSignedDriver; keine Treiberupdates gesucht.",
-            "Ein Versionsdatum allein beweist weder Aktualitaet noch Fehlerfreiheit."));
+                ? DesktopUiText.Get("Diagnostic.NoDrivers")
+                : DesktopUiText.Format("Diagnostic.DriverCount", snapshot.Drivers.Length),
+            DesktopUiText.Get("Diagnostic.DriverSource"),
+            DesktopUiText.Get("Diagnostic.DriverAdvice")));
 
         if (!snapshot.Events.Any(e => e.Level is 1 or 2 || e.Id is 1000 or 1001))
             findings.Insert(0, new("Windows-Ereignisse", "INFORMATION",
-                "Keine kritischen oder wiederholt auftretenden System-/Anwendungsfehler in der begrenzten Abfrage erkannt.",
-                "System- und Application-Protokoll / letzte 24 Stunden / maximal 100 Ereignisse je Kanal.",
-                "Dies ist kein vollstaendiger Systemgesundheitsnachweis."));
+                DesktopUiText.Get("Diagnostic.NoErrors"),
+                DesktopUiText.Get("Diagnostic.NoErrorEvidence"),
+                DesktopUiText.Get("Diagnostic.NoErrorAdvice")));
 
         return new(capturedAt ?? DateTimeOffset.Now, snapshot, findings.ToArray());
     }

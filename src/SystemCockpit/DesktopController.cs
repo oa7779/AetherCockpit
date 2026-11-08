@@ -35,7 +35,7 @@ internal sealed class DesktopController : IDisposable
         Network = new NetworkWatch(() => _model.Settings, Notify);
         _tray = new Forms.NotifyIcon
         {
-            Text = "AETHER / Desktop und Netzwerk",
+            Text = DesktopText.Get("Tray.NotifyTip"),
             Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!)
                 ?? System.Drawing.SystemIcons.Application,
             Visible = true,
@@ -43,18 +43,18 @@ internal sealed class DesktopController : IDisposable
         };
         void Menu(string text, Action action) => _tray.ContextMenuStrip.Items.Add(text, null,
             (_, _) => _main.Dispatcher.Invoke(action));
-        Menu("AETHER oeffnen", () => WindowActivation.Show(_main));
-        Menu("Desktop / Transparenz / Parameter", OpenSettings);
-        Menu("Netzwerkueberwachung", OpenNetwork);
-        Menu("Gadgets minimieren / wiederherstellen", () =>
+        Menu(DesktopText.Get("Tray.Open"), () => WindowActivation.Show(_main));
+        Menu(DesktopText.Get("Tray.Settings"), OpenSettings);
+        Menu(DesktopText.Get("Tray.Network"), OpenNetwork);
+        Menu(DesktopText.Get("Tray.GadgetsToggle"), () =>
         {
             _hidden = !_hidden;
             RefreshGadgets();
             foreach (var window in _gadgets.Values)
                 if (_hidden) window.Hide(); else window.Show();
         });
-        Menu("Gadgets schliessen", () => _save(_model.Settings with { GadgetsEnabled = false }));
-        Menu("AETHER vollstaendig beenden", exit);
+        Menu(DesktopText.Get("Tray.GadgetsClose"), () => _save(_model.Settings with { GadgetsEnabled = false }));
+        Menu(DesktopText.Get("Tray.Exit"), exit);
         _tray.DoubleClick += (_, _) => _main.Dispatcher.Invoke(() => WindowActivation.Show(_main));
         _tray.BalloonTipClicked += (_, _) =>
         {
@@ -158,7 +158,7 @@ internal sealed class DesktopController : IDisposable
                     _save(_model.Settings with { GadgetsEnabled = false });
                     foreach (var opened in _gadgets.Values.ToArray()) opened.Close();
                     _gadgets.Clear();
-                    Notify("Desktop-Gadgets deaktiviert: " + message + " In Einstellungen erneut aktivierbar.");
+                    Notify(string.Format(DesktopText.Get("Tray.GadgetsDisabled"), message));
                 });
                 _gadgets.Add(item.Id, gadget);
                 gadget.Closed += (_, _) => _gadgets.Remove(item.Id);
@@ -178,14 +178,14 @@ internal sealed class DesktopController : IDisposable
     {
         if (_disposed) return;
         _diagnosticBalloon = false;
-        _tray.ShowBalloonTip(7000, "AETHER / Netzwerkhinweis", message, Forms.ToolTipIcon.Warning);
+        _tray.ShowBalloonTip(7000, DesktopText.Get("Tray.NetworkNotice"), message, Forms.ToolTipIcon.Warning);
     }
 
     internal void NotifyDiagnostics(string message)
     {
         if (_disposed) return;
         _diagnosticBalloon = true;
-        _tray.ShowBalloonTip(7000, "AETHER / Hintergrunddiagnose", message, Forms.ToolTipIcon.Warning);
+        _tray.ShowBalloonTip(7000, DesktopText.Get("Tray.DiagnosticsNotice"), message, Forms.ToolTipIcon.Warning);
     }
 
     public async Task StopAsync() => await Network.StopAsync();

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using SystemCockpit.Services;
 
 namespace SystemCockpit.Controls;
 
@@ -41,19 +42,22 @@ public sealed class NeonGauge : FrameworkElement
             _bloomPen = GlowPen(Accent, 7, .3);
         }
         var lit = double.IsFinite(Level) ? (int)Math.Ceiling(Math.Clamp(Level, 0, 100) / 100 * 40) : 0;
-        dc.DrawEllipse(null, DimLine, center, radius - 15, radius - 15);
+        var modern = SkinCatalog.IsModern;
+        var dimLine = modern ? new Pen((Brush)FindResource("ModernBorder"), 1) : DimLine;
+        var dimTick = modern ? new Pen((Brush)FindResource("ModernBorder"), 4) : DimTick;
+        dc.DrawEllipse(null, dimLine, center, radius - 15, radius - 15);
         for (var i = 0; i < 40; i++)
         {
             var angle = (140 + i * 260d / 39) * Math.PI / 180;
             Point At(double distance) => new(center.X + Math.Cos(angle) * distance, center.Y + Math.Sin(angle) * distance);
-            if (i < lit)
+            if (i < lit && !modern)
             {
                 dc.DrawLine(_haloPen, At(radius - 9), At(radius));
                 dc.DrawLine(_bloomPen, At(radius - 9), At(radius));
             }
-            dc.DrawLine(i < lit ? _accentPen : DimTick, At(radius - 9), At(radius));
+            dc.DrawLine(i < lit ? _accentPen : dimTick, At(radius - 9), At(radius));
         }
-        dc.DrawLine(DimLine, new(center.X - radius / 2, center.Y + radius / 2),
+        dc.DrawLine(dimLine, new(center.X - radius / 2, center.Y + radius / 2),
             new(center.X + radius / 2, center.Y + radius / 2));
     }
 

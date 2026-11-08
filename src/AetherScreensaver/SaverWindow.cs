@@ -40,7 +40,7 @@ internal sealed class SaverWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException)
         {
             Trace.TraceError("AETHER Schoner-Darstellungseinstellungen: {0}", ex);
-            _settingsIssue = "Darstellungseinstellungen nicht lesbar: " + ex.Message;
+            _settingsIssue = DesktopUiText.Format("Saver.SettingsUnreadable", ex.Message);
         }
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         _backdrop = new LinearGradientBrush(new GradientStopCollection {
@@ -138,7 +138,7 @@ internal sealed class SaverWindow : Window
         _status.Text = status + (_settingsIssue is null ? "" : "\n" + _settingsIssue) +
             (hardware.Warnings.Length == 0 ? "" : "\n" + string.Join(" / ", hardware.Warnings));
         _readings.Text = frame is null
-            ? "KEINE LIVE-MESSWERTE / CPU -- / RAM -- / GPU -- / DOWN -- / UP -- / TEMP --"
+            ? DesktopUiText.Get("Saver.NoLive")
             : $"LIVE / CPU {frame.Cpu}% / RAM {frame.Ram}% / GPU {frame.Gpu}% / DOWN {frame.Download} Mbit/s / " +
               $"UP {(frame.Upload is { } upload ? upload.ToString("0.0") : "--")} Mbit/s / CPU-TEMP {frame.Temperature}";
     }

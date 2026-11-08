@@ -14,10 +14,14 @@ public sealed record OptionalMicrosoftTool(string Name, string Executable, strin
 
 public static class ManagedActionTools
 {
-    public static IReadOnlyList<ManagedActionTool> All { get; } =
-        ManagedActionCatalog.All.Select(a => new ManagedActionTool(a, Risk(a))).ToArray();
+    public static IReadOnlyList<ManagedActionTool> All =>
+        ManagedActionCatalog.All.Select(a => new ManagedActionTool(a with
+        {
+            Name = DesktopUiText.Get($"Managed.{a.Id}.Name"),
+            Category = DesktopUiText.Get($"Managed.Category.{a.Category}")
+        }, Risk(a))).ToArray();
 
-    public static IReadOnlyList<OptionalMicrosoftTool> OptionalTools { get; } =
+    private static readonly IReadOnlyList<OptionalMicrosoftTool> OptionalDefinitions =
     [
         new("Process Explorer", "procexp64.exe", "https://learn.microsoft.com/sysinternals/downloads/process-explorer",
             "Prozesse/DLLs; sensible Daten, extern auch Prozessbeendigung möglich"),
@@ -43,25 +47,31 @@ public static class ManagedActionTools
             "Edition/Version prüfen; ADK ist nicht automatisch installiert")
     ];
 
-    public static string Risk(ManagedAction action) => action.Id switch
+    public static IReadOnlyList<OptionalMicrosoftTool> OptionalTools => OptionalDefinitions.Select(tool => tool with
     {
-        "dns-cache-clear" => "ÄNDERND: leert nur lokalen DNS-Cache; kein Adapterreset. DNS-Erfolg danach erneut prüfen.",
-        "sfc-repair" => "ÄNDERND: ersetzt Windows-Systemdateien; vorher sichern, CBS-Endbefund prüfen. Abbruch ist kein Rollback.",
-        "dism-repair" => "ÄNDERND: repariert Komponentenspeicher; kann konfigurierte Updatequelle kontaktieren, vorher sichern. Abbruch ist kein Rollback.",
-        "dns-health" => "NETZWERK: löst www.microsoft.com über Standardresolver und konfigurierte DNS-Server aktiver Gateway-Adapter auf; kein Scan/Reset.",
-        "windows-update-search" => "NETZWERK: COM-Suche bei konfigurierter Microsoft-/WSUS-Quelle; zeigt Identität/Revision, installiert nichts, keine EULA-Annahme, kein Neustart.",
-        "inventory" => "LESEND: begrenztes Inventar einschließlich App-/Geräte-/Prozessdaten und Ereignissen; enthält sensible Daten. Fehlende Bereiche bleiben unbekannt.",
-        "bitlocker-status" => "LESEND: Volume-/Verschlüsselungsstatus, keine Schlüssel; Modul und Edition müssen unterstützt sein.",
-        "defender-status" => "LESEND: Defender-Modul kann fehlen; passiver/deaktivierter Status ist kein allgemeiner Sicherheitsnachweis.",
-        "etw-sessions" => "LESEND: logman listet Sitzungen/Provider; kein Start eines Captures, Ausgabe kann gekürzt werden.",
-        "power-status" => "LESEND: keine Änderung am Energieschema; Schlafzustände hängen von Firmware/Treibern ab.",
-        "boot-config" => "LESEND: BCDEdit liest aktuellen Boot-Eintrag; keine Bootänderung, Rechte erforderlich.",
-        "performance-snapshot" => "LESEND: Prozesse und gespeicherter WinSAT-Befund; kein Benchmark, ungültige/veraltete Werte nicht als aktuelle Leistung interpretieren.",
-        "dism-scan" or "sfc-verify" => "PRÜFEND: erhöhte Rechte, hohe I/O-Last und Diagnoseprotokolle möglich; keine Reparatur. Endbefund prüfen.",
-        "event-errors" => "LESEND: maximal 100 Ereignisse je Kanal/7 Tage; sensible Meldungen. Keine Treffer beweisen keine Fehlerfreiheit.",
-        "pnputil-drivers" => "LESEND: nur /enum-drivers; Umfang/Optionen hängen von Windows-Build ab, keine Treiberinstallation.",
-        "driver-versions" or "pnp-inventory" => "LESEND: Geräte-/Treiberdaten; Datum ist kein Aktualitätsnachweis. Installation nur separat mit exakter geprüfter Auswahl.",
-        "storage-status" => "LESEND: Windows-Storage-Modul; HealthStatus ist kein vollständiger SMART-/Hardwaretest.",
-        _ => "LESEND: lokale Windows-Abfrage; sensible Daten möglich, Module/Edition/Rechte versionsabhängig. Fehlende Befehle werden als Fehler gemeldet."
-    };
+        Name = tool.Executable == "dism.exe" ? DesktopUiText.Get("OptionalTool.AdkName") : tool.Name,
+        Risk = DesktopUiText.Get($"OptionalTool.{tool.Executable}.Risk")
+    }).ToArray();
+
+    public static string Risk(ManagedAction action) => DesktopUiText.Get("Managed.Risk." + (action.Id switch
+    {
+        "dns-cache-clear" => "DnsClear",
+        "sfc-repair" => "SfcRepair",
+        "dism-repair" => "DismRepair",
+        "dns-health" => "DnsHealth",
+        "windows-update-search" => "UpdateSearch",
+        "inventory" => "Inventory",
+        "bitlocker-status" => "BitLocker",
+        "defender-status" => "Defender",
+        "etw-sessions" => "Etw",
+        "power-status" => "Power",
+        "boot-config" => "Boot",
+        "performance-snapshot" => "Performance",
+        "dism-scan" or "sfc-verify" => "Check",
+        "event-errors" => "Events",
+        "pnputil-drivers" => "DriverPackages",
+        "driver-versions" or "pnp-inventory" => "Drivers",
+        "storage-status" => "Storage",
+        _ => "Read"
+    }));
 }

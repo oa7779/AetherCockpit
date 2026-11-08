@@ -57,11 +57,14 @@ oder manuellem Start. Er liest die Versionswerte aus dem Publishprofil,
 führt beide Konsolenrunner ohne optionale Live-/UI-Schalter aus und erzeugt
 Client, Server sowie Setup mit den vorhandenen Publishskripten.
 Der STA-Grundlauf wird zusätzlich mit den publizierten Assemblies wiederholt.
+Ein synthetischer Desktop-Smoke-Test prüft Windows Modern und erzeugt
+System-Schema-Bilder für hell und dunkel als eigenes Screenshot-Artefakt.
 
 ZIPs, Setup, SHA256-Manifest und Build-Herkunft werden als unsignierte
 Workflow-Artefakte für 14 Tage gespeichert. Der Workflow erstellt keinen
 GitHub-Release, installiert kein Produkt und enthält noch keine SignPath-
-Anbindung. Er ersetzt nicht die grafischen UI-/Hardwareprüfungen oder die
+Anbindung. Der Desktop-Smoke-Test ersetzt nicht die vollständigen
+grafischen UI-/Hardwareprüfungen oder die
 Intune-Paketierung. SignPath-Annahme, Freigaberollen und Signing-Konfiguration
 müssen vor einer Zertifikatsnutzung separat eingerichtet werden.
 Der Antrag bei der SignPath Foundation ist eingereicht, die Entscheidung

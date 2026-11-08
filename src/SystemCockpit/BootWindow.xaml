@@ -1,7 +1,8 @@
 <Window x:Class="SystemCockpit.BootWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="AETHER | Neon Wave Boot | Olaf Weins" Width="980" Height="780" MinWidth="800" MinHeight="650"
+        xmlns:loc="clr-namespace:SystemCockpit.Services"
+        Title="{loc:DesktopLabel Boot.NeonTitle, ModernKey=Boot.ModernTitle}" Width="980" Height="780" MinWidth="800" MinHeight="650"
         Background="#060313" Foreground="#83FFB0" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
         Icon="Assets/aether.ico">
     <Window.Resources>
@@ -29,8 +30,8 @@
             </Rectangle>
         </Grid>
         <StackPanel Grid.Row="1" Margin="0,14,0,10">
-            <TextBlock Text="AETHER // NEON WAVE SYSTEM BOOT" FontFamily="Consolas" FontSize="22" Foreground="#38FFF2"/>
-            <TextBlock Text="Olaf Weins / Lokale Initialisierung / Keine Reparaturen oder Scans beim Boot" FontFamily="Consolas" FontSize="11" Foreground="#F078FF" Margin="0,5"/>
+            <TextBlock Text="{loc:DesktopLabel Boot.NeonHeader, ModernKey=Boot.ModernHeader}" FontFamily="Consolas" FontSize="22" Foreground="#38FFF2"/>
+            <TextBlock Text="{loc:DesktopLabel Boot.Notice}" FontFamily="Consolas" FontSize="11" Foreground="#F078FF" Margin="0,5"/>
             <ProgressBar x:Name="BootProgress" Maximum="100" Height="7" Foreground="#36FFF0" Background="#38204E" BorderThickness="0"/>
         </StackPanel>
         <Border Grid.Row="2" CornerRadius="18" Padding="12" BorderBrush="#728F89" BorderThickness="3">
@@ -38,7 +39,7 @@
             <Grid Background="#000603">
                 <TextBox x:Name="BootOutput" Background="#000603" Foreground="#83FFB0" BorderThickness="0" Padding="12"
                          IsReadOnly="True" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Bootkonsole"
+                         VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:DesktopLabel Boot.AccessibleConsole}"
                          TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
                 <Border Background="{StaticResource BootScanlines}" IsHitTestVisible="False"/>
                 <Border Height="65" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -47,9 +48,9 @@
             </Grid>
         </Border>
         <DockPanel Grid.Row="3" Margin="0,10,0,0">
-            <Button x:Name="ContinueButton" Content="Cockpit oeffnen / Hinweise gelesen" Visibility="Collapsed" Click="ContinueClicked" DockPanel.Dock="Right"
+            <Button x:Name="ContinueButton" Content="{loc:DesktopLabel Boot.Continue}" Visibility="Collapsed" Click="ContinueClicked" DockPanel.Dock="Right"
                     Foreground="#38FFF2" Background="#241333" BorderBrush="#F078FF" Padding="12,8"/>
-            <TextBlock x:Name="BootStatus" Text="START / Lokale Komponenten werden vorbereitet ..." Foreground="#83FFB0" FontFamily="Consolas" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <TextBlock x:Name="BootStatus" Text="{loc:DesktopLabel Boot.Preparing}" Foreground="#83FFB0" FontFamily="Consolas" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </DockPanel>
     </Grid>
 </Window>

@@ -56,44 +56,44 @@ public static class SystemInventory
     public static async Task<InventorySnapshot> BuildAsync(CancellationToken token, IProgress<string>? progress = null)
     {
         token.ThrowIfCancellationRequested();
-        progress?.Report("Hardware und Windows-Systemdaten werden untersucht ...");
+        progress?.Report(DesktopUiText.Get("Inventory.ReadHardware"));
         var hardware = new List<InventoryItem>();
         void Add(string category, string name, string detail) => hardware.Add(new(category, name, detail));
 
-        Add("System", "Rechnername", Environment.MachineName);
+        Add("System", DesktopUiText.Get("Inventory.MachineName"), Environment.MachineName);
         try
         {
             var report = await new WindowsProbe().ReadAsync(token);
             Add("System", "Windows", report.Windows);
             Add("System", "Mainboard", report.Board);
-            Add("Prozessor", "CPU", report.Cpu);
-            Add("Grafik", "GPU", report.Gpu);
-            Add("Arbeitsspeicher", "RAM", report.Memory);
+            Add(DesktopUiText.Get("Inventory.Processor"), "CPU", report.Cpu);
+            Add(DesktopUiText.Get("Inventory.Graphics"), "GPU", report.Gpu);
+            Add(DesktopUiText.Get("Inventory.Memory"), "RAM", report.Memory);
             foreach (var disk in report.Disks)
-                Add("Datentraeger", disk.Name, $"{disk.Value} | {disk.Detail}");
+                Add(DesktopUiText.Get("Inventory.Disk"), disk.Name, $"{disk.Value} | {disk.Detail}");
         }
         catch (Exception ex) when (ex is InvalidOperationException or TimeoutException or OperationCanceledException
             && !token.IsCancellationRequested)
         {
-            Add("System", "Windows-Abfrage", "Nicht verfuegbar: " + ex.Message);
+            Add("System", DesktopUiText.Get("Inventory.WindowsQuery"), DesktopUiText.Format("Common.UnavailableDetail", ex.Message));
         }
 
         token.ThrowIfCancellationRequested();
-        progress?.Report("Arbeitsspeicher und Laufwerke werden gelesen ...");
+        progress?.Report(DesktopUiText.Get("Inventory.ReadMemory"));
         try
         {
             var live = await Task.Run(() => new NativeMetrics().Read(), token);
-            Add("Arbeitsspeicher", "RAM gesamt", $"{live.MemoryTotalGb:0.0} GB");
+            Add(DesktopUiText.Get("Inventory.Memory"), DesktopUiText.Get("Inventory.TotalRam"), $"{live.MemoryTotalGb:0.0} GB");
             foreach (var volume in live.Volumes)
                 Add("Volume", volume.Name, $"{volume.Value} | {volume.Detail}");
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException)
         {
-            Add("Arbeitsspeicher", "Native Metriken", "Nicht verfuegbar: " + ex.Message);
+            Add(DesktopUiText.Get("Inventory.Memory"), DesktopUiText.Get("Inventory.NativeMetrics"), DesktopUiText.Format("Common.UnavailableDetail", ex.Message));
         }
 
         token.ThrowIfCancellationRequested();
-        progress?.Report("Aktive Netzwerkadapter werden untersucht ...");
+        progress?.Report(DesktopUiText.Get("Inventory.ReadNetwork"));
         try
         {
             // Nur echte Adapter: physische MAC, aktive Verbindung mit Bandbreite.
@@ -105,13 +105,13 @@ public static class SystemInventory
                                      n.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211 &&
                                      n.GetPhysicalAddress().GetAddressBytes().Length == 6 &&
                                      !noise.Any(term => n.Name.Contains(term, StringComparison.OrdinalIgnoreCase))))
-                Add("Netzwerk", adapter.Name,
+                Add(DesktopUiText.Get("Common.Network"), adapter.Name,
                     $"{adapter.NetworkInterfaceType} | {adapter.Speed / 1_000_000} Mbit/s");
         }
-        catch (NetworkInformationException ex) { Add("Netzwerk", "Adapter", "Nicht verfuegbar: " + ex.Message); }
+        catch (NetworkInformationException ex) { Add(DesktopUiText.Get("Common.Network"), "Adapter", DesktopUiText.Format("Common.UnavailableDetail", ex.Message)); }
 
         token.ThrowIfCancellationRequested();
-        progress?.Report("Installierte Software wird aus der Registry gelesen ...");
+        progress?.Report(DesktopUiText.Get("Inventory.ReadSoftware"));
         var software = await Task.Run(ReadInstalledSoftware, token);
         token.ThrowIfCancellationRequested();
         return new(DateTimeOffset.Now, hardware, software);
@@ -120,8 +120,8 @@ public static class SystemInventory
     public static string ToText(InventorySnapshot snapshot)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"AETHER RECHNER-INVENTAR / {snapshot.GeneratedAt:yyyy-MM-dd HH:mm:ss}");
-        builder.AppendLine("Lesende Momentaufnahme. Nicht verfuegbare Werte sind als solche gekennzeichnet.");
+        builder.AppendLine(DesktopUiText.Format("Inventory.ExportHeader", snapshot.GeneratedAt));
+        builder.AppendLine(DesktopUiText.Get("Inventory.ExportNotice"));
         builder.AppendLine();
         builder.AppendLine("== HARDWARE / SYSTEM ==");
         foreach (var group in snapshot.Hardware.GroupBy(h => h.Category))
@@ -130,7 +130,7 @@ public static class SystemInventory
             foreach (var item in group) builder.AppendLine($"  {item.Name}: {item.Detail}");
         }
         builder.AppendLine();
-        builder.AppendLine($"== INSTALLIERTE SOFTWARE ({snapshot.Software.Count}) ==");
+        builder.AppendLine("== " + DesktopUiText.Format("Inventory.SoftwareCount", snapshot.Software.Count) + " ==");
         foreach (var app in snapshot.Software)
             builder.AppendLine($"  {app.Name} | {(app.Version.Length > 0 ? app.Version : "-")} | " +
                 $"{(app.Publisher.Length > 0 ? app.Publisher : "-")}");

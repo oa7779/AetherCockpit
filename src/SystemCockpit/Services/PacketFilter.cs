@@ -12,12 +12,12 @@ public sealed record PacketFilter(string Text, string Protocol, int? Port, bool 
     public static PacketFilter Create(string text, string protocol, string port, bool synOnly, bool dnsErrorsOnly)
     {
         if (text.Length > 200 || text.Any(char.IsControl) || !Protocols.Contains(protocol))
-            throw new ArgumentException("Adress-/Textfilter: maximal 200 Zeichen; bekanntes Protokoll waehlen.");
+            throw new ArgumentException(DesktopUiText.Get("Packet.InvalidFilter"));
         int? parsed = null;
         if (port.Trim().Length > 0)
         {
             if (!int.TryParse(port.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var value) || value is < 1 or > 65535)
-                throw new ArgumentException("Port leer lassen oder eine Zahl von 1 bis 65535 eingeben.");
+                throw new ArgumentException(DesktopUiText.Get("Packet.InvalidPort"));
             parsed = value;
         }
         return new(text.Trim(), protocol, parsed, synOnly, dnsErrorsOnly);
@@ -41,9 +41,9 @@ public sealed record PacketFilter(string Text, string Protocol, int? Port, bool 
     }
 
     public static string Describe(PacketSummary packet) =>
-        $"{packet.Time:O}\n{Endpoint(packet.Source, packet.SourcePort)} -> {Endpoint(packet.Destination, packet.DestinationPort)}\n" +
-        $"{packet.Protocol} / gemeldete Paketlaenge: {packet.WireLength} Bytes / SYN ohne ACK: {packet.Syn} / DNS-Fehlerantwort: {packet.DnsFailure}\n" +
-        "Port 0 kann fehlende/nicht dekodierte Transportdaten bedeuten. 128-Byte-Mitschnitt: keine vollstaendige Nutzlast-/TLS-Analyse.";
+        DesktopUiText.Format("Packet.Description", packet.Time, Endpoint(packet.Source, packet.SourcePort),
+            Endpoint(packet.Destination, packet.DestinationPort), packet.Protocol, packet.WireLength,
+            packet.Syn, packet.DnsFailure);
 
     private static string Endpoint(string address, int port) => address.Contains(':') ? $"[{address}]:{port}" : $"{address}:{port}";
 
@@ -65,10 +65,10 @@ public static class CaptureHandoff
     {
         if (!Path.IsPathFullyQualified(executable) || !Path.GetFileName(executable).Equals("Wireshark.exe", StringComparison.OrdinalIgnoreCase) ||
             !File.Exists(executable))
-            throw new ArgumentException("Vorhandene Wireshark.exe bewusst auswaehlen; AETHER installiert kein Analyseprogramm.");
+            throw new ArgumentException(DesktopUiText.Get("Packet.SelectExecutable"));
         if (!Path.IsPathFullyQualified(capture) || !File.Exists(capture) ||
             !new[] { ".pcap", ".pcapng" }.Contains(Path.GetExtension(capture), StringComparer.OrdinalIgnoreCase))
-            throw new ArgumentException("Vorhandene PCAP-/PCAPNG-Datei auswaehlen.");
+            throw new ArgumentException(DesktopUiText.Get("Packet.SelectCapture"));
         var info = new ProcessStartInfo { FileName = executable, UseShellExecute = false };
         info.ArgumentList.Add("-r");
         info.ArgumentList.Add(capture);

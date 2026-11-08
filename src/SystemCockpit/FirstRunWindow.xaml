@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SystemCockpit.Controls"
-        Title="AETHER | Willkommen" Width="1000" Height="760" MinWidth="820" MinHeight="640"
+        xmlns:loc="clr-namespace:SystemCockpit.Services"
+        Title="{loc:DesktopLabel FirstRun.Title}" Width="1000" Height="760" MinWidth="820" MinHeight="640"
         WindowStartupLocation="CenterScreen" Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7"
         FontFamily="Segoe UI" Icon="Assets/aether.ico">
     <Window.Resources>
@@ -21,56 +22,56 @@
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
         <StackPanel>
             <TextBlock Text="AETHER // SYSTEM CONTROL" Foreground="#D45CFF" FontFamily="Consolas" FontSize="26" FontWeight="Bold"/>
-            <TextBlock x:Name="StepLabel" Text="Schritt 1 von 3 - Willkommen" Foreground="#24FFE3" FontFamily="Consolas" Margin="0,4,0,14"/>
+            <TextBlock x:Name="StepLabel" Text="{loc:DesktopLabel FirstRun.StepIntro}" Foreground="#24FFE3" FontFamily="Consolas" Margin="0,4,0,14"/>
         </StackPanel>
 
         <!-- Schritt 1: Einfuehrung / Funktionsuebersicht -->
         <ScrollViewer x:Name="StepIntro" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Deine Windows-Kommandozentrale für Hardwareüberwachung, Diagnose, Wartung und Systemverwaltung im Retro-Neon-Design."
+                <TextBlock Text="{loc:DesktopLabel FirstRun.Introduction}"
                            FontSize="15" Margin="0,0,0,14"/>
-                <TextBlock Text="WAS AETHER KANN" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,0,0,8"/>
-                <TextBlock Text="- Live-Cockpit und xBar: CPU, RAM, GPU, Temperatur- und Netzwerkverläufe sowie Laufwerksbelegung."/>
-                <TextBlock Text="- Desktop-Gadgets, Transparenzregler und Tray. X blendet das Hauptfenster aus; vollständig beenden im Tray-Menü."/>
-                <TextBlock Text="- Netzwerkalarme und begrenzte Paketmitschnitte mit eigener Freigabe. Npcap wird separat installiert und lizenziert."/>
-                <TextBlock Text="- CPU-Kerngraphen, Sensor-Matrix, SMART-Diagnose und freizugebende Selbsttests."/>
-                <TextBlock Text="- Messaufzeichnung, MIN/MAX/AVG und PresentMon-Framezeitauswertung."/>
-                <TextBlock Text="- Windows-Diagnoseassistenten, Ereignisse und Export mit Musterschwärzung. Hintergrunddiagnose ist wählbar und repariert nicht automatisch."/>
-                <TextBlock Text="- Cleaner mit Dateivorschau und Bestätigung der ausgewählten Löschkandidaten."/>
-                <TextBlock Text="- Paket-Center: Installieren, Aktualisieren und Deinstallieren mit exakten IDs und Bestätigung."/>
-                <TextBlock Text="- Befehls-Katalog: 103 Windows-Befehle mit Risikoanzeige und Einsteiger-/Expertenmodus, CRT-Konsole."/>
-                <TextBlock Text="- Superadmin und Operations: statusbasierte Verwaltung und Wartungspläne mit Vorschau und Einzelbestätigung."/>
-                <TextBlock Text="- Netzwerkwerkzeuge, Downloadtest, Shellbag-Analyse, vier Skins und lokale Hilfe."/>
-                <TextBlock Text="GRUNDREGEL" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,16,0,8"/>
-                <TextBlock Text="Geführte Änderungen benötigen deine Bestätigung. Die freie Administratorkonsole startet dagegen mit Enter direkt. Einzelplatz bleibt ohne Managerkontakt; Serverberichte verlangen Anmeldung, manuelle Freigabe und getrenntes Übertragungs-Opt-in."/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.Features}" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,0,0,8"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureLive}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureDesktop}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureNetwork}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureSensors}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureRecording}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureDiagnostics}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureCleaner}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeaturePackages}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureCommands}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureOperations}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.FeatureTools}"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.SafetyHeading}" Foreground="#5DE5D0" FontFamily="Consolas" Margin="0,16,0,8"/>
+                <TextBlock Text="{loc:DesktopLabel FirstRun.Safety}"/>
             </StackPanel>
         </ScrollViewer>
 
         <!-- Schritt 2: EULA -->
         <Grid x:Name="StepEula" Grid.Row="1" Visibility="Collapsed">
             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-            <TextBlock Text="Bitte lies die Endnutzer-Lizenzvereinbarung. Zur Nutzung ist die Zustimmung erforderlich."
+            <TextBlock Text="{loc:DesktopLabel FirstRun.LicenseNotice}"
                        Foreground="#FFB86C" Margin="0,0,0,10"/>
             <TextBox x:Name="EulaText" Grid.Row="1" IsReadOnly="True" FontFamily="Consolas" FontSize="12.5"
                      Background="#120C26" Foreground="#DCEAF7" BorderBrush="#7944B5"
                      VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Padding="12"/>
             <CheckBox x:Name="AcceptCheck" Grid.Row="2" Margin="0,12,0,0" Foreground="#39FF68"
-                      Content="Ich habe die Bedingungen gelesen und akzeptiere sie."
+                      Content="{loc:DesktopLabel FirstRun.Accept}"
                       Checked="AcceptChanged" Unchecked="AcceptChanged"/>
         </Grid>
 
         <!-- Schritt 3: Inventar -->
         <Grid x:Name="StepInventory" Grid.Row="1" Visibility="Collapsed">
             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-            <TextBlock Text="Beim ersten Start erstellt AETHER ein lokales Inventar deines Rechners (Hardware und installierte Software). Es wird nur hier angezeigt und kann als Textdatei gespeichert werden."
+            <TextBlock Text="{loc:DesktopLabel FirstRun.InventoryNotice}"
                        Foreground="#A8A4C5" Margin="0,0,0,12"/>
             <controls:InventoryView x:Name="Inventory" Grid.Row="1"/>
         </Grid>
 
         <Grid Grid.Row="2" Margin="0,16,0,0">
-            <Button x:Name="DeclineButton" Content="Ablehnen und beenden" Click="DeclineClicked" HorizontalAlignment="Left" BorderBrush="#FF5470"/>
-            <Button x:Name="BackButton" Content="Zurueck" Click="BackClicked" HorizontalAlignment="Right" Margin="0,0,320,0" Visibility="Collapsed"/>
-            <Button x:Name="NextButton" Content="Weiter zur Lizenz" Click="NextClicked" HorizontalAlignment="Right" Width="300"/>
+            <Button x:Name="DeclineButton" Content="{loc:DesktopLabel FirstRun.Decline}" Click="DeclineClicked" HorizontalAlignment="Left" BorderBrush="#FF5470"/>
+            <Button x:Name="BackButton" Content="{loc:DesktopLabel Common.Back}" Click="BackClicked" HorizontalAlignment="Right" Margin="0,0,320,0" Visibility="Collapsed"/>
+            <Button x:Name="NextButton" Content="{loc:DesktopLabel FirstRun.NextLicense}" Click="NextClicked" HorizontalAlignment="Right" Width="300"/>
         </Grid>
     </Grid>
 </Window>

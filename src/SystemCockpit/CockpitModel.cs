@@ -10,10 +10,10 @@ public sealed partial class CockpitModel : Observable
     internal DateTimeOffset LastSampleAt { get; private set; }
     public ObservableCollection<MetricCard> Cards { get; } =
     [
-        new("CPU / AUSLASTUNG", "%", "#24FFE3"),
-        new("RAM / BELEGUNG", "%", "#4294FF"),
+        new(DesktopUiText.Get("Metric.CpuLoad"), "%", "#24FFE3"),
+        new(DesktopUiText.Get("Metric.RamUsage"), "%", "#4294FF"),
         new("GPU / CORE LOAD", "%", "#D45CFF"),
-        new("NETZ / DOWNLOAD", "Mbit/s", "#32D5FF")
+        new(DesktopUiText.Get("Metric.Download"), "Mbit/s", "#32D5FF")
     ];
     public ObservableCollection<Check> Checks { get; } = [];
     public ObservableCollection<Check> Disks { get; } = [];
@@ -27,17 +27,17 @@ public sealed partial class CockpitModel : Observable
     public ObservableCollection<Check> Instruments { get; } = [];
     public ObservableCollection<DashboardGraph> SidebarTemperatures { get; } =
     [
-        new("CPU / TEMPERATUR", "C", "#32D5FF"),
-        new("GPU / TEMPERATUR", "C", "#D45CFF"),
-        new("SSD / TEMPERATUR", "C", "#24FFE3")
+        new(DesktopUiText.Get("Metric.CpuTemperature"), "C", "#32D5FF"),
+        new(DesktopUiText.Get("Metric.GpuTemperature"), "C", "#D45CFF"),
+        new(DesktopUiText.Get("Metric.SsdTemperature"), "C", "#24FFE3")
     ];
-    public DashboardGraph SidebarUpload { get; } = new("NETZ / UPLOAD", "Mbit/s", "#24FFE3");
+    public DashboardGraph SidebarUpload { get; } = new(DesktopUiText.Get("Metric.Upload"), "Mbit/s", "#24FFE3");
     private CockpitSettings _settings = new();
     public CockpitSettings Settings { get => _settings; set => Set(ref _settings, value); }
     private readonly SessionStatistics _statistics = new();
     public bool RecordStatistics { get; set; } = true;
-    private string _sessionStatus = "Messauswertung ab dem ersten gueltigen Messpunkt.";
-    private string _cleanupStatus = "Noch keine Vorschau. Nur lokale Benutzer-Temp-Dateien aelter als 7 Tage.";
+    private string _sessionStatus = DesktopUiText.Get("Model.SessionInitial");
+    private string _cleanupStatus = DesktopUiText.Get("Model.CleanupInitial");
     private bool _canClean = true;
     private bool _motionEnabled = System.Windows.SystemParameters.ClientAreaAnimation;
     private string _accessStatus = "";
@@ -48,7 +48,7 @@ public sealed partial class CockpitModel : Observable
     public bool MotionEnabled { get => _motionEnabled; set => Set(ref _motionEnabled, value); }
     private bool _isDaytime;
     public bool IsDaytime { get => _isDaytime; internal set { if (_isDaytime == value) return; Set(ref _isDaytime, value); OnPropertyChanged(nameof(DisplayStatus)); } }
-    public string DisplayStatus => IsDaytime ? "TAG / NEON" : "NACHT / NEON";
+    public string DisplayStatus => DesktopUiText.Get(SkinCatalog.IsModern ? "Model.WindowsModern" : IsDaytime ? "Model.Day" : "Model.Night");
     public ICollectionView SensorView { get; }
     public ICollectionView StatisticsView { get; }
     public ICollectionView CleanupView { get; }
@@ -66,18 +66,18 @@ public sealed partial class CockpitModel : Observable
     private readonly List<double>[] _traces = [[], [], [], []];
     private Check? _measurementError;
     private Check? _sensorError;
-    private string _systemIdentity = "Lokale Hardware-Erkennung laeuft ...";
-    private string _liveStatus = "INITIALISIERUNG";
-    private string _cpuTemperature = "Nicht aktiviert";
-    private string _gpuTemperature = "Nicht aktiviert";
-    private string _cpuPower = "Nicht aktiviert";
-    private string _gpuIdentity = "GPU / Erkennung ausstehend";
+    private string _systemIdentity = DesktopUiText.Get("Model.HardwareInitial");
+    private string _liveStatus = DesktopUiText.Get("Model.Initializing");
+    private string _cpuTemperature = DesktopUiText.Get("Common.NotEnabled");
+    private string _gpuTemperature = DesktopUiText.Get("Common.NotEnabled");
+    private string _cpuPower = DesktopUiText.Get("Common.NotEnabled");
+    private string _gpuIdentity = DesktopUiText.Get("Model.GpuInitial");
     public string GpuIdentity { get => _gpuIdentity; set => Set(ref _gpuIdentity, value); }
-    private string _sensorStatus = "Optionaler Zugriff ueber LibreHardwareMonitor. Verfuegbarkeit haengt von Hardware, Treibern und Rechten ab.";
-    private string _historyStatus = "Aus. Live-Verlaeufe werden nur im Arbeitsspeicher gehalten.";
-    private string _probeStatus = "Lesende Windows-Abfrage laeuft ...";
-    private string _securitySummary = "Sicherheitsstatus wird abgefragt.";
-    private string _footer = "2s Live/Prozesse | 15s Ereignisse/Disk-I/O | 60s Windows-Status | rein lokal";
+    private string _sensorStatus = DesktopUiText.Get("Model.SensorInitial");
+    private string _historyStatus = DesktopUiText.Get("Model.HistoryInitial");
+    private string _probeStatus = DesktopUiText.Get("Model.ProbeInitial");
+    private string _securitySummary = DesktopUiText.Get("Model.SecurityInitial");
+    private string _footer = DesktopUiText.Get("Model.FooterInitial");
     private string _sensorFilter = "";
     private bool _canRefresh;
     public string SystemIdentity { get => _systemIdentity; set => Set(ref _systemIdentity, value); }
@@ -85,7 +85,7 @@ public sealed partial class CockpitModel : Observable
     public string CpuTemperature { get => _cpuTemperature; set => Set(ref _cpuTemperature, value); }
     public string GpuTemperature { get => _gpuTemperature; set => Set(ref _gpuTemperature, value); }
     public string CpuPower { get => _cpuPower; set => Set(ref _cpuPower, value); }
-    private string _storageTemperature = "Nicht aktiviert";
+    private string _storageTemperature = DesktopUiText.Get("Common.NotEnabled");
     private bool _cpuTempWarning, _gpuTempWarning, _storageTempWarning;
     private string _overlayAlert = "";
     public string StorageTemperature { get => _storageTemperature; set => Set(ref _storageTemperature, value); }
@@ -123,48 +123,47 @@ public sealed partial class CockpitModel : Observable
         LastSampleAt = sample.Timestamp;
         _measurementError = null;
         _sensorError = sample.SensorError is { } error
-            ? new Check("Hardware-Sensoren", "Abfrage fehlgeschlagen", "unknown", error) : null;
+            ? new Check(DesktopUiText.Get("Model.HardwareSensors"), DesktopUiText.Get("Common.QueryFailed"), "unknown", error) : null;
         LiveStatus = $"LIVE / {sample.Timestamp:HH:mm:ss}";
-        UpdateCard(0, sample.CpuPercent, "Windows CPU-Gesamtzeit", 100);
+        UpdateCard(0, sample.CpuPercent, DesktopUiText.Get("Model.CpuTotalTime"), 100);
         UpdateCard(1, sample.MemoryPercent, $"{sample.MemoryUsedGb:0.0} / {sample.MemoryTotalGb:0.0} GB", 100);
         var selectedGpu = SelectGpu(sample.Sensors);
-        GpuIdentity = selectedGpu.FirstOrDefault()?.Hardware ?? (sensorsEnabled ? "GPU / nicht erkannt" : "GPU / Sensorzugriff ausgeschaltet");
+        GpuIdentity = selectedGpu.FirstOrDefault()?.Hardware ?? DesktopUiText.Get(sensorsEnabled ? "Model.GpuNotDetected" : "Model.GpuDisabled");
         var gpu = FindGpu(selectedGpu, "Load", "GPU Core");
-        UpdateCard(2, gpu?.Value, sensorsEnabled ? $"{GpuIdentity} | GPU Core" : "Sensorzugriff nicht aktiviert", 100);
+        UpdateCard(2, gpu?.Value, sensorsEnabled ? $"{GpuIdentity} | GPU Core" : DesktopUiText.Get("Model.SensorDisabled"), 100);
         UpdateCard(3, sample.DownloadMbps, sample.UploadMbps is { } upload
-            ? $"Upload {upload:0.00} Mbit/s | alle Adapter | Skala dynamisch" : "Netzwerk-Baseline wird aufgebaut",
+            ? DesktopUiText.Format("Model.UploadDetail", upload) : DesktopUiText.Get("Model.NetworkBaseline"),
             Math.Max(1, _traces[3].Append(sample.DownloadMbps ?? 0).DefaultIfEmpty(1).Max()));
         var cpuTemp = SensorSemantics.CpuTemperature(sample.Sensors);
         var gpuTemp = FindGpu(selectedGpu, "Temperature", "GPU Core");
         var cpuPower = SensorSemantics.CpuPower(sample.Sensors);
-        CpuTemperature = cpuTemp?.Display ?? (sensorsEnabled ? "Nicht verfuegbar" : "Nicht aktiviert");
-        GpuTemperature = gpuTemp?.Display ?? (sensorsEnabled ? "Nicht verfuegbar" : "Nicht aktiviert");
-        CpuPower = cpuPower?.Display ?? (sensorsEnabled ? "Nicht verfuegbar" : "Nicht aktiviert");
+        var temperatureStatus = DesktopUiText.Get(sensorsEnabled ? "Common.Unavailable" : "Common.NotEnabled");
+        CpuTemperature = cpuTemp?.Display ?? temperatureStatus;
+        GpuTemperature = gpuTemp?.Display ?? temperatureStatus;
+        CpuPower = cpuPower?.Display ?? temperatureStatus;
         // Overlay-Werte: heissester echter Storage-Messkanal; Grenzwertkanaele bleiben ausgeschlossen.
         var storageTemp = sample.Sensors
             .Where(s => s.Type == "Temperature" && SensorSemantics.IsStorage(s.Id) &&
                 !SensorSemantics.IsTemperatureLimit(s) && s.Value is { } v && double.IsFinite(v))
             .OrderByDescending(s => s.Value).FirstOrDefault();
-        StorageTemperature = storageTemp?.Display ?? (sensorsEnabled ? "Nicht verfuegbar" : "Nicht aktiviert");
-        var temperatureStatus = sensorsEnabled ? "Nicht verfuegbar" : "Nicht aktiviert";
+        StorageTemperature = storageTemp?.Display ?? temperatureStatus;
         SidebarTemperatures[0].Update(cpuTemp?.Value, cpuTemp?.Display ?? temperatureStatus);
         SidebarTemperatures[1].Update(gpuTemp?.Value, gpuTemp?.Display ?? temperatureStatus);
         SidebarTemperatures[2].Update(storageTemp?.Value, storageTemp?.Display ?? temperatureStatus);
         SidebarUpload.Update(sample.UploadMbps, sample.UploadMbps is null
-            ? "Netzwerk-Baseline wird aufgebaut / nicht verfuegbar" : "Alle aktiven Adapter / dynamische Skala");
+            ? DesktopUiText.Get("Model.NetworkUnavailable") : DesktopUiText.Get("Model.AllAdapters"));
         CpuTempWarning = cpuTemp?.Value >= Settings.CpuWarningC;
         GpuTempWarning = gpuTemp?.Value >= Settings.GpuWarningC;
         StorageTempWarning = storageTemp?.Value >= Settings.StorageWarningC;
         OverlayAlert = CpuTempWarning || GpuTempWarning || StorageTempWarning
-            ? "WARNSCHWELLE ERREICHT: " + string.Join(" / ", new[]
+            ? DesktopUiText.Get("Model.ThresholdReached") + string.Join(" / ", new[]
             {
                 CpuTempWarning ? "CPU" : null, GpuTempWarning ? "GPU" : null, StorageTempWarning ? "STORAGE" : null
             }.Where(s => s is not null))
             : "";
-        CpuSensorDetail = !sensorsEnabled ? "Hardware-Zugriff ausgeschaltet." :
-            $"Temperaturkanal: {cpuTemp?.Name ?? "kein lesbarer CPU-Kanal"} / " +
-            $"Leistung: {cpuPower?.Name ?? "kein lesbarer Package-Kanal"}. " +
-            "Keine Ableitung aus Mainboard-/ACPI-Zonen. Treiberzugriff und CPU-Unterstuetzung im Providerbericht pruefen." +
+        CpuSensorDetail = !sensorsEnabled ? DesktopUiText.Get("Model.HardwareDisabled") :
+            DesktopUiText.Format("Model.CpuSensorDetail", cpuTemp?.Name ?? DesktopUiText.Get("Model.NoCpuChannel"),
+                cpuPower?.Name ?? DesktopUiText.Get("Model.NoPackageChannel")) +
             (cpuTemp is null && cpuPower is null ? "\n" + HardwareSensors.KernelAccessHint : "");
         UpdateInstruments(sample.Sensors, sensorsEnabled);
         Replace(Volumes, sample.Volumes.Select(volume => volume.FreePercent is { } percent
@@ -172,16 +171,15 @@ public sealed partial class CockpitModel : Observable
         Replace(Sensors, sample.Sensors.OrderBy(s => s.Hardware).ThenBy(s => s.Type).ThenBy(s => s.Name));
         SensorCharts.Add(sample.Timestamp, sensorsEnabled && sample.SensorError is null ? sample.Sensors : []);
         if (sensorsEnabled)
-            SensorStatus = sample.SensorError is { } sensorError ? $"Sensorabfrage fehlgeschlagen: {sensorError}"
-                : $"{Sensors.Count(s => s.Value is { } v && double.IsFinite(v))} / {Sensors.Count} Sensorwerte lesbar. " +
-                "Nicht verfuegbar = kein Messwert, nicht 0. CPU/GPU-Package-Werte koennen ohne Rechte oder Treiber fehlen." +
+            SensorStatus = sample.SensorError is { } sensorError ? DesktopUiText.Format("Model.SensorFailed", sensorError)
+                : DesktopUiText.Format("Model.SensorReadings", Sensors.Count(s => s.Value is { } v && double.IsFinite(v)), Sensors.Count) +
                 (SensorCharts.Warning.Length == 0 ? "" : "\n" + SensorCharts.Warning);
         RefreshAlerts(cpuTemp, gpuTemp);
         if (RecordStatistics)
         {
             _statistics.Add(sample);
             Replace(Statistics, _statistics.Snapshot());
-            SessionStatus = $"Messsitzung seit {_statistics.Started:HH:mm:ss} | {Statistics.Count} Reihen | MIN / MAX / AVG aus gueltigen Messpunkten" +
+            SessionStatus = DesktopUiText.Format("Model.SessionStatus", _statistics.Started, Statistics.Count) +
                 (_statistics.Warning.Length == 0 ? "" : "\n" + _statistics.Warning);
         }
     }
@@ -189,18 +187,18 @@ public sealed partial class CockpitModel : Observable
     public void MeasurementFailed(string message)
     {
         LastSampleAt = DateTimeOffset.MinValue;
-        LiveStatus = "MESSUNG FEHLGESCHLAGEN";
-        _measurementError = new Check("Live-Messung", "Nicht verfuegbar", "unknown", message);
-        for (var i = 0; i < Cards.Count; i++) UpdateCard(i, null, "Messung fehlgeschlagen", 100);
+        LiveStatus = DesktopUiText.Get("Model.MeasurementFailed");
+        _measurementError = new Check(DesktopUiText.Get("Model.LiveMeasurement"), DesktopUiText.Get("Common.Unavailable"), "unknown", message);
+        for (var i = 0; i < Cards.Count; i++) UpdateCard(i, null, DesktopUiText.Get("Model.MeasurementFailure"), 100);
         Sensors.Clear();
         SensorCharts.Add(DateTimeOffset.Now, []);
-        Replace(Volumes, [new Check("Volumes", "Nicht verfuegbar", "unknown", message)]);
-        CpuTemperature = GpuTemperature = CpuPower = StorageTemperature = "Nicht verfuegbar";
-        foreach (var graph in SidebarTemperatures) graph.Update(null, "Messung fehlgeschlagen / nicht verfuegbar");
-        SidebarUpload.Update(null, "Messung fehlgeschlagen / nicht verfuegbar");
+        Replace(Volumes, [new Check("Volumes", DesktopUiText.Get("Common.Unavailable"), "unknown", message)]);
+        CpuTemperature = GpuTemperature = CpuPower = StorageTemperature = DesktopUiText.Get("Common.Unavailable");
+        foreach (var graph in SidebarTemperatures) graph.Update(null, DesktopUiText.Get("Model.MeasurementUnavailable"));
+        SidebarUpload.Update(null, DesktopUiText.Get("Model.MeasurementUnavailable"));
         CpuTempWarning = GpuTempWarning = StorageTempWarning = false;
         OverlayAlert = "";
-        GpuIdentity = "GPU / Messung fehlgeschlagen";
+        GpuIdentity = DesktopUiText.Get("Model.GpuMeasurementFailed");
         UpdateInstruments([], true);
         RefreshAlerts(null, null);
     }
@@ -213,21 +211,20 @@ public sealed partial class CockpitModel : Observable
         Replace(Checks, report.Checks);
         Replace(Disks, report.Disks);
         Replace(Diagnostics, report.Diagnostics ?? []);
-        ProbeStatus = $"Zuletzt gelesen: {DateTimeOffset.Now:HH:mm:ss} | naechste automatische Abfrage in etwa 60s";
-        SecuritySummary = $"{Checks.Count(c => c.State == "warning")} Hinweise | " +
-            $"{Checks.Count(c => c.State == "unknown")} nicht lesbare Pruefungen | " +
-            $"{Checks.Count(c => c.State == "ok")} bestandene Pruefungen";
+        ProbeStatus = DesktopUiText.Format("Model.ProbeStatus", DateTimeOffset.Now);
+        SecuritySummary = DesktopUiText.Format("Model.SecuritySummary", Checks.Count(c => c.State == "warning"),
+            Checks.Count(c => c.State == "unknown"), Checks.Count(c => c.State == "ok"));
         RefreshAlerts(SensorSemantics.CpuTemperature(Sensors),
             FindGpu(SelectGpu(Sensors), "Temperature", "GPU Core"));
     }
 
     public void ProbeFailed(string message)
     {
-        Replace(Checks, [new Check("Windows-Status", "Abfrage fehlgeschlagen", "unknown", message)]);
-        Replace(Disks, [new Check("Storage Health", "Abfrage fehlgeschlagen", "unknown", message)]);
-        Replace(Diagnostics, [new Check("Diagnose", "Abfrage fehlgeschlagen", "unknown", message)]);
-        ProbeStatus = $"Abfrage fehlgeschlagen: {message}";
-        SecuritySummary = "Sicherheitsstatus unbekannt. Keine gueltige aktuelle Abfrage.";
+        Replace(Checks, [new Check(DesktopUiText.Get("Model.WindowsStatus"), DesktopUiText.Get("Common.QueryFailed"), "unknown", message)]);
+        Replace(Disks, [new Check("Storage Health", DesktopUiText.Get("Common.QueryFailed"), "unknown", message)]);
+        Replace(Diagnostics, [new Check(DesktopUiText.Get("Module.Diagnose"), DesktopUiText.Get("Common.QueryFailed"), "unknown", message)]);
+        ProbeStatus = DesktopUiText.Format("Model.ProbeFailed", message);
+        SecuritySummary = DesktopUiText.Get("Model.SecurityUnknown");
         RefreshAlerts(null, null);
     }
 
@@ -236,7 +233,7 @@ public sealed partial class CockpitModel : Observable
         _statistics.Reset();
         RecordStatistics = true;
         Statistics.Clear();
-        SessionStatus = "Messsitzung zurueckgesetzt. Neue Auswertung startet mit dem naechsten Messpunkt.";
+        SessionStatus = DesktopUiText.Get("Model.SessionReset");
     }
 
     private void UpdateInstruments(IEnumerable<SensorReading> sensors, bool enabled)
@@ -245,17 +242,17 @@ public sealed partial class CockpitModel : Observable
         Check Instrument(string label, string prefix, string type, string name, string detail)
         {
             var sensor = prefix == "/gpu-" ? FindGpu(gpuSensors, type, name) : Find(sensors, prefix, type, name);
-            return new(label, sensor?.Display ?? (enabled ? "Nicht verfuegbar" : "Nicht aktiviert"),
+            return new(label, sensor?.Display ?? DesktopUiText.Get(enabled ? "Common.Unavailable" : "Common.NotEnabled"),
                 sensor?.Value is null ? "unknown" : "info", detail);
         }
         Replace(Instruments,
         [
-            Instrument("GPU / HOTSPOT", "/gpu-", "Temperature", "GPU Hot Spot", "Separater Hotspot-Sensor"),
-            Instrument("GPU / VRAM", "/gpu-", "SmallData", "GPU Memory Used", "Gemeldete Speicherbelegung"),
-            Instrument("GPU / PACKAGE", "/gpu-", "Power", "GPU Package", "Gemeldete Leistungsaufnahme"),
-            Instrument("GPU / FAN 1", "/gpu-", "Fan", "GPU Fan 1", "Gemeldete Drehzahl"),
-            Instrument("GPU / CLOCK", "/gpu-", "Clock", "GPU Core", "Gemeldeter GPU-Takt"),
-            Instrument("GPU / MEMORY TEMP", "/gpu-", "Temperature", "GPU Memory Junction", "Separater Speichertemperatursensor")
+            Instrument("GPU / HOTSPOT", "/gpu-", "Temperature", "GPU Hot Spot", DesktopUiText.Get("Instrument.Hotspot")),
+            Instrument("GPU / VRAM", "/gpu-", "SmallData", "GPU Memory Used", DesktopUiText.Get("Instrument.Vram")),
+            Instrument("GPU / PACKAGE", "/gpu-", "Power", "GPU Package", DesktopUiText.Get("Instrument.Power")),
+            Instrument("GPU / FAN 1", "/gpu-", "Fan", "GPU Fan 1", DesktopUiText.Get("Instrument.Fan")),
+            Instrument("GPU / CLOCK", "/gpu-", "Clock", "GPU Core", DesktopUiText.Get("Instrument.Clock")),
+            Instrument("GPU / MEMORY TEMP", "/gpu-", "Temperature", "GPU Memory Junction", DesktopUiText.Get("Instrument.MemoryTemperature"))
         ]);
     }
 
@@ -266,8 +263,10 @@ public sealed partial class CockpitModel : Observable
         alerts.AddRange(SensorDiagnostics.Evaluate(Sensors, Settings).Where(c => c.State == "warning"));
         if (_measurementError is not null) alerts.Insert(0, _measurementError);
         if (_sensorError is not null) alerts.Insert(0, _sensorError);
-        if (cpu?.Value >= Settings.CpuWarningC) alerts.Insert(0, new("CPU-Temperatur", cpu.Display, "warning", $"CPU Package >= {Settings.CpuWarningC} C. Beobachtungshinweis, kein Nachweis von Drosselung."));
-        if (gpu?.Value >= Settings.GpuWarningC) alerts.Insert(0, new("GPU-Temperatur", gpu.Display, "warning", $"GPU Core >= {Settings.GpuWarningC} C. Hotspot separat."));
+        if (cpu?.Value >= Settings.CpuWarningC) alerts.Insert(0, new(DesktopUiText.Get("Alert.CpuTemperature"), cpu.Display, "warning",
+            DesktopUiText.Format("Alert.CpuTemperatureDetail", Settings.CpuWarningC)));
+        if (gpu?.Value >= Settings.GpuWarningC) alerts.Insert(0, new(DesktopUiText.Get("Alert.GpuTemperature"), gpu.Display, "warning",
+            DesktopUiText.Format("Alert.GpuTemperatureDetail", Settings.GpuWarningC)));
         Replace(Alerts, alerts);
     }
 

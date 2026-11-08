@@ -21,7 +21,7 @@ internal sealed class NetworkWatch : Observable, IDisposable
     private DateTimeOffset _lastConnectionAlert;
     private DateTimeOffset _lastPrune;
     private DateTimeOffset _lastNotification;
-    private string _status = "Kein Mitschnitt aktiv. Npcap separat installieren/lizenzieren.";
+    private string _status = DesktopUiText.Get("Network.NoCapture");
     private int _connections;
     private long _packets, _dropped;
     private long _captureCount, _captureDrops;
@@ -56,12 +56,12 @@ internal sealed class NetworkWatch : Observable, IDisposable
 
     public void StartCapture(string device)
     {
-        if (IsCapturing) throw new InvalidOperationException("Es laeuft bereits ein Mitschnitt.");
-        if (string.IsNullOrWhiteSpace(device)) throw new ArgumentException("Npcap-Schnittstelle auswaehlen.");
+        if (IsCapturing) throw new InvalidOperationException(DesktopUiText.Get("Network.AlreadyCapturing"));
+        if (string.IsNullOrWhiteSpace(device)) throw new ArgumentException(DesktopUiText.Get("Network.SelectDevice"));
         _captureStop?.Dispose();
         _captureStop = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
         var token = _captureStop.Token;
-        Status = "Npcap wird geoeffnet / 128 Bytes, 100 MB, max. 15 Minuten; kein Promiscuous-Modus.";
+        Status = DesktopUiText.Get("Network.OpeningCapture");
         Packets = 0;
         DisplayDropped = 0;
         Interlocked.Exchange(ref _captureCount, 0);
@@ -76,7 +76,7 @@ internal sealed class NetworkWatch : Observable, IDisposable
         {
             var rules = new PacketAlertRules();
             var progress = new Progress<string>(path => Status =
-                "Mitschnitt aktiv: " + path + " / 128 Bytes, maximal 100 MB oder 15 Minuten.");
+                DesktopUiText.Format("Network.CaptureActive", path));
             var path = await Task.Run(() =>
             {
                 using var capture = new NpcapCapture();
@@ -92,12 +92,12 @@ internal sealed class NetworkWatch : Observable, IDisposable
             Drain();
             Packets = Interlocked.Read(ref _captureCount);
             DisplayDropped = Interlocked.Read(ref _captureDrops);
-            Status = $"Mitschnitt beendet: {path} / {Packets} Pakete; {DisplayDropped} nicht in der begrenzten Live-Anzeige (PCAP unveraendert).";
+            Status = DesktopUiText.Format("Network.CaptureFinished", path, Packets, DisplayDropped);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Win32Exception or
             InvalidOperationException or ArgumentException or NotSupportedException or EntryPointNotFoundException or BadImageFormatException)
         {
-            Status = "Mitschnitt nicht verfuegbar/abgebrochen: " + ex.Message;
+            Status = DesktopUiText.Format("Network.CaptureFailed", ex.Message);
             Report(Status);
         }
     }
@@ -121,7 +121,7 @@ internal sealed class NetworkWatch : Observable, IDisposable
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                Report("Lokale Netzwerk-Aufbewahrung konnte nicht angewendet werden: " + ex.Message);
+                Report(DesktopUiText.Format("Network.RetentionFailed", ex.Message));
             }
         }
     }
@@ -147,13 +147,13 @@ internal sealed class NetworkWatch : Observable, IDisposable
                 DateTimeOffset.UtcNow - _lastConnectionAlert > TimeSpan.FromMinutes(1))
             {
                 _lastConnectionAlert = DateTimeOffset.UtcNow;
-                Report($"TCP-Verbindungszahl {count} erreicht Schwelle {_settings().ConnectionAlertThreshold}. Keine Aussage ueber Schadsoftware.");
+                Report(DesktopUiText.Format("Network.ConnectionAlert", count, _settings().ConnectionAlertThreshold));
             }
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }
         catch (Exception ex) when (ex is NetworkInformationException or Win32Exception)
         {
-            Status = "Verbindungsueberwachung fehlgeschlagen: " + ex.Message;
+            Status = DesktopUiText.Format("Network.MonitorFailed", ex.Message);
             System.Diagnostics.Trace.TraceError("{0}", ex);
         }
     }
@@ -169,7 +169,7 @@ internal sealed class NetworkWatch : Observable, IDisposable
             Directory.CreateDirectory(LogDirectory);
             var path = Path.Combine(LogDirectory, $"alerts-{DateTime.UtcNow:yyyyMMdd}.log");
             if (File.Exists(path) && new FileInfo(path).Length >= 2 * 1024 * 1024)
-                throw new IOException("Tagesgrenze des Alarmprotokolls (2 MB) erreicht.");
+                throw new IOException(DesktopUiText.Get("Network.LogLimit"));
             File.AppendAllText(path, line + Environment.NewLine);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

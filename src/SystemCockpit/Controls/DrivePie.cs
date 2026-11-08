@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using SystemCockpit.Services;
 
 namespace SystemCockpit.Controls;
 
@@ -10,8 +11,14 @@ public sealed class DrivePie : FrameworkElement
         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
     public double? FreePercent { get => (double?)GetValue(FreePercentProperty); set => SetValue(FreePercentProperty, value); }
 
-    private static readonly Brush FreeBrush = FrozenBrush("#24FFE3");
-    private static readonly Brush UsedBrush = FrozenBrush("#A84FFF");
+    public static readonly DependencyProperty FreeBrushProperty = DependencyProperty.Register(
+        nameof(FreeBrush), typeof(Brush), typeof(DrivePie),
+        new FrameworkPropertyMetadata(FrozenBrush("#24FFE3"), FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty UsedBrushProperty = DependencyProperty.Register(
+        nameof(UsedBrush), typeof(Brush), typeof(DrivePie),
+        new FrameworkPropertyMetadata(FrozenBrush("#A84FFF"), FrameworkPropertyMetadataOptions.AffectsRender));
+    public Brush FreeBrush { get => (Brush)GetValue(FreeBrushProperty); set => SetValue(FreeBrushProperty, value); }
+    public Brush UsedBrush { get => (Brush)GetValue(UsedBrushProperty); set => SetValue(UsedBrushProperty, value); }
     private static readonly Brush UnknownBrush = FrozenBrush("#40374F");
     private static readonly Pen Outline = new(FrozenBrush("#72608F"), 1);
 
@@ -49,7 +56,9 @@ public sealed class DrivePie : FrameworkElement
         var x = (ActualWidth - diameter) / 2;
         var y = (ActualHeight - diameter) / 2;
         var available = FreePercent is { } free && double.IsFinite(free) && free is >= 0 and <= 100;
-        dc.DrawEllipse(available ? FreeBrush : UnknownBrush, Outline,
+        var outline = SkinCatalog.IsModern ? new Pen((Brush)FindResource("ModernBorder"), 1) : Outline;
+        var unknown = SkinCatalog.IsModern ? (Brush)FindResource("ModernBorder") : UnknownBrush;
+        dc.DrawEllipse(available ? FreeBrush : unknown, outline,
             new Point(ActualWidth / 2, ActualHeight / 2), diameter / 2, diameter / 2);
         if (!available) return;
         dc.PushTransform(new MatrixTransform(diameter, 0, 0, diameter, x, y));

@@ -1,6 +1,6 @@
 <UserControl x:Class="SystemCockpit.Controls.EventBrowser"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:loc="clr-namespace:SystemCockpit.Services" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Resources>
         <ResourceDictionary>
             <Style TargetType="TextBlock"><Setter Property="Foreground" Value="#E1EAF7"/><Setter Property="TextWrapping" Value="Wrap"/></Style>
@@ -13,35 +13,35 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="180"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-        <StackPanel><TextBlock Text="EREIGNISANZEIGE // EVENTMONITOR" FontSize="22" FontFamily="Consolas" Foreground="#D45CFF"/>
-            <TextBlock Text="Eingebettete Windows-Ereigniskanaele, Suche und Nachrichtendetails. Maximal 2000 Eintraege pro Abfrage; keine Log-Loeschung." Foreground="#A8A4C5" Margin="0,8"/></StackPanel>
+        <StackPanel><TextBlock Text="{loc:DesktopLabel Ui.EventHeading}" FontSize="22" FontFamily="Consolas" Foreground="#D45CFF"/>
+            <TextBlock Text="{loc:DesktopLabel Layout.EventsNotice}" Foreground="#A8A4C5" Margin="0,8"/></StackPanel>
         <WrapPanel x:Name="QueryControls" Grid.Row="1">
-            <ComboBox x:Name="Channel" Width="360" IsEditable="False" AutomationProperties.Name="Ereigniskanal"/>
-            <TextBox x:Name="Days" Text="1" Width="50" Height="36" ToolTip="Rueckblick in Tagen (1..30)"/>
-            <TextBox x:Name="Limit" Text="500" Width="65" Height="36" ToolTip="Maximale Ereignisse (1..2000)"/>
-            <Button Content="Kanal lesen" Click="ReadClicked"/>
-            <Button Content="Kanaele auflisten" Click="ChannelsClicked"/>
-            <Button Content="Auswahl / Volltext und XML" Click="FullDetailsClicked"/>
+            <ComboBox x:Name="Channel" Width="360" IsEditable="False" AutomationProperties.Name="{loc:DesktopLabel Ui.EventChannel}"/>
+            <TextBox x:Name="Days" Text="1" Width="50" Height="36" ToolTip="{loc:DesktopLabel Ui.EventDays}"/>
+            <TextBox x:Name="Limit" Text="500" Width="65" Height="36" ToolTip="{loc:DesktopLabel Ui.EventLimit}"/>
+            <Button Content="{loc:DesktopLabel Layout.ReadChannel}" Click="ReadClicked"/>
+            <Button Content="{loc:DesktopLabel Ui.ListChannels}" Click="ChannelsClicked"/>
+            <Button Content="{loc:DesktopLabel Layout.EventDetails}" Click="FullDetailsClicked"/>
             <CheckBox x:Name="AutoRefresh" Content="Auto 15s" Foreground="#24FFE3" VerticalAlignment="Center" Margin="10,0"/>
-            <Button Content="Abbrechen" Click="CancelClicked"/>
+            <Button Content="{loc:DesktopLabel Ui.Cancel}" Click="CancelClicked"/>
         </WrapPanel>
         <Grid Grid.Row="2" Margin="0,0,0,8">
             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="200"/></Grid.ColumnDefinitions>
-            <TextBox x:Name="Search" TextChanged="FilterChanged" AutomationProperties.Name="Eventbrowser Suche" ToolTip="Nachricht, Quelle, ID"/>
+            <TextBox x:Name="Search" TextChanged="FilterChanged" AutomationProperties.Name="{loc:DesktopLabel Layout.EventSearch}" ToolTip="{loc:DesktopLabel Layout.EventSearchTip}"/>
             <ComboBox x:Name="Severity" Grid.Column="1" SelectedIndex="0" SelectionChanged="SeverityChanged">
-                <ComboBoxItem Content="Alle Stufen"/><ComboBoxItem Content="Kritisch / Fehler"/><ComboBoxItem Content="Warnungen"/><ComboBoxItem Content="Informationen"/>
+                <ComboBoxItem Content="{loc:DesktopLabel Ui.AllLevels}"/><ComboBoxItem Content="{loc:DesktopLabel Layout.CriticalErrors}"/><ComboBoxItem Content="{loc:DesktopLabel Ui.Warnings}"/><ComboBoxItem Content="{loc:DesktopLabel Ui.InformationPlural}"/>
             </ComboBox>
         </Grid>
         <DataGrid x:Name="Records" Grid.Row="3" SelectionChanged="Selected" SelectionMode="Single">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ZEIT" Binding="{Binding LocalTime, StringFormat=MM-dd HH:mm:ss}" Width="150"/>
-                <DataGridTextColumn Header="STUFE" Binding="{Binding Severity}" Width="110"/>
+                <DataGridTextColumn Header="{loc:DesktopLabel Layout.Time}" Binding="{Binding LocalTime, StringFormat=MM-dd HH:mm:ss}" Width="150"/>
+                <DataGridTextColumn Header="{loc:DesktopLabel Ui.LevelColumn}" Binding="{Binding Severity}" Width="110"/>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
-                <DataGridTextColumn Header="QUELLE" Binding="{Binding Provider}" Width="2*"/>
-                <DataGridTextColumn Header="NACHRICHT" Binding="{Binding Message}" Width="3*"/>
+                <DataGridTextColumn Header="{loc:DesktopLabel Layout.Source}" Binding="{Binding Provider}" Width="2*"/>
+                <DataGridTextColumn Header="{loc:DesktopLabel Ui.MessageColumn}" Binding="{Binding Message}" Width="3*"/>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="Details" Grid.Row="4" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Foreground="#83FFB0" Margin="0,12,0,0" AutomationProperties.Name="Eventbrowser Details"/>
-        <TextBlock x:Name="Status" Grid.Row="5" Text="Bereit / Kanal auswaehlen und lesen." Foreground="#32D5FF" Margin="0,8"/>
+        <TextBox x:Name="Details" Grid.Row="4" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Foreground="#83FFB0" Margin="0,12,0,0" AutomationProperties.Name="{loc:DesktopLabel Ui.EventBrowserDetails}"/>
+        <TextBlock x:Name="Status" Grid.Row="5" Text="{loc:DesktopLabel Layout.EventsInitial}" Foreground="#32D5FF" Margin="0,8"/>
     </Grid>
 </UserControl>

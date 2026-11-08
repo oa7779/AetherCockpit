@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Automation.Peers;
+using SystemCockpit.Services;
 
 namespace SystemCockpit.Controls;
 
@@ -26,6 +27,19 @@ public sealed class LedDisplay : FrameworkElement
     protected override void OnRender(DrawingContext dc)
     {
         var text = Text ?? "--";
+        if (SkinCatalog.IsModern)
+        {
+            if (ActualWidth <= 0 || ActualHeight <= 0) return;
+            var fontSize = Math.Max(1, ActualHeight * .76);
+            var value = new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Segoe UI"), fontSize, Accent,
+                VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            if (value.Width > ActualWidth)
+                value.SetFontSize(Math.Max(1, fontSize * ActualWidth / value.Width));
+            dc.DrawText(value, new Point(Math.Max(0, (ActualWidth - value.Width) / 2),
+                Math.Max(0, (ActualHeight - value.Height) / 2)));
+            return;
+        }
         var length = Math.Max(1, text.Sum(c => c is '.' or ',' or ':' ? 0.45 : 1));
         var scale = Math.Max(0, Math.Min(ActualHeight / 32, ActualWidth / (length * 20)));
         if (scale <= 0) return;

@@ -14,21 +14,27 @@ public sealed record SystemAction(string Id, string Label, string Executable, st
 public static class SystemActions
 {
     private static string Exe(string name) => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), name);
-    public static IReadOnlyList<SystemAction> Catalog { get; } =
+    private static readonly IReadOnlyList<SystemAction> Definitions =
     [
-        new("sfc-verify", "SFC / nur pruefen", Exe("sfc.exe"), ["/verifyonly"], "Prueft Windows-Systemdateien, kann lange dauern.", true, false, TimeSpan.FromMinutes(60)),
-        new("sfc-repair", "SFC / reparieren", Exe("sfc.exe"), ["/scannow"], "Aendert/repariert geschuetzte Systemdateien. Vorher sichern.", true, true, TimeSpan.FromMinutes(60)),
-        new("dism-scan", "DISM / Komponenten pruefen", Exe("dism.exe"), ["/Online", "/Cleanup-Image", "/ScanHealth"], "Prueft Windows-Komponentenspeicher.", true, false, TimeSpan.FromMinutes(60)),
-        new("dism-repair", "DISM / Komponenten reparieren", Exe("dism.exe"), ["/Online", "/Cleanup-Image", "/RestoreHealth"], "Repariert Windows-Komponentenspeicher. Kann Windows Update kontaktieren und Dateien ersetzen.", true, true, TimeSpan.FromMinutes(90)),
-        new("chkdsk", "CHKDSK / Systemlaufwerk online pruefen", Exe("chkdsk.exe"), [Environment.GetEnvironmentVariable("SystemDrive") ?? "C:", "/scan"], "Online-Scan auf NTFS; kein /f, kein erzwungenes Aushangen.", true, false, TimeSpan.FromMinutes(90)),
-        new("firmware", "UEFI / neu starten", Exe("shutdown.exe"), ["/r", "/fw", "/t", "30"], "Neustart in 30 Sekunden zur Firmware. Arbeit speichern. Nicht auf jedem BIOS unterstuetzt.", true, true, TimeSpan.FromSeconds(15)),
-        new("cancel-reboot", "Geplanten Neustart abbrechen", Exe("shutdown.exe"), ["/a"], "Bricht einen bestehenden geplanten Windows-Neustart ab.", false, true, TimeSpan.FromSeconds(15)),
-        new("arp", "ARP-/Neighbor-Cache leeren", Exe("netsh.exe"), ["interface", "ip", "delete", "arpcache"], "Loescht gelernte IPv4-Nachbarn; Verbindungen koennen kurz beeintraechtigt werden.", true, true, TimeSpan.FromSeconds(30)),
-        new("wlan", "WLAN / sichtbare Netze", Exe("netsh.exe"), ["wlan", "show", "networks", "mode=bssid"], "Liest/scannt sichtbare WLANs. Windows-Standortfreigabe kann erforderlich sein.", false, false, TimeSpan.FromSeconds(30)),
-        new("wlan-profiles", "WLAN / gespeicherte Profile", Exe("netsh.exe"), ["wlan", "show", "profiles"], "Zeigt Profilnamen, keine Passwoerter.", false, false, TimeSpan.FromSeconds(30)),
-        new("neighbors", "LAN / ARP-Nachbarn und MAC", Exe("arp.exe"), ["-a"], "Liest lokalen ARP-Cache. Nicht vollstaendig; Hersteller wird ohne OUI-Datenbank nicht geraten.", false, false, TimeSpan.FromSeconds(15)),
-        new("bluetooth", "Bluetooth / Windows-Geraete", Exe("pnputil.exe"), ["/enum-devices", "/class", "Bluetooth", "/connected"], "Liest verbundene Bluetooth-Geraete, kein Pairing.", false, false, TimeSpan.FromSeconds(30))
+        new("sfc-verify", "", Exe("sfc.exe"), ["/verifyonly"], "", true, false, TimeSpan.FromMinutes(60)),
+        new("sfc-repair", "", Exe("sfc.exe"), ["/scannow"], "", true, true, TimeSpan.FromMinutes(60)),
+        new("dism-scan", "", Exe("dism.exe"), ["/Online", "/Cleanup-Image", "/ScanHealth"], "", true, false, TimeSpan.FromMinutes(60)),
+        new("dism-repair", "", Exe("dism.exe"), ["/Online", "/Cleanup-Image", "/RestoreHealth"], "", true, true, TimeSpan.FromMinutes(90)),
+        new("chkdsk", "", Exe("chkdsk.exe"), [Environment.GetEnvironmentVariable("SystemDrive") ?? "C:", "/scan"], "", true, false, TimeSpan.FromMinutes(90)),
+        new("firmware", "", Exe("shutdown.exe"), ["/r", "/fw", "/t", "30"], "", true, true, TimeSpan.FromSeconds(15)),
+        new("cancel-reboot", "", Exe("shutdown.exe"), ["/a"], "", false, true, TimeSpan.FromSeconds(15)),
+        new("arp", "", Exe("netsh.exe"), ["interface", "ip", "delete", "arpcache"], "", true, true, TimeSpan.FromSeconds(30)),
+        new("wlan", "", Exe("netsh.exe"), ["wlan", "show", "networks", "mode=bssid"], "", false, false, TimeSpan.FromSeconds(30)),
+        new("wlan-profiles", "", Exe("netsh.exe"), ["wlan", "show", "profiles"], "", false, false, TimeSpan.FromSeconds(30)),
+        new("neighbors", "", Exe("arp.exe"), ["-a"], "", false, false, TimeSpan.FromSeconds(15)),
+        new("bluetooth", "", Exe("pnputil.exe"), ["/enum-devices", "/class", "Bluetooth", "/connected"], "", false, false, TimeSpan.FromSeconds(30))
     ];
+
+    public static IReadOnlyList<SystemAction> Catalog => Definitions.Select(action => action with
+    {
+        Label = DesktopUiText.Get($"SystemAction.{action.Id}.Name"),
+        Warning = DesktopUiText.Get($"SystemAction.{action.Id}.Warning")
+    }).ToArray();
 
     public static bool IsAdmin()
     {
@@ -37,7 +43,7 @@ public static class SystemActions
     }
     public static void RequireAdmin()
     {
-        if (!IsAdmin()) throw new UnauthorizedAccessException("Diese Aktion erfordert Administratorrechte. App bewusst ueber UAC neu starten.");
+        if (!IsAdmin()) throw new UnauthorizedAccessException(DesktopUiText.Get("SystemAction.AdminRequired"));
     }
 
     public const string CertificateScript = """

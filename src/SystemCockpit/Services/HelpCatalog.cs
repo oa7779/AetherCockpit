@@ -44,7 +44,10 @@ public static class HelpCatalog
             "Der Cache-Cleaner ist ein eigener Ablauf. Sein Pfadfilter ändert nur die Ansicht: versteckte angekreuzte Dateien bleiben ausgewählt. " +
             "Keine ankreuzen leert alles. Erst Vorschau und Gesamtbestätigung erlauben endgültiges Löschen ohne Papierkorb.",
             "speicherfresser grosse dateien filter cleanup temp autostart"),
-        new("Mainboard", "Virtuelles Mainboard / 1986",
+        SkinCatalog.IsModern
+            ? new(DesktopUiText.Get("Module.SystemSchema"), DesktopUiText.Get("Help.SchemaTitle"),
+                DesktopUiText.Get("Help.SchemaBody"), DesktopUiText.Get("Help.SchemaKeywords"))
+            : new("Mainboard", "Virtuelles Mainboard / 1986",
             "Hardware -> Mainframe / Board liest Windows-PnP-Geräte und RAM-Bänke. HARDWARE NEU LESEN aktualisiert die Momentaufnahme. " +
             "Bauteil oder Beschriftung anklicken zeigt rechts die erfassten Geräte mit Status und verfügbarer Eltern-ID.\n" +
             "Die Platine mit CPU-Kühler, RAM, GPU und Anschlüssen ist schematisch. Datenpfade und Lüftertempo sind dekorativ, " +
@@ -102,12 +105,8 @@ public static class HelpCatalog
             "SYN-Port-, DNS-Fehler- und TCP-Schwellen erzeugen Tray-Hinweise und lokale Logs, keine Blockierung. " +
             "Auch gekürzte Pakete können vertrauliche Daten enthalten. Automatischer Anmeldemitschnitt braucht eine eigene Zustimmung und Autostart.",
             "netzwerk npcap wireshark pcap paketmitschnitt capture dns tcp syn alarm datenschutz"),
-        new("Erste Schritte", "Skins: Retro-Neon, Aero, Candy, Fluent",
-            "Systemkontrolle -> EINSTELLUNGEN bietet Retro-Neon, Vista Aero Glas, Candy Glossy und Windows 11 26H2 Fluent. " +
-            "Die Namen bezeichnen Darstellungsvarianten, keine Windows-Funktions- oder Kompatibilitätszusage.\n" +
-            "Skins ändern Hintergründe, Panels, Leisten und Knöpfe; Neon-Akzente bleiben erhalten. " +
-            "Die Auswahl wirkt sofort auf offene Fenster und wird gespeichert. Der Erststart-Assistent nutzt immer das Retro-Neon-Original.",
-            "skin theme design aero vista candy glossy fluent windows 11 oberflaeche optik"),
+        new(DesktopUiText.Get("Help.FirstSteps"), DesktopUiText.Get("Help.SkinsTitle"),
+            DesktopUiText.Get("Help.SkinsBody"), DesktopUiText.Get("Help.SkinsKeywords")),
         new("Erste Schritte", "Navigation: Zurück, Vor, Hauptebene",
             "Die Navigationsleiste folgt dem lokalen Besuchsverlauf: ZURÜCK, VOR, COCKPIT und HILFE. " +
             "Maus-Daumentasten und Alt+Pfeil links/rechts führen dieselben Schritte aus.\n" +

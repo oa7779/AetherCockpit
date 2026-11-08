@@ -34,7 +34,7 @@ public partial class InventoryView : UserControl
         SaveButton.IsEnabled = false;
         Investigation.Visibility = Visibility.Visible;
         InvestigationProgress.IsIndeterminate = true;
-        Status.Text = "Dein Rechner wird untersucht (Hardware ueber Windows-Abfrage, Software aus der Registry) ...";
+        Status.Text = DesktopUiText.Get("Inventory.Reading");
         StateChanged?.Invoke(this, EventArgs.Empty);
         try
         {
@@ -48,23 +48,22 @@ public partial class InventoryView : UserControl
             _snapshot = snapshot;
             HardwareGrid.ItemsSource = snapshot.Hardware;
             SoftwareGrid.ItemsSource = snapshot.Software;
-            SoftwareHeader.Text = $"INSTALLIERTE SOFTWARE ({snapshot.Software.Count})";
-            Status.Text = $"Erfasst {snapshot.GeneratedAt:HH:mm:ss} | {snapshot.Hardware.Count} Hardware-Eintraege | " +
-                $"{snapshot.Software.Count} Programme. Rein lesend; nichts wurde veraendert.";
+            SoftwareHeader.Text = DesktopUiText.Format("Inventory.SoftwareCount", snapshot.Software.Count);
+            Status.Text = DesktopUiText.Format("Inventory.Completed", snapshot.GeneratedAt, snapshot.Hardware.Count, snapshot.Software.Count);
             SaveButton.IsEnabled = true;
             HasCompleted = true;
             return true;
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
-            Status.Text = "Inventarisierung abgebrochen.";
+            Status.Text = DesktopUiText.Get("Inventory.Canceled");
             return false;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException or
             System.ComponentModel.Win32Exception or TimeoutException or System.Text.Json.JsonException)
         {
             System.Diagnostics.Trace.TraceError("AETHER Inventarisierung: {0}", ex);
-            Status.Text = "Inventarisierung fehlgeschlagen. Bitte erneut aktualisieren: " + ex.Message;
+            Status.Text = DesktopUiText.Format("Inventory.Failed", ex.Message);
             return false;
         }
         finally
@@ -84,14 +83,14 @@ public partial class InventoryView : UserControl
         if (_snapshot is null) return;
         var dialog = new SaveFileDialog
         {
-            Filter = "Textdatei (*.txt)|*.txt",
+            Filter = DesktopUiText.Get("Common.TextFileFilter"),
             FileName = $"AETHER-Inventar-{DateTime.Now:yyyyMMdd-HHmmss}.txt"
         };
         if (dialog.ShowDialog() != true) return;
         try { File.WriteAllText(dialog.FileName, SystemInventory.ToText(_snapshot)); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            MessageBox.Show(ex.Message, "Inventar nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(ex.Message, DesktopUiText.Get("Inventory.SaveFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

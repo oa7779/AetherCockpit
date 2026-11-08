@@ -1,0 +1,1556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="FirstRun.Title" xml:space="preserve"><value>AETHER | Willkommen</value></data>
+  <data name="FirstRun.StepIntro" xml:space="preserve"><value>Schritt 1 von 3 - Willkommen</value></data>
+  <data name="FirstRun.StepLicense" xml:space="preserve"><value>Schritt 2 von 3 - Lizenzvereinbarung</value></data>
+  <data name="FirstRun.StepInventory" xml:space="preserve"><value>Schritt 3 von 3 - Rechner-Inventar</value></data>
+  <data name="FirstRun.Introduction" xml:space="preserve"><value>Deine Windows-Kommandozentrale für Hardwareüberwachung, Diagnose, Wartung und Systemverwaltung.</value></data>
+  <data name="FirstRun.Features" xml:space="preserve"><value>WAS AETHER KANN</value></data>
+  <data name="FirstRun.FeatureLive" xml:space="preserve"><value>- Live-Cockpit und xBar: CPU, RAM, GPU, Temperatur- und Netzwerkverläufe sowie Laufwerksbelegung.</value></data>
+  <data name="FirstRun.FeatureDesktop" xml:space="preserve"><value>- Desktop-Gadgets, Transparenzregler und Tray. X blendet das Hauptfenster aus; vollständig beenden im Tray-Menü.</value></data>
+  <data name="FirstRun.FeatureNetwork" xml:space="preserve"><value>- Netzwerkalarme und begrenzte Paketmitschnitte mit eigener Freigabe. Npcap wird separat installiert und lizenziert.</value></data>
+  <data name="FirstRun.FeatureSensors" xml:space="preserve"><value>- CPU-Kerngraphen, Sensor-Matrix, SMART-Diagnose und freizugebende Selbsttests.</value></data>
+  <data name="FirstRun.FeatureRecording" xml:space="preserve"><value>- Messaufzeichnung, MIN/MAX/AVG und PresentMon-Framezeitauswertung.</value></data>
+  <data name="FirstRun.FeatureDiagnostics" xml:space="preserve"><value>- Windows-Diagnoseassistenten, Ereignisse und Export mit Musterschwärzung. Hintergrunddiagnose ist wählbar und repariert nicht automatisch.</value></data>
+  <data name="FirstRun.FeatureCleaner" xml:space="preserve"><value>- Cleaner mit Dateivorschau und Bestätigung der ausgewählten Löschkandidaten.</value></data>
+  <data name="FirstRun.FeaturePackages" xml:space="preserve"><value>- Paket-Center: Installieren, Aktualisieren und Deinstallieren mit exakten IDs und Bestätigung.</value></data>
+  <data name="FirstRun.FeatureCommands" xml:space="preserve"><value>- Befehls-Katalog: 103 Windows-Befehle mit Risikoanzeige und Einsteiger-/Expertenmodus, CRT-Konsole.</value></data>
+  <data name="FirstRun.FeatureOperations" xml:space="preserve"><value>- Superadmin und Operations: statusbasierte Verwaltung und Wartungspläne mit Vorschau und Einzelbestätigung.</value></data>
+  <data name="FirstRun.FeatureTools" xml:space="preserve"><value>- Netzwerkwerkzeuge, Downloadtest, Shellbag-Analyse, vier Skins und lokale Hilfe.</value></data>
+  <data name="FirstRun.SafetyHeading" xml:space="preserve"><value>GRUNDREGEL</value></data>
+  <data name="FirstRun.Safety" xml:space="preserve"><value>Geführte Änderungen benötigen deine Bestätigung. Die freie Administratorkonsole startet dagegen mit Enter direkt. Einzelplatz bleibt ohne Managerkontakt; Serverberichte verlangen Anmeldung, manuelle Freigabe und getrenntes Übertragungs-Opt-in.</value></data>
+  <data name="FirstRun.LicenseNotice" xml:space="preserve"><value>Bitte lies die Endnutzer-Lizenzvereinbarung. Zur Nutzung ist die Zustimmung erforderlich.</value></data>
+  <data name="FirstRun.Accept" xml:space="preserve"><value>Ich habe die Bedingungen gelesen und akzeptiere sie.</value></data>
+  <data name="FirstRun.InventoryNotice" xml:space="preserve"><value>Beim ersten Start erstellt AETHER ein lokales Inventar deines Rechners (Hardware und installierte Software). Es wird nur hier angezeigt und kann als Textdatei gespeichert werden.</value></data>
+  <data name="FirstRun.Decline" xml:space="preserve"><value>Ablehnen und beenden</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Zurueck</value></data>
+  <data name="FirstRun.NextLicense" xml:space="preserve"><value>Weiter zur Lizenz</value></data>
+  <data name="FirstRun.AcceptContinue" xml:space="preserve"><value>Akzeptieren und weiter</value></data>
+  <data name="FirstRun.Start" xml:space="preserve"><value>Cockpit starten</value></data>
+  <data name="FirstRun.Reading" xml:space="preserve"><value>Rechner wird untersucht ...</value></data>
+  <data name="Boot.Notice" xml:space="preserve"><value>Olaf Weins / Lokale Initialisierung / Keine Reparaturen oder Scans beim Boot</value></data>
+  <data name="Boot.AccessibleConsole" xml:space="preserve"><value>Bootkonsole</value></data>
+  <data name="Boot.Continue" xml:space="preserve"><value>Cockpit oeffnen / Hinweise gelesen</value></data>
+  <data name="Boot.Preparing" xml:space="preserve"><value>START / Lokale Komponenten werden vorbereitet ...</value></data>
+  <data name="Boot.ReadyWarnings" xml:space="preserve"><value>[READY / HINWEISE] Cockpit bereit; fehlende Werte sind kein Erfolg.</value></data>
+  <data name="Boot.Ready" xml:space="preserve"><value>[READY] Initialisierung abgeschlossen.</value></data>
+  <data name="Boot.Cancel" xml:space="preserve"><value>ABBRUCH / Laufende Initialisierung wird beendet ...</value></data>
+  <data name="Network.Title"><value>AETHER / Netzwerkbeobachtung und Paketmitschnitt</value></data>
+  <data name="Network.Consent"><value>Paketmitschnitt: IP-Adressen und DNS-/Protokollmetadaten, trotz Begrenzung auch vertrauliche Inhalte. Nur eigene/berechtigte Schnittstelle verwenden. 128 Bytes/Paket, maximal 100 MB oder 15 Minuten pro Start; lokale PCAP-Dateien, sieben Tage Aufbewahrung, insgesamt maximal ca. 500 MB. Keine Cloud, keine Entschluesselung, kein automatisches Blockieren. Jetzt freigeben?</value></data>
+  <data name="Network.LiveTab"><value>Live-Analyse</value></data>
+  <data name="Network.CaptureTab"><value>Erfassung / Alarme</value></data>
+  <data name="Network.AlertsTab"><value>Warnungen</value></data>
+  <data name="Network.Header"><value>NETZWERK / Npcap optional</value></data>
+  <data name="Network.PacketCount"><value>Erfasste Pakete: {0}</value></data>
+  <data name="Network.DroppedCount"><value>Wegen Anzeigelimit nicht dargestellt: {0} (kein Indikator fuer Treiberverluste)</value></data>
+  <data name="Network.Monitor"><value>Lokale TCP-Verbindungszahl ueberwachen (ohne Mitschnitt)</value></data>
+  <data name="Network.ConnectionCount"><value>Aktive/aufbauende TCP-Verbindungen: {0}</value></data>
+  <data name="Network.ConnectionThreshold"><value>TCP-Verbindungsschwelle</value></data>
+  <data name="Network.PortThreshold"><value>Verschiedene SYN-Zielports / Minute</value></data>
+  <data name="Network.DnsThreshold"><value>DNS-Fehlerantworten / Minute</value></data>
+  <data name="Network.SaveThresholds"><value>Alarmschwellen speichern</value></data>
+  <data name="Network.InvalidThresholds"><value>Alle Schwellen muessen zwischen 5 und 10000 liegen.</value></data>
+  <data name="Network.ReadDevices"><value>Npcap-Schnittstellen lesen (kein Mitschnitt)</value></data>
+  <data name="Network.NoDevices"><value>Npcap meldet keine Schnittstelle.</value></data>
+  <data name="Network.NpcapUnavailable"><value>Npcap nicht verfuegbar</value></data>
+  <data name="Network.Download"><value>Npcap fehlt? Offizielle Downloadseite oeffnen</value></data>
+  <data name="Network.DownloadConsent"><value>AETHER liefert Npcap nicht mit. Die offizielle Npcap-Seite wird geoeffnet; Download und Installation erfolgen durch Sie und unter den Npcap-Lizenzbedingungen. Fortfahren?</value></data>
+  <data name="Network.InstallNpcap"><value>Npcap separat installieren</value></data>
+  <data name="Network.DownloadFailed"><value>Npcap-Downloadseite konnte nicht geoeffnet werden</value></data>
+  <data name="Network.StartCapture"><value>Mitschnitt starten (Bestaetigung)</value></data>
+  <data name="Network.SelectDevice"><value>Zuerst eine Npcap-Schnittstelle auswaehlen.</value></data>
+  <data name="Network.CaptureConsentTitle"><value>Paketmitschnitt freigeben</value></data>
+  <data name="Network.StopCapture"><value>Mitschnitt stoppen</value></data>
+  <data name="Network.CaptureAtLogon"><value>Ein Mitschnitt pro Windows-Anmeldung (nur installierter Autostart)</value></data>
+  <data name="Network.FutureLogons"><value>Gilt auch fuer zukuenftige Anmeldungen, bis hier deaktiviert.</value></data>
+  <data name="Network.AutoConsentTitle"><value>Automatischen Mitschnitt freigeben</value></data>
+  <data name="Network.LiveNotice"><value>Unter Erfassung / Alarme Schnittstelle bewusst freigeben. Begrenzte Protokollanalyse: Ethernet/VLAN, IPv4/IPv6, TCP/UDP/ICMP und DNS-Fehler. Keine Wireshark-Vollanalyse, TLS-Entschluesselung oder Angriffsgarantie. Letzte 200 Pakete; PCAP bleibt vom Anzeigefilter unberuehrt.</value></data>
+  <data name="Network.SearchTooltip"><value>Adresse / Text, mehrere Begriffe mit Leerzeichen; kein Wireshark-Displayfilter</value></data>
+  <data name="Network.PortTooltip"><value>Quell- oder Zielport, leer oder 1..65535</value></data>
+  <data name="Network.DnsErrors"><value>DNS-Fehler</value></data>
+  <data name="Network.ApplyFilter"><value>Filter anwenden</value></data>
+  <data name="Network.AccessibleSearch"><value>Pakettextfilter</value></data>
+  <data name="Network.AccessibleProtocol"><value>Paketprotokoll</value></data>
+  <data name="Network.AccessiblePort"><value>Paketport</value></data>
+  <data name="Network.AddressText"><value>Adresse / Text</value></data>
+  <data name="Common.Protocol"><value>Protokoll</value></data>
+  <data name="Common.Time"><value>Zeit</value></data>
+  <data name="Common.Source"><value>Quelle</value></data>
+  <data name="Common.Destination"><value>Ziel</value></data>
+  <data name="Network.SourcePort"><value>Quellport</value></data>
+  <data name="Network.DestinationPort"><value>Zielport</value></data>
+  <data name="Network.PacketBytes"><value>Paketbytes</value></data>
+  <data name="Network.SelectPacket"><value>Paket markieren fuer Metadaten und Analysegrenzen.</value></data>
+  <data name="Network.NoPacket"><value>Kein Paket markiert.</value></data>
+  <data name="Network.VisibleCounts"><value>{0} / {1} Live-Zeilen sichtbar, {2} gemeldete Paketbytes. Aktiver Filter: '{3}' / {4} / Port {5} / SYN {6} / DNS-Fehler {7}. Nur begrenztes Live-Fenster, keine Gesamtstatistik und keine PCAP-Filterung.</value></data>
+  <data name="Common.All"><value>alle</value></data>
+  <data name="Network.FilterUnchanged"><value>Der bisherige Filter bleibt aktiv.</value></data>
+  <data name="Network.FilterFailed"><value>Filter nicht angewendet</value></data>
+  <data name="Network.ExportCsv"><value>Sichtbare Paketmetadaten als CSV</value></data>
+  <data name="Network.ExportEmpty"><value>Keine sichtbaren Paketzeilen fuer den Export.</value></data>
+  <data name="Network.ExportConsent"><value>CSV enthaelt IP-Adressen und Kommunikationsmetadaten. Vor Weitergabe pruefen. Lokal speichern?</value></data>
+  <data name="Network.SensitiveData"><value>Sensible Netzwerkdaten</value></data>
+  <data name="Network.ExportComplete"><value>{0} sichtbare Paketmetadaten gespeichert; keine PCAP-Nutzlast exportiert.</value></data>
+  <data name="Network.ExportFailed"><value>CSV nicht gespeichert: {0}</value></data>
+  <data name="Network.OpenWireshark"><value>PCAP in installiertem Wireshark oeffnen</value></data>
+  <data name="Network.StopFirst"><value>Zuerst den laufenden Mitschnitt stoppen.</value></data>
+  <data name="Network.CaptureFilter"><value>Paketmitschnitt (*.pcap;*.pcapng)|*.pcap;*.pcapng</value></data>
+  <data name="Network.SelectWireshark"><value>Vertrauenswuerdiges installiertes Wireshark auswaehlen</value></data>
+  <data name="Network.WiresharkConsent" xml:space="preserve"><value>Externes Programm starten:
+{0}
+
+Datei uebergeben:
+{1}
+
+Die Datei kann vertrauliche Kommunikation enthalten. Nur eine vertrauenswuerdige Wireshark-Installation verwenden. AETHER startet keinen Mitschnitt und laedt nichts hoch; das externe Programm hat eigene Einstellungen.</value></data>
+  <data name="Network.WiresharkTitle"><value>Wireshark-Uebergabe</value></data>
+  <data name="Network.WiresharkNoProcess"><value>Windows hat keinen Wireshark-Prozess gestartet.</value></data>
+  <data name="Network.WiresharkFailed"><value>Wireshark nicht gestartet: {0}</value></data>
+  <data name="Network.AlertsNotice"><value>LOKALE WARNUNGEN / Indizien, keine Angriffsnachweise. Die Verbindungsschwelle erfordert freigegebene lokale Ueberwachung; SYN-/DNS-Regeln erfordern einen bewusst gestarteten Mitschnitt.</value></data>
+  <data name="Network.NoCapture"><value>Kein Mitschnitt aktiv. Npcap separat installieren/lizenzieren.</value></data>
+  <data name="Network.AlreadyCapturing"><value>Es laeuft bereits ein Mitschnitt.</value></data>
+  <data name="Network.OpeningCapture"><value>Npcap wird geoeffnet / 128 Bytes, 100 MB, max. 15 Minuten; kein Promiscuous-Modus.</value></data>
+  <data name="Network.CaptureActive"><value>Mitschnitt aktiv: {0} / 128 Bytes, maximal 100 MB oder 15 Minuten.</value></data>
+  <data name="Network.CaptureFinished"><value>Mitschnitt beendet: {0} / {1} Pakete; {2} nicht in der begrenzten Live-Anzeige (PCAP unveraendert).</value></data>
+  <data name="Network.CaptureFailed"><value>Mitschnitt nicht verfuegbar/abgebrochen: {0}</value></data>
+  <data name="Network.RetentionFailed"><value>Lokale Netzwerk-Aufbewahrung konnte nicht angewendet werden: {0}</value></data>
+  <data name="Network.ConnectionAlert"><value>TCP-Verbindungszahl {0} erreicht Schwelle {1}. Keine Aussage ueber Schadsoftware.</value></data>
+  <data name="Network.MonitorFailed"><value>Verbindungsueberwachung fehlgeschlagen: {0}</value></data>
+  <data name="Network.LogLimit"><value>Tagesgrenze des Alarmprotokolls (2 MB) erreicht.</value></data>
+  <data name="Packet.InvalidFilter"><value>Adress-/Textfilter: maximal 200 Zeichen; bekanntes Protokoll waehlen.</value></data>
+  <data name="Packet.InvalidPort"><value>Port leer lassen oder eine Zahl von 1 bis 65535 eingeben.</value></data>
+  <data name="Packet.Description" xml:space="preserve"><value>{0:O}
+{1} -&gt; {2}
+{3} / gemeldete Paketlaenge: {4} Bytes / SYN ohne ACK: {5} / DNS-Fehlerantwort: {6}
+Port 0 kann fehlende/nicht dekodierte Transportdaten bedeuten. 128-Byte-Mitschnitt: keine vollstaendige Nutzlast-/TLS-Analyse.</value></data>
+  <data name="Packet.SelectExecutable"><value>Vorhandene Wireshark.exe bewusst auswaehlen; AETHER installiert kein Analyseprogramm.</value></data>
+  <data name="Packet.SelectCapture"><value>Vorhandene PCAP-/PCAPNG-Datei auswaehlen.</value></data>
+  <data name="Packet.EthernetIncomplete"><value>Ethernet / unvollstaendig</value></data>
+  <data name="Packet.VlanTruncated"><value>VLAN / gekuerzt</value></data>
+  <data name="Packet.Ipv4Truncated"><value>IPv4 / gekuerzt</value></data>
+  <data name="Packet.Ipv4Invalid"><value>IPv4 / ungueltig</value></data>
+  <data name="Packet.Ipv4Length"><value>IPv4 / ungueltige Laenge</value></data>
+  <data name="Packet.Ipv6Truncated"><value>IPv6 / gekuerzt</value></data>
+  <data name="Packet.Ipv6Extension"><value>IPv6 / Erweiterung gekuerzt</value></data>
+  <data name="Packet.TlsUninspected"><value>TCP / Port 443 (Inhalt nicht analysiert)</value></data>
+  <data name="Packet.SynAlert"><value>Viele TCP-Verbindungsversuche: {0}, mindestens {1} Zielports / Minute. Indiz, kein Angriffsnachweis.</value></data>
+  <data name="Packet.DnsAlert"><value>Viele DNS-Fehlerantworten fuer {0}: {1} / Minute. Konfiguration oder Stoerung pruefen.</value></data>
+  <data name="Sidebar.LiveCharts"><value>LIVE DIAGRAMME</value></data>
+  <data name="Sidebar.PinTooltip"><value>Anheften oder als frei schwebende Leiste nutzen</value></data>
+  <data name="Sidebar.OptionsTooltip"><value>Monitor, Verhalten und Diagrammauswahl</value></data>
+  <data name="Sidebar.CloseTooltip"><value>xBar schliessen</value></data>
+  <data name="Sidebar.DriveUsage"><value>LAUFWERKSBELEGUNG</value></data>
+  <data name="Sidebar.NoDriveReading"><value>Keine Laufwerksmessung verfuegbar</value></data>
+  <data name="Sidebar.ConfigureHint"><value>Diagramme ueber das Zahnrad konfigurieren.</value></data>
+  <data name="Sidebar.Settings"><value>xBAR EINSTELLUNGEN</value></data>
+  <data name="Sidebar.DockSide"><value>Andockseite</value></data>
+  <data name="Common.Right"><value>Rechts</value></data>
+  <data name="Common.Left"><value>Links</value></data>
+  <data name="Sidebar.Pinned"><value>Angeheftet / volle Bildschirmhoehe</value></data>
+  <data name="Sidebar.AutoHide"><value>Auto-hide (nur mit Einzelmonitor)</value></data>
+  <data name="Sidebar.Opacity"><value>Deckkraft der Leiste (20-100 %)</value></data>
+  <data name="Sidebar.ShowCharts"><value>DIAGRAMME EINBLENDEN</value></data>
+  <data name="Sidebar.Cpu"><value>CPU / Instrument und Verlauf</value></data>
+  <data name="Sidebar.Ram"><value>RAM / Instrument und Verlauf</value></data>
+  <data name="Sidebar.Gpu"><value>GPU / Instrument und Verlauf</value></data>
+  <data name="Sidebar.Temperatures"><value>CPU-/GPU-/SSD-Temperaturverlaeufe</value></data>
+  <data name="Sidebar.Network"><value>Netzwerk / Download und Upload</value></data>
+  <data name="Sidebar.Drives"><value>Laufwerke / Belegt-Frei-Torten</value></data>
+  <data name="Sidebar.StartFailed"><value>AETHER xBar konnte nicht gestartet werden</value></data>
+  <data name="Sidebar.NoMonitor"><value>Windows meldet keinen verfuegbaren Bildschirm.</value></data>
+  <data name="Sidebar.NoDpi"><value>Die Bildschirm-Skalierung der xBar ist nicht verfuegbar.</value></data>
+  <data name="Sidebar.AutoHideMulti"><value>Auto-hide ist bei mehreren Monitoren deaktiviert.</value></data>
+  <data name="Sidebar.AutoHideFloating"><value>Auto-hide ist nur im angehefteten Modus verfuegbar.</value></data>
+  <data name="Sidebar.AutoHideHint"><value>Blendet die Leiste aus, wenn sich der Mauszeiger entfernt.</value></data>
+  <data name="Sidebar.ReadMonitorsFailed"><value>xBar-Monitore konnten nicht gelesen werden: {0}</value></data>
+  <data name="Sidebar.SettingsUnavailable"><value>xBar-Einstellungen nicht verfuegbar</value></data>
+  <data name="Sidebar.PositionFailed"><value>xBar-Position konnte nicht gespeichert werden: {0}</value></data>
+  <data name="Sidebar.MoveFailed"><value>AETHER xBar / Verschieben fehlgeschlagen</value></data>
+  <data name="Sidebar.MouseFailed"><value>xBar-Mausposition nicht lesbar: {0}</value></data>
+  <data name="Sidebar.BehaviorFailed"><value>xBar-Fensterverhalten fehlgeschlagen: {0}</value></data>
+  <data name="Sidebar.SaveFailed"><value>xBar-Einstellung konnte nicht gespeichert werden: {0}</value></data>
+  <data name="Gadget.Drag"><value>AETHER / ZIEHEN</value></data>
+  <data name="Gadget.Opacity"><value>Deckkraft dieses Gadgets</value></data>
+  <data name="Gadget.PositionFailed"><value>Gadget-Position nicht gespeichert</value></data>
+  <data name="Gadget.MoveFailed"><value>Gadget konnte nicht verschoben werden</value></data>
+  <data name="FirstRun.Eula" xml:space="preserve"><value>ENDNUTZER-LIZENZVEREINBARUNG (EULA) - AETHER System Control
+
+1. Herausgeber und Kostenfreiheit
+AETHER System Control ("die Software") ist ein kostenloses, privat
+entwickeltes Windows-Werkzeug von Olaf Weins. Es wird unveraendert und
+ohne Gebuehr zur Verfuegung gestellt.
+
+2. Nutzung auf eigenes Risiko / kein Gewaehrleistungsausschluss-Umgehung
+Die Software liest Systemzustaende und kann auf ausdrueckliche Bestaetigung
+Windows-eigene Wartungs- und Verwaltungsaktionen ausloesen. Du nutzt die
+Software auf eigene Verantwortung. Es wird KEINE Gewaehrleistung
+uebernommen - weder fuer Fehlerfreiheit noch fuer Eignung fuer einen
+bestimmten Zweck. Soweit gesetzlich zulaessig, ist jede Haftung fuer
+mittelbare oder Folgeschaeden ausgeschlossen. Zwingende gesetzliche
+Rechte (z.B. bei Vorsatz/grober Fahrlaessigkeit) bleiben unberuehrt.
+
+3. Administratorrechte
+Das Cockpit benötigt Administratorrechte für Hardwarezugriff und
+Systemverwaltung. Erteile sie nur bei vertrauenswürdiger Herkunft.
+Vor Reparaturen wichtige Daten sichern; ein Wiederherstellungspunkt
+ersetzt kein Backup.
+
+4. Freigaben und Datenverarbeitung
+Geführte Änderungen benötigen deine Bestätigung. Die freie
+Administratorkonsole führt eingegebene Befehle mit Enter direkt aus.
+Einstellungen und lokale Berichte liegen unter
+%LOCALAPPDATA%\AetherCockpit des ausführenden Kontos.
+AETHER hat keine allgemeine App-Telemetrie. Im Einzelplatzmodus
+erfolgt kein Kontakt zum Verwaltungsserver. Optionaler Clientbetrieb
+überträgt Diagnoseberichte erst nach Anmeldung, manueller Freigabe
+und getrenntem Übertragungs-Opt-in. Netzwerkwerkzeuge, Updates und
+aufgerufene Programme können ihre jeweiligen Ziele kontaktieren.
+
+5. Diagnose und Datenschutz
+Das Erstinventar wird lokal angezeigt und kann als Text gespeichert
+werden. Inventare, Ereignisse, Backups und Mitschnitte können Namen,
+Geräte-IDs und private Pfade enthalten. Vor Weitergabe prüfen.
+Die Musterschwärzung des Text-Exports gilt nicht automatisch für
+andere Berichte oder die optionale Serverübertragung.
+
+6. Fremdkomponenten
+Die Software nutzt LibreHardwareMonitor (MPL 2.0), smartmontools
+(GPL v2) und PresentMon (MIT) unter deren eigenen Bedingungen.
+Die mitgelieferten Lizenz- und Herkunftshinweise gelten weiter.
+
+7. Desktop, Mitschnitt und Deinstallation
+Gadgets und aktivierte Hintergrunddiagnose laufen nach Ausblenden
+des Hauptfensters weiter. Vollständig beenden über das Tray.
+Anmeldestart und automatischer Mitschnitt benötigen eigene Freigaben.
+Npcap wird separat installiert und lizenziert, nicht mitgeliefert.
+Mitschnitte bleiben lokal und sind auf 128 Bytes je Paket,
+100.000.000 Bytes (100 MB) je Datei und 15 Minuten begrenzt.
+Eigene Captures werden nach sieben Tagen beim nächsten
+Aufbewahrungslauf entfernt. Sie können vertrauliche Daten enthalten.
+Netzwerkalarme sind Indizien, keine Angriffsnachweise.
+Der aktuelle Uninstaller entfernt nach Bestätigung Installation
+und AETHER-Daten des ausführenden Kontos. Benötigte Daten vorher
+außerhalb dieser Ordner sichern; externe Dateien bleiben erhalten.
+
+8. Zustimmung
+Mit Akzeptieren bestätigst du, die Bedingungen gelesen zu haben
+und mit ihnen einverstanden zu sein. Andernfalls endet die Software.</value></data>
+  <data name="Navigation.Overview"><value>Übersicht</value></data>
+  <data name="Navigation.Hardware"><value>Hardware</value></data>
+  <data name="Navigation.Diagnostics"><value>Diagnose</value></data>
+  <data name="Navigation.Maintenance"><value>Wartung</value></data>
+  <data name="Navigation.Administration"><value>Verwaltung</value></data>
+  <data name="Navigation.Help"><value>Hilfe</value></data>
+  <data name="Navigation.Processes"><value>Prozesse / Leistung</value></data>
+  <data name="Navigation.Board"><value>Mainframe / Board</value></data>
+  <data name="Navigation.Sensors"><value>Sensoren</value></data>
+  <data name="Navigation.Drives"><value>Laufwerke</value></data>
+  <data name="Navigation.WindowsDiagnostics"><value>Windows-Diagnose</value></data>
+  <data name="Navigation.Protection"><value>Schutzstatus</value></data>
+  <data name="Navigation.Events"><value>Ereignisse</value></data>
+  <data name="Navigation.NetworkTests"><value>Netzwerk / Tests ↗</value></data>
+  <data name="Navigation.Measurements"><value>Messauswertung</value></data>
+  <data name="Navigation.Plans"><value>Assistenten / Pläne</value></data>
+  <data name="Navigation.WindowsTools"><value>Windows-Werkzeuge ↗</value></data>
+  <data name="Navigation.Packages"><value>Pakete / Updates ↗</value></data>
+  <data name="Navigation.SystemAdministration"><value>Systemverwaltung</value></data>
+  <data name="Navigation.Startup"><value>Autostart ↗</value></data>
+  <data name="Navigation.Jobs"><value>Aufträge ↗</value></data>
+  <data name="Navigation.Traces"><value>Ordnerspuren ↗</value></data>
+  <data name="Navigation.Keys"><value>Schlüssel ↗</value></data>
+  <data name="Navigation.HelpSearch"><value>Anleitung / Suche</value></data>
+  <data name="Navigation.Parameters"><value>Parameter / Server ↗</value></data>
+  <data name="Navigation.ExternalTooltip"><value>Öffnet das Modul in der Systemkontrolle; startet keine Aktion.</value></data>
+  <data name="Navigation.InternalTooltip"><value>Öffnet den Bereich im Hauptfenster; startet keine Aktion.</value></data>
+  <data name="Module.Taskmanager"><value>Taskmanager</value></data>
+  <data name="Module.Mainboard"><value>Mainboard</value></data>
+  <data name="Module.Sensoren"><value>Sensoren</value></data>
+  <data name="Module.Laufwerke"><value>Laufwerke</value></data>
+  <data name="Module.Messauswertung"><value>Messauswertung</value></data>
+  <data name="Module.Diagnose"><value>Diagnose</value></data>
+  <data name="Module.Sicherheit"><value>Sicherheit</value></data>
+  <data name="Module.Ereignisse"><value>Ereignisse</value></data>
+  <data name="Module.Hilfe"><value>Hilfe</value></data>
+  <data name="Module.Netzwerk"><value>Netzwerk</value></data>
+  <data name="Module.Pakete"><value>Pakete</value></data>
+  <data name="Module.Auftraege"><value>Auftraege</value></data>
+  <data name="Module.Wartung"><value>Wartung</value></data>
+  <data name="Module.Autostart"><value>Autostart</value></data>
+  <data name="Module.Spuren"><value>Spuren</value></data>
+  <data name="Module.Einstellungen"><value>Einstellungen</value></data>
+  <data name="Module.Schluessel"><value>Schluessel</value></data>
+  <data name="ControlCenter.Trail"><value>SYSTEMKONTROLLE  ▸  {0}</value></data>
+  <data name="ControlCenter.BusyNavigation"><value>Modulwechsel erst nach Ende des laufenden Auftrags.</value></data>
+  <data name="ControlCenter.BusyCatalog"><value>Katalogwechsel erst nach Ende des laufenden Auftrags.</value></data>
+  <data name="ControlCenter.CommandBlocked"><value>Befehl im Einsteigermodus gesperrt. Expertenmodus wird nicht automatisch aktiviert.</value></data>
+  <data name="Module.SystemSchema"><value>System-Schema</value></data>
+  <data name="Module.CockpitTip"><value>Live-Instrumente: CPU, RAM, GPU, Netzwerk, Temperaturen und Systempuls</value></data>
+  <data name="Module.BoardTip"><value>Virtuelles Retro-Mainboard mit lokal erkannten Komponenten und logischen Verbindungen</value></data>
+  <data name="Module.SchemaTip"><value>Animiertes System-Schema mit lokal erkannten Komponenten; Datenfluss ist illustrativ, fehlende Sensoren bleiben unverfuegbar.</value></data>
+  <data name="Module.ProcessesTip"><value>Prozesse mit maschinennormiertem CPU-Anteil und Graphen fuer jeden logischen Kern</value></data>
+  <data name="Module.SensorsTip"><value>Live-Verlaufskurven nach Hardware und Einheit; umschaltbare Detailmatrix mit Grenzwerten</value></data>
+  <data name="Module.DrivesTip"><value>Windows Storage Health und Speicherplatz; vollstaendiges SMART im Modul SMART der Systemkontrolle</value></data>
+  <data name="Module.MeasurementsTip"><value>MIN/MAX/AVG-Statistik, JSONL-Aufzeichnung, Logvergleich und CSV-Export</value></data>
+  <data name="Module.DiagnosticsTip"><value>Lesende Windows-Pruefungen, Speicherdiagnose-Ergebnisse, Diagnose-Export und Schnellzugriffe</value></data>
+  <data name="Module.SecurityTip"><value>Lesender Schutzstatus: Defender, Firewall, BitLocker, Secure Boot, TPM, Updates</value></data>
+  <data name="Module.CleanerTip"><value>Vorschau mit Bewertung, explizite Checkbox-Auswahl, endgueltiges Loeschen nur nach Bestaetigung</value></data>
+  <data name="Module.EventsTip"><value>Windows-Ereignisprotokolle: Kanal und Zeitraum waehlen, Details eingebettet lesen</value></data>
+  <data name="Module.AdminTip"><value>Statusbasierte Verwaltung: Dienste, Aufgaben, Firewall, Pakete, Benutzer - mit Vorschau, Einzelbestaetigung und Ruecknahme</value></data>
+  <data name="Module.OperationsTip"><value>Wartungsplaene, Windows-Updates und Arbeitsgruppen-Geraete - einzeln bestaetigt und protokolliert</value></data>
+  <data name="Module.HelpTip"><value>Durchsuchbare Anleitung: Schritt-fuer-Schritt je Modul, Sicherheitsregeln und Grenzen</value></data>
+  <data name="Module.SmartTip"><value>Vollstaendige smartctl-Diagnose, Fehlerlogs und bestaetigte Selbsttests je Laufwerk</value></data>
+  <data name="Module.NetworkTip"><value>Ping, LAN-Scan, WLAN, Captive Portal und Speedtest - alles nur nach Freigabe</value></data>
+  <data name="Module.PackagesTip"><value>Paket-Center: WinGet-Listen, Suche und Aktionen mit exakten IDs und vollstaendiger Bestaetigungsliste</value></data>
+  <data name="Module.JobsTip"><value>Begrenzter Sitzungsverlauf ohne sensible Anzeigen oder freie Konsolenbefehle</value></data>
+  <data name="Module.MaintenanceTip"><value>Befehlskatalog mit Risikoanzeige und Einsteiger-/Expertenmodus, gefuehrte Windows-Aktionen, Zertifikate</value></data>
+  <data name="Module.StartupTip"><value>Run-Eintraege reversibel deaktivieren/aktivieren; Original wird vorher gesichert</value></data>
+  <data name="Module.TracesTip"><value>Shellbag-Analyse: Explorer-Ordnerspuren nur lesend, Unbekanntes bleibt unbekannt</value></data>
+  <data name="Module.LogsTip"><value>Messlogs ansehen/vergleichen, PresentMon-Frame-Telemetrie auswerten</value></data>
+  <data name="Module.SettingsTip"><value>Warnschwellen, Aufzeichnungsintervall, Werkzeugpfade und OUI-Datenbank</value></data>
+  <data name="Module.KeysTip"><value>WLAN-/BitLocker-/OEM-Schluessel nur auf Klick nach Warndialog; Anzeige verschwindet beim Tabwechsel</value></data>
+  <data name="SystemAction.sfc-verify.Name"><value>SFC / nur pruefen</value></data><data name="SystemAction.sfc-verify.Warning"><value>Prueft Windows-Systemdateien, kann lange dauern.</value></data>
+  <data name="SystemAction.sfc-repair.Name"><value>SFC / reparieren</value></data><data name="SystemAction.sfc-repair.Warning"><value>Aendert/repariert geschuetzte Systemdateien. Vorher sichern.</value></data>
+  <data name="SystemAction.dism-scan.Name"><value>DISM / Komponenten pruefen</value></data><data name="SystemAction.dism-scan.Warning"><value>Prueft Windows-Komponentenspeicher.</value></data>
+  <data name="SystemAction.dism-repair.Name"><value>DISM / Komponenten reparieren</value></data><data name="SystemAction.dism-repair.Warning"><value>Repariert Windows-Komponentenspeicher. Kann Windows Update kontaktieren und Dateien ersetzen.</value></data>
+  <data name="SystemAction.chkdsk.Name"><value>CHKDSK / Systemlaufwerk online pruefen</value></data><data name="SystemAction.chkdsk.Warning"><value>Online-Scan auf NTFS; kein /f, kein erzwungenes Aushangen.</value></data>
+  <data name="SystemAction.firmware.Name"><value>UEFI / neu starten</value></data><data name="SystemAction.firmware.Warning"><value>Neustart in 30 Sekunden zur Firmware. Arbeit speichern. Nicht auf jedem BIOS unterstuetzt.</value></data>
+  <data name="SystemAction.cancel-reboot.Name"><value>Geplanten Neustart abbrechen</value></data><data name="SystemAction.cancel-reboot.Warning"><value>Bricht einen bestehenden geplanten Windows-Neustart ab.</value></data>
+  <data name="SystemAction.arp.Name"><value>ARP-/Neighbor-Cache leeren</value></data><data name="SystemAction.arp.Warning"><value>Loescht gelernte IPv4-Nachbarn; Verbindungen koennen kurz beeintraechtigt werden.</value></data>
+  <data name="SystemAction.wlan.Name"><value>WLAN / sichtbare Netze</value></data><data name="SystemAction.wlan.Warning"><value>Liest/scannt sichtbare WLANs. Windows-Standortfreigabe kann erforderlich sein.</value></data>
+  <data name="SystemAction.wlan-profiles.Name"><value>WLAN / gespeicherte Profile</value></data><data name="SystemAction.wlan-profiles.Warning"><value>Zeigt Profilnamen, keine Passwoerter.</value></data>
+  <data name="SystemAction.neighbors.Name"><value>LAN / ARP-Nachbarn und MAC</value></data><data name="SystemAction.neighbors.Warning"><value>Liest lokalen ARP-Cache. Nicht vollstaendig; Hersteller wird ohne OUI-Datenbank nicht geraten.</value></data>
+  <data name="SystemAction.bluetooth.Name"><value>Bluetooth / Windows-Geraete</value></data><data name="SystemAction.bluetooth.Warning"><value>Liest verbundene Bluetooth-Geraete, kein Pairing.</value></data>
+  <data name="SystemAction.AdminRequired"><value>Diese Aktion erfordert Administratorrechte. App bewusst ueber UAC neu starten.</value></data>
+  <data name="Managed.inventory.Name"><value>Strukturiertes Windows-Inventar</value></data>
+  <data name="Managed.dns-health.Name"><value>DNS: Standardresolver mit konfigurierten Servern vergleichen</value></data>
+  <data name="Managed.dns-cache-clear.Name"><value>DNS-Clientcache leeren</value></data>
+  <data name="Managed.sfc-verify.Name"><value>SFC /verifyonly – Systemdateien prüfen</value></data>
+  <data name="Managed.dism-check.Name"><value>DISM /CheckHealth – gespeicherten Befund prüfen</value></data>
+  <data name="Managed.dism-scan.Name"><value>DISM /ScanHealth – Komponentenspeicher prüfen</value></data>
+  <data name="Managed.dism-repair.Name"><value>DISM /RestoreHealth – Komponenten reparieren</value></data>
+  <data name="Managed.sfc-repair.Name"><value>SFC /scannow – Systemdateien reparieren</value></data>
+  <data name="Managed.windows-update-search.Name"><value>Windows Update: angebotene Software/Treiber lesen</value></data>
+  <data name="Managed.windows-update-install.Name"><value>Ein exakt geprüftes Windows-/Treiberupdate installieren</value></data>
+  <data name="Managed.pnp-inventory.Name"><value>PnP-Geräte und Problemcodes</value></data>
+  <data name="Managed.driver-versions.Name"><value>Installierte signierte Treiber und Versionen</value></data>
+  <data name="Managed.pnputil-drivers.Name"><value>PnPUtil: Treiberpakete aufzählen</value></data>
+  <data name="Managed.storage-status.Name"><value>Datenträger und Volumes lesen</value></data>
+  <data name="Managed.network-status.Name"><value>Adapter, IP, DNS und Routen lesen</value></data>
+  <data name="Managed.event-errors.Name"><value>System-/Anwendungsfehler: begrenzter Verlauf</value></data>
+  <data name="Managed.defender-status.Name"><value>Defender-Schutzstatus – keine Änderungen</value></data>
+  <data name="Managed.bitlocker-status.Name"><value>BitLocker-Status – keine Wiederherstellungsschlüssel</value></data>
+  <data name="Managed.boot-config.Name"><value>Bootkonfiguration lesen – keine Bearbeitung</value></data>
+  <data name="Managed.power-status.Name"><value>Energieschema und verfügbare Schlafzustände</value></data>
+  <data name="Managed.performance-snapshot.Name"><value>Prozesse und vorhandener WinSAT-Befund – kein Benchmark</value></data>
+  <data name="Managed.etw-sessions.Name"><value>ETW-Sitzungen und Provider aufzählen – kein Capture</value></data>
+  <data name="Managed.services-status.Name"><value>Dienste und Startmodi lesen</value></data>
+  <data name="Managed.scheduled-tasks.Name"><value>Geplante Aufgaben lesen</value></data>
+  <data name="Managed.firewall-status.Name"><value>Firewallprofile und aktivierte Regeln lesen</value></data>
+  <data name="Managed.Category.Inventar"><value>Inventar</value></data>
+  <data name="Managed.Category.Netzwerk"><value>Netzwerk</value></data>
+  <data name="Managed.Category.Windows"><value>Windows</value></data>
+  <data name="Managed.Category.Updates"><value>Updates</value></data>
+  <data name="Managed.Category.Treiber"><value>Treiber</value></data>
+  <data name="Managed.Category.Speicher"><value>Speicher</value></data>
+  <data name="Managed.Category.Ereignisse"><value>Ereignisse</value></data>
+  <data name="Managed.Category.Sicherheit"><value>Sicherheit</value></data>
+  <data name="Managed.Category.Start"><value>Start</value></data>
+  <data name="Managed.Category.Energie"><value>Energie</value></data>
+  <data name="Managed.Category.Leistung"><value>Leistung</value></data>
+  <data name="Managed.Category.Analyse"><value>Analyse</value></data>
+  <data name="Managed.Risk.DnsClear"><value>ÄNDERND: leert nur lokalen DNS-Cache; kein Adapterreset. DNS-Erfolg danach erneut prüfen.</value></data>
+  <data name="Managed.Risk.SfcRepair"><value>ÄNDERND: ersetzt Windows-Systemdateien; vorher sichern, CBS-Endbefund prüfen. Abbruch ist kein Rollback.</value></data>
+  <data name="Managed.Risk.DismRepair"><value>ÄNDERND: repariert Komponentenspeicher; kann konfigurierte Updatequelle kontaktieren, vorher sichern. Abbruch ist kein Rollback.</value></data>
+  <data name="Managed.Risk.DnsHealth"><value>NETZWERK: löst www.microsoft.com über Standardresolver und konfigurierte DNS-Server aktiver Gateway-Adapter auf; kein Scan/Reset.</value></data>
+  <data name="Managed.Risk.UpdateSearch"><value>NETZWERK: COM-Suche bei konfigurierter Microsoft-/WSUS-Quelle; zeigt Identität/Revision, installiert nichts, keine EULA-Annahme, kein Neustart.</value></data>
+  <data name="Managed.Risk.Inventory"><value>LESEND: begrenztes Inventar einschließlich App-/Geräte-/Prozessdaten und Ereignissen; enthält sensible Daten. Fehlende Bereiche bleiben unbekannt.</value></data>
+  <data name="Managed.Risk.BitLocker"><value>LESEND: Volume-/Verschlüsselungsstatus, keine Schlüssel; Modul und Edition müssen unterstützt sein.</value></data>
+  <data name="Managed.Risk.Defender"><value>LESEND: Defender-Modul kann fehlen; passiver/deaktivierter Status ist kein allgemeiner Sicherheitsnachweis.</value></data>
+  <data name="Managed.Risk.Etw"><value>LESEND: logman listet Sitzungen/Provider; kein Start eines Captures, Ausgabe kann gekürzt werden.</value></data>
+  <data name="Managed.Risk.Power"><value>LESEND: keine Änderung am Energieschema; Schlafzustände hängen von Firmware/Treibern ab.</value></data>
+  <data name="Managed.Risk.Boot"><value>LESEND: BCDEdit liest aktuellen Boot-Eintrag; keine Bootänderung, Rechte erforderlich.</value></data>
+  <data name="Managed.Risk.Performance"><value>LESEND: Prozesse und gespeicherter WinSAT-Befund; kein Benchmark, ungültige/veraltete Werte nicht als aktuelle Leistung interpretieren.</value></data>
+  <data name="Managed.Risk.Check"><value>PRÜFEND: erhöhte Rechte, hohe I/O-Last und Diagnoseprotokolle möglich; keine Reparatur. Endbefund prüfen.</value></data>
+  <data name="Managed.Risk.Events"><value>LESEND: maximal 100 Ereignisse je Kanal/7 Tage; sensible Meldungen. Keine Treffer beweisen keine Fehlerfreiheit.</value></data>
+  <data name="Managed.Risk.DriverPackages"><value>LESEND: nur /enum-drivers; Umfang/Optionen hängen von Windows-Build ab, keine Treiberinstallation.</value></data>
+  <data name="Managed.Risk.Drivers"><value>LESEND: Geräte-/Treiberdaten; Datum ist kein Aktualitätsnachweis. Installation nur separat mit exakter geprüfter Auswahl.</value></data>
+  <data name="Managed.Risk.Storage"><value>LESEND: Windows-Storage-Modul; HealthStatus ist kein vollständiger SMART-/Hardwaretest.</value></data>
+  <data name="Managed.Risk.Read"><value>LESEND: lokale Windows-Abfrage; sensible Daten möglich, Module/Edition/Rechte versionsabhängig. Fehlende Befehle werden als Fehler gemeldet.</value></data>
+  <data name="Common.Unavailable"><value>Nicht verfuegbar</value></data>
+  <data name="Common.PreparingMeasurement"><value>Messung wird vorbereitet</value></data>
+  <data name="Sensor.TemperatureLimitSuffix" xml:space="preserve"><value> (Grenzwert, keine Ist-Temperatur)</value></data>
+  <data name="Drive.Usage"><value>{0:0.0} % belegt / {1:0.0} % frei</value></data>
+  <data name="Job.NICHT GESTARTET"><value>NICHT GESTARTET</value></data>
+  <data name="Job.LAEUFT"><value>LAEUFT</value></data>
+  <data name="Job.ABGESCHLOSSEN"><value>ABGESCHLOSSEN</value></data>
+  <data name="Job.ABGEBROCHEN"><value>ABGEBROCHEN</value></data>
+  <data name="Job.FEHLGESCHLAGEN"><value>FEHLGESCHLAGEN</value></data>
+  <data name="Job.UEBERSPRUNGEN"><value>UEBERSPRUNGEN</value></data>
+  <data name="Job.Capacity"><value>Auftragslimit erreicht; laufende Auftraege werden nicht entfernt.</value></data>
+  <data name="Job.Busy"><value>Nicht gestartet: erst laufenden Auftrag beenden oder abbrechen.</value></data>
+  <data name="Job.ConfirmNow" xml:space="preserve"><value>
+
+Jetzt ausfuehren?</value></data>
+  <data name="Job.NotAuthorized"><value>Nicht freigegeben. Keine Aktion ausgefuehrt.</value></data>
+  <data name="Job.PrivateNotice" xml:space="preserve"><value>[PRIVAT] Sensible Anzeige; kein Export oder Protokoll.
+</value></data>
+  <data name="Job.LocalNotice" xml:space="preserve"><value>[LOCAL] Live-Ausgabe bleibt in dieser Konsole.
+</value></data>
+  <data name="Job.Running"><value>{0} laeuft ...</value></data>
+  <data name="Job.Result" xml:space="preserve"><value>
+[ERGEBNIS]
+{0}
+[ENDE] {1} | Laufzeit {2:hh\:mm\:ss}
+</value></data>
+  <data name="Job.Completed"><value>{0} abgeschlossen. Ergebnis beachten.</value></data>
+  <data name="Job.CompletedDetail"><value>Ohne gemeldeten Ausfuehrungsfehler; Textbefund beachten, kein Gesundheitsnachweis.</value></data>
+  <data name="Job.Canceled"><value>Abgebrochen. Bereits ausgefuehrte Systemaktionen bleiben bestehen.</value></data>
+  <data name="Job.CancelOutput" xml:space="preserve"><value>
+[ABBRUCH] Teilaktionen/Dateien koennen bereits ausgefuehrt worden sein.
+</value></data>
+  <data name="Job.CancelDetail"><value>Teilaktionen koennen bestehen bleiben.</value></data>
+  <data name="Job.Failed"><value>{0} fehlgeschlagen: {1}</value></data>
+  <data name="Job.ErrorOutput" xml:space="preserve"><value>
+[FEHLER] {0}
+</value></data>
+  <data name="Job.TerminalEnd"><value>ENDE / {0} / Laufzeit {1:hh\:mm\:ss} / Ergebnis und Fehler oben beachten</value></data>
+  <data name="Terminal.Expand"><value>Konsole vergroessern</value></data>
+  <data name="Terminal.ShowModules"><value>Module anzeigen</value></data>
+  <data name="Safety.Secrets.Title"><value>Sensible lokale Anzeige</value></data>
+  <data name="Safety.Secrets.Body"><value>GEHEIMNISSE werden nur lokal in dieser Ansicht angezeigt. Bildschirmfreigabe/Recording vorher beenden. Keine Speicherung, kein Export und kein Senden an externe Dienste. Anzeige bewusst freigeben?</value></data>
+  <data name="Safety.Smart.Title"><value>Laufwerksaktion</value></data>
+  <data name="Safety.Smart.Body"><value>Gewaehlte SMART-Aktion startet/beendet einen Laufwerkstest oder aendert AAM/APM. Tests belasten das Laufwerk, koennen Stunden dauern und laufen nach App-Abbruch weiter. Vorher Daten sichern. Im Laufwerk unterstuetzte Faehigkeiten zuerst lesen.</value></data>
+  <data name="Job.KEIN UPGRADE"><value>KEIN UPGRADE</value></data>
+  <data name="Job.UNVOLLSTAENDIG"><value>UNVOLLSTAENDIG</value></data>
+  <data name="Job.NICHT AUSGEFUEHRT"><value>NICHT AUSGEFUEHRT</value></data>
+  <data name="Inventory.Title"><value>AETHER | Rechner-Inventar</value></data>
+  <data name="Inventory.Header"><value>RECHNER-INVENTAR</value></data>
+  <data name="Inventory.Refresh"><value>Inventar aktualisieren</value></data>
+  <data name="Inventory.Save"><value>Als Textdatei speichern</value></data>
+  <data name="Inventory.Initial"><value>Noch nicht erfasst.</value></data>
+  <data name="Inventory.PleaseWait"><value>DEIN RECHNER WIRD UNTERSUCHT - BITTE WARTEN</value></data>
+  <data name="Inventory.ReadOnly"><value>Nur lesende Inventarisierung. Weiter geht es erst nach Abschluss.</value></data>
+  <data name="Inventory.HardwareHeader"><value>HARDWARE / SYSTEM</value></data>
+  <data name="Inventory.Area"><value>BEREICH</value></data>
+  <data name="Inventory.Component"><value>KOMPONENTE</value></data>
+  <data name="Inventory.SoftwareHeader"><value>INSTALLIERTE SOFTWARE</value></data>
+  <data name="Inventory.Publisher"><value>HERAUSGEBER</value></data>
+  <data name="Inventory.Reading"><value>Dein Rechner wird untersucht (Hardware ueber Windows-Abfrage, Software aus der Registry) ...</value></data>
+  <data name="Inventory.SoftwareCount"><value>INSTALLIERTE SOFTWARE ({0})</value></data>
+  <data name="Inventory.Completed"><value>Erfasst {0:HH:mm:ss} | {1} Hardware-Eintraege | {2} Programme. Rein lesend; nichts wurde veraendert.</value></data>
+  <data name="Inventory.Canceled"><value>Inventarisierung abgebrochen.</value></data>
+  <data name="Inventory.Failed"><value>Inventarisierung fehlgeschlagen. Bitte erneut aktualisieren: {0}</value></data>
+  <data name="Common.TextFileFilter"><value>Textdatei (*.txt)|*.txt</value></data>
+  <data name="Inventory.SaveFailed"><value>Inventar nicht gespeichert</value></data>
+  <data name="Inventory.ReadHardware"><value>Hardware und Windows-Systemdaten werden untersucht ...</value></data>
+  <data name="Inventory.MachineName"><value>Rechnername</value></data>
+  <data name="Inventory.Processor"><value>Prozessor</value></data>
+  <data name="Inventory.Graphics"><value>Grafik</value></data>
+  <data name="Inventory.Memory"><value>Arbeitsspeicher</value></data>
+  <data name="Inventory.Disk"><value>Datentraeger</value></data>
+  <data name="Inventory.WindowsQuery"><value>Windows-Abfrage</value></data>
+  <data name="Common.UnavailableDetail"><value>Nicht verfuegbar: {0}</value></data>
+  <data name="Inventory.ReadMemory"><value>Arbeitsspeicher und Laufwerke werden gelesen ...</value></data>
+  <data name="Inventory.TotalRam"><value>RAM gesamt</value></data>
+  <data name="Inventory.NativeMetrics"><value>Native Metriken</value></data>
+  <data name="Inventory.ReadNetwork"><value>Aktive Netzwerkadapter werden untersucht ...</value></data>
+  <data name="Common.Network"><value>Netzwerk</value></data>
+  <data name="Inventory.ReadSoftware"><value>Installierte Software wird aus der Registry gelesen ...</value></data>
+  <data name="Inventory.ExportHeader"><value>AETHER RECHNER-INVENTAR / {0:yyyy-MM-dd HH:mm:ss}</value></data>
+  <data name="Inventory.ExportNotice"><value>Lesende Momentaufnahme. Nicht verfuegbare Werte sind als solche gekennzeichnet.</value></data>
+  <data name="Main.Areas"><value>AUFGABEN / BEREICHE</value></data>
+  <data name="Main.Find"><value>FUNKTION FINDEN</value></data>
+  <data name="Main.FindTip"><value>Arbeitsplatz mit Suchfunktion und gefuehrten Arbeitsablaeufen (Strg+K). Oeffnet nur Bereiche, startet keine Aktion.</value></data>
+  <data name="Main.Desktop"><value>Darstellung / Desktop</value></data>
+  <data name="Main.DesktopTip"><value>Tag-/Nachtmodus, Transparenz, Gadgets und Hintergrunddiagnose einstellen.</value></data>
+  <data name="Main.Motion"><value>Scanner-Animation</value></data>
+  <data name="Main.MotionTip"><value>Scanner, Neon-Energiepfade und Pulsieren ein/aus. Statisches Neon bleibt sichtbar; Windows-Animationseinstellungen werden beachtet.</value></data>
+  <data name="Main.ModernMotion"><value>Animation</value></data>
+  <data name="Main.ModernMotionTip"><value>Illustrativen Datenfluss und Aktivitaetsanzeige ein/aus. Windows-Einstellungen fuer reduzierte Bewegung werden beachtet.</value></data>
+  <data name="Main.Admin"><value>ADMIN / UAC beim Start</value></data>
+  <data name="Main.LocalNotice"><value>Einzelplatz ohne Serverkontakt. Berichte nur nach Freigabe und ausdruecklichem Opt-in.</value></data>
+  <data name="Main.Tagline"><value>DEIN SYSTEM. DEINE KOMMANDOBRUECKE.</value></data>
+  <data name="Main.ClockTip"><value>Lokale Windows-Zeit / Aktualisierung mit Live-Messung</value></data>
+  <data name="Main.Refresh"><value>Status aktualisieren</value></data>
+  <data name="Navigation.BackButton"><value>◀ ZURUECK</value></data>
+  <data name="Navigation.ForwardButton"><value>VOR ▶</value></data>
+  <data name="Navigation.BackTip"><value>Zur vorherigen Ansicht zurueck - auch per Maus-Zurueck-Taste oder Alt+Pfeil links</value></data>
+  <data name="Navigation.ForwardTip"><value>Wieder vorwaerts - auch per Maus-Vor-Taste oder Alt+Pfeil rechts</value></data>
+  <data name="Navigation.CockpitTip"><value>Direkt zur Hauptebene (Cockpit)</value></data>
+  <data name="Navigation.HelpButton"><value>? HILFE</value></data>
+  <data name="Navigation.HelpTip"><value>Durchsuchbares Hilfe-Center oeffnen</value></data>
+  <data name="Navigation.InitialTrail"><value>HAUPTEBENE ▸ COCKPIT</value></data>
+  <data name="Navigation.TrailTip"><value>Aktuelle Position. Zurueck/Vor folgen deinem Besuchsverlauf wie im Browser.</value></data>
+  <data name="ControlCenter.Title"><value>AETHER | Systemkontrolle | Olaf Weins</value></data>
+  <data name="ControlCenter.Header"><value>AETHER // ZENTRALE SYSTEMKONTROLLE</value></data>
+  <data name="ControlCenter.AdminNotice"><value>Autor: Olaf Weins // ADMINISTRATOR // Freie Konsole: Enter startet direkt, ohne weitere Bestaetigung.</value></data>
+  <data name="ControlCenter.BackTip"><value>Zum vorherigen Modul zurueck - auch per Maus-Zurueck-Taste oder Alt+Pfeil links</value></data>
+  <data name="ControlCenter.Home"><value>⌂ HAUPTFENSTER</value></data>
+  <data name="ControlCenter.HomeTip"><value>Zum Hauptfenster (Cockpit) wechseln; dieses Fenster bleibt offen</value></data>
+  <data name="ControlCenter.FindTip"><value>Gemeinsamer Arbeitsplatz / Strg+K</value></data>
+  <data name="Terminal.Toggle"><value>AUSGABE EIN/AUS</value></data>
+  <data name="Terminal.ToggleTip"><value>Mehr Platz fuer Listen. Bei einem Auftrag wird die Ausgabe automatisch sichtbar.</value></data>
+  <data name="ControlCenter.InitialTrail"><value>SYSTEMKONTROLLE ▸ SMART</value></data>
+  <data name="ControlCenter.TrailTip"><value>Aktuelles Modul. Zurueck/Vor folgen deinem Besuchsverlauf wie im Browser.</value></data>
+  <data name="Main.CpuTotal"><value>CPU GESAMT / %</value></data>
+  <data name="Main.CpuTemperature" xml:space="preserve"><value>CPU TEMPERATUR: </value></data>
+  <data name="Main.PackagePower" xml:space="preserve"><value>   PACKAGE-LEISTUNG: </value></data>
+  <data name="Main.CpuCores"><value>ALLE LOGISCHEN CPU-KERNE / 0..100% / 2s</value></data>
+  <data name="Main.PhysicalDisks"><value>PHYSISCHE DATENTRAEGER / READ, WRITE, AKTIVZEIT, QUEUE / 15s</value></data>
+  <data name="Overlay.Close"><value>Overlay schliessen</value></data>
+  <data name="App.TrayUnavailable"><value>Der Anmeldestart ist nur fuer die installierte Ausgabe konfiguriert.</value></data>
+  <data name="App.TrayUnavailableTitle"><value>AETHER / Kein installierter Autostart</value></data>
+  <data name="App.SetupFailed"><value>Setup-Einstellungen nicht uebernommen</value></data>
+  <data name="App.BackgroundFailed"><value>AETHER / Hintergrundstart fehlgeschlagen</value></data>
+  <data name="App.InitializationFailed"><value>AETHER / Initialisierung fehlgeschlagen</value></data>
+  <data name="Boot.AccessGranted"><value>[ACCESS] ADMINISTRATOR / Windows-UAC freigegeben</value></data>
+  <data name="Boot.ResourcesLoaded"><value>[LOAD] WPF / Cockpit / gemeinsame Neon- und Glasressourcen geladen</value></data>
+  <data name="Boot.ModernResourcesLoaded"><value>[LOAD] WPF / Cockpit / Windows-Modern-Ressourcen geladen</value></data>
+  <data name="Boot.SettingsLoaded"><value>[LOAD] Einstellungen / Cache-Katalog initialisiert; keine Bereinigung gestartet</value></data>
+  <data name="Boot.ConfigurationWarning"><value>[WARN] Konfiguration unvollstaendig: {0}</value></data>
+  <data name="Boot.NativeBaseline"><value>[INIT] Windows CPU/RAM/Netzwerk / erste Zaehler-Baseline</value></data>
+  <data name="Boot.Memory"><value>[OK] RAM {0:0.0} GB / {1} Volumes</value></data>
+  <data name="Boot.DriverNotice"><value>[HINWEIS] Low-Level-Sensorzugriff kann einen lokalen Treiber laden; Windows-Schutz bleibt unveraendert</value></data>
+  <data name="Boot.Gpu"><value>[GPU] {0} / {1} Sensoren</value></data>
+  <data name="Boot.NoGpu"><value>[WARN] Keine GPU-Sensoren erkannt</value></data>
+  <data name="Boot.Limit"><value>LIMIT / KEIN MESSWERT</value></data>
+  <data name="Boot.SensorResult"><value>[RESULT] {0} / {1} Sensorwerte lesbar. Fehlende Kanaele sind nicht 0.</value></data>
+  <data name="Boot.SensorFailed"><value>[WARN] Hardware-Sensorzugriff fehlgeschlagen: {0}</value></data>
+  <data name="Boot.PerformanceInit"><value>[INIT] Prozessmonitor / logische CPU-Zeiten / Commit / Adapter-Baselines</value></data>
+  <data name="Boot.PerformanceBaseline"><value>[OK] Performance-Baselines erfasst; Intervallwerte ab zweiter Messung</value></data>
+  <data name="Boot.OnDemand"><value>[MODULE / ON DEMAND] {0} registriert; Aktionen erst bei Aufruf</value></data>
+  <data name="Boot.Commands"><value>Wartung / {0} Administrationsbefehle</value></data>
+  <data name="Common.Present"><value>vorhanden</value></data>
+  <data name="Common.Missing"><value>nicht vorhanden</value></data>
+  <data name="Boot.Tools"><value>[TOOLS] smartctl {0} / PresentMon {1}; keine Tests/Captures gestartet</value></data>
+  <data name="Boot.Scheduled"><value>[SCHEDULED] Ereignismonitor / Disk-I/O 15s; Windows-Status 60s. Erste Abfragen nach Cockpitstart.</value></data>
+  <data name="Boot.Privacy"><value>[PRIVACY] Messaufzeichnung / Auto-LAN / Geheimnisabfragen bleiben aus</value></data>
+  <data name="Chart.NoUnitScale"><value>ohne Einheit / eigene Skala</value></data>
+  <data name="Chart.UnitScale"><value>{0} / eigene Skala</value></data>
+  <data name="Chart.SelectSensors"><value>Sensoren unten auswaehlen</value></data>
+  <data name="Chart.NoReadings"><value>Keine verfuegbaren Messwerte im Verlauf</value></data>
+  <data name="OptionalTool.procexp64.exe.Risk"><value>Prozesse/DLLs; sensible Daten, extern auch Prozessbeendigung möglich</value></data>
+  <data name="OptionalTool.Procmon64.exe.Risk"><value>Datei/Registry/Prozessmitschnitt; hohe Last und sensible Pfade, Treiber und EULA</value></data>
+  <data name="OptionalTool.Autoruns64.exe.Risk"><value>Autostarts; extern Deaktivierung/Löschung möglich</value></data>
+  <data name="OptionalTool.Tcpview64.exe.Risk"><value>Verbindungen; sensible Ziele, extern Verbindungen schließbar</value></data>
+  <data name="OptionalTool.RAMMap64.exe.Risk"><value>Speicheranalyse; extern Cacheleerung möglich</value></data>
+  <data name="OptionalTool.VMMap64.exe.Risk"><value>Prozessspeicheranalyse; Administratorrechte und sensible Daten</value></data>
+  <data name="OptionalTool.sigcheck64.exe.Risk"><value>Signaturen; optionale VirusTotal-Abfragen übertragen Daten, nicht automatisch aktiviert</value></data>
+  <data name="OptionalTool.handle64.exe.Risk"><value>Offene Handles; Schließen kann Datenverlust verursachen</value></data>
+  <data name="OptionalTool.wpr.exe.Risk"><value>ETW-Aufzeichnung braucht bewusste Freigabe, erzeugt sensible Trace-Dateien</value></data>
+  <data name="OptionalTool.wpa.exe.Risk"><value>Lokale Trace-Analyse; separate optionale Installation</value></data>
+  <data name="OptionalTool.dism.exe.Risk"><value>Edition/Version prüfen; ADK ist nicht automatisch installiert</value></data>
+  <data name="OptionalTool.AdkName"><value>Windows ADK / DISM-Werkzeuge</value></data>
+  <data name="Metric.CpuLoad"><value>CPU / AUSLASTUNG</value></data>
+  <data name="Metric.RamUsage"><value>RAM / BELEGUNG</value></data>
+  <data name="Metric.Download"><value>NETZ / DOWNLOAD</value></data>
+  <data name="Metric.CpuTemperature"><value>CPU / TEMPERATUR</value></data>
+  <data name="Metric.GpuTemperature"><value>GPU / TEMPERATUR</value></data>
+  <data name="Metric.SsdTemperature"><value>SSD / TEMPERATUR</value></data>
+  <data name="Metric.Upload"><value>NETZ / UPLOAD</value></data>
+  <data name="Model.SessionInitial"><value>Messauswertung ab dem ersten gueltigen Messpunkt.</value></data>
+  <data name="Model.CleanupInitial"><value>Noch keine Vorschau. Nur lokale Benutzer-Temp-Dateien aelter als 7 Tage.</value></data>
+  <data name="Model.Day"><value>TAG / NEON</value></data>
+  <data name="Model.Night"><value>NACHT / NEON</value></data>
+  <data name="Model.WindowsModern"><value>WINDOWS MODERN</value></data>
+  <data name="Model.HardwareInitial"><value>Lokale Hardware-Erkennung laeuft ...</value></data>
+  <data name="Model.Initializing"><value>INITIALISIERUNG</value></data>
+  <data name="Common.NotEnabled"><value>Nicht aktiviert</value></data>
+  <data name="Model.GpuInitial"><value>GPU / Erkennung ausstehend</value></data>
+  <data name="Model.SensorInitial"><value>Optionaler Zugriff ueber LibreHardwareMonitor. Verfuegbarkeit haengt von Hardware, Treibern und Rechten ab.</value></data>
+  <data name="Model.HistoryInitial"><value>Aus. Live-Verlaeufe werden nur im Arbeitsspeicher gehalten.</value></data>
+  <data name="Model.ProbeInitial"><value>Lesende Windows-Abfrage laeuft ...</value></data>
+  <data name="Model.SecurityInitial"><value>Sicherheitsstatus wird abgefragt.</value></data>
+  <data name="Model.FooterInitial"><value>2s Live/Prozesse | 15s Ereignisse/Disk-I/O | 60s Windows-Status | rein lokal</value></data>
+  <data name="Model.HardwareSensors"><value>Hardware-Sensoren</value></data>
+  <data name="Common.QueryFailed"><value>Abfrage fehlgeschlagen</value></data>
+  <data name="Model.CpuTotalTime"><value>Windows CPU-Gesamtzeit</value></data>
+  <data name="Model.GpuNotDetected"><value>GPU / nicht erkannt</value></data>
+  <data name="Model.GpuDisabled"><value>GPU / Sensorzugriff ausgeschaltet</value></data>
+  <data name="Model.SensorDisabled"><value>Sensorzugriff nicht aktiviert</value></data>
+  <data name="Model.UploadDetail"><value>Upload {0:0.00} Mbit/s | alle Adapter | Skala dynamisch</value></data>
+  <data name="Model.NetworkBaseline"><value>Netzwerk-Baseline wird aufgebaut</value></data>
+  <data name="Model.NetworkUnavailable"><value>Netzwerk-Baseline wird aufgebaut / nicht verfuegbar</value></data>
+  <data name="Model.AllAdapters"><value>Alle aktiven Adapter / dynamische Skala</value></data>
+  <data name="Model.ThresholdReached" xml:space="preserve"><value>WARNSCHWELLE ERREICHT: </value></data>
+  <data name="Model.HardwareDisabled"><value>Hardware-Zugriff ausgeschaltet.</value></data>
+  <data name="Model.NoCpuChannel"><value>kein lesbarer CPU-Kanal</value></data>
+  <data name="Model.NoPackageChannel"><value>kein lesbarer Package-Kanal</value></data>
+  <data name="Model.CpuSensorDetail"><value>Temperaturkanal: {0} / Leistung: {1}. Keine Ableitung aus Mainboard-/ACPI-Zonen. Treiberzugriff und CPU-Unterstuetzung im Providerbericht pruefen.</value></data>
+  <data name="Model.SensorFailed"><value>Sensorabfrage fehlgeschlagen: {0}</value></data>
+  <data name="Model.SensorReadings"><value>{0} / {1} Sensorwerte lesbar. Nicht verfuegbar = kein Messwert, nicht 0. CPU/GPU-Package-Werte koennen ohne Rechte oder Treiber fehlen.</value></data>
+  <data name="Model.SessionStatus"><value>Messsitzung seit {0:HH:mm:ss} | {1} Reihen | MIN / MAX / AVG aus gueltigen Messpunkten</value></data>
+  <data name="Model.MeasurementFailed"><value>MESSUNG FEHLGESCHLAGEN</value></data>
+  <data name="Model.LiveMeasurement"><value>Live-Messung</value></data>
+  <data name="Model.MeasurementFailure"><value>Messung fehlgeschlagen</value></data>
+  <data name="Model.MeasurementUnavailable"><value>Messung fehlgeschlagen / nicht verfuegbar</value></data>
+  <data name="Model.GpuMeasurementFailed"><value>GPU / Messung fehlgeschlagen</value></data>
+  <data name="Model.ProbeStatus"><value>Zuletzt gelesen: {0:HH:mm:ss} | naechste automatische Abfrage in etwa 60s</value></data>
+  <data name="Model.SecuritySummary"><value>{0} Hinweise | {1} nicht lesbare Pruefungen | {2} bestandene Pruefungen</value></data>
+  <data name="Model.WindowsStatus"><value>Windows-Status</value></data>
+  <data name="Model.ProbeFailed"><value>Abfrage fehlgeschlagen: {0}</value></data>
+  <data name="Model.SecurityUnknown"><value>Sicherheitsstatus unbekannt. Keine gueltige aktuelle Abfrage.</value></data>
+  <data name="Model.SessionReset"><value>Messsitzung zurueckgesetzt. Neue Auswertung startet mit dem naechsten Messpunkt.</value></data>
+  <data name="Instrument.Hotspot"><value>Separater Hotspot-Sensor</value></data>
+  <data name="Instrument.Vram"><value>Gemeldete Speicherbelegung</value></data>
+  <data name="Instrument.Power"><value>Gemeldete Leistungsaufnahme</value></data>
+  <data name="Instrument.Fan"><value>Gemeldete Drehzahl</value></data>
+  <data name="Instrument.Clock"><value>Gemeldeter GPU-Takt</value></data>
+  <data name="Instrument.MemoryTemperature"><value>Separater Speichertemperatursensor</value></data>
+  <data name="Alert.CpuTemperature"><value>CPU-Temperatur</value></data>
+  <data name="Alert.GpuTemperature"><value>GPU-Temperatur</value></data>
+  <data name="Alert.CpuTemperatureDetail"><value>CPU Package &gt;= {0} C. Beobachtungshinweis, kein Nachweis von Drosselung.</value></data>
+  <data name="Alert.GpuTemperatureDetail"><value>GPU Core &gt;= {0} C. Hotspot separat.</value></data>
+  <data name="Update.Driver"><value>TREIBER</value></data>
+  <data name="Update.InvalidJson"><value>Ungültiges oder unvollständiges Updatesuch-JSON; erneut suchen.</value></data>
+  <data name="Update.Incomplete"><value>Nur vollständige erfolgreiche Updatesuchen erlauben eine Auswahl.</value></data>
+  <data name="Update.InvalidSource"><value>Updatesuche ist nicht vollständig oder nutzt nicht die konfigurierte Quelle.</value></data>
+  <data name="Update.InvalidIdentity"><value>Updateidentität oder exakter EULA-Hash ungültig.</value></data>
+  <data name="Update.InvalidType"><value>Unbekannter Updateangebotstyp.</value></data>
+  <data name="Update.Ambiguous"><value>Mehrdeutige Updateidentitäten; erneut suchen.</value></data>
+  <data name="Update.PlanStatus"><value>{0} vollständige Angebote / konfigurierte Windows-Update-/WSUS-Quelle. Auswahl gültig bis {1:HH:mm:ss}.</value></data>
+  <data name="Update.ExpiredHour"><value>Auswahl nach einer Stunde abgelaufen; erneut suchen.</value></data>
+  <data name="Update.Expired"><value>Auswahl abgelaufen; erneut suchen.</value></data>
+  <data name="Update.NoManufacturer"><value>nicht angegeben</value></data>
+  <data name="Update.OfferDetail" xml:space="preserve"><value>{0}
+GUID: {1:D}
+Revision: {2}
+Typ: {3}
+Hersteller: {4}
+EULA SHA256: {5}
+
+EXAKTER LIZENZTEXT:
+{6}</value></data>
+  <data name="Update.ExpertRequired"><value>Nicht gestartet: Updateinstallation verlangt Expertenmodus.</value></data>
+  <data name="Update.SearchFirst"><value>Keine aktuelle vollständige Suche; zuerst Angebote suchen.</value></data>
+  <data name="Update.AcceptExact"><value>Genau ein Angebot auswählen und dessen angezeigten Lizenztext ausdrücklich akzeptieren.</value></data>
+  <data name="Update.InstallTitle"><value>Ein geprüftes Windows-/Treiberupdate installieren</value></data>
+  <data name="Update.PlanInvalid"><value>Auswahl/Expertenmodus nicht mehr gültig; erneut prüfen.</value></data>
+  <data name="Update.PlanConsumed"><value>Freigabe verbraucht; für weitere Updates erneut suchen.</value></data>
+  <data name="Update.InstallIncomplete"><value>Updateinstallation nicht vollständig erfolgreich (Exit {0}, gekürzt={1}); Teilaktionen können bestehen bleiben.</value></data>
+  <data name="Update.InstallConsent" xml:space="preserve"><value>ÄNDERND: genau ein Update; Systemdateien/Treiber und EULA-Zustand ändern sich. Vorher sichern, laufende Apps schließen. Abbruch ist kein Rollback; Windows kann einen Neustart benötigen, AETHER startet nicht neu.
+
+QUELLE: konfigurierte Windows Update/WSUS
+{0}
+GUID: {1:D}
+REVISION: {2}
+EULA SHA256: {3}
+
+Akzeptierter exakter Lizenztext:
+{4}</value></data>
+  <data name="Update.SearchTitle"><value>Windows-/Treiberupdates suchen</value></data>
+  <data name="Update.SearchStarted"><value>Neue Suche gestartet; vorherige Auswahl verworfen.</value></data>
+  <data name="Update.SearchConsent"><value>NETZWERK: vollständige WUA-Suche bei konfigurierter Windows-Update-/WSUS-Quelle. Keine Installation/Lizenzannahme. Vorherige Auswahl wird verworfen; gekürzte/fehlgeschlagene Ergebnisse erlauben keine Installation.</value></data>
+  <data name="Update.InstallHere"><value>Installation nur unten: genau ein Angebot und EULA prüfen, Expertenmodus aktivieren, einzeln freigeben.</value></data>
+  <data name="Managed.Truncated" xml:space="preserve"><value>
+[AUSGABE GEKÜRZT – kein vollständiger Befund/JSON]</value></data>
+  <data name="Managed.ExecutionFailed"><value>Windows-Aktion ExitCode {0}; Ausgabe beachten.</value></data>
+  <data name="Managed.Prerequisites" xml:space="preserve"><value>
+
+Voraussetzungen: {0}
+
+Fester Befehl:
+{1}</value></data>
+  <data name="Update.SettingsTitle"><value>Windows Update / manuelle Auswahl</value></data>
+  <data name="Update.SettingsOpened"><value>Windows Update geöffnet. Software-/Treiberangebote und Identitäten dort prüfen und einzeln auswählen. AETHER installiert nichts, nimmt keine EULA an und startet Windows nicht neu. Für geprüfte exakte Updatepläne bleibt der vorhandene Operations-Wartungsplan verfügbar.</value></data>
+  <data name="Update.SettingsConsent"><value>Lokale Einstellungen öffnen. Jede dort genehmigte Installation kann Windows und Treiber ändern; Windows kann einen Neustart verlangen. Keine remote-/Session-0-Aktion.</value></data>
+  <data name="OptionalTool.AvailabilityTitle"><value>{0} / Verfügbarkeit</value></data>
+  <data name="OptionalTool.NotFound"><value>Nicht in System/tools/PATH gefunden (keine vollständige Installationssuche).</value></data>
+  <data name="OptionalTool.Found" xml:space="preserve"><value>Datei gefunden (nicht ausgeführt; Signatur und Version separat prüfen):
+{0}</value></data>
+  <data name="OptionalTool.AvailabilityNotice" xml:space="preserve"><value>
+RISIKO: {0}
+OFFIZIELL: {1}
+Keine Installation, kein Toolstart und keine automatische Lizenzannahme.</value></data>
+  <data name="OptionalTool.WebTitle"><value>{0} / offizielle Microsoft-Seite</value></data>
+  <data name="OptionalTool.WebOpened"><value>Nur offizielle Informations-/Downloadseite geöffnet; Download, Installation, EULA und Toolstart bleiben manuell.</value></data>
+  <data name="OptionalTool.WebConsent" xml:space="preserve"><value>Browserkontakt zu Microsoft:
+{0}
+{1}
+AETHER lädt nichts herunter und akzeptiert keine Lizenz.</value></data>
+  <data name="Help.FirstSteps"><value>Erste Schritte</value></data>
+  <data name="Help.SkinsTitle"><value>Darstellung und Sprache: Retro-Neon und Windows Modern</value></data>
+  <data name="Help.SkinsBody" xml:space="preserve"><value>Darstellung / Desktop bietet Retro-Neon, Vista Aero Glas, Candy Glossy und Windows Modern sowie Deutsch und Englisch. Die Namen bezeichnen Darstellungsvarianten, keine Windows-Kompatibilitätszusage.
+Gespeicherte Darstellung und Sprache gelten nach einem bestätigten App-Neustart. Später speichert die Auswahl, ohne die laufende Sitzung umzustellen; beim nächsten Start wird sie angewendet.
+Retro-Neon und Deutsch bleiben Standard. Windows Modern folgt der hellen/dunklen Windows-App-Einstellung und ersetzt die Mainframe-Landschaft durch ein zurückhaltend animiertes System-Schema. Windows Modern hat keinen Bildschirmschoner. Externe Befehlsausgaben, Pfade, IDs und Hardware-Namen werden nicht übersetzt.</value></data>
+  <data name="Help.SkinsKeywords"><value>skin theme design aero vista candy glossy modern windows sprache englisch deutsch neustart darstellung</value></data>
+  <data name="Help.SchemaTitle"><value>Animiertes System-Schema</value></data>
+  <data name="Help.SchemaBody" xml:space="preserve"><value>Hardware -&gt; System-Schema liest Windows-PnP-Geräte und RAM-Bänke. Hardware neu lesen aktualisiert die Momentaufnahme. Bauteile anklicken zeigt erkannte Geräte und verfügbare Status- und Eltern-IDs.
+Das neutrale Schema zeigt Gerätegruppen, keine elektrische Topologie. Dezenter Datenfluss ist illustrativ; Aktivitätsanzeigen beruhen auf Windows-Gerätestatus, nicht auf erfundenen Sensorwerten. Fehlende Messwerte bleiben unverfügbar; Temperaturgrenzen sind keine Ist-Temperaturen.
+Der globale Animationsschalter und Windows-Einstellungen für reduzierte Bewegung stoppen die Animation; unsichtbare Ansichten pausieren. Windows Modern folgt der Windows-App-Farbeinstellung und stellt keinen Bildschirmschoner bereit.</value></data>
+  <data name="Help.SchemaKeywords"><value>system schema schaubild hardware geräte animation bewegung sensor mainboard</value></data>
+  <data name="Boot.ModernTitle"><value>AETHER | Systemstart | Olaf Weins</value></data>
+  <data name="Boot.NeonTitle"><value>AETHER | Neon Wave Boot | Olaf Weins</value></data>
+  <data name="Boot.ModernHeader"><value>AETHER // SYSTEMSTART</value></data>
+  <data name="Boot.NeonHeader"><value>AETHER // NEON WAVE SYSTEM BOOT</value></data>
+  <data name="Diagnostic.Agent.ApplicationEvents"><value>Anwendungsereignisse</value></data>
+  <data name="Diagnostic.Agent.WindowsEvents"><value>Windows-Ereignisse</value></data>
+  <data name="Diagnostic.Agent.Devices"><value>Treiber und Geraete</value></data>
+  <data name="Diagnostic.Agent.Connections"><value>Verbindungen</value></data>
+  <data name="Diagnostic.Agent.Applications"><value>Anwendungsinventar</value></data>
+  <data name="Diagnostic.Agent.Drivers"><value>Treiberinventar</value></data>
+  <data name="Diagnostic.Level.KRITISCH"><value>KRITISCH</value></data>
+  <data name="Diagnostic.Level.HOCH"><value>HOCH</value></data>
+  <data name="Diagnostic.Level.MITTEL"><value>MITTEL</value></data>
+  <data name="Diagnostic.Level.UNBEKANNT"><value>UNBEKANNT</value></data>
+  <data name="Diagnostic.Level.HINWEIS"><value>HINWEIS</value></data>
+  <data name="Diagnostic.Level.INFORMATION"><value>INFORMATION</value></data>
+  <data name="Diagnostic.EventReadFailure"><value>Ereignisprotokoll {0} nicht lesbar: {1}</value></data>
+  <data name="Diagnostic.Incomplete"><value>Windows-Diagnose lieferte keinen vollstaendigen Snapshot; Befund bleibt unbekannt.</value></data>
+  <data name="Diagnostic.EventSummary"><value>{0} / Ereignis {1}: {2} Treffer in 24 Stunden</value></data>
+  <data name="Diagnostic.EventAdvice"><value>Ereignisdetails und betroffene Anwendung/Geraet pruefen. Keine automatische Reparatur abgeleitet.</value></data>
+  <data name="Diagnostic.NotReported"><value>nicht gemeldet</value></data>
+  <data name="Diagnostic.DeviceSummary"><value>{0}: Status {1}, Problemcode {2}</value></data>
+  <data name="Diagnostic.UnknownDeviceAdvice"><value>Windows lieferte keinen Geraetestatus; daraus wird kein fehlerfreier Zustand abgeleitet.</value></data>
+  <data name="Diagnostic.DeviceAdvice"><value>Geraetemanager, Hardwareverbindung und passenden Herstellertreiber pruefen. Treiber werden nicht automatisch ersetzt.</value></data>
+  <data name="Diagnostic.NoAdapters"><value>Windows meldet keine Netzwerkadapter.</value></data>
+  <data name="Diagnostic.NoAdapterEvidence"><value>Die Adapterabfrage lieferte keine Eintraege.</value></data>
+  <data name="Diagnostic.NoAdapterAdvice"><value>Verbindungsstatus ist nicht verfuegbar; daraus wird kein Fehler oder Reparaturschritt abgeleitet.</value></data>
+  <data name="Diagnostic.UnknownAdapter"><value>Mindestens ein Netzwerkadapter hat keinen lesbaren Status.</value></data>
+  <data name="Diagnostic.UnknownAdapterAdvice"><value>Adapterdaten pruefen; fehlende Statuswerte werden nicht als fehlerfrei gewertet.</value></data>
+  <data name="Diagnostic.NoUpAdapter"><value>Kein Netzwerkadapter meldet aktuell Status Up.</value></data>
+  <data name="Diagnostic.NoUpAdapterAdvice"><value>WLAN-/LAN-Verbindung und Adapterzustand pruefen. Deaktivierte, virtuelle und getrennte Adapter koennen beabsichtigt sein.</value></data>
+  <data name="Diagnostic.NoApplications"><value>Installierte Anwendungen konnten nicht ausgewiesen werden.</value></data>
+  <data name="Diagnostic.ApplicationCount"><value>{0} installierte Anwendungen erfasst.</value></data>
+  <data name="Diagnostic.ApplicationSource"><value>Quelle: Windows-Deinstallationsregistrierung; keine Installer gestartet.</value></data>
+  <data name="Diagnostic.ApplicationAdvice"><value>Versionsinventar ist keine Update- oder Sicherheitsbewertung.</value></data>
+  <data name="Diagnostic.NoDrivers"><value>Treiberinventar ist nicht verfuegbar.</value></data>
+  <data name="Diagnostic.DriverCount"><value>{0} Windows-PnP-Treiber erfasst.</value></data>
+  <data name="Diagnostic.DriverSource"><value>Quelle: Win32_PnPSignedDriver; keine Treiberupdates gesucht.</value></data>
+  <data name="Diagnostic.DriverAdvice"><value>Ein Versionsdatum allein beweist weder Aktualitaet noch Fehlerfreiheit.</value></data>
+  <data name="Diagnostic.NoErrors"><value>Keine kritischen oder wiederholt auftretenden System-/Anwendungsfehler in der begrenzten Abfrage erkannt.</value></data>
+  <data name="Diagnostic.NoErrorEvidence"><value>System- und Application-Protokoll / letzte 24 Stunden / maximal 100 Ereignisse je Kanal.</value></data>
+  <data name="Diagnostic.NoErrorAdvice"><value>Dies ist kein vollstaendiger Systemgesundheitsnachweis.</value></data>
+  <data name="Diagnostic.ReportFinding" xml:space="preserve"><value>[{0}] {1}: {2}
+  Befund: {3}
+  Naechster Schritt: {4}
+</value></data>
+  <data name="Background.Checking"><value>Hintergrunddiagnose: Windows, Ereignisse, Geraete, Adapter und Apps werden lesend geprueft.</value></data>
+  <data name="Background.FindingCount"><value>Hintergrunddiagnose: {0} Befunde im aktuellen Bericht; Reparaturen bleiben manuell.</value></data>
+  <data name="Background.Failure"><value>Hintergrunddiagnose fehlgeschlagen: {0}</value></data>
+  <data name="Background.FailureNotice"><value>Hintergrunddiagnose fehlgeschlagen. Details stehen im AETHER-Status.</value></data>
+  <data name="Background.Notification"><value>Neue Befunde: {0}. {1} Reparatur nur nach Freigabe.</value></data>
+  <data name="Board.NeonRefresh"><value>HARDWARE NEU LESEN</value></data>
+  <data name="Board.NeonInitialStatus"><value>Hardware wird beim ersten Oeffnen lokal gelesen.</value></data>
+  <data name="Board.NeonDescription"><value>SCHEMATISCHE ANORDNUNG / Bauteile anklicken: Windows-Details rechts. Pfade und Lüfter sind keine Messwerte.</value></data>
+  <data name="Board.Legend"><value>Darstellung und Statuslegende</value></data>
+  <data name="Board.NeonLegendDescription"><value>ISOMETRISCHE HARDWARE-SKIZZE / Bauteile oder Beschriftungen anklicken. Animierte Pfade sind SCHEMATISCH: keine gemessenen Paketwege, PCIe-Lanes oder exakte physische Bestueckung.</value></data>
+  <data name="Board.NeonAudioLegend"><value>Audio: GELB = aktive Windows-Audiositzung (auch bei Stille), GRUEN = Standardrolle. Screens: Hauptbildschirm zuerst. Momentaufnahme; nach Geraete-/Ausgabewechsel HARDWARE NEU LESEN.</value></data>
+  <data name="Board.NeonMotion"><value>Animation: Datenfluss, Luefter, Raster und Binaertext</value></data>
+  <data name="Board.NeonZoomTip"><value>Einpassen oder Details vergrößern; Zeichnung scrollt unabhängig von der Geräteliste.</value></data>
+  <data name="Board.NeonZoomFit"><value>Board einpassen</value></data>
+  <data name="Board.NeonZoom75"><value>Board 75 %</value></data>
+  <data name="Board.NeonZoom100"><value>Board 100 %</value></data>
+  <data name="Board.NeonZoom125"><value>Board 125 %</value></data>
+  <data name="Board.NeonLiveNotice" xml:space="preserve"><value>    ECHTE LIVE-MESSWERTE / separat, nicht pro Leiterbahn</value></data>
+  <data name="Board.NeonDetailTitle"><value>KOMPONENTEN / Bauteil auswaehlen</value></data>
+  <data name="Board.NeonDetailCount"><value>{0} / {1} WINDOWS-EINTRAEGE</value></data>
+  <data name="Board.NoReadings"><value>Keine Messwerte verfuegbar</value></data>
+  <data name="Board.NoChannel"><value>Kein zuordenbarer Messkanal</value></data>
+  <data name="Board.DialScale" xml:space="preserve"><value>{0}
+Skala 0 bis {1:0.##} {2}; keine gemessene Grenze.</value></data>
+  <data name="Board.Loading"><value>Windows-Hardware und vorhandene Komponenten werden rein lesend erfasst ...</value></data>
+  <data name="Board.NeonReadCancelled"><value>Hardware-Abfrage abgebrochen.</value></data>
+  <data name="Board.NeonReadError"><value>Hardware-Schaubild nicht aktualisiert: {0}</value></data>
+  <data name="Board.NeonSnapshotStatus"><value>{0} Windows-Geraeteeintraege inkl. Audio-Endpunktstatus / Momentaufnahme {1}</value></data>
+  <data name="Layout.SmartNotice"><value>Offizielles smartctl benoetigt. Diagnose zeigt alle JSON-Rohdaten einschliesslich Firmware/Seriennummer. Keine Lebensdauerprognose. Tests beeinflussen I/O; Unterstuetzung ist laufwerkabhaengig.</value></data>
+  <data name="Layout.SmartScan"><value>SMART-Geraete erkennen</value></data>
+  <data name="Layout.SmartDevice"><value>SMART-Geraet</value></data>
+  <data name="Layout.SmartSave"><value>SMART JSON speichern</value></data>
+  <data name="Layout.SmartExecute"><value>SMART-Aktion ausfuehren</value></data>
+  <data name="Layout.SmartOperationsNotice"><value>Selektiv: Start-Ende in LBA. AAM/APM veraendern Geraeteverhalten und sind meist nur fuer ATA verfuegbar. Abort beendet einen Laufwerkstest, nicht die App. Fortschritt anschliessend neu lesen.</value></data>
+  <data name="Layout.PortalCheck"><value>Captive Portal pruefen</value></data>
+  <data name="Layout.LanNotice"><value>Scan nur im eigenen/freigegebenen Netz: RFC1918 /24 bis /30, 16 parallele ICMP-Abfragen. Keine Portscans. Nicht antwortende Geraete bleiben unbekannt. MAC aus ARP; Hersteller nur mit importierter OUI-CSV.</value></data>
+  <data name="Layout.PackagesNotice"><value>Listen, Suche und Aktionen laufen ueber die lokale WinGet-Installation. Aktionen verwenden ausschliesslich exakte Paket-IDs (--exact) und werden vor dem Start mit vollstaendiger ID-Liste bestaetigt. Eintraege ohne eindeutig lesbare ID (abgeschnittene Spalten) sind nicht aktionierbar.</value></data>
+  <data name="Layout.AvailableUpdates"><value>Verfuegbare Updates</value></data>
+  <data name="Layout.ExternalPackagesTip"><value>Bewusst ausgewaehlte Installation starten; keine native Scoop-/Chocolatey-Verwaltung in AETHER</value></data>
+  <data name="Layout.Available"><value>VERFUEGBAR</value></data>
+  <data name="Layout.JobsNotice"><value>AUFTRAEGE / letzte 200 Eintraege dieser Sitzung. Pakete laufen nacheinander. Kein automatischer Wiederholungsversuch; Abbruch macht erfolgte Aenderungen nicht rueckgaengig. Sensible Anzeigen und freie Befehle bleiben ausgeschlossen.</value></data>
+  <data name="Layout.Job"><value>AUFTRAG</value></data>
+  <data name="Layout.CommandsNotice"><value>Befehl anklicken: in Konsoleneingabe kopieren. Parameter anklicken: an der Schreibposition einfuegen. Platzhalter ersetzen; Enter startet direkt. Verfuegbarkeit haengt von Windows, installierten Modulen und Toolversionen ab.</value></data>
+  <data name="Layout.ExpertTip"><value>AUS = Einsteiger: nur lesende Befehle, freie Konsole gesperrt. AN = Experte: voller Katalog, Enter fuehrt direkt aus.</value></data>
+  <data name="Layout.SelectCommand"><value>Befehl auswaehlen.</value></data>
+  <data name="Layout.ManagedNotice"><value>Feste geprüfte Aktionen: kein freier Scripttext. Jede Änderung verlangt Einzelbestätigung. Verfügbarkeit hängt von Build, Edition, Modulen und Rechten ab. Keine automatische lokale Reparatur.</value></data>
+  <data name="Layout.ManagedExecute"><value>Aktion prüfen / ausführen</value></data>
+  <data name="Layout.UpdateSettings"><value>Updates / Treiber manuell auswählen</value></data>
+  <data name="Layout.ReviewedUpdateHeading"><value>GEPRÜFTE EINZELAUSWAHL / WINDOWS + TREIBER</value></data>
+  <data name="Layout.ReviewedUpdateNotice"><value>ÄNDERND: Installation nur im Expertenmodus, nach vollständiger Suche und Zustimmung zur exakten EULA. Genau eine GUID/Revision; Quelle und Lizenz werden erneut geprüft. Keine automatische Treiberwahl oder Neustarts. Abbruch ist kein Rollback.</value></data>
+  <data name="Layout.ReviewedUpdateSelect"><value>Genau ein geprüftes Windows- oder Treiberupdate</value></data>
+  <data name="Layout.UpdateEulaAcceptance"><value>Ich habe den exakten Lizenztext dieses ausgewählten Updates gelesen und akzeptiere ihn.</value></data>
+  <data name="Layout.ReviewedUpdateInstall"><value>Genau dieses Update prüfen / Installation bestätigen</value></data>
+  <data name="Layout.OptionalAvailability"><value>Lokale Datei-Verfügbarkeit prüfen</value></data>
+  <data name="Layout.GuidedActions"><value>Bisherige gefuehrte Windows-Aktionen (mit Bestaetigung)</value></data>
+  <data name="Layout.StartSelectedAction"><value>Gewaehlte Windows-Aktion starten</value></data>
+  <data name="Layout.DeliveryCleanup"><value>Delivery Optimization Cache bereinigen</value></data>
+  <data name="Layout.Certificates"><value>Zertifikate / Root-CAs pruefen</value></data>
+  <data name="Layout.StartupEntry"><value>Autostarteintrag</value></data>
+  <data name="Layout.DisableStartup"><value>Ausgewaehlten Autostart deaktivieren</value></data>
+  <data name="Layout.ShellbagsHeading"><value>Shellbag-Analyse / Explorer-Ordnerspuren (nur lesend)</value></data>
+  <data name="Layout.ShellbagsNotice"><value>Windows merkt sich Ansichtseinstellungen besuchter Ordner in der Registry (BagMRU) - auch fuer inzwischen geloeschte Ordner. Diese Analyse liest HKCU ausschliesslich lesend. Die Namensdekodierung ist Best Effort: nicht dekodierbare Elemente werden ausdruecklich als unbekannt angezeigt, nie erfunden. AETHER bietet bewusst keine Shellbag-Loeschung an.</value></data>
+  <data name="Layout.Reading"><value>MESSWERT</value></data>
+  <data name="Layout.PresentMonNotice"><value>Externe PresentMon-Console benoetigt, kein eigener Dienst. ETW-Capture fuer gewaehlten Prozess. CSV-Auswertung pro Swapchain: AVG FPS, P99 Framezeit und 1%-low. Keine Vermischung verschiedener Renderketten.</value></data>
+  <data name="Layout.SettingsHeading"><value>Warnschwellen / Sensorprofil / Werkzeuge</value></data>
+  <data name="Layout.NetworkMonitor"><value>Netzwerkueberwachung / Paketmitschnitt</value></data>
+  <data name="Layout.FreeSpace"><value>Freier Speicher %</value></data>
+  <data name="Layout.SelectSmartctl"><value>smartctl auswaehlen</value></data>
+  <data name="Layout.SelectPresentMon"><value>PresentMon auswaehlen</value></data>
+  <data name="Layout.SelectOui"><value>OUI-CSV auswaehlen</value></data>
+  <data name="Layout.Standalone"><value>Einzelplatz - nur lokale Diagnose und Einstellungen</value></data>
+  <data name="Layout.ManagedClient"><value>Server-Client - mit zentraler Geraeteanmeldung</value></data>
+  <data name="Layout.EnrollmentNotice"><value>Geraeteanmeldung verbraucht einen Einmalcode. Berichte enthalten Windows-Ereignisse der letzten 24h, Geraete, Adapter, installierte Apps und Treiber. Uebertragung startet erst nach Freigabe und ausdruecklicher Aktivierung.</value></data>
+  <data name="Layout.Enroll"><value>Geraet einmalig anmelden</value></data>
+  <data name="Layout.SkinTip"><value>Skin-Auswahl; wird nach bestätigtem App-Neustart übernommen.</value></data>
+  <data name="Layout.PreferencesNotice"><value>Die Auswahl wird gespeichert und erst nach bestätigtem Neustart auf alle Desktop-Fenster angewendet. Retro-Neon bleibt der Standard.</value></data>
+  <data name="Layout.SaveSettings"><value>Einstellungen speichern</value></data>
+  <data name="Layout.SensorChecks"><value>Sensor-Spannungen / Drosselung pruefen</value></data>
+  <data name="Layout.SecretsNotice"><value>WLAN-, BitLocker- und OEM-Schluessel sind Geheimnisse. Nicht teilen, nicht aufzeichnen, nicht exportieren. Ausgabe wird bei Tabwechsel und Schliessen entfernt; keine Garantie fuer Bildschirm-/Speicherforensik.</value></data>
+  <data name="Layout.ShowWifiSecret"><value>WLAN-Profil lokal anzeigen</value></data>
+  <data name="Layout.ShowBitLockerSecret"><value>BitLocker Recovery lokal anzeigen</value></data>
+  <data name="Layout.ShowOemSecret"><value>OEM Windows-Key lokal anzeigen</value></data>
+  <data name="Layout.ClearSecrets"><value>Sensible Ausgabe sofort entfernen</value></data>
+  <data name="Layout.ActionOutput"><value>Aktionsausgabe</value></data>
+  <data name="Layout.ConsoleInitial" xml:space="preserve"><value>AETHER VT READY / Olaf Weins
+Verwaltung: Befehl/Parameter waehlen oder unten frei eingeben.
+Enter fuehrt direkt mit Administratorrechten aus.</value></data>
+  <data name="Layout.ProcessAccounting"><value>CPU: Anteil an gesamter logischer CPU-Kapazitaet im Messintervall. RAM: Working Set, gemeinsame Seiten werden mehrfach gezaehlt. I/O: Prozesszaehler inklusive Datei/Geraet/Netzwerk, keine SSD-Bandbreite. Spalten anklicken zum Sortieren.</value></data>
+  <data name="Layout.HealthNotice"><value>Hinweise sind erklaerbar, nicht diagnostisch: Kein erfundener Health-Score, keine Lebensdauerprognose, kein Malware-Freiheitsversprechen.</value></data>
+  <data name="Layout.SensorSettings"><value>Warnschwellen / ATX / Drosselung</value></data>
+  <data name="Layout.SensorSettingsTip"><value>Springt direkt zu den Einstellungen der Systemkontrolle</value></data>
+  <data name="Layout.StorageNotice"><value>Windows Storage Health und freier Speicher. Vollstaendiges NVMe-SMART und herstellerspezifische Diagnosen sind damit nicht garantiert; fehlende Detailwerte bleiben sichtbar.</value></data>
+  <data name="Layout.Volumes"><value>VOLUMES / SPEICHERPLATZ</value></data>
+  <data name="Layout.AssistantsTip"><value>Oeffnet die getrennten Windows-Assistenten fuer Systemdateien, Updates, Netzwerk und Geraete/Treiber</value></data>
+  <data name="Layout.ControlCenterTip"><value>SMART, Pakete, Netzwerk, Wartungskatalog, Spuren, Einstellungen und Schluessel</value></data>
+  <data name="Layout.MemoryResults"><value>Speicherdiagnose-Ergebnisse</value></data>
+  <data name="Layout.MemoryResultsTip"><value>Vorhandene Ergebnisse der Windows-Speicherdiagnose aus dem System-Ereignislog lesen; startet keinen RAM-Test</value></data>
+  <data name="Layout.Inventory"><value>Rechner-Inventar</value></data>
+  <data name="Layout.InventoryTip"><value>Lokales Inventar aus Hardware und installierter Software anzeigen und speichern</value></data>
+  <data name="Layout.DeviceManager"><value>Geraete-Manager</value></data>
+  <data name="Layout.AllTasksTip"><value>Windows-Ansicht 'Alle Aufgaben'. Auf Windows-Builds ohne diese Ansicht oeffnet sich stattdessen Alle Systemsteuerungselemente - mit Hinweis in der Fusszeile.</value></data>
+  <data name="Layout.AdminAccess"><value>App-, Datei-, Ordner- und Laufwerkszugriff, Live-Widgets und bestaetigungspflichtige Windows-Aktionen</value></data>
+  <data name="Layout.SecurityLegend"><value>Gruen: gemeldete Pruefung bestanden. Orange: Hinweis. Grau: Information oder unbekannt. Nicht lesbar bedeutet niemals sicher. Diese Ansicht ersetzt kein Sicherheitsprodukt.</value></data>
+  <data name="Layout.CleanerNotice"><value>Nur gewaehlte Kategorie, Dateien aelter als 7 Tage. Keine Downloads, Cookies, Lesezeichen oder Offline-Medien. Keine Ordnerloeschung. System-/Diagnosecaches nur bewusst im Expertenmodus.</value></data>
+  <data name="Layout.CheckTemp"><value>Temp-Dateien pruefen</value></data>
+  <data name="Layout.DeleteChecked"><value>Angekreuzte Dateien loeschen</value></data>
+  <data name="Layout.CleanerInitial"><value>0 Dateien angekreuzt / 0 MiB. Zeilenmarkierung loescht nichts.</value></data>
+  <data name="Layout.CleanerFilterNotice"><value>Nur Ansicht filtern. Versteckte angekreuzte Dateien bleiben ausgewaehlt; Keine ankreuzen leert die gesamte Auswahl.</value></data>
+  <data name="Layout.DeleteQuestion"><value>LOESCHEN?</value></data>
+  <data name="Layout.DeleteCheckboxTip"><value>Nur angekreuzte Dateien werden nach Bestaetigung geloescht</value></data>
+  <data name="Layout.CheckedFile"><value>GEPRUEFTE DATEI / ZEILENMARKIERUNG IST KEINE LOESCHFREIGABE</value></data>
+  <data name="Layout.HelpSearch"><value>Thema, Modul oder Stichwort suchen, z.B. 'Update', 'Temperatur', 'Loeschen'</value></data>
+  <data name="Layout.SelectHelp"><value>Thema links auswaehlen.</value></data>
+  <data name="Layout.OperationsHeading"><value>OPERATIONS // PLANEN · PRUEFEN · BEWUSST AUSFUEHREN</value></data>
+  <data name="Layout.OperationsNotice"><value>Lokaler Einzelplatz + explizite Arbeitsgruppen-Ziele. Hintergrunddiagnose ist separat einstellbar und bleibt lesend; Reparaturen erfordern weiterhin eine Vorschau und ausdrueckliche Freigabe.</value></data>
+  <data name="Layout.PerformanceIndex"><value>WINDOWS-LEISTUNGSINDEX / WinSAT / gespeicherte Messung</value></data>
+  <data name="Layout.ReadIndex"><value>Gespeicherten Index lesen</value></data>
+  <data name="Layout.ApplyTemplate"><value>Vorlage uebernehmen</value></data>
+  <data name="Layout.SelectPlanTask"><value>Aufgabe auswaehlen: Wirkung, Grenzen und Befehl erscheinen hier.</value></data>
+  <data name="Layout.PreviewPlan"><value>Plan anzeigen / noch nichts ausfuehren</value></data>
+  <data name="Layout.StartPlan"><value>Plan starten / Schritte bestaetigen</value></data>
+  <data name="Layout.DevicesConsoles"><value>Geraete / Konsolen</value></data>
+  <data name="Layout.RemoteNotice"><value>Nur eingetragene Windows-Ziele. WinRM muss bereits eingerichtet sein. Aktuelles Admin-Konto / Negotiate; HTTPS-Zertifikat wird geprueft. Keine Kennwoerter gespeichert. Keine automatische TrustedHosts-/Firewall-Aenderung.</value></data>
+  <data name="Layout.Device"><value>GERAET</value></data>
+  <data name="Layout.TargetLimit"><value>Bis 500 Ziele; transparente serielle Ausfuehrung. Kein Agent oder Netzwerkscan.</value></data>
+  <data name="Layout.CloudReadinessNotice"><value>Dieser Ausbau liest nur lokale Windows-, Office- und Modulvoraussetzungen. Keine Microsoft-Graph-Abfrage, keine Tenant-Anmeldung, keine Copilot-Prompts und keine Datenuebertragung.</value></data>
+  <data name="Layout.CloudLimits"><value>M365 / Entra / Intune: benoetigen bewusst eingerichtete Tenant-App, minimale Scopes und Rollen. Copilot-Verfuegbarkeit ist lizenz-/API-abhaengig; ein lokaler Office-Eintrag beweist keine Lizenz. Windows Server-Ziele nutzen vorhandenes WinRM, nicht pauschale Domaenenrechte. Herstellergeraete/Linux/SNMP/SSH sind in dieser Beta nicht angebunden.</value></data>
+  <data name="Layout.AssistantsNotice"><value>Waehle den passenden Windows-Helfer. Jeder startet nur seine abgegrenzte Diagnose und zeigt Befund plus naechste Schritte. Reparaturen starten nie automatisch.</value></data>
+  <data name="Layout.SystemAssistantTip"><value>DISM-Pruefung und SFC /verifyonly; keine Reparatur</value></data>
+  <data name="Layout.UpdateAssistantTip"><value>Update-Dienste, Ereignisse und Neustartindikatoren lesen</value></data>
+  <data name="Layout.NetworkAssistantTip"><value>Adapter, IP, Gateway und DNS gezielt pruefen</value></data>
+  <data name="Layout.DeviceAssistant"><value>4 / Geraete &amp; Treiber</value></data>
+  <data name="Layout.CollectDiagnosticsTip"><value>Windows-Ereignisse, Geraete, Adapter, Apps und Treiber als lokalen Bericht erfassen</value></data>
+  <data name="Layout.AssistantInitial"><value>Assistent auswaehlen / noch keine Diagnose gestartet.</value></data>
+  <data name="Layout.AssistantLimits"><value>Ergebnisse sind Hinweise, keine automatische Fehlerfeststellung. Fehlende Daten bleiben unbekannt.</value></data>
+  <data name="Layout.AssistantOutput"><value>Windows-Assistent Diagnoseausgabe</value></data>
+  <data name="Layout.PrepareRepair"><value>Windows-Reparaturplan vorbereiten / noch nichts ausfuehren</value></data>
+  <data name="Layout.PrepareRepairTip"><value>DISM RestoreHealth und SFC scannow; Vorschau und Wiederherstellungspunkt, danach jeden Aenderungsschritt einzeln bestaetigen</value></data>
+  <data name="Layout.LastReportTip"><value>Nur den zuletzt lokal gespeicherten Diagnosebericht anzeigen</value></data>
+  <data name="Layout.AssistantPrivacy"><value>Treiber werden nicht automatisch installiert. Updates und Reparaturen benötigen eigene Vorschau und Freigabe. Diese Assistenten speichern lokal; separat aktivierte Clientberichte können Diagnoseinventar an den Verwaltungsserver senden.</value></data>
+  <data name="Layout.AdminNotice"><value>Vorschau → Bestaetigung → Aktion → Status neu lesen. Keine Sicherheitsumgehung, keine TrustedInstaller-Rechte. Jede Aenderung ist eigenverantwortlich; Ruecknahmen nur wo vorhanden.</value></data>
+  <data name="Layout.ApplyPreview"><value>Vorschau bestaetigen / anwenden</value></data>
+  <data name="Layout.UndoAction"><value>Letzte reversible Aktion zuruecknehmen</value></data>
+  <data name="Layout.Used"><value>Belegt</value></data>
+  <data name="Layout.EventsNotice"><value>Eingebettete Windows-Ereigniskanaele, Suche und Nachrichtendetails. Maximal 2000 Eintraege pro Abfrage; keine Log-Loeschung.</value></data>
+  <data name="Layout.EventsInitial"><value>Bereit / Kanal auswaehlen und lesen.</value></data>
+  <data name="Layout.ChartsNotice"><value>Hardware + Einheit = eigene Skala. Sensoren per Farblegende ein-/ausblenden (fuer diese Sitzung). Letzte 180 Messzyklen (bei 2s etwa 6 Minuten), nur im Arbeitsspeicher. Fehlende Werte bleiben Luecken; Grenzwerte stehen nur in der Detailmatrix.</value></data>
+  <data name="Layout.ExportTitle"><value>AETHER / Diagnosebericht - Vorschau vor dem Speichern</value></data>
+  <data name="Layout.ExportNotice"><value>Genau dieser Text wird gespeichert. Die Schwaerzung ersetzt Rechnername, Benutzername, Benutzerpfade sowie IPv4-/MAC-Adressen durch Platzhalter - Mustererkennung, keine Garantie: vor dem Teilen selbst pruefen.</value></data>
+  <data name="Layout.SaveText"><value>Als Textdatei speichern</value></data>
+  <data name="Cleaner.PreviewRunning"><value>Vorschau laeuft: {0}</value></data>
+  <data name="Cleaner.SelectCategory"><value>Zuerst eine vorhandene Cache-Kategorie auswaehlen.</value></data>
+  <data name="Cleaner.PreviewConsent" xml:space="preserve"><value>{0}
+{1}
+Nur Vorschau lesen?</value></data>
+  <data name="Cleaner.PreviewTitle"><value>Diagnose-/Systemcache</value></data>
+  <data name="Cleaner.PreviewDeclined"><value>Vorschau nicht freigegeben.</value></data>
+  <data name="Cleaner.PreviewComplete" xml:space="preserve"><value>Noch nichts geloescht. Dateien in der Spalte LOESCHEN? ankreuzen; Zeilenmarkierung allein reicht nicht.
+</value></data>
+  <data name="Cleaner.PreviewCanceled"><value>Vorschau abgebrochen. Keine Dateien geloescht.</value></data>
+  <data name="Cleaner.PreviewFailed"><value>Vorschau fehlgeschlagen: {0}</value></data>
+  <data name="Cleaner.NoneSelected"><value>Keine Dateien angekreuzt. Erst Vorschau erstellen und LOESCHEN?-Checkboxen aktivieren.</value></data>
+  <data name="Cleaner.DeleteConsent" xml:space="preserve"><value>{0} ausgewaehlte Temp-Dateien ({1:0.00} MiB) endgueltig loeschen? Kein Papierkorb und kein Rueckgaengig. Jede Datei wird vor dem Loeschen erneut geprueft. Andere Dateien und alle Ordner bleiben bestehen.
+Achtung: {2} angekreuzte Dateien sind durch den Ansichtsfilter verborgen. Auch diese sind Teil der Loeschung. Zum Pruefen abbrechen und Filter leeren.</value></data>
+  <data name="Cleaner.DeleteTitle"><value>Ausgewaehlte Dateien endgueltig loeschen</value></data>
+  <data name="Cleaner.Deleted" xml:space="preserve"><value>{0}: {1} Dateien geloescht / {2:0.00} MiB. Fuer weitere Aktionen neue Vorschau erstellen.
+</value></data>
+  <data name="Cleaner.Completed"><value>Abgeschlossen</value></data>
+  <data name="Cleaner.Canceled"><value>Abgebrochen</value></data>
+  <data name="Cleaner.DeleteFailed"><value>Bereinigung fehlgeschlagen: {0}</value></data>
+  <data name="Cleaner.NoAccessErrors"><value>Keine Zugriffsfehler.</value></data>
+  <data name="Cleaner.IssueCount" xml:space="preserve"><value>{0} Fehler/Hinweise:
+</value></data>
+  <data name="Cleaner.IssueLimit" xml:space="preserve"><value>
+Weitere Hinweise durch Ausgabelimit nicht angezeigt.</value></data>
+  <data name="Cleaner.Selection"><value>{0} / {1} Dateien angekreuzt / {2:0.00} MiB / davon {3} durch Filter verborgen. Zeilenmarkierung loescht nichts.</value></data>
+  <data name="Cleaner.SelectionReady"><value>Auswahl bereit. Angekreuzte Dateien werden erst nach ausdruecklicher Bestaetigung geloescht.</value></data>
+  <data name="Control.SelectSmart"><value>SMART-Geraet zuerst erkennen und auswaehlen.</value></data>
+  <data name="Control.SmartScan"><value>SMART-Erkennung</value></data>
+  <data name="Control.SmartNone"><value>Keine SMART-Geraete gemeldet.</value></data>
+  <data name="Control.SmartCount"><value>{0} Geraete erkannt.</value></data>
+  <data name="Control.SmartRead"><value>SMART-Diagnose</value></data>
+  <data name="Control.SmartRaw" xml:space="preserve"><value>
+
+JSON / FAEHIGKEITEN / LOGS:
+</value></data>
+  <data name="Control.SmartRequired"><value>Zuerst gueltige SMART-Diagnose lesen.</value></data>
+  <data name="Control.SmartExport"><value>SMART-Export</value></data>
+  <data name="Control.SmartSaved"><value>SMART JSON gespeichert. Datei kann lokale Seriennummern enthalten; nicht ungeprueft teilen.</value></data>
+  <data name="Safety.Ping"><value>Sendet ICMP an {0}. Bei Hostnamen wird DNS verwendet. Nur eigene/freigegebene Ziele.</value></data>
+  <data name="Safety.RouterPing"><value>Sendet ICMP an das lokal gemeldete Standardgateway.</value></data>
+  <data name="Control.SpeedSize"><value>Speedtest: Testgroesse {0} bis {1} MiB als ganze Zahl angeben.</value></data>
+  <data name="Safety.SpeedTest" xml:space="preserve"><value>Laedt jetzt {0} MiB Testdaten von https://{1} herunter.
+Deine IP-Adresse wird dem Messziel sichtbar; das Datenvolumen zaehlt bei getakteten Verbindungen.
+Eine HTTPS-Verbindung, Zeitlimit 120 s, kein Upload-Test.</value></data>
+  <data name="Safety.ToolCommand" xml:space="preserve"><value>[BEFEHL] "{0}" {1}
+[LIMIT] {2:0.##} Minuten
+[HINWEIS] {3}
+</value></data>
+  <data name="Safety.ToolStream" xml:space="preserve"><value>[STREAM] STDOUT live, STDERR gekennzeichnet. Fortschritt wird vom Werkzeug gemeldet, nicht geschaetzt.
+</value></data>
+  <data name="Control.ToolExitFailed"><value>Werkzeug Exitcode {0}. STDOUT/STDERR stehen oben. Exit 0 allein beweist keine vollstaendige Reparatur; Abschlussmeldung und Windows-Detailprotokoll beachten.</value></data>
+  <data name="Control.ToolExit"><value>Exitcode {0}. Abschlussmeldung oben beachten; erfolgreich beendeter Prozess ist kein pauschales Gesundheitsurteil.</value></data>
+  <data name="Safety.ExplorerRestart"><value>Explorer-Fenster und Taskleiste der aktuellen Sitzung werden beendet. Laufende Explorer-Dateioperationen vorher abschliessen. Andere Sitzungen werden nicht beendet.</value></data>
+  <data name="Safety.DeliveryCleanup"><value>Windows-Delivery-Optimization-Cache ueber die offizielle Windows-Schnittstelle loeschen. Kein Dateivorschau-API vorhanden; Cachegroesse wird nicht versprochen. Windows kann Daten erneut herunterladen.</value></data>
+  <data name="Control.SelectStartup"><value>Autostarteintrag auswaehlen.</value></data>
+  <data name="Control.StartupUnchanged"><value>Nicht geaendert: Eintrag hat bereits den gewaehlten Zustand.</value></data>
+  <data name="Control.StartupChange"><value>Autostart aendern</value></data>
+  <data name="Control.StartupEnabled"><value>aktiviert</value></data>
+  <data name="Control.StartupDisabled"><value>deaktiviert</value></data>
+  <data name="Control.StartupResult"><value>Autostart {0} {1}. Sicherung bleibt lokal unter AetherCockpit/Backups.</value></data>
+  <data name="Control.StartupEnable"><value>aus lokaler Sicherung aktivieren</value></data>
+  <data name="Control.StartupDisable"><value>sichern und deaktivieren</value></data>
+  <data name="Safety.StartupChange" xml:space="preserve"><value>{0} / {1} {2}? Befehl:
+{3}
+Dies aendert den naechsten Benutzerstart. Keine anderen Werte werden geaendert.</value></data>
+  <data name="Safety.UpdateInstallRisk"><value>ÄNDERND: exakt ausgewähltes Windows-/Treiberupdate installieren; Expertenmodus, vollständige Suche und EULA-Einzelzustimmung erforderlich. Vorher sichern. Teiländerungen bleiben bei Abbruch; kein automatischer Neustart.</value></data>
+  <data name="Plan.Change"><value>AENDERUNG</value></data>
+  <data name="Plan.Diagnostic"><value>DIAGNOSE</value></data>
+  <data name="Plan.Confirm" xml:space="preserve"><value>Lokales Ziel: {0}
+{1}
+
+In dieser Reihenfolge starten? Veraendernde Schritte werden einzeln nochmals bestaetigt. Beim ersten Fehler stoppt der Plan.</value></data>
+  <data name="Plan.NoRestoreConsent"><value>Ohne Wiederherstellungspunkt fortfahren? Dieser ist kein Dateibackup. Vorher Daten extern sichern.</value></data>
+  <data name="Plan.StepConsent" xml:space="preserve"><value>{0}
+{1}
+Ziel: {2}
+
+Jetzt diesen Aenderungsschritt ausfuehren?</value></data>
+  <data name="Plan.SelectTask"><value>Mindestens eine Aufgabe ankreuzen.</value></data>
+  <data name="Plan.CleanerSeparate"><value>Temp-Bereinigung separat im Cleaner: Dateivorschau und Checkboxen erforderlich.</value></data>
+  <data name="Plan.ScanChoice"><value>Schnellscan ODER Vollscan auswaehlen.</value></data>
+  <data name="Plan.AcceptEula"><value>Angekreuzte Update-EULAs lesen und ausdruecklich akzeptieren.</value></data>
+  <data name="Plan.NotApproved"><value>Plan nicht freigegeben.</value></data>
+  <data name="Plan.NoRestoreDeclined"><value>Ungesicherte Wartung nicht freigegeben.</value></data>
+  <data name="Plan.UpdateSearchConsent"><value>Windows-Updatequelle laut bestehender Richtlinie kontaktieren und Softwareupdates suchen? Keine Installation.</value></data>
+  <data name="Plan.BenchmarkConsent" xml:space="preserve"><value>Vorschau: WinSAT.exe formal
+Belastet CPU, RAM, Grafik und Systemdatentraeger, kann Bildschirmdarstellung beeinflussen. Anwendungen vorher speichern/schliessen. Windows schreibt Bewertungsdateien. KEINE automatische Messung beim Boot.
+
+Jetzt starten?</value></data>
+  <data name="Plan.HttpConsent"><value>HTTP/Negotiate in Arbeitsgruppen kann TrustedHosts voraussetzen. AETHER aendert diese NICHT. HTTPS ist bevorzugt. HTTP-Ziel bewusst eintragen?</value></data>
+  <data name="Plan.RemoveTargetConsent"><value>Nur {0} aus AETHER entfernen? Geraet selbst bleibt unveraendert.</value></data>
+  <data name="Plan.RemoteConsent" xml:space="preserve"><value>Nur diese Ziele kontaktieren?
+{0}
+Aktuelles Admin-Konto / Negotiate. Keine Aenderungen, keine WinRM-Einrichtung. Erfasste Inventar-/Ereignisdaten werden lokal protokolliert.</value></data>
+  <data name="Plan.ConfirmTitle"><value>AETHER / Operations-Freigabe</value></data>
+  <data name="Maintenance.inventory.Name"><value>System- und Sicherheitsinventar</value></data>
+  <data name="Maintenance.inventory.Description"><value>Hardware/Windows/Defender lesen; keine Schutzabschaltung.</value></data>
+  <data name="Maintenance.events.Name"><value>Fehler / Warnungen lesen</value></data>
+  <data name="Maintenance.events.Description"><value>Bis 500 System-/Application-Ereignisse je Kanal, sieben Tage.</value></data>
+  <data name="Maintenance.startup.Name"><value>Autostart / Dienste / Aufgaben</value></data>
+  <data name="Maintenance.startup.Description"><value>Inventar; keine Eintraege ausschalten.</value></data>
+  <data name="Maintenance.componentAnalysis.Name"><value>Komponentenspeicher analysieren</value></data>
+  <data name="Maintenance.componentAnalysis.Description"><value>DISM-Analyse; kann eigene Windows-Logs schreiben.</value></data>
+  <data name="Maintenance.diskScan.Name"><value>NTFS-Systemvolume online pruefen</value></data>
+  <data name="Maintenance.diskScan.Description"><value>CHKDSK /scan kann Onlinekorrekturen ausloesen; kein /r oder Offline-Neustart.</value></data>
+  <data name="Maintenance.repairImage.Name"><value>Windows-Abbild reparieren</value></data>
+  <data name="Maintenance.repairImage.Description"><value>DISM RestoreHealth; Downloads moeglich; nicht gewaltsam abbrechen.</value></data>
+  <data name="Maintenance.sfc.Name"><value>Systemdateien pruefen / reparieren</value></data>
+  <data name="Maintenance.sfc.Description"><value>SFC-Befund bleibt PRUEFEN; Exit 0 ist kein Gesundheitssiegel.</value></data>
+  <data name="Maintenance.cleanup.Name"><value>Temp-Bereinigung mit Dateivorschau</value></data>
+  <data name="Maintenance.cleanup.Description"><value>Oeffnet den AETHER-Cleaner. Dateien einzeln ankreuzen; keine unbeaufsichtigte Loeschung.</value></data>
+  <data name="Maintenance.componentCleanup.Name"><value>Komponentenspeicher bereinigen</value></data>
+  <data name="Maintenance.componentCleanup.Description"><value>Kein ResetBase; keine einfache Ruecknahme.</value></data>
+  <data name="Maintenance.optimize.Name"><value>Lokale Laufwerke mediengerecht optimieren</value></data>
+  <data name="Maintenance.optimize.Description"><value>Windows defrag /O entscheidet SSD-TRIM/HDD-Optimierung; kein SSD-Zwangsdefrag.</value></data>
+  <data name="Maintenance.defenderUpdate.Name"><value>Defender-Signaturen aktualisieren</value></data>
+  <data name="Maintenance.defenderUpdate.Description"><value>Downloads; kein deaktivierter Defender wird automatisch aktiviert.</value></data>
+  <data name="Maintenance.defenderQuick.Name"><value>Defender-Schnellscan</value></data>
+  <data name="Maintenance.defenderQuick.Description"><value>Windows kann Bedrohungen gemaess bestehender Richtlinie behandeln.</value></data>
+  <data name="Maintenance.defenderFull.Name"><value>Defender-Vollscan</value></data>
+  <data name="Maintenance.defenderFull.Description"><value>Kann Stunden dauern; bestehende Defender-Richtlinie gilt.</value></data>
+  <data name="Maintenance.windowsSearch.Name"><value>Windows-Updates suchen</value></data>
+  <data name="Maintenance.windowsSearch.Description"><value>Microsoft/WSUS-Quelle laut Windows-Richtlinie; keine Treiberupdates.</value></data>
+  <data name="Maintenance.windowsInstall.Name"><value>Angekreuzte Windows-Updates installieren</value></data>
+  <data name="Maintenance.windowsInstall.Description"><value>Explizite Update-ID + Revision, EULA vor Installation bestaetigen; kein automatischer Neustart.</value></data>
+  <data name="Maintenance.wingetList.Name"><value>App-Updateangebot anzeigen</value></data>
+  <data name="Maintenance.wingetList.Description"><value>Kein --all / --force; Paket-IDs aus Ausgabe verwenden.</value></data>
+  <data name="Maintenance.wingetInstall.Name"><value>Exakte App-IDs aktualisieren</value></data>
+  <data name="Maintenance.wingetInstall.Description"><value>Eine ID je Zeile; Quell-/Paketlizenzen werden durch Bestaetigung akzeptiert; Fremdinstaller koennen UI zeigen.</value></data>
+  <data name="Settings.DisplayMode"><value>Darstellungsmodus muss auto, day oder night sein.</value></data>
+  <data name="Settings.Range"><value>{0}: Bereich {1} bis {2} erforderlich.</value></data>
+  <data name="Settings.CpuWarning"><value>CPU-Warnung</value></data>
+  <data name="Settings.GpuWarning"><value>GPU-Warnung</value></data>
+  <data name="Settings.StorageWarning"><value>Storage-Warnung</value></data>
+  <data name="Settings.FreeSpace"><value>Freier Speicher</value></data>
+  <data name="Settings.VoltageTolerance"><value>ATX-Toleranz</value></data>
+  <data name="Settings.CmosMinimum"><value>CMOS-Minimum</value></data>
+  <data name="Settings.AppOpacity"><value>App-Deckkraft</value></data>
+  <data name="Settings.SidebarOpacity"><value>Leisten-Deckkraft</value></data>
+  <data name="Settings.GadgetOpacity"><value>Gadget-Deckkraft</value></data>
+  <data name="Settings.GadgetLayout"><value>Ungueltige Gadget-Position oder Deckkraft.</value></data>
+  <data name="Settings.CaptureDevice"><value>Ungueltiges Capture-Geraet.</value></data>
+  <data name="Settings.NetworkThresholds"><value>Netzwerk-Alarmschwellen: 5 bis 10000 erforderlich.</value></data>
+  <data name="Settings.CaptureInterface"><value>Automatischer Mitschnitt erfordert eine ausgewaehlte Npcap-Schnittstelle.</value></data>
+  <data name="Settings.RecordInterval"><value>Aufzeichnung: 2 bis 60 Sekunden erforderlich.</value></data>
+  <data name="Settings.UnknownSkin"><value>Unbekannter Skin. Verfuegbar: {0}</value></data>
+  <data name="Settings.Language"><value>Language must be 'de' or 'en'.</value></data>
+  <data name="Settings.OverlayMonitor"><value>Overlay-Monitorname ist ungueltig oder zu lang.</value></data>
+  <data name="Settings.OverlayDock"><value>Overlay-Andockseite muss 'left' oder 'right' sein.</value></data>
+  <data name="Settings.OverlayPosition"><value>Overlay-Position muss zwischen 0 und 1 liegen.</value></data>
+  <data name="Settings.SidebarMonitor"><value>Seitenleisten-Monitorname ist ungueltig oder zu lang.</value></data>
+  <data name="Settings.SidebarDock"><value>Seitenleisten-Andockseite muss 'left' oder 'right' sein.</value></data>
+  <data name="Settings.SidebarPosition"><value>Seitenleisten-Position muss zwischen 0 und 1 liegen.</value></data>
+  <data name="Settings.SidebarHorizontal"><value>Horizontale Seitenleisten-Position muss zwischen 0 und 1 liegen.</value></data>
+  <data name="Settings.ShortcutLimit"><value>Maximal 100 eigene Seitenleisten-Verknuepfungen sind erlaubt.</value></data>
+  <data name="Settings.ServerUrlLength"><value>Die URL der zentralen Verwaltung ist zu lang.</value></data>
+  <data name="Settings.ServerUrl"><value>Zentrale Verwaltung: HTTPS fuer Netzwerkziele; HTTP nur fuer localhost. URL ohne Pfad, Zugangsdaten, Query oder Fragment eingeben.</value></data>
+  <data name="Settings.ServerRequired"><value>Fuer zentrale Berichte zuerst die Server-URL speichern.</value></data>
+  <data name="Settings.ClientRequired"><value>Zentrale Berichte sind nur im Clientmodus verfuegbar.</value></data>
+  <data name="Settings.Shortcut"><value>Eine eigene Seitenleisten-Verknuepfung ist ungueltig.</value></data>
+  <data name="Settings.ToolPath"><value>{0}: Werkzeugpfad muss ein absoluter EXE-Pfad sein.</value></data>
+  <data name="Settings.OuiPath"><value>OUI-Datenbank muss ein absoluter Dateipfad sein.</value></data>
+  <data name="Settings.OuiName"><value>OUI-Datenbank</value></data>
+  <data name="Settings.FileWarning"><value>{0} nicht verfuegbar: {1}. Gespeicherten Pfad unter Systemkontrolle -&gt; Einstellungen neu auswaehlen oder leeren; keine automatische Ersetzung.</value></data>
+  <data name="Settings.EmptyFile"><value>Leere Einstellungsdatei.</value></data>
+  <data name="Sensor.ThrottleName"><value>Drosselungsindikator / {0}</value></data>
+  <data name="Sensor.ThrottleEvidence"><value>Expliziter Sensor: {0}; keine Ableitung allein aus Temperatur.</value></data>
+  <data name="Sensor.VoltageName"><value>Spannung / {0}</value></data>
+  <data name="Sensor.CmosMinimum"><value>CMOS Minimum {0} V</value></data>
+  <data name="Sensor.AtxTolerance"><value>ATX-Toleranz +/- {0}%</value></data>
+  <data name="Sensor.NoVoltageProfile"><value>Kein pauschaler Sollwert fuer VCore/DRAM. Keine Bewertung ohne Hardwareprofil.</value></data>
+  <data name="Sensor.StorageTemperature"><value>Storage Temperatur / {0} / {1}</value></data>
+  <data name="Sensor.StorageEvidence"><value>Aktueller Messkanal: {0} | Quelle: LibreHardwareMonitor / SMART | AETHER-Warnschwelle {1} C; keine Lebensdauerprognose.</value></data>
+  <data name="Sensor.Throttle"><value>Drosselungsindikator</value></data>
+  <data name="Sensor.NotReported"><value>Nicht gemeldet</value></data>
+  <data name="Sensor.NoThrottle"><value>Kein expliziter Thermal-/Throttling-Sensor verfuegbar.</value></data>
+  <data name="Assistant.Script.Dism"><value>=== DISM / CHECKHEALTH / KEINE REPARATUR ===</value></data>
+  <data name="Assistant.Script.Sfc"><value>=== SFC / VERIFYONLY / KEINE REPARATUR ===</value></data>
+  <data name="Assistant.Script.SystemAdvice"><value>AUSWERTUNG: SFC-/CBS-Text und DISM-Befund lesen; Prozessende allein ist kein Erfolg.</value></data>
+  <data name="Assistant.Script.UpdateServices"><value>=== UPDATE-DIENSTE / NUR LESEN ===</value></data>
+  <data name="Assistant.Script.RestartIndicators"><value>=== AUSSTEHENDER NEUSTART / INDIKATOREN ===</value></data>
+  <data name="Assistant.Script.UpdateEvents"><value>=== WINDOWS UPDATE EREIGNISSE / LETZTE 7 TAGE ===</value></data>
+  <data name="Assistant.Script.EventCount"><value>TREFFER: {0} / begrenzter Snapshot, kein vollstaendiger Updateverlauf.</value></data>
+  <data name="Assistant.Script.Adapters"><value>=== ADAPTER / NUR LESEN ===</value></data>
+  <data name="Assistant.Script.IpDns"><value>=== IP- UND DNS-KONFIGURATION ===</value></data>
+  <data name="Assistant.Script.Gateway"><value>=== GATEWAY / {0} / {1} ===</value></data>
+  <data name="Assistant.Script.DnsQuery"><value>=== DNS-ABFRAGE / {0} / {1} ===</value></data>
+  <data name="Assistant.Script.DnsError"><value>DNS-FEHLER: {0}</value></data>
+  <data name="Assistant.Script.NoIpAdapters"><value>KEIN AKTIVER IP-ADAPTER MIT LESBARER KONFIGURATION</value></data>
+  <data name="Assistant.Script.NetworkAdvice"><value>Hinweis: Gateway/DNS-Abfragen pruefen genau die gezeigten lokalen Ziele; kein Scan und keine Konfigurationsaenderung.</value></data>
+  <data name="Assistant.Script.DeviceProblems"><value>=== PNP-PROBLEMGERAETE / NUR LESEN ===</value></data>
+  <data name="Assistant.Script.NoDeviceProblems"><value>KEINE AKTUELLEN PNP-PROBLEMGERAETE GEMELDET</value></data>
+  <data name="Assistant.Script.DriverInventory"><value>=== TREIBERINVENTAR / LETZTE 30 EINTRAEGE ===</value></data>
+  <data name="Assistant.Script.DriverAdvice"><value>Ein Treiberdatum ist kein Aktualitaets- oder Sicherheitsnachweis.</value></data>
+  <data name="Assistant.Unknown"><value>Unbekannter Windows-Diagnoseassistent.</value></data>
+  <data name="Layout.SmartHeading"><value>SMART / ATA / NVMe / Fehler- und Selbsttestlogs</value></data>
+  <data name="Layout.ReadSmartLogs"><value>Diagnose / Faehigkeiten / Logs lesen</value></data>
+  <data name="Layout.NetworkHeading"><value>LAN / WLAN / Verbindungskontrolle</value></data>
+  <data name="Layout.SpeedNotice"><value>Download-Durchsatz einer HTTPS-Verbindung zu speed.cloudflare.com; nur nach Freigabe, kein Upload-Test.</value></data>
+  <data name="Layout.ReadArp"><value>ARP / MAC lesen</value></data>
+  <data name="Layout.OuiManufacturer"><value>OUI HERSTELLER</value></data>
+  <data name="Layout.InstalledPackages"><value>Installierte Pakete</value></data>
+  <data name="Layout.PackageSearchTip"><value>Suchbegriff fuer winget search</value></data>
+  <data name="Layout.PackageSearch"><value>Paketsuche</value></data>
+  <data name="Layout.Search"><value>Suchen</value></data>
+  <data name="Layout.InstallSelection"><value>Auswahl installieren</value></data>
+  <data name="Layout.UpgradeSelection"><value>Auswahl aktualisieren</value></data>
+  <data name="Layout.UpgradeAll"><value>Alle aktualisieren</value></data>
+  <data name="Layout.UninstallSelection"><value>Auswahl deinstallieren</value></data>
+  <data name="Layout.PackageDetails"><value>Paketdetails lesen</value></data>
+  <data name="Layout.PackageDetailsTip"><value>winget show mit exakter ID und gemeldeter Quelle; kann die Quelle kontaktieren</value></data>
+  <data name="Layout.PackageExportTip"><value>Auswahl, sonst geladene Liste. Nur vollstaendige IDs mit bekannter Quelle; kein Installerbackup.</value></data>
+  <data name="Layout.PackageImport"><value>Paketliste importieren / Vorschau</value></data>
+  <data name="Layout.PackageImportTip"><value>Lokale AETHER-Paketliste lesen; installiert nichts. Versionen sind keine Versionssperren.</value></data>
+  <data name="Layout.Source"><value>QUELLE</value></data>
+  <data name="Layout.PackageInitial"><value>Noch keine Liste geladen. Alle aktualisieren nutzt die zuletzt geladene Update-Liste.</value></data>
+  <data name="Layout.Time"><value>ZEIT</value></data>
+  <data name="Layout.ResultLimits"><value>ERGEBNIS / GRENZEN</value></data>
+  <data name="Layout.CommandSearch"><value>Befehlssuche</value></data>
+  <data name="Layout.CommandSearchTip"><value>Befehl, Kategorie, Parameter oder Funktion suchen</value></data>
+  <data name="Layout.CommandHelp"><value>Mehr Befehle/Optionen: Get-Command, Get-Help BEFEHL -Full, Get-Command BEFEHL -Syntax sowie winget --help / dism /? / sfc /?. Keine Liste kann alle optionalen Windows-Module vorwegnehmen.</value></data>
+  <data name="Layout.SafeWindowsTools"><value>Sichere Windows-Werkzeuge</value></data>
+  <data name="Layout.SearchUpdates"><value>Vollständige Update-/Treiberangebote suchen</value></data>
+  <data name="Layout.UpdateInitial"><value>Noch keine vollständige Suche. Auswahl verfällt nach einer Stunde oder neuer Suche.</value></data>
+  <data name="Layout.UpdateIdentity"><value>Exakte Updateidentität und vollständiger Lizenztext</value></data>
+  <data name="Layout.OptionalNotice"><value>Keine Installation, kein externer Toolstart, keine automatische EULA-Annahme. Gefundene Dateien sind kein Vertrauens-/Versionsnachweis. WinGet/Pakete und bisherige Assistenten bleiben unverändert.</value></data>
+  <data name="Layout.RestartExplorer"><value>Explorer kontrolliert neu starten</value></data>
+  <data name="Layout.RepairNotice"><value>Reparaturen aendern Windows. DISM kann Windows Update kontaktieren. Keine Defender-Abschaltung. Abbruch beendet den gestarteten Befehlsprozess; Reparaturen koennen bereits Teilaktionen ausgefuehrt haben. Vorher sichern.</value></data>
+  <data name="Layout.StartupNotice"><value>64-Bit HKCU/HKLM Run-Zeichenfolgen. Deaktivierung sichert den exakten Wert vor Entfernung; Aktivierung verweigert Konflikte. Weitere Aufgaben/Dienste im Windows-Task-Manager verwalten.</value></data>
+  <data name="Layout.StartupFilterTip"><value>Name, HKCU/HKLM oder vollstaendigen Befehl lokal filtern; kein erneutes Einlesen</value></data>
+  <data name="Layout.Active"><value>AKTIV</value></data>
+  <data name="Layout.Command"><value>BEFEHL</value></data>
+  <data name="Layout.StartupCommand"><value>Vollstaendiger Autostartbefehl</value></data>
+  <data name="Layout.EnableStartup"><value>Gesicherten Autostart aktivieren</value></data>
+  <data name="Layout.ReadShellbags"><value>Shellbags lesen (HKCU)</value></data>
+  <data name="Layout.Kind"><value>ART</value></data>
+  <data name="Layout.KeyWritten"><value>SCHLUESSEL ZULETZT GESCHRIEBEN</value></data>
+  <data name="Layout.RegistrySource"><value>REGISTRY-QUELLE</value></data>
+  <data name="Layout.ShellbagInitial"><value>Noch nicht gelesen. Der Zeitstempel gehoert zum Registry-Schluessel, nicht zwingend zum letzten Ordnerbesuch.</value></data>
+  <data name="Layout.Timestamp"><value>ZEITSTEMPEL</value></data>
+  <data name="Layout.CaptureSeconds"><value>Capture-Sekunden</value></data>
+  <data name="Layout.AnalyzeFrames"><value>Frame-CSV auswerten</value></data>
+  <data name="Layout.OuiNotice"><value>Optionale IEEE MA-L/OUI-CSV fuer Herstellerzuordnung (offline)</value></data>
+  <data name="Layout.ManagementReports"><value>Zentrale Verwaltung / Diagnoseberichte</value></data>
+  <data name="Layout.ServerUrl"><value>Server-URL (HTTP nur localhost; LAN nur mit HTTPS)</value></data>
+  <data name="Layout.ReportingConsent"><value>Nach Freigabe beim App-Start und danach stuendlich Diagnoseberichte senden</value></data>
+  <data name="Layout.ManagementInitial"><value>Nicht angemeldet. Keine zentrale Verbindung aktiv.</value></data>
+  <data name="Layout.SkinSelection"><value>Skin-Auswahl</value></data>
+  <data name="Layout.SensorLimits"><value>Fehlende Thermal-/Throttling-Sensoren bleiben unbekannt. Hohe Temperatur allein beweist keine Drosselung. Fuer VCore/DRAM keine erfundenen Sollwerte. Werkzeuge werden nicht automatisch heruntergeladen oder als Admin installiert.</value></data>
+  <data name="Layout.SensitiveHeading"><value>Sensible lokale Anzeige / nur auf ausdruecklichen Klick</value></data>
+  <data name="Layout.SecretProfile"><value>WLAN-Profil fuer Schluessel</value></data>
+  <data name="Layout.ConsoleHeight"><value>Konsolenhoehe aendern</value></data>
+  <data name="Layout.PowerShellNotice"><value>Windows PowerShell 5.1. Enter: direkt starten. Pfeil hoch/runter: Verlauf. Pro Befehl eine neue Sitzung; keine interaktive Standardeingabe.</value></data>
+  <data name="Layout.TimeoutTip"><value>Zeitlimit in Minuten (1 bis 1440)</value></data>
+  <data name="Layout.Timeout"><value>Befehlszeitlimit Minuten</value></data>
+  <data name="Layout.TerminalIdle"><value>IDLE / PowerShell 5.1 / neue Sitzung pro Befehl / Zeitlimit in Minuten</value></data>
+  <data name="Layout.ControlReady"><value>Bereit. Keine Aktion automatisch gestartet.</value></data>
+  <data name="Layout.AdminArea"><value>Superadmin Bereich</value></data>
+  <data name="Layout.ReadAdmin"><value>Status / Tabelle lesen</value></data>
+  <data name="Layout.AdminParameter"><value>WinGet-ID/Suchbegriff, DNS-IPs, Proxy, Gruppenmitglied oder ACL-Pfad; je nach Bereich</value></data>
+  <data name="Layout.ChangePreview"><value>Aenderungsvorschau</value></data>
+  <data name="Layout.AdminReady"><value>Bereit. Keine Systemaenderung automatisch gestartet.</value></data>
+  <data name="Layout.Unavailable"><value>Nicht verfuegbar</value></data>
+  <data name="Layout.Free"><value>Frei</value></data>
+  <data name="Layout.ReadChannel"><value>Kanal lesen</value></data>
+  <data name="Layout.EventDetails"><value>Auswahl / Volltext und XML</value></data>
+  <data name="Layout.EventSearch"><value>Eventbrowser Suche</value></data>
+  <data name="Layout.EventSearchTip"><value>Nachricht, Quelle, ID</value></data>
+  <data name="Layout.CriticalErrors"><value>Kritisch / Fehler</value></data>
+  <data name="Layout.IndexNotice"><value>Historischer Windows-Index, keine Spiele-FPS oder Sicherheitsnote. Windows 11 kann WinSAT eingeschraenkt bereitstellen. D3D/Gaming wird nach Windows 8.1 nicht neu bewertet und bleibt hier --.</value></data>
+  <data name="Layout.MeasureIndex"><value>Neue WinSAT-Messung / Vorschau</value></data>
+  <data name="Layout.IndexInitial"><value>Noch nicht gelesen; kein Benchmark beim Boot.</value></data>
+  <data name="Layout.DiagnosticTemplate"><value>Nur Diagnose</value></data>
+  <data name="Layout.SecurityTemplate"><value>Sicherheitswartung</value></data>
+  <data name="Layout.NoTasks"><value>Keine Aufgaben</value></data>
+  <data name="Layout.RequireRestorePoint"><value>Wiederherstellungspunkt vor Aenderungen</value></data>
+  <data name="Layout.SearchWindowsUpdates"><value>Windows-Updates suchen</value></data>
+  <data name="Layout.UpdateEula"><value>UPDATE / EULA bei Auswahl</value></data>
+  <data name="Layout.ExactPackages"><value>Keine --all-Option; keine freien Skripte</value></data>
+  <data name="Layout.CleanerSelection"><value>Cleaner / sichere Dateiauswahl</value></data>
+  <data name="Layout.ReportFolder"><value>Berichtsordner</value></data>
+  <data name="Layout.Diagnostic"><value>DIAGNOSE</value></data>
+  <data name="Layout.TargetPreview"><value>Diagnoseplan / Zielvorschau</value></data>
+  <data name="Layout.CloudHeading"><value>CLOUD / SERVER READINESS // LOKAL, NICHT VERBUNDEN</value></data>
+  <data name="Layout.ReadPrerequisites"><value>Lokale Voraussetzungen lesen</value></data>
+  <data name="Layout.AssistantHeading"><value>WINDOWS-DIAGNOSE &amp; PROBLEMLÖSUNG // GEFÜHRTE ASSISTENTEN</value></data>
+  <data name="Layout.ReadPnpTip"><value>PnP-Problemcodes und Treiberinventar lesen</value></data>
+  <data name="Layout.FullDiagnostics"><value>Komplettes Diagnoseinventar</value></data>
+  <data name="Layout.PlanProgress"><value>Protokollierte Aufgaben / keine geschaetzte Gesamtrestzeit</value></data>
+  <data name="Layout.StopDiagnostics"><value>Anhalten / Diagnose abbrechen</value></data>
+  <data name="Layout.OperationsReady"><value>Bereit. Nichts wird beim Oeffnen ausgefuehrt.</value></data>
+  <data name="Layout.SensorMatrix"><value>DETAILMATRIX / GRENZWERTE</value></data>
+  <data name="Layout.ExportHeading"><value>DIAGNOSEBERICHT / VORSCHAU</value></data>
+  <data name="Layout.ReportPreview"><value>Berichtsvorschau</value></data>
+  <data name="Layout.VisualScanner"><value>VISUAL SCANNER / KEIN NETZSCAN</value></data>
+  <data name="Layout.VolumeHistory"><value>VOLUMES / BELEGUNGSBALKEN UND VERLAUF</value></data>
+  <data name="Layout.SensorAccessNotice"><value>Sensorzugriff unten separat aktivieren. Unlesbare Werte: --, nicht 0. Nichtprozentwerte nutzen dynamische Skalen, keine Warn-/Gesundheitsscores.</value></data>
+  <data name="Layout.EventBuckets"><value>24H / STUNDENBUCKETS / nur die maximal 400 gelieferten Ereignisse, kein vollstaendiges Ereignisaufkommen</value></data>
+  <data name="Layout.EventFilter"><value>Quelle, Ereignis-ID, Kanal oder Nachricht filtern</value></data>
+  <data name="Layout.EventDetailNotice"><value>EREIGNISDETAIL / Auswahl oben / maximal 2000 Zeichen pro Nachricht</value></data>
+  <data name="Layout.ReadSensorReport"><value>CPU-/Sensorproviderbericht lesen</value></data>
+  <data name="Layout.RecordHistory"><value>Messverlauf lokal aufzeichnen</value></data>
+  <data name="Layout.OpenDataFolder"><value>Lokalen Datenordner oeffnen</value></data>
+  <data name="Layout.ProcessDetails"><value>Auswahl / Prozessdetails</value></data>
+  <data name="Layout.MatrixSnapshot"><value>Momentaufnahme der gefilterten Detailmatrix, inklusive gekennzeichneter Grenzwerte und leerer fehlender Werte</value></data>
+  <data name="Layout.SmartTests"><value>SMART-Diagnose und Laufwerkstests</value></data>
+  <data name="Layout.PauseSession"><value>Sitzung anhalten / fortsetzen</value></data>
+  <data name="Layout.SessionNotice"><value>Sitzungsstatistik im RAM, keine FPS-Messung und kein synthetischer Benchmark. Sensorluecken werden nicht als 0 gemittelt.</value></data>
+  <data name="Layout.SessionFilter"><value>Hardware, Messreihe oder Einheit filtern; CSV exportiert nur sichtbare Reihen</value></data>
+  <data name="Layout.DiagnoseControl"><value>Diagnose &amp; Systemkontrolle</value></data>
+  <data name="Layout.WindowsDiagnostics"><value>Windows-Diagnose &amp; Problemlösung</value></data>
+  <data name="Layout.ExportReport"><value>Diagnosebericht exportieren</value></data>
+  <data name="Layout.ExportReportTip"><value>Textbericht mit Vorschau; persoenliche Angaben werden auf Wunsch geschwaerzt</value></data>
+  <data name="Layout.WindowsSecurity"><value>Windows Sicherheit</value></data>
+  <data name="Layout.GodMode"><value>GodMode-Ordner</value></data>
+  <data name="Layout.WindowsToolsNotice"><value>Oeffnet die originalen Windows-Werkzeuge. Aenderungen dort erfolgen unter deiner Kontrolle. Keine Hintergrund-Reparaturen, keine Schutzabschaltung.</value></data>
+  <data name="Layout.SecurityTelemetry"><value>Sicherheit &amp; Windows-Telemetrie</value></data>
+  <data name="Layout.CleanerHeading"><value>Cleaner / Vorschau vor Kontrolle</value></data>
+  <data name="Layout.FindLargeFiles"><value>Grosse Dateien finden / nur lesen</value></data>
+  <data name="Layout.UncheckAll"><value>Keine ankreuzen</value></data>
+  <data name="Layout.ModifiedUtc"><value>GEAENDERT (UTC)</value></data>
+  <data name="Layout.HelpNotice"><value>Lokale, durchsuchbare Hilfe zu jedem Modul: was es tut, wie du es Schritt fuer Schritt benutzt und wo die Grenzen liegen. Keine Online-Verbindung, keine Telemetrie.</value></data>
+  <data name="Layout.HelpSearchName"><value>Hilfesuche</value></data>
+  <data name="Layout.MaintenanceTab" xml:space="preserve"><value>Wartungsplan</value></data>
+  <data name="Layout.AssistantsTab" xml:space="preserve"><value>Windows-Assistenten</value></data>
+  <data name="Package.ExternalSelect" xml:space="preserve"><value>Bereits installiertes UniGetUI / WingetUI bewusst auswaehlen</value></data>
+  <data name="Package.ExternalConsent" xml:space="preserve"><value>Externes Programm starten:
+{0}
+
+Fuer weitere Paketmanager (z.B. Scoop/Chocolatey). Keine native AETHER-Verwaltung dieser Quellen. Nur vertrauenswuerdige Installation verwenden. Das externe Programm hat eigene Einstellungen, Freigaben und Protokolle; seine Aktionen werden nicht in AETHERs Auftraegen erfasst. AETHER installiert oder aktualisiert dabei selbst keine Pakete.</value></data>
+  <data name="Package.ExternalTitle" xml:space="preserve"><value>Externe Paketverwaltung</value></data>
+  <data name="Package.ExternalNoProcess" xml:space="preserve"><value>Windows hat keinen Paketmanager-Prozess gestartet.</value></data>
+  <data name="Package.ExternalStarted" xml:space="preserve"><value>Externe Paketverwaltung gestartet. AETHER-Liste nach externen Aenderungen neu laden.</value></data>
+  <data name="Package.ExternalFailed" xml:space="preserve"><value>Externe Paketverwaltung nicht gestartet: {0}</value></data>
+  <data name="Package.SelectOne" xml:space="preserve"><value>Genau ein Paket fuer Details markieren.</value></data>
+  <data name="Package.DetailsTitle" xml:space="preserve"><value>Paketdetails / {0}</value></data>
+  <data name="Package.DetailsExit" xml:space="preserve"><value>Paketdetails: WinGet Exit {0}; Ausgabe beachten.</value></data>
+  <data name="Package.DetailsSource" xml:space="preserve"><value>Hersteller, Lizenz und Installerangaben stammen von der konfigurierten Quelle; vor Installation pruefen.</value></data>
+  <data name="Package.ExportConsent" xml:space="preserve"><value>{0} Paket-IDs mit Quelle exportieren; {1} Eintraege ohne eindeutige ID/Quelle ausgeschlossen.
+Auswahl, sonst geladene Liste. Kein vollstaendiges Softwarebackup, keine Installer, Einstellungen oder Lizenzen. Versionen sind nur Hinweise; Import installiert spaeter die verfuegbare Version der Quelle.</value></data>
+  <data name="Package.ExportTitle" xml:space="preserve"><value>Paketliste pruefen</value></data>
+  <data name="Package.BundleFilter" xml:space="preserve"><value>AETHER-Paketliste (*.aether-packages.json)|*.aether-packages.json</value></data>
+  <data name="Package.Exported" xml:space="preserve"><value>{0} Pakete exportiert; {1} ausgeschlossen. Keine Systemaenderung.</value></data>
+  <data name="Package.ExportFailed" xml:space="preserve"><value>Paketexport fehlgeschlagen: {0}</value></data>
+  <data name="Package.Imported" xml:space="preserve"><value>{0} IMPORTIERTE WUNSCHPAKETE / nichts installiert. Keine Ist-Liste! Quellen/IDs pruefen, gewuenschte Zeilen markieren und separat installieren. Quellen muessen lokal bereits eingerichtet sein. Versionen sind keine Versionssperren.</value></data>
+  <data name="Package.ImportFailed" xml:space="preserve"><value>Paketimport fehlgeschlagen; bisherige Liste bleibt erhalten: {0}</value></data>
+  <data name="Package.QueueIds" xml:space="preserve"><value>Paketlauf braucht 1..100 eindeutige IDs.</value></data>
+  <data name="Package.QueueHeading" xml:space="preserve"><value>
+[PAKET] {0} / {1} / Quelle: {2}
+</value></data>
+  <data name="Package.SourceUnknown" xml:space="preserve"><value>nicht gemeldet / WinGet-Zuordnung</value></data>
+  <data name="Package.QueueExit" xml:space="preserve"><value>WinGet Exit {0}; Ausgabe und anschliessend Programmliste pruefen.</value></data>
+  <data name="Package.QueuePartialChanges" xml:space="preserve"><value>Installer kann bereits Aenderungen vorgenommen haben.</value></data>
+  <data name="Package.QueueError" xml:space="preserve"><value>
+[PAKETFEHLER] {0}: {1}
+</value></data>
+  <data name="Package.QueueNotStarted" xml:space="preserve"><value>Warteschlange vor Ausfuehrung gestoppt; keine automatische Wiederholung.</value></data>
+  <data name="Package.QueueIncomplete" xml:space="preserve"><value>Ausfuehrung ohne bestaetigtes Ende; Teilaktionen koennen bestehen bleiben.</value></data>
+  <data name="Package.QueueStale" xml:space="preserve"><value>Paketlauf beendet/gestoppt. Liste ist jetzt eine alte Momentaufnahme; vor weiteren Aktionen neu laden. Einzelstatus unter Auftraege.</value></data>
+  <data name="Package.QueueSummary" xml:space="preserve"><value>{0} ohne gemeldeten Fehler / {1} ohne passendes Upgrade / {2} fehlgeschlagen. Kein Funktionsnachweis und kein automatischer Neustart. Liste neu laden.</value></data>
+  <data name="Package.QueueFindings" xml:space="preserve"><value> Einzelbefunde unter Auftraege.</value></data>
+  <data name="Package.ListInstalled" xml:space="preserve"><value>Paket-Center / installierte Pakete</value></data>
+  <data name="Package.ListUpdates" xml:space="preserve"><value>Paket-Center / Updateangebot</value></data>
+  <data name="Package.Search" xml:space="preserve"><value>Paket-Center / Suche</value></data>
+  <data name="Package.NativeExit" xml:space="preserve"><value>WinGet Exit {0}. STDERR steht oben.</value></data>
+  <data name="Package.Loaded" xml:space="preserve"><value>{0} Eintraege geladen | {1} ohne eindeutig lesbare ID (nicht aktionierbar).</value></data>
+  <data name="Package.UpdateListOnly" xml:space="preserve"><value> Alle aktualisieren nutzt genau diese Liste.</value></data>
+  <data name="Package.TableParsed" xml:space="preserve"><value>{0} Tabellenzeilen erkannt. Eintraege mit abgeschnittener ID bleiben bewusst ohne Aktion.</value></data>
+  <data name="Package.Reload" xml:space="preserve"><value>Vor weiteren Paketaktionen Liste neu laden oder Paketliste erneut importieren.</value></data>
+  <data name="Package.ImportOnlyInstall" xml:space="preserve"><value>Import ist eine Wunschliste, keine Ist-Liste. Nur Auswahl installieren ist moeglich; fuer Updates/Entfernen lokale Liste laden.</value></data>
+  <data name="Package.LoadUpdatesFirst" xml:space="preserve"><value>Zuerst 'Verfuegbare Updates' laden: Alle aktualisieren nutzt genau diese angezeigte Liste.</value></data>
+  <data name="Package.MultipleSources" xml:space="preserve"><value>Gleiche Paket-ID aus mehreren Quellen: Auswahl auf genau eine Quelle je ID eingrenzen.</value></data>
+  <data name="Package.NoUpdates" xml:space="preserve"><value>Keine aktionierbaren Updates in der Liste.</value></data>
+  <data name="Package.NoSelection" xml:space="preserve"><value>Keine aktionierbaren Pakete markiert. Zeilen in der Tabelle auswaehlen; AKTIONIERBAR muss 'ja' sein.</value></data>
+  <data name="Package.Limit" xml:space="preserve"><value>Maximal {0} Paket-IDs je Lauf; Auswahl verkleinern.</value></data>
+  <data name="Package.InstallVerb" xml:space="preserve"><value>INSTALLIEREN</value></data>
+  <data name="Package.UpgradeVerb" xml:space="preserve"><value>AKTUALISIEREN</value></data>
+  <data name="Package.UninstallVerb" xml:space="preserve"><value>DEINSTALLIEREN</value></data>
+  <data name="Package.ConsentHeading" xml:space="preserve"><value>{0} ueber WinGet, {1} exakte Paket-ID(s):
+</value></data>
+  <data name="Package.Target" xml:space="preserve"><value>{0}  ({1}) / Quelle: {2}</value></data>
+  <data name="Package.SkippedTargets" xml:space="preserve"><value>
+{0} Eintraege ohne eindeutige ID werden uebersprungen.</value></data>
+  <data name="Package.ConsentDetails" xml:space="preserve"><value>
+
+Jede ID laeuft einzeln mit --exact. Quell-/Paketlizenzen werden akzeptiert; Fremdinstaller koennen eigene Fenster zeigen.</value></data>
+  <data name="Package.UninstallPermanent" xml:space="preserve"><value>
+Deinstallation entfernt Programme endgueltig.</value></data>
+  <data name="Package.RunTitle" xml:space="preserve"><value>Paket-Center / {0} ({1} IDs)</value></data>
+  <data name="Center.VersionUnreadable" xml:space="preserve"><value>Windows-Version nicht lesbar</value></data>
+  <data name="Center.ModeSaveFailed" xml:space="preserve"><value>Modus gilt nur fuer diese Sitzung; nicht gespeichert: {0}</value></data>
+  <data name="Center.ExpertNotice" xml:space="preserve"><value>EXPERTE: voller Katalog; Enter fuehrt direkt aus, ohne weitere Bestaetigung.</value></data>
+  <data name="Center.BeginnerNotice" xml:space="preserve"><value>EINSTEIGER: nur lesende Befehle sichtbar; freier Konsolenstart ist gesperrt.</value></data>
+  <data name="Center.BootJournal" xml:space="preserve"><value>
+[BOOT JOURNAL / NUR RAM]
+</value></data>
+  <data name="Center.NativeTitleFailed" xml:space="preserve"><value>Dunkle Windows-Titelleiste nicht verfuegbar: HRESULT {0:X8}</value></data>
+  <data name="Center.ManagedProtected" xml:space="preserve"><value>Server-Client-Modus. Geraetetoken ist Windows-DPAPI-geschuetzt; Versand nur nach Freigabe und Opt-in.</value></data>
+  <data name="Center.ManagedLocal" xml:space="preserve"><value>Server-Client-Modus. Noch nicht angemeldet; alle Funktionen bleiben lokal.</value></data>
+  <data name="Center.Standalone" xml:space="preserve"><value>Einzelplatz-Modus. Keine Verbindung und keine Datenuebertragung zur Zentrale.</value></data>
+  <data name="Center.ToolMissing" xml:space="preserve"><value>Gespeicherte EXE fehlt. Pfad neu auswaehlen oder leeren.</value></data>
+  <data name="Center.ManagedRegistered" xml:space="preserve"><value>Server-Client-Modus. Geraet angemeldet; Berichte nur nach separater Freigabe.</value></data>
+  <data name="Center.ManagedPending" xml:space="preserve"><value>Server-Client-Modus gewaehlt. Noch nicht angemeldet; keine Berichte werden gesendet.</value></data>
+  <data name="Center.ShellbagTitle" xml:space="preserve"><value>Shellbag-Analyse (nur lesend)</value></data>
+  <data name="Center.ShellbagStatus" xml:space="preserve"><value>{0} Eintraege (Limit {1}) | {2} nicht dekodierbar | Zeitstempel = Registry-Schluessel, nicht Ordnerbesuch.</value></data>
+  <data name="Center.ShellbagResult" xml:space="preserve"><value>{0} Shellbag-Eintraege aus HKCU gelesen. Nur lesender Zugriff; nichts wurde veraendert oder geloescht.</value></data>
+  <data name="Center.PortalTitle" xml:space="preserve"><value>Captive-Portal-Diagnose</value></data>
+  <data name="Center.PortalConsent" xml:space="preserve"><value>Sendet eine HTTP-Konnektivitaetsprobe an www.msftconnecttest.com. IP-Adresse wird dort sichtbar. Keine Anmeldung, keine Datenuebertragung aus dem Cockpit.</value></data>
+  <data name="Center.LanResult" xml:space="preserve"><value>{0} Antworten/Abfragefehler im Netz {1}. Nicht antwortende Geraete sind nicht ausgeschlossen.
+</value></data>
+  <data name="Center.LanConsent" xml:space="preserve"><value>Privates Netz {0} mit bis zu 254 ICMP-Zielen pruefen. Nur mit Berechtigung im eigenen Netz.</value></data>
+  <data name="Center.AutoLanPrevious" xml:space="preserve"><value>Vorherigen Auto-Scan erst beenden lassen.</value></data>
+  <data name="Center.AutoLanConsent" xml:space="preserve"><value>{0} alle 60 Sekunden aktiv mit ICMP pruefen, solange dieses Fenster offen ist? Nur im eigenen/freigegebenen Netz. Mit Abbrechen oder Ausschalten jederzeit stoppen.</value></data>
+  <data name="Center.AutoLanTitle" xml:space="preserve"><value>Wiederkehrenden LAN-Scan freigeben</value></data>
+  <data name="Center.AutoLanRun" xml:space="preserve"><value>Freigegebener Auto-LAN-Scan</value></data>
+  <data name="Center.AutoLanStopped" xml:space="preserve"><value>Auto-Scan beendet.</value></data>
+  <data name="Center.ActionRunning" xml:space="preserve"><value>Es laeuft bereits eine Aktion. Erst abschliessen oder abbrechen.</value></data>
+  <data name="Center.CommandEmpty" xml:space="preserve"><value>Kein Befehl eingegeben. Befehl in der Verwaltung waehlen oder eingeben.</value></data>
+  <data name="Center.CommandBlocked" xml:space="preserve"><value>EINSTEIGER-Modus: freie Konsolenbefehle sind gesperrt. Expertenmodus in der Wartung aktivieren.</value></data>
+  <data name="Center.CommandTimeout" xml:space="preserve"><value>Zeitlimit muss eine ganze Zahl zwischen 1 und 1440 Minuten sein.</value></data>
+  <data name="Center.CommandTitle" xml:space="preserve"><value>Administrator-Konsole</value></data>
+  <data name="Center.CommandHeading" xml:space="preserve"><value>[BEFEHL] {0}
+[SHELL] Windows PowerShell 5.1 / neue Sitzung / keine interaktive Eingabe
+[ACHTUNG] Direkte Ausfuehrung. Veraenderungen bleiben bei Abbruch bestehen.
+</value></data>
+  <data name="Center.CommandExit" xml:space="preserve"><value>Befehl Exitcode {0}. Ausgabe/Fehler oben beachten.</value></data>
+  <data name="Center.CommandSuccess" xml:space="preserve"><value>Exitcode 0. Ergebnis pruefen; dies ist kein pauschaler Reparatur-/Gesundheitsnachweis.</value></data>
+  <data name="Center.ExplorerTitle" xml:space="preserve"><value>Explorer-Neustart</value></data>
+  <data name="Center.ExplorerFailed" xml:space="preserve"><value>Explorer-Neustart fehlgeschlagen.</value></data>
+  <data name="Center.ExplorerResult" xml:space="preserve"><value>Explorer der aktuellen Sitzung neu gestartet. Windows kann die Shell ebenfalls automatisch neu starten.</value></data>
+  <data name="Center.DeliveryResult" xml:space="preserve"><value>Windows Delivery Optimization Cache-Bereinigung angefordert.</value></data>
+  <data name="Center.CertificatesTitle" xml:space="preserve"><value>Zertifikate</value></data>
+  <data name="Center.StabilityTitle" xml:space="preserve"><value>Stabilitaetsereignisse</value></data>
+  <data name="Center.JournalTitle" xml:space="preserve"><value>Aktionsordner</value></data>
+  <data name="Center.JournalOpened" xml:space="preserve"><value>Aktionsordner geoeffnet. Schluesselinhalte werden hier nicht gespeichert.</value></data>
+  <data name="Center.StartupTitle" xml:space="preserve"><value>Autostarts</value></data>
+  <data name="Center.StartupRead" xml:space="preserve"><value>Autostarts lokal eingelesen; AN/AUS bezieht sich auf den Run-Wert.</value></data>
+  <data name="Center.LogRange" xml:space="preserve"><value> | {0:g} bis {1:g}. Kurve bei Bedarf ausgeduennt.</value></data>
+  <data name="Center.CaptureDuration" xml:space="preserve"><value>Capture-Dauer ist keine Ganzzahl.</value></data>
+  <data name="Center.CaptureTitle" xml:space="preserve"><value>Frame-Capture</value></data>
+  <data name="Center.PresentMonMissing" xml:space="preserve"><value>PresentMon Console fehlt. EXE in Einstellungen auswaehlen.</value></data>
+  <data name="Center.EtwCleanup" xml:space="preserve"><value>
+ETW-Aufraeumhinweis: Exit {0}. {1} {2}</value></data>
+  <data name="Center.CaptureEmpty" xml:space="preserve"><value>Keine gueltigen Frames fuer den Prozess erfasst. Prozessname/Renderaktivitaet pruefen.</value></data>
+  <data name="Center.CaptureConsent" xml:space="preserve"><value>{0} fuer {1}s mit lokalem ETW verfolgen und in CSV speichern. Prozess muss laufen. ETW-Rechte/Administrator erforderlich, kein Dienst wird installiert.</value></data>
+  <data name="Center.FrameAnalysisTitle" xml:space="preserve"><value>Frame-Auswertung</value></data>
+  <data name="Center.FramesEmpty" xml:space="preserve"><value>Keine gueltigen Frames.</value></data>
+  <data name="Center.FramesLoadFirst" xml:space="preserve"><value>Erste Frame-CSV laden oder Capture abschliessen.</value></data>
+  <data name="Center.FrameCompareTitle" xml:space="preserve"><value>Frame-Vergleich</value></data>
+  <data name="Center.FramesSecondEmpty" xml:space="preserve"><value>Zweite CSV hat keine gueltigen Frames.</value></data>
+  <data name="Center.FrameComparison" xml:space="preserve"><value>ERSTE MESSUNG:
+{0}
+
+ZWEITE MESSUNG:
+{1}
+Swapchain-Adressen koennen zwischen Sitzungen wechseln; keine ungepruefte Vermischung/Zuordnung.</value></data>
+  <data name="Center.ToolFilter" xml:space="preserve"><value>Offizielles Werkzeug (*.exe)|*.exe</value></data>
+  <data name="Center.ManagerUnregistered" xml:space="preserve"><value>Dieses Geraet ist noch nicht angemeldet. Zuerst Server-URL und Einmalcode eingeben und das Geraet registrieren.</value></data>
+  <data name="Center.ManagerBound" xml:space="preserve"><value>Dieses Geraet ist bereits an eine Server-URL gebunden. Ein Serverwechsel wird erst nach sicherem Token-Widerruf unterstuetzt.</value></data>
+  <data name="Center.ManagerTitle" xml:space="preserve"><value>AETHER / Zentralverwaltung</value></data>
+  <data name="Center.ManagerConsent" xml:space="preserve"><value>Diagnoseberichte an {0} senden?
+
+Enthalten sind Windows-Ereignisse der letzten 24 Stunden, Geraete, Adapter, installierte Anwendungen, Treiber und Befunde. Versand beim App-Start und danach stuendlich, nur solange AETHER laeuft und der Server das Geraet freigegeben hat.</value></data>
+  <data name="Center.ManagerConsentTitle" xml:space="preserve"><value>AETHER / Ausdrueckliche Freigabe fuer zentrale Berichte</value></data>
+  <data name="Center.ManagerDisabled" xml:space="preserve"><value>Zentrale Uebertragung nicht aktiviert.</value></data>
+  <data name="Center.SettingsTitle" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Center.NumberInvalid" xml:space="preserve"><value>Gueltige Zahl in regionaler Schreibweise eingeben.</value></data>
+  <data name="Center.IntervalInvalid" xml:space="preserve"><value>Gueltiges Sekundenintervall eingeben.</value></data>
+  <data name="Center.StandaloneSaved" xml:space="preserve"><value>Einzelplatz-Modus gespeichert. Keine Serververbindung oder Datenuebertragung.</value></data>
+  <data name="Center.ManagedSaved" xml:space="preserve"><value>Server-Client-Modus gespeichert. Berichte starten erst nach manueller Geraetefreigabe.</value></data>
+  <data name="Center.ManagedReportsOff" xml:space="preserve"><value>Server-Client-Modus; Geraet angemeldet, Berichte aber deaktiviert.</value></data>
+  <data name="Center.ManagedEnrollFirst" xml:space="preserve"><value>Server-Client-Modus gewaehlt; zuerst am Server anmelden.</value></data>
+  <data name="Center.SettingsSaved" xml:space="preserve"><value>Einstellungen gespeichert. Neue Messungen verwenden die Warnschwellen; Aufzeichnung bleibt separat zustimmungspflichtig.</value></data>
+  <data name="Center.SettingsWarnings" xml:space="preserve"><value>
+WARNUNG: {0}</value></data>
+  <data name="Center.EnrollTitle" xml:space="preserve"><value>Geraet bei der Zentralverwaltung anmelden</value></data>
+  <data name="Center.MainMissing" xml:space="preserve"><value>Das Cockpit-Hauptfenster ist nicht verfuegbar.</value></data>
+  <data name="Center.TokenExists" xml:space="preserve"><value>Dieses Windows-Benutzerkonto besitzt bereits ein Geraetetoken. Keinen weiteren Einmalcode verbrauchen.</value></data>
+  <data name="Center.EnrollPending" xml:space="preserve"><value>Geraet {0} wartet auf manuelle Freigabe. Berichte sind noch deaktiviert.</value></data>
+  <data name="Center.Enrolled" xml:space="preserve"><value>Geraet angemeldet und Token mit Windows-DPAPI geschuetzt. Freigabe durch den Zentraladministrator erforderlich; Berichte bleiben bis zum gesonderten Opt-in aus.</value></data>
+  <data name="Center.EnrollConsent" xml:space="preserve"><value>Der Einmalcode wird an den Server gesendet und nach erfolgreicher Anmeldung verbraucht. Das Geraet bleibt bis zur manuellen Serverfreigabe gesperrt; diese Aktion aktiviert noch keine Berichte.</value></data>
+  <data name="Center.SensorProfile" xml:space="preserve"><value>Sensorprofil</value></data>
+  <data name="Main.ConfigurationUnreadable" xml:space="preserve"><value>Konfiguration nicht lesbar; Standardwerte bleiben sichtbar</value></data>
+  <data name="Main.SettingsNotSaved" xml:space="preserve"><value>AETHER / Einstellungen nicht gespeichert</value></data>
+  <data name="Main.ProbeReading" xml:space="preserve"><value>Windows-Status wird gelesen ...</value></data>
+  <data name="Main.AdminBusy" xml:space="preserve"><value>Zuerst die laufende Aktion/den Auto-Scan in der erweiterten Systemkontrolle beenden.</value></data>
+  <data name="Main.AdminAlready" xml:space="preserve"><value>Bereits mit Administratorrechten gestartet.</value></data>
+  <data name="Main.AdminConsent" xml:space="preserve"><value>Die gesamte App mit Administratorrechten neu starten? Windows zeigt die UAC-Abfrage. Die aktuelle Messsitzung im RAM endet; exportiere sie bei Bedarf vorher. Sensoren und Aufzeichnung bleiben nach dem Neustart aus. Windows-Schutzfunktionen werden nicht abgeschaltet.</value></data>
+  <data name="Main.AdminTitle" xml:space="preserve"><value>Administrator-Modus</value></data>
+  <data name="Main.AdminStartFailed" xml:space="preserve"><value>Administrator-Neustart konnte nicht gestartet werden.</value></data>
+  <data name="Main.RestartFailed" xml:space="preserve"><value>Neustart fehlgeschlagen</value></data>
+  <data name="Main.SessionResumed" xml:space="preserve"><value>Messsitzung wird fortgesetzt; Pausenwerte werden nicht eingerechnet.</value></data>
+  <data name="Main.SessionPaused" xml:space="preserve"><value>Messsitzung angehalten. MIN/MAX/AVG eingefroren; Live-Cockpit laeuft weiter.</value></data>
+  <data name="Main.StatisticsEmpty" xml:space="preserve"><value>Keine sichtbaren Statistikreihen fuer den Export.</value></data>
+  <data name="Main.StatisticsSaved" xml:space="preserve"><value>{0} sichtbare Statistikreihen gespeichert: {1}</value></data>
+  <data name="Main.SensorsEmpty" xml:space="preserve"><value>Keine sichtbaren Sensorzeilen fuer den Export.</value></data>
+  <data name="Main.SensorsSaved" xml:space="preserve"><value>{0} sichtbare Sensorzeilen als Momentaufnahme gespeichert; keine fortlaufende Aufzeichnung.</value></data>
+  <data name="Main.SnapshotFailed" xml:space="preserve"><value>Sensor-Snapshot nicht gespeichert</value></data>
+  <data name="Main.ToolFailed" xml:space="preserve"><value>Werkzeug nicht gestartet</value></data>
+  <data name="Main.HelpEmptyTitle" xml:space="preserve"><value>Kein Thema gefunden.</value></data>
+  <data name="Main.HelpEmptyBody" xml:space="preserve"><value>Anderen Suchbegriff versuchen, z.B. 'Update', 'Temperatur', 'Loeschen' oder 'Gaming'.</value></data>
+  <data name="Main.DiagnosticSaved" xml:space="preserve"><value>Diagnosebericht gespeichert: {0}</value></data>
+  <data name="Main.ViewFailed" xml:space="preserve"><value>Ansicht nicht geoeffnet</value></data>
+  <data name="Main.XbarActive" xml:space="preserve"><value>AETHER xBar aktiv: konfigurierbare Live-Diagramme und Laufwerksbelegung als Torten.</value></data>
+  <data name="Main.XbarSaved" xml:space="preserve"><value>AETHER xBar-Einstellungen gespeichert.</value></data>
+  <data name="Main.ProcessSelect" xml:space="preserve"><value>Lesbaren Prozess mit Startzeit auswaehlen. Geschuetzte Prozesse haben keine sicheren Detaildaten.</value></data>
+  <data name="Main.CacheUnreadable" xml:space="preserve"><value>Cache-Katalog nicht lesbar: {0}</value></data>
+  <data name="Main.SensorConsent" xml:space="preserve"><value>LibreHardwareMonitor liest Hardware-Sensoren. Bei erhoehten Rechten kann die Bibliothek einen lokalen Low-Level-Treiber laden. Das kann durch Windows-Schutzfunktionen blockiert werden.
+
+{0}
+
+Keine automatische Rechteerhoehung, keine Aenderung von Defender oder Treibersperren. Sensorzugriff aktivieren?</value></data>
+  <data name="Main.SensorAdmin" xml:space="preserve"><value>Die App laeuft bereits mit Administratorrechten.</value></data>
+  <data name="Main.SensorNoAdmin" xml:space="preserve"><value>Die App laeuft ohne Administratorrechte; einige Werte werden fehlen.</value></data>
+  <data name="Main.SensorConsentTitle" xml:space="preserve"><value>Optionaler Hardware-Zugriff</value></data>
+  <data name="Main.SensorInitializing" xml:space="preserve"><value>Sensoren werden initialisiert ...</value></data>
+  <data name="Main.SensorOff" xml:space="preserve"><value>Sensorzugriff aus. Keine tiefen Hardware-Messungen.</value></data>
+  <data name="Main.SensorFailed" xml:space="preserve"><value>Sensorzugriff fehlgeschlagen: {0}</value></data>
+  <data name="Main.HistoryActive" xml:space="preserve"><value>Aufzeichnung aktiv | zuletzt {0:HH:mm:ss}
+{1}</value></data>
+  <data name="Main.HistoryEnabled" xml:space="preserve"><value>Aufzeichnung aktiviert: {0}</value></data>
+  <data name="Main.HistoryOff" xml:space="preserve"><value>Aus. Vorhandene Aufzeichnungen bleiben lokal gespeichert.</value></data>
+  <data name="Main.DataFolderFailed" xml:space="preserve"><value>Datenordner konnte nicht geoeffnet werden</value></data>
+  <data name="Saver.InvalidArguments" xml:space="preserve"><value>Ungueltiger Bildschirmschoner-Aufruf. Erlaubt: /s, /c, /p &lt;Fensterhandle&gt;.</value></data>
+  <data name="Saver.Configuration" xml:space="preserve"><value>Der AETHER-Bildschirmschoner hat derzeit keine eigenen Einstellungen. Wartezeit und Anmeldeseite bei Reaktivierung legst du in den Windows-Bildschirmschonereinstellungen fest.</value></data>
+  <data name="Saver.Title" xml:space="preserve"><value>AETHER / Bildschirmschoner</value></data>
+  <data name="Saver.ErrorTitle" xml:space="preserve"><value>AETHER Bildschirmschoner / Fehler</value></data>
+  <data name="Saver.Loading" xml:space="preserve"><value>HARDWARE WIRD LOKAL GELESEN / KEINE LIVE-MESSWERTE</value></data>
+  <data name="Saver.HardwarePending" xml:space="preserve"><value>Hardware noch nicht verfuegbar</value></data>
+  <data name="Saver.InternetUnknown" xml:space="preserve"><value>Internetstatus nicht verfuegbar</value></data>
+  <data name="Saver.Disconnected" xml:space="preserve"><value>AETHER NICHT VERBUNDEN / HARDWARE-MOMENTAUFNAHME / KEINE LIVE-MESSWERTE</value></data>
+  <data name="Saver.ConnectionUnavailable" xml:space="preserve"><value>Verbindung nicht verfuegbar</value></data>
+  <data name="Saver.SettingsUnreadable" xml:space="preserve"><value>Darstellungseinstellungen nicht lesbar: {0}</value></data>
+  <data name="Saver.NoLive" xml:space="preserve"><value>KEINE LIVE-MESSWERTE / CPU -- / RAM -- / GPU -- / DOWN -- / UP -- / TEMP --</value></data>
+  <data name="Ui.AllLevels" xml:space="preserve"><value>Alle Stufen</value></data>
+  <data name="Ui.Warning" xml:space="preserve"><value>Warnung</value></data>
+  <data name="Ui.Warnings" xml:space="preserve"><value>Warnungen</value></data>
+  <data name="Ui.InformationPlural" xml:space="preserve"><value>Informationen</value></data>
+  <data name="Ui.Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Ui.RepairTemplate" xml:space="preserve"><value>Windows reparieren</value></data>
+  <data name="Ui.UpdatesTemplate" xml:space="preserve"><value>Updates vorbereiten</value></data>
+  <data name="Ui.SelectedTargets" xml:space="preserve"><value>Angekreuzte Ziele diagnostizieren</value></data>
+  <data name="Ui.TaskColumn" xml:space="preserve"><value>AUFGABE</value></data>
+  <data name="Ui.SizeColumn" xml:space="preserve"><value>GROESSE</value></data>
+  <data name="Ui.LicenseConsent" xml:space="preserve"><value>EULAs gelesen / akzeptiert</value></data>
+  <data name="Ui.PackageIds" xml:space="preserve"><value>WinGet-IDs: eine exakte Paket-ID je Zeile</value></data>
+  <data name="Ui.IndexTab" xml:space="preserve"><value>Leistungsindex</value></data>
+  <data name="Ui.AddressColumn" xml:space="preserve"><value>ADRESSE</value></data>
+  <data name="Ui.ChannelColumn" xml:space="preserve"><value>KANAL</value></data>
+  <data name="Ui.MessageColumn" xml:space="preserve"><value>NACHRICHT</value></data>
+  <data name="Ui.LevelColumn" xml:space="preserve"><value>STUFE</value></data>
+  <data name="Ui.SeriesColumn" xml:space="preserve"><value>MESSREIHE</value></data>
+  <data name="Ui.PointsColumn" xml:space="preserve"><value>PUNKTE</value></data>
+  <data name="Ui.ProcessColumn" xml:space="preserve"><value>PROZESS</value></data>
+  <data name="Ui.PathColumn" xml:space="preserve"><value>PFAD (BEST EFFORT)</value></data>
+  <data name="Ui.TypeColumn" xml:space="preserve"><value>TYP</value></data>
+  <data name="Ui.ActionableColumn" xml:space="preserve"><value>AKTIONIERBAR</value></data>
+  <data name="Ui.AdminCommands" xml:space="preserve"><value>Administrationsbefehle</value></data>
+  <data name="Ui.CancelAction" xml:space="preserve"><value>Aktion abbrechen</value></data>
+  <data name="Ui.CancelRunningAction" xml:space="preserve"><value>Laufende Aktion abbrechen</value></data>
+  <data name="Ui.JournalOpen" xml:space="preserve"><value>Aktionsprotokoll oeffnen</value></data>
+  <data name="Ui.TaskManagerEmbedded" xml:space="preserve"><value>Aufgaben eingebettet verwalten</value></data>
+  <data name="Ui.TaskScheduler" xml:space="preserve"><value>Aufgabenplanung</value></data>
+  <data name="Ui.StartupManage" xml:space="preserve"><value>Autostart verwalten</value></data>
+  <data name="Ui.StartupFilter" xml:space="preserve"><value>Autostartfilter</value></data>
+  <data name="Ui.StartupRead" xml:space="preserve"><value>Autostarts einlesen</value></data>
+  <data name="Ui.ClientMode" xml:space="preserve"><value>Betriebsmodus</value></data>
+  <data name="Ui.CpuWarning" xml:space="preserve"><value>CPU Warnung C</value></data>
+  <data name="Ui.GpuWarning" xml:space="preserve"><value>GPU Warnung C</value></data>
+  <data name="Ui.StorageWarning" xml:space="preserve"><value>Storage Warnung C</value></data>
+  <data name="Ui.CpuLoad" xml:space="preserve"><value>CPU LAST</value></data>
+  <data name="Ui.CacheCategory" xml:space="preserve"><value>Cache-Kategorie</value></data>
+  <data name="Ui.CleanerFilter" xml:space="preserve"><value>Cleaner-Pfadfilter</value></data>
+  <data name="Ui.DataControl" xml:space="preserve"><value>DATENKONTROLLE</value></data>
+  <data name="Ui.DiskManagement" xml:space="preserve"><value>Datentraegerverwaltung</value></data>
+  <data name="Ui.DesktopSettings" xml:space="preserve"><value>Desktop-Gadgets / Transparenz / Parameter</value></data>
+  <data name="Ui.Services" xml:space="preserve"><value>Dienste</value></data>
+  <data name="Ui.ServicesEmbedded" xml:space="preserve"><value>Dienste eingebettet verwalten</value></data>
+  <data name="Ui.EnrollmentCode" xml:space="preserve"><value>Einmaliger Zentralverwaltungs-Anmeldecode</value></data>
+  <data name="Ui.EventViewer" xml:space="preserve"><value>Ereignisanzeige</value></data>
+  <data name="Ui.EventDetails" xml:space="preserve"><value>Ereignisdetails</value></data>
+  <data name="Ui.EventFilter" xml:space="preserve"><value>Ereignisfilter</value></data>
+  <data name="Ui.EventChannel" xml:space="preserve"><value>Ereigniskanal</value></data>
+  <data name="Ui.EventLevel" xml:space="preserve"><value>Ereignisstufe</value></data>
+  <data name="Ui.EventBrowserDetails" xml:space="preserve"><value>Eventbrowser Details</value></data>
+  <data name="Ui.AdvancedControl" xml:space="preserve"><value>Erweiterte Systemkontrolle</value></data>
+  <data name="Ui.Expert" xml:space="preserve"><value>Experte</value></data>
+  <data name="Ui.ExpertMode" xml:space="preserve"><value>Expertenmodus</value></data>
+  <data name="Ui.CompareFrameCsv" xml:space="preserve"><value>Frame-CSV vergleichen</value></data>
+  <data name="Ui.HelpCenter" xml:space="preserve"><value>Hilfe-Center</value></data>
+  <data name="Ui.HelpTopics" xml:space="preserve"><value>Hilfethemen</value></data>
+  <data name="Ui.OpenJsonl" xml:space="preserve"><value>JSONL Messlog oeffnen</value></data>
+  <data name="Ui.ListChannels" xml:space="preserve"><value>Kanaele auflisten</value></data>
+  <data name="Ui.ConsoleCommand" xml:space="preserve"><value>Konsolenbefehl</value></data>
+  <data name="Ui.LanNetwork" xml:space="preserve"><value>LAN-Netz</value></data>
+  <data name="Ui.LiveCharts" xml:space="preserve"><value>LIVE-DIAGRAMME</value></data>
+  <data name="Ui.OpenBackgroundReport" xml:space="preserve"><value>Letzten Hintergrundbericht oeffnen</value></data>
+  <data name="Ui.LogSeries" xml:space="preserve"><value>Log-Messreihe</value></data>
+  <data name="Ui.LogInterval" xml:space="preserve"><value>Logintervall s</value></data>
+  <data name="Ui.LocalReports" xml:space="preserve"><value>Lokale Berichte</value></data>
+  <data name="Ui.CheckMarked" xml:space="preserve"><value>Markierte Zeilen ankreuzen</value></data>
+  <data name="Ui.CheckVisible" xml:space="preserve"><value>Sichtbare ankreuzen</value></data>
+  <data name="Ui.RemoveTarget" xml:space="preserve"><value>Markiertes Ziel entfernen</value></data>
+  <data name="Ui.AddTarget" xml:space="preserve"><value>Ziel hinzufuegen</value></data>
+  <data name="Ui.EventLimit" xml:space="preserve"><value>Maximale Ereignisse (1..2000)</value></data>
+  <data name="Ui.NewSession" xml:space="preserve"><value>Neue Messsitzung</value></data>
+  <data name="Ui.CompareLog" xml:space="preserve"><value>Mit zweitem Messlog vergleichen</value></data>
+  <data name="Ui.ProcessFilterTip" xml:space="preserve"><value>Name / PID / Status filtern</value></data>
+  <data name="Ui.ProcessFilterTipAlt" xml:space="preserve"><value>Name, PID oder Status filtern</value></data>
+  <data name="Ui.NetworkWifi" xml:space="preserve"><value>Netzwerk / WLAN</value></data>
+  <data name="Ui.OfficialPage" xml:space="preserve"><value>Offizielle Download-/Hilfeseite</value></data>
+  <data name="Ui.OptionalTools" xml:space="preserve"><value>Optionale Microsoft-Werkzeuge</value></data>
+  <data name="Ui.OperationsConsole" xml:space="preserve"><value>Operations Live-Konsole</value></data>
+  <data name="Ui.PackageCenter" xml:space="preserve"><value>Paket-Center / WinGet</value></data>
+  <data name="Ui.PackageExport" xml:space="preserve"><value>Paketliste exportieren</value></data>
+  <data name="Ui.Redact" xml:space="preserve"><value>Persoenliche Angaben schwaerzen (empfohlen fuer Foren/Support)</value></data>
+  <data name="Ui.PingTarget" xml:space="preserve"><value>Ping-Ziel</value></data>
+  <data name="Ui.ScanPrivateLan" xml:space="preserve"><value>Privates LAN scannen</value></data>
+  <data name="Ui.ProcessFilter" xml:space="preserve"><value>Prozessfilter</value></data>
+  <data name="Ui.EventDays" xml:space="preserve"><value>Rueckblick in Tagen (1..30)</value></data>
+  <data name="Ui.SmartParameter" xml:space="preserve"><value>SMART-Aktionsparameter</value></data>
+  <data name="Ui.Fast" xml:space="preserve"><value>Schnell</value></data>
+  <data name="Ui.Deep" xml:space="preserve"><value>Tief</value></data>
+  <data name="Ui.SensorFilter" xml:space="preserve"><value>Sensorfilter</value></data>
+  <data name="Ui.StatisticsFilter" xml:space="preserve"><value>Statistikfilter</value></data>
+  <data name="Ui.SensorExport" xml:space="preserve"><value>Sichtbare Sensoren als CSV-Snapshot</value></data>
+  <data name="Ui.StatisticsExport" xml:space="preserve"><value>Sichtbare Auswertung als CSV exportieren</value></data>
+  <data name="Ui.SpeedSize" xml:space="preserve"><value>Speedtest-Testgroesse MiB</value></data>
+  <data name="Ui.GameProcess" xml:space="preserve"><value>Spielprozess</value></data>
+  <data name="Ui.SmartJump" xml:space="preserve"><value>Springt direkt zum SMART-Modul der Systemkontrolle</value></data>
+  <data name="Ui.AdminAction" xml:space="preserve"><value>Superadmin Aktion</value></data>
+  <data name="Ui.AdminFilter" xml:space="preserve"><value>Superadmin Filter</value></data>
+  <data name="Ui.AdminConsole" xml:space="preserve"><value>Superadmin Konsole</value></data>
+  <data name="Ui.AdminParameter" xml:space="preserve"><value>Superadmin Parameter</value></data>
+  <data name="Ui.TableFilter" xml:space="preserve"><value>Tabellenfilter</value></data>
+  <data name="Ui.TestSize" xml:space="preserve"><value>Testgroesse 1..200 MiB</value></data>
+  <data name="Ui.OtherManagers" xml:space="preserve"><value>UniGetUI / weitere Manager (extern)</value></data>
+  <data name="Ui.WifiNetworks" xml:space="preserve"><value>WLAN Netze</value></data>
+  <data name="Ui.WifiProfiles" xml:space="preserve"><value>WLAN Profile</value></data>
+  <data name="Ui.DnsTarget" xml:space="preserve"><value>Windows-/DNS-Hostname oder IPv4</value></data>
+  <data name="Ui.MaintenanceAction" xml:space="preserve"><value>Windows-Wartungsaktion</value></data>
+  <data name="Ui.SystemFilesAssistant" xml:space="preserve"><value>1 / Systemdateien</value></data>
+  <data name="Ui.NetworkAssistant" xml:space="preserve"><value>3 / Netzwerk</value></data>
+  <data name="Ui.XbarToggle" xml:space="preserve"><value>AETHER xBar AN/AUS</value></data>
+  <data name="Ui.ArpClear" xml:space="preserve"><value>ARP-Cache leeren</value></data>
+  <data name="Ui.AtxTolerance" xml:space="preserve"><value>ATX Toleranz %</value></data>
+  <data name="Ui.AutoScan" xml:space="preserve"><value>Auto-Scan alle 60s</value></data>
+  <data name="Ui.StartupHeading" xml:space="preserve"><value>Autostart / reversible Registry-Verwaltung</value></data>
+  <data name="Ui.CrtGlass" xml:space="preserve"><value>CRT-Glas</value></data>
+  <data name="Ui.SensorFilterTip" xml:space="preserve"><value>Diagramme und Detailmatrix nach Hardware, Name, Typ, Einheit oder Sensor-ID filtern</value></data>
+  <data name="Ui.EventHeading" xml:space="preserve"><value>EREIGNISANZEIGE // EVENTMONITOR</value></data>
+  <data name="Ui.SensorBoot" xml:space="preserve"><value>Hardware-Sensoren / beim Boot initialisiert</value></data>
+  <data name="Ui.HistoryNotice" xml:space="preserve"><value>Live-Kurven: bis zu 90 Messpunkte. JSONL-Intervall konfigurierbar (Standard 5s), max. 7 Dateien / 16 MiB pro Tag. Aufzeichnung ist standardmaessig aus.</value></data>
+  <data name="Ui.LogViewerTab" xml:space="preserve"><value>Log-Viewer / Gaming / Vergleich</value></data>
+  <data name="Ui.LogsTab" xml:space="preserve"><value>Logs / Gaming</value></data>
+  <data name="Ui.StatisticsHeading" xml:space="preserve"><value>Messauswertung / MIN - MAX - AVG</value></data>
+  <data name="Ui.LogViewerHeading" xml:space="preserve"><value>Messlog-Viewer / Vergleich / Frame-Telemetrie</value></data>
+  <data name="Ui.NetworkHeading" xml:space="preserve"><value>NETZWERK / RX UND TX JE AKTIVEM ADAPTER</value></data>
+  <data name="Ui.PhysicalDrives" xml:space="preserve"><value>PHYSISCHE LAUFWERKE</value></data>
+  <data name="Ui.ProcessMonitorHeading" xml:space="preserve"><value>PROZESSMONITOR / CPU / RAM / I/O</value></data>
+  <data name="Ui.ProcessesHeading" xml:space="preserve"><value>Prozesse / Prioritaet / Beenden</value></data>
+  <data name="Ui.SensorsHeading" xml:space="preserve"><value>SENSOREN / ALLE GEMELDETEN KANAELE MIT GRAPH UND BALKEN</value></data>
+  <data name="Ui.AdminHeading" xml:space="preserve"><value>SUPERADMIN // EINGEBETTETE SYSTEMVERWALTUNG</value></data>
+  <data name="Ui.SystemPulse" xml:space="preserve"><value>SYSTEMPULS</value></data>
+  <data name="Ui.SensorMatrixHeading" xml:space="preserve"><value>Sensor-Matrix / Live-Diagramme</value></data>
+  <data name="Ui.SkinSurface" xml:space="preserve"><value>Skin / Fensteroberfläche</value></data>
+  <data name="Ui.TaskManagerHeading" xml:space="preserve"><value>TASKMANAGER / EINGEBETTET / LIVE</value></data>
+  <data name="Ui.AdminCatalogHeading" xml:space="preserve"><value>VERWALTUNG / BEFEHLE / PARAMETER</value></data>
+  <data name="Ui.WindowsToolsHeading" xml:space="preserve"><value>WINDOWS / DIREKTE WERKZEUGE</value></data>
+  <data name="Ui.WindowsToolLab" xml:space="preserve"><value>WINDOWS TOOL LAB / FESTE ASSISTENTEN</value></data>
+  <data name="Ui.SmartTool" xml:space="preserve"><value>smartctl.exe / offizielles smartmontools</value></data>
+  <data name="Ui.SmartArgumentHint" xml:space="preserve"><value>selective: LBA-Start-Ende; aam: 128..254; apm: 1..254</value></data>
+  <data name="Language.ReleaseNotice" xml:space="preserve"><value>Diese Version unterstützt Deutsch. Die englische Oberfläche ist noch nicht vollständig und nicht auswählbar. Eine zuvor gespeicherte Englisch-Auswahl wird als Deutsch geladen; andere Einstellungen bleiben erhalten.</value></data>
+</root>

@@ -89,6 +89,8 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
 | `--interface-ui` | Aufgabengruppen, echte Zielrouten, getrennte Mainframe-Bereiche, GPU-Lüfterebene, Tag-/Nachtgrenzen, schwarze Nacht-Hintergründe und Sekunden-Takt mit synthetischer Animation |
 | `--desktop-ui` | Gadgets und Desktopparameter |
+| `--desktop-language-smoke` | Ressourcenbasierte Desktop-Sprachtexte und Darstellung |
+| `--desktop-ui-smoke` | Windows-Modern-Darstellung und synthetisches System-Schema in hell/dunkel |
 | `--screensaver-ui` | Synthetische Schonerszene ohne Hardwareinitialisierung |
 | `--inventory-ui` | Inventarfenster mit kontrollierten Testdaten |
 
@@ -97,6 +99,10 @@ Optionale Screenshots verwenden `--board-screenshot`, `--sensor-charts-screensho
 `--professional-screenshot-prefix` benennt mehrere Workflow-Bilder.
 `--branding-screenshot-prefix` erzeugt Boot-, Dashboard- und xBar-Bilder.
 `--interface-screenshot-prefix` erzeugt Mainframebilder im Tag-/Nachtmodus.
+Für `--desktop-ui-smoke` legt `AETHER_SCREENSHOT_DIR` den Screenshotordner fest;
+die Bilder heißen `windows-modern-light-system-schema.png` und
+`windows-modern-dark-system-schema.png`. Dabei werden keine Sensoren,
+Reparaturen oder Produktinstallationen gestartet.
 Die Sekundenprüfung beobachtet sechs Sekunden lang Property-Änderungen
 ohne Sensorzugriff. Nach dem ersten Intervall gilt maximal 1,5 Sekunden Abstand.
 `--board-render-profile verify` prüft bei synthetischer WPF-Komposition

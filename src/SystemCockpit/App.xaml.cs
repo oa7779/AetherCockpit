@@ -9,10 +9,17 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        try { Services.DesktopText.ConfigureSupportedUi(Services.CockpitSettings.Load().Language); }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
+            System.Text.Json.JsonException or ArgumentException)
+        {
+            Services.DesktopText.Configure("de");
+            System.Diagnostics.Trace.TraceError("AETHER Sprache: {0}", ex);
+        }
         if (!Services.SystemActions.IsAdmin())
         {
-            MessageBox.Show("AETHER benoetigt Administratorrechte. Bitte Windows-UAC beim Programmstart freigeben.",
-                "AETHER / Administratorrechte erforderlich", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(Services.DesktopText.Get("App.AdminRequired.Body"),
+                Services.DesktopText.Get("App.AdminRequired.Title"), MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
             return;
         }
@@ -20,8 +27,8 @@ public partial class App : Application
         var trayStart = e.Args.Contains("--tray", StringComparer.Ordinal);
         if (trayStart && !System.IO.File.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, "desktop-defaults.json")))
         {
-            MessageBox.Show("Der Anmeldestart ist nur fuer die installierte Ausgabe konfiguriert.",
-                "AETHER / Kein installierter Autostart", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(Services.DesktopUiText.Get("App.TrayUnavailable"),
+                Services.DesktopUiText.Get("App.TrayUnavailableTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             Shutdown(1);
             return;
         }
@@ -47,13 +54,29 @@ public partial class App : Application
             System.Text.Json.JsonException or ArgumentException)
         {
             System.Diagnostics.Trace.TraceError("AETHER Setup-Profil: {0}", ex);
-            MessageBox.Show(ex.Message, "Setup-Einstellungen nicht uebernommen", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, Services.DesktopUiText.Get("App.SetupFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
             return;
         }
+        Services.CockpitSettings startupSettings;
+        try { startupSettings = Services.CockpitSettings.Load(); }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
+            System.Text.Json.JsonException or ArgumentException)
+        {
+            startupSettings = new();
+            System.Diagnostics.Trace.TraceError("AETHER Einstellungen vor UI-Start: {0}", ex);
+        }
+        Services.DesktopText.ConfigureSupportedUi(startupSettings.Language);
+        try { Services.SkinCatalog.Apply(this, startupSettings.Skin); }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
+            System.Text.Json.JsonException or ArgumentException or System.Windows.Markup.XamlParseException)
+        {
+            System.Diagnostics.Trace.TraceError("AETHER Design: {0}", ex);
+        }
+        Services.ModernWindowAppearance.Enable();
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged += WindowsPreferencesChanged;
         // Erststart: Funktionsuebersicht, EULA-Pflichtzustimmung und Rechner-Inventar.
-        // Der Assistent laeuft bewusst IMMER im Original-Design (Retro-Neon);
-        // der gespeicherte Skin wird erst danach angewendet und wirkt dann sofort.
+        // Sprache und Design werden vor dem ersten Programmfenster gesetzt.
         var consent = Services.EulaConsent.Default;
         if (!consent.IsAccepted())
         {
@@ -72,12 +95,6 @@ public partial class App : Application
                 System.Diagnostics.Trace.TraceError("AETHER EULA: {0}", ex);
             }
         }
-        try { Services.SkinCatalog.Apply(this, Services.CockpitSettings.Load().Skin); }
-        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
-            System.Text.Json.JsonException or ArgumentException)
-        {
-            System.Diagnostics.Trace.TraceError("AETHER Skin: {0}", ex);
-        }
         if (trayStart)
         {
             MainWindow? background = null;
@@ -95,7 +112,7 @@ public partial class App : Application
                 InvalidOperationException or UnauthorizedAccessException or NotSupportedException or ArgumentException)
             {
                 System.Diagnostics.Trace.TraceError("AETHER Hintergrundstart: {0}", ex);
-                MessageBox.Show(ex.Message, "AETHER / Hintergrundstart fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, Services.DesktopUiText.Get("App.BackgroundFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
                 if (background is not null) background.RequestExit();
                 else Shutdown(1);
             }
@@ -106,7 +123,7 @@ public partial class App : Application
         Services.WindowActivation.Show(boot);
         try
         {
-            boot.Report("[ACCESS] ADMINISTRATOR / Windows-UAC freigegeben", 3);
+            boot.Report(Services.DesktopUiText.Get("Boot.AccessGranted"), 3);
             cockpit = new MainWindow();
             var warnings = await cockpit.InitializeHardwareAsync(boot.Report, boot.Token);
             await boot.FinishAsync(warnings);
@@ -128,7 +145,7 @@ public partial class App : Application
             NotSupportedException or ArgumentException)
         {
             System.Diagnostics.Trace.TraceError("AETHER Boot: {0}", ex);
-            MessageBox.Show(boot, ex.Message, "AETHER / Initialisierung fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(boot, ex.Message, Services.DesktopUiText.Get("App.InitializationFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
             if (cockpit is not null) await cockpit.ReleaseBeforeStartupAsync();
             boot.CloseAfterStartup();
             Shutdown(1);
@@ -136,10 +153,36 @@ public partial class App : Application
 
     }
 
+    private void WindowsPreferencesChanged(object? sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+    {
+        if (e.Category != Microsoft.Win32.UserPreferenceCategory.Color || !Services.SkinCatalog.IsModern ||
+            Dispatcher.HasShutdownStarted) return;
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (!Dispatcher.HasShutdownStarted && Services.SkinCatalog.IsModern)
+            {
+                try { Services.SkinCatalog.Apply(this, "windows-modern"); }
+                catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
+                    System.Windows.Markup.XamlParseException or InvalidOperationException)
+                {
+                    System.Diagnostics.Trace.TraceError("AETHER Windows Modern appearance refresh: {0}", ex);
+                }
+            }
+        });
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
-        _activationWait?.Unregister(null);
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged -= WindowsPreferencesChanged;
+        if (_activationWait is { } wait)
+        {
+            using var callbacksFinished = new EventWaitHandle(false, EventResetMode.ManualReset);
+            if (wait.Unregister(callbacksFinished)) callbacksFinished.WaitOne();
+            _activationWait = null;
+        }
         _activation?.Dispose();
+        _activation = null;
         base.OnExit(e);
+        Services.DesktopRestart.StartReplacementAfterExit();
     }
 }

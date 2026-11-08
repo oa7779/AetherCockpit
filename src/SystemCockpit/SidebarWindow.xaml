@@ -3,6 +3,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SystemCockpit.Controls"
+        xmlns:loc="clr-namespace:SystemCockpit.Services"
         Title="AETHER xBar" Width="350" Height="760" MinHeight="480" Opacity="{Binding Settings.SidebarOpacity}"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
         Background="Transparent" Foreground="#E1EAF7" FontFamily="Segoe UI"
@@ -56,15 +57,15 @@
                                FontSize="17" FontWeight="Bold">
                         <TextBlock.Effect><DropShadowEffect Color="#E744FF" BlurRadius="14" ShadowDepth="0" Opacity="0.8"/></TextBlock.Effect>
                     </TextBlock>
-                    <TextBlock Text="LIVE DIAGRAMME" Foreground="#7C7398" FontFamily="Consolas"
+                    <TextBlock Text="{loc:DesktopLabel Sidebar.LiveCharts}" Foreground="#7C7398" FontFamily="Consolas"
                                FontSize="9"/>
                 </StackPanel>
                 <Button x:Name="PinButton" Grid.Column="1" Content="PIN" Style="{StaticResource BarButton}"
-                        Padding="7,5" Click="PinClicked" ToolTip="Anheften oder als frei schwebende Leiste nutzen"/>
+                        Padding="7,5" Click="PinClicked" ToolTip="{loc:DesktopLabel Sidebar.PinTooltip}"/>
                 <Button x:Name="OptionsButton" Grid.Column="2" Content="⚙" Style="{StaticResource BarButton}"
-                        Padding="8,5" Click="OptionsClicked" ToolTip="Monitor, Verhalten und Diagrammauswahl"/>
+                        Padding="8,5" Click="OptionsClicked" ToolTip="{loc:DesktopLabel Sidebar.OptionsTooltip}"/>
                 <Button Grid.Column="3" Content="×" Style="{StaticResource BarButton}" Padding="8,5"
-                        Click="CloseClicked" ToolTip="xBar schliessen"/>
+                        Click="CloseClicked" ToolTip="{loc:DesktopLabel Sidebar.CloseTooltip}"/>
             </Grid>
             <Border Grid.Row="1" Margin="0,8,0,4" Padding="9" Background="#22121832"
                     BorderBrush="#443451" BorderThickness="1" CornerRadius="6">
@@ -88,9 +89,9 @@
                         <ContentControl Content="{Binding SidebarUpload}" ContentTemplate="{StaticResource HistoryTemplate}"/>
                     </StackPanel>
                     <StackPanel x:Name="DriveCharts" Visibility="{Binding Settings.SidebarWidgetDrives, Converter={StaticResource BoolVisibility}}">
-                        <TextBlock Text="LAUFWERKSBELEGUNG" Style="{StaticResource SectionLabel}"/>
+                        <TextBlock Text="{loc:DesktopLabel Sidebar.DriveUsage}" Style="{StaticResource SectionLabel}"/>
                         <ItemsControl x:Name="VolumePies" ItemsSource="{Binding Volumes}" ItemTemplate="{StaticResource VolumeTemplate}"/>
-                        <TextBlock Text="Keine Laufwerksmessung verfuegbar" Foreground="#9D92B5" FontSize="10">
+                        <TextBlock Text="{loc:DesktopLabel Sidebar.NoDriveReading}" Foreground="#9D92B5" FontSize="10">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -105,7 +106,7 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
-            <TextBlock Grid.Row="3" x:Name="SidebarStatus" Text="Diagramme ueber das Zahnrad konfigurieren."
+            <TextBlock Grid.Row="3" x:Name="SidebarStatus" Text="{loc:DesktopLabel Sidebar.ConfigureHint}"
                        Foreground="#8D82A8" FontSize="9" TextWrapping="Wrap" Margin="2,6,2,0"/>
             <Popup x:Name="OptionsPopup" Placement="Bottom" PlacementTarget="{Binding ElementName=OptionsButton}"
                    StaysOpen="False" AllowsTransparency="True">
@@ -113,26 +114,26 @@
                         BorderBrush="#9C44B5" BorderThickness="1.5" CornerRadius="8">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="xBAR EINSTELLUNGEN" Foreground="#D45CFF" FontFamily="Consolas" FontWeight="Bold"/>
+                            <TextBlock Text="{loc:DesktopLabel Sidebar.Settings}" Foreground="#D45CFF" FontFamily="Consolas" FontWeight="Bold"/>
                             <TextBlock Text="Monitor" Foreground="#32D5FF" Margin="0,10,0,3"/>
                             <ComboBox x:Name="MonitorSelect" DisplayMemberPath="DeviceName" SelectionChanged="MonitorChanged"/>
-                            <TextBlock Text="Andockseite" Foreground="#32D5FF" Margin="0,8,0,3"/>
+                            <TextBlock Text="{loc:DesktopLabel Sidebar.DockSide}" Foreground="#32D5FF" Margin="0,8,0,3"/>
                             <ComboBox x:Name="SideSelect" SelectedValuePath="Tag" SelectionChanged="SideChanged">
-                                <ComboBoxItem Content="Rechts" Tag="right"/>
-                                <ComboBoxItem Content="Links" Tag="left"/>
+                                <ComboBoxItem Content="{loc:DesktopLabel Common.Right}" Tag="right"/>
+                                <ComboBoxItem Content="{loc:DesktopLabel Common.Left}" Tag="left"/>
                             </ComboBox>
-                            <CheckBox x:Name="PinnedToggle" Content="Angeheftet / volle Bildschirmhoehe" Checked="ModeChanged" Unchecked="ModeChanged" Margin="0,8"/>
-                            <CheckBox x:Name="AutoHideToggle" Content="Auto-hide (nur mit Einzelmonitor)" Checked="AutoHideChanged" Unchecked="AutoHideChanged" Margin="0,4"/>
-                            <TextBlock Text="Deckkraft der Leiste (20-100 %)" Foreground="#32D5FF" Margin="0,8,0,3"/>
+                            <CheckBox x:Name="PinnedToggle" Content="{loc:DesktopLabel Sidebar.Pinned}" Checked="ModeChanged" Unchecked="ModeChanged" Margin="0,8"/>
+                            <CheckBox x:Name="AutoHideToggle" Content="{loc:DesktopLabel Sidebar.AutoHide}" Checked="AutoHideChanged" Unchecked="AutoHideChanged" Margin="0,4"/>
+                            <TextBlock Text="{loc:DesktopLabel Sidebar.Opacity}" Foreground="#32D5FF" Margin="0,8,0,3"/>
                             <Slider x:Name="OpacitySlider" Minimum="0.2" Maximum="1" Value="1"
                                     ValueChanged="OpacityChanged"/>
-                            <TextBlock Text="DIAGRAMME EINBLENDEN" Foreground="#32D5FF" FontFamily="Consolas" Margin="0,10,0,2"/>
-                            <CheckBox x:Name="CpuWidgetToggle" Content="CPU / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
-                            <CheckBox x:Name="MemoryWidgetToggle" Content="RAM / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
-                            <CheckBox x:Name="GpuWidgetToggle" Content="GPU / Instrument und Verlauf" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
-                            <CheckBox x:Name="TemperatureWidgetToggle" Content="CPU-/GPU-/SSD-Temperaturverlaeufe" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
-                            <CheckBox x:Name="NetworkWidgetToggle" Content="Netzwerk / Download und Upload" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
-                            <CheckBox x:Name="DrivesWidgetToggle" Content="Laufwerke / Belegt-Frei-Torten" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <TextBlock Text="{loc:DesktopLabel Sidebar.ShowCharts}" Foreground="#32D5FF" FontFamily="Consolas" Margin="0,10,0,2"/>
+                            <CheckBox x:Name="CpuWidgetToggle" Content="{loc:DesktopLabel Sidebar.Cpu}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="MemoryWidgetToggle" Content="{loc:DesktopLabel Sidebar.Ram}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="GpuWidgetToggle" Content="{loc:DesktopLabel Sidebar.Gpu}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="TemperatureWidgetToggle" Content="{loc:DesktopLabel Sidebar.Temperatures}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="NetworkWidgetToggle" Content="{loc:DesktopLabel Sidebar.Network}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
+                            <CheckBox x:Name="DrivesWidgetToggle" Content="{loc:DesktopLabel Sidebar.Drives}" Checked="WidgetChanged" Unchecked="WidgetChanged"/>
                         </StackPanel>
                     </ScrollViewer>
                 </Border>

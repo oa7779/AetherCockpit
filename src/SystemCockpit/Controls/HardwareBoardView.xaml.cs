@@ -18,6 +18,7 @@ public partial class HardwareBoardView : UserControl
     private readonly List<Polyline> _flows = [];
     private readonly List<RotateTransform> _fans = [];
     private readonly List<TranslateTransform> _binaryRows = [];
+    private readonly List<UIElement> _modernIndicators = [];
     private readonly List<(GradientStop Stop, Color Alternate)> _skyColors = [];
     private readonly List<(SolidColorBrush Brush, Color Alternate)> _routeColors = [];
     private readonly TranslateTransform _sceneDrift = new();
@@ -44,10 +45,13 @@ public partial class HardwareBoardView : UserControl
     private string? _selectedDevice;
     private bool _drawnDay;
     internal int AnimationStarts { get; private set; }
+    internal static bool AnimationAllowed(bool loaded, bool visible, bool motionEnabled, bool windowsAnimations, bool shutdown) =>
+        !shutdown && loaded && visible && motionEnabled && windowsAnimations;
 
     public HardwareBoardView()
     {
         InitializeComponent();
+        ApplyModernChrome();
         BoardScale.RenderTransform = _sceneDrift;
         _readoutTimer.Tick += (_, _) => RefreshReadouts();
         DataContextChanged += (_, _) => ConnectModel();
@@ -56,9 +60,17 @@ public partial class HardwareBoardView : UserControl
             _windowsAnimations = SystemParameters.ClientAreaAnimation;
             SystemParameters.StaticPropertyChanged -= WindowsMotionChanged;
             SystemParameters.StaticPropertyChanged += WindowsMotionChanged;
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged -= WindowsThemeChanged;
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += WindowsThemeChanged;
             ConnectModel(); UpdateMotion();
         };
-        Unloaded += (_, _) => { SystemParameters.StaticPropertyChanged -= WindowsMotionChanged; DisconnectModel(); UpdateMotion(); };
+        Unloaded += (_, _) =>
+        {
+            SystemParameters.StaticPropertyChanged -= WindowsMotionChanged;
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged -= WindowsThemeChanged;
+            DisconnectModel();
+            UpdateMotion();
+        };
         IsVisibleChanged += (_, _) => UpdateMotion();
     }
 
@@ -103,9 +115,24 @@ public partial class HardwareBoardView : UserControl
         UpdateMotion();
     }
 
+    private void WindowsThemeChanged(object? sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+    {
+        if (e.Category != Microsoft.Win32.UserPreferenceCategory.Color || !SkinCatalog.IsModern ||
+            !IsLoaded || Dispatcher.HasShutdownStarted) return;
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (IsLoaded && SkinCatalog.IsModern && Snapshot is { } snapshot)
+            {
+                var frame = _lastFrame;
+                Apply(snapshot);
+                UpdateComponentReadings(frame);
+            }
+        });
+    }
+
     private void UpdateMotion()
     {
-        SceneAnimating = !_shutdown && IsLoaded && IsVisible && _model?.MotionEnabled == true && _windowsAnimations;
+        SceneAnimating = AnimationAllowed(IsLoaded, IsVisible, _model?.MotionEnabled == true, _windowsAnimations, _shutdown);
         if (!_shutdown && IsLoaded && IsVisible) _readoutTimer.Start(); else _readoutTimer.Stop();
         FlowAnimating = SceneAnimating && _flows.Count > 0;
         if (_motionState == SceneAnimating) return;
@@ -113,8 +140,17 @@ public partial class HardwareBoardView : UserControl
         if (SceneAnimating) AnimationStarts++;
         foreach (var flow in _flows)
             flow.BeginAnimation(Shape.StrokeDashOffsetProperty, FlowAnimating
-                ? new DoubleAnimation(0, -40 / flow.StrokeThickness, TimeSpan.FromSeconds(2.4)) { RepeatBehavior = RepeatBehavior.Forever,
+                ? new DoubleAnimation(0,
+                    flow.Tag is string { } flowTag && flowTag.StartsWith("modern-schema-flow:", StringComparison.Ordinal)
+                        ? -8 / flow.StrokeThickness : -40 / flow.StrokeThickness,
+                    flow.Tag is string { } durationTag && durationTag.StartsWith("modern-schema-flow:", StringComparison.Ordinal)
+                        ? TimeSpan.FromSeconds(7) : TimeSpan.FromSeconds(2.4)) { RepeatBehavior = RepeatBehavior.Forever,
                     AutoReverse = flow.Tag is string tag && tag.Contains("callout-route:", StringComparison.Ordinal) }
+                : null);
+        foreach (var indicator in _modernIndicators)
+            indicator.BeginAnimation(UIElement.OpacityProperty, SceneAnimating
+                ? new DoubleAnimation(0.55, 1, TimeSpan.FromSeconds(2.8))
+                    { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever }
                 : null);
         foreach (var fan in _fans)
             fan.BeginAnimation(RotateTransform.AngleProperty, SceneAnimating
@@ -158,6 +194,7 @@ public partial class HardwareBoardView : UserControl
     {
         _motionState = null;
         foreach (var flow in _flows) flow.BeginAnimation(Shape.StrokeDashOffsetProperty, null);
+        foreach (var indicator in _modernIndicators) indicator.BeginAnimation(UIElement.OpacityProperty, null);
         foreach (var fan in _fans) fan.BeginAnimation(RotateTransform.AngleProperty, null);
         foreach (var row in _binaryRows) row.BeginAnimation(TranslateTransform.XProperty, null);
         _gridMotion?.BeginAnimation(ScaleTransform.ScaleYProperty, null);
@@ -171,7 +208,7 @@ public partial class HardwareBoardView : UserControl
         _horizonGlow?.BeginAnimation(RadialGradientBrush.GradientOriginProperty, null);
         _horizonGlow = null;
         _skyColors.Clear(); _routeColors.Clear();
-        _flows.Clear(); _fans.Clear(); _binaryRows.Clear(); _gridMotion = null;
+        _flows.Clear(); _fans.Clear(); _binaryRows.Clear(); _modernIndicators.Clear(); _gridMotion = null;
     }
 
     internal void UseScreensaverLayout()
@@ -251,10 +288,10 @@ public partial class HardwareBoardView : UserControl
             controls.Text.Visibility = slot % 2 == 0 ? Visibility.Visible : Visibility.Collapsed;
             controls.Dial.Visibility = slot % 2 == 0 ? Visibility.Collapsed : Visibility.Visible;
             controls.Gauge.Level = metric?.Level ?? double.NaN;
-            controls.Name.Text = metric?.Name ?? "Keine Messwerte verfuegbar";
+            controls.Name.Text = metric?.Name ?? DesktopUiText.Get("Board.NoReadings");
             controls.Value.Text = metric?.Display ?? "--";
-            controls.Dial.ToolTip = metric is null ? "Kein zuordenbarer Messkanal" :
-                $"{metric.Name}\nSkala 0 bis {metric.Scale:0.##} {metric.Unit}; keine gemessene Grenze.";
+            controls.Dial.ToolTip = metric is null ? DesktopUiText.Get("Board.NoChannel") :
+                DesktopUiText.Format("Board.DialScale", metric.Name, metric.Scale, metric.Unit);
         }
     }
 
@@ -292,7 +329,7 @@ public partial class HardwareBoardView : UserControl
     {
         _busy = true;
         RefreshButton.IsEnabled = false;
-        StatusText.Text = "Windows-Hardware und vorhandene Komponenten werden rein lesend erfasst ...";
+        StatusText.Text = DesktopUiText.Get("Board.Loading");
         try
         {
             Apply(await HardwareTopology.ReadAsync(_stop.Token));
@@ -300,13 +337,16 @@ public partial class HardwareBoardView : UserControl
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested)
         {
-            StatusText.Text = "Hardware-Abfrage abgebrochen.";
+            StatusText.Text = SkinCatalog.IsModern ? DesktopText.Get("Board.ReadCancelled") :
+                DesktopUiText.Get("Board.NeonReadCancelled");
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or Win32Exception or
             JsonException or TimeoutException or UnauthorizedAccessException)
         {
             Trace.TraceError("Hardware-Schaubild: {0}", ex);
-            StatusText.Text = "Hardware-Schaubild nicht aktualisiert: " + ex.Message;
+            StatusText.Text = SkinCatalog.IsModern
+                ? string.Format(DesktopText.Get("Board.ReadError"), ex.Message)
+                : DesktopUiText.Format("Board.NeonReadError", ex.Message);
         }
         finally { _busy = false; RefreshButton.IsEnabled = !_shutdown; }
     }
@@ -325,7 +365,9 @@ public partial class HardwareBoardView : UserControl
         DrawBoard(visible);
         ApplyZoom();
         UpdateComponentReadings(null);
-        StatusText.Text = $"{snapshot.Devices.Length} Windows-Geraeteeintraege inkl. Audio-Endpunktstatus / Momentaufnahme {DateTime.Now:HH:mm:ss}" +
+        StatusText.Text = (SkinCatalog.IsModern
+            ? string.Format(DesktopText.Get("Board.SnapshotStatus"), snapshot.Devices.Length, DateTime.Now.ToString("HH:mm:ss"))
+            : DesktopUiText.Format("Board.NeonSnapshotStatus", snapshot.Devices.Length, DateTime.Now.ToString("HH:mm:ss"))) +
             (snapshot.Warnings.Length > 0 ? "\n" + string.Join("\n", snapshot.Warnings) : "");
         InternetText.Text = snapshot.Internet;
         var selected = Groups.FirstOrDefault(group => group.Key == _selectedGroup) ??
@@ -341,7 +383,12 @@ public partial class HardwareBoardView : UserControl
         _selectedGroup = group.Key;
         var complete = Groups.FirstOrDefault(item => item.Key == group.Key);
         _selectedDevice = group.Devices.Count == 1 && complete?.Devices.Count > 1 ? group.Devices[0].Id : null;
-        DetailTitle.Text = $"{group.Title} / {group.Devices.Count} WINDOWS-EINTRAEGE";
+        DetailTitle.Text = SkinCatalog.IsModern
+            ? string.Format(DesktopText.Get("Board.DeviceDetailTitle"),
+                DesktopText.Get("Board.Category." + group.Key), group.Devices.Count)
+            : DesktopUiText.Format("Board.NeonDetailCount",
+                System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en"
+                    ? DesktopText.Get("Board.Category." + group.Key) : group.Title, group.Devices.Count);
         DeviceList.ItemsSource = group.Devices;
     }
 }

@@ -78,7 +78,7 @@ public partial class SidebarWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException)
         {
             Trace.TraceError("AETHER xBar konnte nicht gestartet werden: {0}", ex);
-            MessageBox.Show(this, ex.Message, "AETHER xBar konnte nicht gestartet werden",
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Sidebar.StartFailed"),
                 MessageBoxButton.OK, MessageBoxImage.Error);
             Close();
         }
@@ -87,7 +87,7 @@ public partial class SidebarWindow : Window
     private void RefreshDisplays()
     {
         _displays = SidebarDisplays.GetAll();
-        if (_displays.Count == 0) throw new InvalidOperationException("Windows meldet keinen verfuegbaren Bildschirm.");
+        if (_displays.Count == 0) throw new InvalidOperationException(DesktopUiText.Get("Sidebar.NoMonitor"));
     }
 
     private SidebarDisplay SelectedDisplay()
@@ -105,7 +105,7 @@ public partial class SidebarWindow : Window
         if (SidebarDisplays.ForWindow(handle).Handle != display.Handle)
             MoveNative(display.WorkLeft, display.WorkTop);
         var dpi = GetDpiForWindow(handle);
-        if (dpi == 0) throw new InvalidOperationException("Die Bildschirm-Skalierung der xBar ist nicht verfuegbar.");
+        if (dpi == 0) throw new InvalidOperationException(DesktopUiText.Get("Sidebar.NoDpi"));
         var scale = dpi / 96.0;
         var bounds = SidebarPlacement.Restore(display.WorkArea, scale, _settings.SidebarPinned,
             _settings.SidebarDockSide, _settings.SidebarHorizontalOffset, _settings.SidebarVerticalOffset);
@@ -125,10 +125,10 @@ public partial class SidebarWindow : Window
     {
         AutoHideToggle.IsEnabled = _displays.Count == 1 && _settings.SidebarPinned;
         AutoHideToggle.ToolTip = _displays.Count > 1
-            ? "Auto-hide ist bei mehreren Monitoren deaktiviert."
+            ? DesktopUiText.Get("Sidebar.AutoHideMulti")
             : !_settings.SidebarPinned
-                ? "Auto-hide ist nur im angehefteten Modus verfuegbar."
-                : "Blendet die Leiste aus, wenn sich der Mauszeiger entfernt.";
+                ? DesktopUiText.Get("Sidebar.AutoHideFloating")
+                : DesktopUiText.Get("Sidebar.AutoHideHint");
     }
 
     private void OptionsClicked(object sender, RoutedEventArgs e)
@@ -158,9 +158,9 @@ public partial class SidebarWindow : Window
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
-            _model.Footer = $"xBar-Monitore konnten nicht gelesen werden: {ex.Message}";
+            _model.Footer = DesktopUiText.Format("Sidebar.ReadMonitorsFailed", ex.Message);
             SidebarStatus.Text = _model.Footer;
-            MessageBox.Show(this, ex.Message, "xBar-Einstellungen nicht verfuegbar",
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Sidebar.SettingsUnavailable"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
@@ -248,9 +248,9 @@ public partial class SidebarWindow : Window
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
             Trace.TraceError("AETHER xBar konnte nicht verschoben werden: {0}", ex);
-            _model.Footer = $"xBar-Position konnte nicht gespeichert werden: {ex.Message}";
+            _model.Footer = DesktopUiText.Format("Sidebar.PositionFailed", ex.Message);
             SidebarStatus.Text = _model.Footer;
-            MessageBox.Show(this, ex.Message, "AETHER xBar / Verschieben fehlgeschlagen",
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Sidebar.MoveFailed"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally { if (IsLoaded && IsVisible) _behaviorTimer.Start(); }
@@ -279,7 +279,7 @@ public partial class SidebarWindow : Window
         if (!GetCursorPos(out var cursor))
         {
             var error = new Win32Exception(Marshal.GetLastWin32Error());
-            _model.Footer = $"xBar-Mausposition nicht lesbar: {error.Message}";
+            _model.Footer = DesktopUiText.Format("Sidebar.MouseFailed", error.Message);
             SidebarStatus.Text = _model.Footer;
             Trace.TraceError("AETHER xBar: {0}", error);
             _behaviorTimer.Stop();
@@ -312,7 +312,7 @@ public partial class SidebarWindow : Window
         try { UpdateWindowBehavior(); }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {
-            _model.Footer = $"xBar-Fensterverhalten fehlgeschlagen: {ex.Message}";
+            _model.Footer = DesktopUiText.Format("Sidebar.BehaviorFailed", ex.Message);
             SidebarStatus.Text = _model.Footer;
             Trace.TraceError("AETHER xBar: {0}", ex);
             _behaviorTimer.Stop();
@@ -355,7 +355,7 @@ public partial class SidebarWindow : Window
         try { _saveSettings(_settings); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
-            _model.Footer = $"xBar-Einstellung konnte nicht gespeichert werden: {ex.Message}";
+            _model.Footer = DesktopUiText.Format("Sidebar.SaveFailed", ex.Message);
             SidebarStatus.Text = _model.Footer;
             Trace.TraceError("AETHER xBar: {0}", ex);
         }

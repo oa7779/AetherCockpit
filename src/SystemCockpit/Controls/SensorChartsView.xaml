@@ -1,6 +1,6 @@
 <UserControl x:Class="SystemCockpit.Controls.SensorChartsView"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:loc="clr-namespace:SystemCockpit.Services" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:local="clr-namespace:SystemCockpit.Controls">
  <UserControl.Resources>
   <Style TargetType="TabItem">
@@ -30,10 +30,10 @@
   </Style>
  </UserControl.Resources>
  <TabControl x:Name="SensorModes" Background="#080717" BorderBrush="#51347A">
-  <TabItem Header="LIVE-DIAGRAMME">
+  <TabItem Header="{loc:DesktopLabel Ui.LiveCharts}">
    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel>
-     <TextBlock Text="Hardware + Einheit = eigene Skala. Sensoren per Farblegende ein-/ausblenden (fuer diese Sitzung). Letzte 180 Messzyklen (bei 2s etwa 6 Minuten), nur im Arbeitsspeicher. Fehlende Werte bleiben Luecken; Grenzwerte stehen nur in der Detailmatrix."
+     <TextBlock Text="{loc:DesktopLabel Layout.ChartsNotice}"
        TextWrapping="Wrap" Foreground="#A8A4C5" Margin="0,6,0,12"/>
      <TextBlock x:Name="EmptyCharts" Text="{Binding SensorCharts.EmptyText}" TextWrapping="Wrap" Foreground="#FFCE54"/>
      <TextBlock Text="{Binding SensorCharts.Warning}" TextWrapping="Wrap" Foreground="#FFCE54"/>
@@ -67,13 +67,13 @@
     </StackPanel>
    </ScrollViewer>
   </TabItem>
-  <TabItem Header="DETAILMATRIX / GRENZWERTE">
+  <TabItem Header="{loc:DesktopLabel Layout.SensorMatrix}">
    <DataGrid x:Name="SensorTable" ItemsSource="{Binding SensorView}" EnableRowVirtualization="True"
       AutoGenerateColumns="False" IsReadOnly="True">
     <DataGrid.Columns>
-     <DataGridTextColumn Header="KOMPONENTE" Binding="{Binding Hardware}" Width="2*"/>
+     <DataGridTextColumn Header="{loc:DesktopLabel Inventory.Component}" Binding="{Binding Hardware}" Width="2*"/>
      <DataGridTextColumn Header="SENSOR" Binding="{Binding Name}" Width="2*"/>
-     <DataGridTextColumn Header="TYP" Binding="{Binding Type}" Width="*"/>
+     <DataGridTextColumn Header="{loc:DesktopLabel Ui.TypeColumn}" Binding="{Binding Type}" Width="*"/>
      <DataGridTextColumn Header="LIVE" Binding="{Binding Display}" Width="*"/>
     </DataGrid.Columns>
    </DataGrid>
