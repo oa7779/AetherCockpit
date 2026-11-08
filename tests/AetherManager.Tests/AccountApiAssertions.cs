@@ -11,6 +11,15 @@ internal static partial class Runner
 {
     private sealed record ApiSession(SessionResponse Session, string Cookie);
 
+    private static async Task CheckStatusAsync(HttpResponseMessage response, HttpStatusCode expected, string message)
+    {
+        if (response.StatusCode == expected) { Check(true, message); return; }
+        var body = await response.Content.ReadAsStringAsync();
+        Check(false, $"{message}; expected HTTP {(int)expected}, got HTTP {(int)response.StatusCode}; " +
+            $"{response.RequestMessage?.Method} {response.RequestMessage?.RequestUri?.AbsolutePath}; " +
+            $"body: {body[..Math.Min(body.Length, 2048)]}");
+    }
+
     private static async Task<HttpResponseMessage> SendAsync(HttpClient client, string url, string path,
         string method = "GET", object? body = null, ApiSession? session = null, string? bearer = null,
         string? csrf = null, string? origin = null, bool browser = false)
@@ -116,18 +125,18 @@ internal static partial class Runner
         foreach (var path in reads)
         {
             using var unauthenticated = await SendAsync(client, url, path);
-            Check(unauthenticated.StatusCode == HttpStatusCode.Unauthorized, $"Anonymous denied GET {path}");
+            await CheckStatusAsync(unauthenticated, HttpStatusCode.Unauthorized, $"Anonymous denied GET {path}");
             foreach (var signedIn in new[] { admin, op, reader })
             {
                 using var response = await SendAsync(client, url, path, session: signedIn);
-                Check(response.StatusCode == HttpStatusCode.OK, $"{signedIn.Session.Account.Role} can read {path}");
+                await CheckStatusAsync(response, HttpStatusCode.OK, $"{signedIn.Session.Account.Role} can read {path}");
             }
         }
         foreach (var path in new[] { "admin/accounts", $"admin/accounts/{administrator.Id}", "admin/sessions" })
             foreach (var signedIn in new[] { admin, op, reader })
             {
                 using var response = await SendAsync(client, url, path, session: signedIn);
-                Check(response.StatusCode == (signedIn == admin ? HttpStatusCode.OK : HttpStatusCode.Forbidden), $"User administration read role {signedIn.Session.Account.Role} {path}");
+                await CheckStatusAsync(response, signedIn == admin ? HttpStatusCode.OK : HttpStatusCode.Forbidden, $"User administration read role {signedIn.Session.Account.Role} {path}");
             }
         var mutations = new (string Method, string Path, object? Body)[]
         {
@@ -143,22 +152,32 @@ internal static partial class Runner
         foreach (var mutation in mutations)
         {
             using var anonymous = await SendAsync(client, url, mutation.Path, mutation.Method, mutation.Body);
-            Check(anonymous.StatusCode == HttpStatusCode.Unauthorized, $"Anonymous mutation denied {mutation.Path}");
+            await CheckStatusAsync(anonymous, HttpStatusCode.Unauthorized, $"Anonymous mutation denied {mutation.Path}");
             using var noCsrf = await SendAsync(client, url, mutation.Path, mutation.Method, mutation.Body, admin, csrf: "");
-            Check(noCsrf.StatusCode == HttpStatusCode.Forbidden, $"All mutations enforce CSRF {mutation.Path}");
+            await CheckStatusAsync(noCsrf, HttpStatusCode.Forbidden, $"All mutations enforce CSRF {mutation.Path}");
             foreach (var signedIn in new[] { reader, op })
             {
                 using var response = await SendAsync(client, url, mutation.Path, mutation.Method, mutation.Body, signedIn);
-                Check(response.StatusCode == HttpStatusCode.Forbidden, $"{signedIn.Session.Account.Role} mutation denied {mutation.Path}");
+                await CheckStatusAsync(response, HttpStatusCode.Forbidden, $"{signedIn.Session.Account.Role} mutation denied {mutation.Path}");
                 Check(response.Content.Headers.ContentType?.MediaType == "application/problem+json", "Authorization errors use Problem Details");
             }
-            using (var response = await SendAsync(client, url, $"admin/management/devices/{deviceId}/policy", "PUT", new ManagementPolicy(), admin))
-                Check(response.StatusCode == HttpStatusCode.OK, "Administrator can set policy while local consent remains unchanged");
-            using (var response = await SendAsync(client, url, $"admin/management/jobs/{jobId}/cancel", "POST", session: admin))
-                Check(response.StatusCode == HttpStatusCode.OK, "Administrator can cancel a queued fixture job");
-            using (var response = await SendAsync(client, url, "admin/accounts", "POST", new CreateAccountRequest("matrix-user", Secret(), AccountRole.Reader), admin))
-                Check(response.StatusCode == HttpStatusCode.Created, "Administrator mutation role matrix permits user provisioning");
         }
+        using (var response = await SendAsync(client, url, $"admin/management/devices/{deviceId}/policy", "PUT", new ManagementPolicy(), admin))
+            await CheckStatusAsync(response, HttpStatusCode.OK, "Administrator can set policy while local consent remains unchanged");
+        using (var response = await SendAsync(client, url, $"admin/management/jobs/{jobId}", session: admin))
+        {
+            await CheckStatusAsync(response, HttpStatusCode.OK, "Fixture job readable before cancellation");
+            var job = (await response.Content.ReadFromJsonAsync<ManagedJob>(WebJson))!;
+            Check(job.State == "queued", "Authorization rejection matrix leaves fixture job queued");
+        }
+        using (var response = await SendAsync(client, url, $"admin/management/jobs/{jobId}/cancel", "POST", session: admin))
+        {
+            await CheckStatusAsync(response, HttpStatusCode.OK, "Administrator can cancel a queued fixture job");
+            var job = (await response.Content.ReadFromJsonAsync<ManagedJob>(WebJson))!;
+            Check(job.State == "cancelled", "Administrator cancellation persists the cancelled state");
+        }
+        using (var response = await SendAsync(client, url, "admin/accounts", "POST", new CreateAccountRequest("matrix-user", Secret(), AccountRole.Reader), admin))
+            await CheckStatusAsync(response, HttpStatusCode.Created, "Administrator mutation role matrix permits user provisioning");
         foreach (var signedIn in new[] { op, reader })
         {
             using var diagnostic = await SendAsync(client, url, $"admin/management/devices/{deviceId}/jobs", "POST", new CreateManagedJobRequest("inventory"), signedIn);

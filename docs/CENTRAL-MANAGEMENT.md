@@ -15,6 +15,37 @@ Für öffentliche Erreichbarkeit empfiehlt sich ein vorgeschalteter VPN-Zugang.
 Die Webverwaltung verwendet ein Administrator-Token; eigene Benutzerrollen
 oder Mehrfaktoranmeldung sind nicht enthalten.
 
+### Weiterentwicklung zur Infrastrukturverwaltung
+
+Der Entwicklungsbranch `feature/professional-server` ergänzt lokale
+AETHER-Konten mit Administrator-, Operator- und Leserrolle sowie eine
+animierte Flottenansicht. Dieser Stand wird separat geprüft und ist noch
+nicht Bestandteil der veröffentlichten Beta 38.
+
+| Rolle | Geplanter und implementierter Prüfstand |
+|---|---|
+| Leser | Server-/Geräteübersicht, Berichte, Aufträge und Audit lesen |
+| Operator | Zusätzlich feste lesende Diagnoseaufträge erstellen |
+| Administrator | Zusätzlich Gerätefreigaben, Änderungsrichtlinien, bestätigte Änderungsaufträge und Benutzerverwaltung |
+
+Neon bleibt Standard; Windows Modern ist als neutrale Weboberfläche
+vorbereitet. Die Flottenansicht zeigt bis zu 48 Geräte pro Seite mit Suche,
+Filter und Auswahl. Ihre Verbindungen sind illustrativ, keine erfasste
+physische Netzwerktopologie. Fehlende aktuelle Heartbeats werden als solche
+angezeigt, nicht als Beweis für einen abgeschalteten Rechner.
+
+Die neue Serverüberwachung erfasst lesend Host-/Prozess-CPU, Speicher,
+Datenträgerkapazität, Prozessanzahl und Uptime. Die Abtastung erfolgt alle
+fünf Sekunden. Nicht verfügbare Temperaturen werden nicht aus Grenzwerten
+oder Zufallswerten ersetzt. Ein externer Sensorprovider ist dafür nicht
+eingebaut.
+
+Die Benutzerverwaltung verwendet einmaliges Bootstrap mit dem bestehenden
+privilegierten Token, kennwortgeschützte Konten und zeitlich begrenzte
+Browsersitzungen. Die vollständige Rollen-, HTTPS- und Browserprüfung
+läuft noch. Keine freie Fernkonsole und keine automatische Übernahme
+aller lokalen Desktopaktionen.
+
 ## Desktopclient
 
 Unter **System Control → Einstellungen → Zentrale Verwaltung**:

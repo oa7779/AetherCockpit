@@ -37,6 +37,15 @@ Beta-37-Pakete und hebt die lokale Code-Integrity-Sperre nicht auf.
 
 ## Testplattform
 
+Der Serverentwicklungsbranch ergänzt Konten-, Rollen-, HTTPS-, Sitzungs-
+und Flottenprüfungen im vorhandenen Verwaltungsrunner. Die Browserprüfung
+verwendet 48 synthetische Geräte ohne Clientexecutor.
+`build\Verify-ManagerBrowser.ps1` ist für den isolierten Windows-CI-Runner
+mit `RUNNER_TEMP` vorgesehen. Playwright-Abhängigkeiten stehen im
+Testprojekt; Chromium wird ausschließlich als Testwerkzeug installiert.
+Fixture-Zugangsdaten und Datenordner werden nicht als Artefakte hochgeladen.
+Screenshots verwenden Testdaten, keine produktive Flotte.
+
 `tests\SystemCockpit.Tests` ist ein **STA-Konsolenrunner**, kein
 `dotnet test`-Projekt. Er erzeugt die WPF-Ressourcen des Produkts und führt
 Assertions aus; Fehler beenden den Prozess mit Exitcode 1.

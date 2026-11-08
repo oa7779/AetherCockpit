@@ -65,6 +65,26 @@ jobs:
           & .\build\Publish-Manager.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Install server browser test dependencies
+        run: |
+          npm ci --prefix .\tests\AetherManager.Tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\tests\AetherManager.Tests\node_modules\.bin\playwright.cmd install chromium
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify server browser with 48 synthetic devices
+        run: |
+          & .\build\Verify-ManagerBrowser.ps1
+
+      - name: Upload server browser screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aether-manager-screenshots-${{ github.run_id }}
+          path: ${{ runner.temp }}\AetherManagerBrowser\screenshots\*.png
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Verify desktop presentation
         env:
           AETHER_SCREENSHOT_DIR: ${{ runner.temp }}\AetherDesktopScreenshots
