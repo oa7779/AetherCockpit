@@ -473,6 +473,7 @@ Run now?</value></data>
   <data name="Main.Admin"><value>ADMIN / UAC on startup</value></data>
   <data name="Main.LocalNotice"><value>Standalone without server contact. Reports require approval and explicit opt-in.</value></data>
   <data name="Main.Tagline"><value>YOUR SYSTEM. YOUR COMMAND BRIDGE.</value></data>
+  <data name="Terminal.ModernHeading"><value>AETHER / PowerShell console</value></data>
   <data name="Main.ClockTip"><value>Local Windows time / refreshed with live measurement</value></data>
   <data name="Main.Refresh"><value>Refresh status</value></data>
   <data name="Navigation.BackButton"><value>◀ BACK</value></data>

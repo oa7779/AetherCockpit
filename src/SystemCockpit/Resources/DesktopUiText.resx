@@ -474,6 +474,7 @@ Jetzt ausfuehren?</value></data>
   <data name="Main.Admin"><value>ADMIN / UAC beim Start</value></data>
   <data name="Main.LocalNotice"><value>Einzelplatz ohne Serverkontakt. Berichte nur nach Freigabe und ausdruecklichem Opt-in.</value></data>
   <data name="Main.Tagline"><value>DEIN SYSTEM. DEINE KOMMANDOBRUECKE.</value></data>
+  <data name="Terminal.ModernHeading"><value>AETHER / PowerShell-Konsole</value></data>
   <data name="Main.ClockTip"><value>Lokale Windows-Zeit / Aktualisierung mit Live-Messung</value></data>
   <data name="Main.Refresh"><value>Status aktualisieren</value></data>
   <data name="Navigation.BackButton"><value>◀ ZURUECK</value></data>

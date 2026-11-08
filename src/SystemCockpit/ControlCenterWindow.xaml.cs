@@ -95,8 +95,31 @@ public partial class ControlCenterWindow : Window
         MaintenanceActions.SelectedIndex = 0;
         PopulateSettings();
         SetTerminalVisible(false);
+        ApplyModernMaintenanceChrome();
+        Loaded += (_, _) => ApplyModernMaintenanceChrome();
         _terminalTimer.Tick += (_, _) => UpdateTerminalInfo();
         Closing += OnClosing;
+    }
+
+    private void ApplyModernMaintenanceChrome()
+    {
+        if (!SkinCatalog.IsModern) return;
+        CommandCatalogHeading.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
+        CommandCatalogHeading.FontFamily = new System.Windows.Media.FontFamily("Segoe UI");
+        CommandList.Style = (Style)Application.Current.FindResource(typeof(ListBox));
+        CommandList.SetResourceReference(Control.BackgroundProperty, "SceneBackdrop");
+        CommandList.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
+        CommandList.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
+        CommandList.ItemTemplate = (DataTemplate)Resources["ModernCommandCatalogItem"];
+        CommandList.ItemContainerStyle = (Style)Application.Current.FindResource(typeof(ListBoxItem));
+        TerminalSplitter.SetResourceReference(Control.BackgroundProperty, "ModernBorder");
+        TerminalHeading.Text = DesktopUiText.Get("Terminal.ModernHeading");
+        TerminalHeading.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
+        TerminalHeading.FontFamily = new System.Windows.Media.FontFamily("Segoe UI");
+        CrtEffects.IsChecked = false;
+        CrtEffects.IsEnabled = false;
+        CrtEffects.Visibility = Visibility.Collapsed;
+        TerminalDecorations.Visibility = Visibility.Collapsed;
     }
 
     private static string DetectOs()

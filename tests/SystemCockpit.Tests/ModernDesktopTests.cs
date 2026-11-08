@@ -657,6 +657,38 @@ internal static class ModernDesktopTests
                 Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
                 surface.UpdateLayout();
                 var elements = VisualElements(surface).ToArray();
+                if (name == "control-center-admin")
+                {
+                    var heading = (TextBlock)control.FindName("CommandCatalogHeading");
+                    var catalog = (ListBox)control.FindName("CommandList");
+                    var splitter = (GridSplitter)control.FindName("TerminalSplitter");
+                    CheckUi(ReferenceEquals(heading.Foreground, app.Resources["ModernTextPrimary"]) &&
+                        heading.FontFamily.Source == "Segoe UI",
+                        $"Modern {modeName} actual maintenance catalog heading is neutral Segoe UI");
+                    CheckUi(ReferenceEquals(catalog.Background, app.Resources["SceneBackdrop"]) &&
+                        ReferenceEquals(catalog.Foreground, app.Resources["ModernTextPrimary"]) &&
+                        ReferenceEquals(catalog.BorderBrush, app.Resources["ModernBorder"]) &&
+                        ReferenceEquals(splitter.Background, app.Resources["ModernBorder"]),
+                        $"Modern {modeName} actual command catalog background/text/border and terminal splitter are neutral");
+                    var categories = VisualElements(catalog).OfType<TextBlock>()
+                        .Where(text => Equals(text.Tag, "modern-catalog-category")).ToArray();
+                    CheckUi(categories.Length > 0 && categories.All(text =>
+                        ReferenceEquals(text.Foreground, app.Resources["ModernTextSecondary"])),
+                        $"Modern {modeName} realized command catalog category labels use semantic secondary text");
+                    var commandButtons = VisualElements(catalog).OfType<Button>().ToArray();
+                    CheckUi(commandButtons.Length > 0 && commandButtons.All(button =>
+                        ReferenceEquals(button.Foreground, app.Resources["ModernTextPrimary"]) &&
+                        button.Template.FindName("Frame", button) is Border frame &&
+                        ReferenceEquals(frame.Background, app.Resources["GlossButton"])),
+                        $"Modern {modeName} actual command catalog buttons use neutral template frames and text");
+                    var terminalHeading = (TextBlock)control.FindName("TerminalHeading");
+                    var crt = (CheckBox)control.FindName("CrtEffects");
+                    CheckUi(terminalHeading.Text == DesktopUiText.Get("Terminal.ModernHeading") &&
+                        ReferenceEquals(terminalHeading.Foreground, app.Resources["ModernTextPrimary"]) &&
+                        !crt.IsEnabled && crt.IsChecked == false && crt.Visibility == Visibility.Collapsed &&
+                        ((Grid)control.FindName("TerminalDecorations")).Visibility == Visibility.Collapsed,
+                        $"Modern {modeName} actual terminal has neutral title and no enabled CRT control or decorations");
+                }
                 var chartCanvases = elements.OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).ToArray();
                 var chartPanels = elements.OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
                 if (name is "dashboard-navigation" or "xbar" or "gadget")

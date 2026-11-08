@@ -7,6 +7,16 @@
         Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7" WindowStartupLocation="CenterOwner" Icon="Assets/aether.ico">
     <Window.Resources>
         <ResourceDictionary>
+        <DataTemplate x:Key="ModernCommandCatalogItem">
+            <StackPanel Margin="3">
+                <WrapPanel>
+                    <TextBlock Tag="modern-catalog-category" Text="{Binding Category}" Foreground="{DynamicResource ModernTextSecondary}" FontFamily="Segoe UI"/>
+                    <TextBlock Text="{Binding RiskBadge}" Foreground="{DynamicResource ModernWarning}" FontSize="10" Margin="8,2,0,0"/>
+                </WrapPanel>
+                <Button Tag="{Binding}" Content="{Binding Command}" Click="CatalogCommandClicked"
+                        Style="{DynamicResource NeonButton}" FontFamily="Segoe UI" HorizontalContentAlignment="Left"/>
+            </StackPanel>
+        </DataTemplate>
         <DrawingBrush x:Key="Scanlines" TileMode="Tile" Viewport="0,0,4,4" ViewportUnits="Absolute">
             <DrawingBrush.Drawing><GeometryDrawing Brush="#16000000">
                 <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,4,1"/></GeometryDrawing.Geometry>
@@ -182,7 +192,7 @@
             </TabItem>
             <TabItem Header="{loc:DesktopLabel Module.Wartung}" Tag="Wartung" ToolTip="{loc:DesktopLabel Module.MaintenanceTip}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="14">
-                    <TextBlock Text="{loc:DesktopLabel Ui.AdminCatalogHeading}" Foreground="#24FFE3" FontSize="19"/>
+                    <TextBlock x:Name="CommandCatalogHeading" Text="{loc:DesktopLabel Ui.AdminCatalogHeading}" Foreground="#24FFE3" FontSize="19"/>
                     <TextBlock Text="{loc:DesktopLabel Layout.CommandsNotice}" Margin="0,6,0,6"/>
                     <WrapPanel>
                         <CheckBox x:Name="ExpertToggle" Content="{loc:DesktopLabel Ui.ExpertMode}" Foreground="#FFB86C" VerticalAlignment="Center"
@@ -415,7 +425,7 @@
                             <CheckBox x:Name="FollowOutput" Content="Autoscroll" IsChecked="True" Foreground="#7BFFA6" VerticalAlignment="Center" Margin="0,0,12,0"/>
                             <Button x:Name="ExpandTerminalButton" Content="{loc:DesktopLabel Terminal.Expand}" Click="ExpandTerminalClicked" Margin="0" Padding="8,3"/>
                         </WrapPanel>
-                        <TextBlock Text="AETHER VT // PHOSPHOR TERMINAL" Foreground="#62FF91" FontFamily="Consolas" FontWeight="Bold"/>
+                        <TextBlock x:Name="TerminalHeading" Text="AETHER VT // PHOSPHOR TERMINAL" Foreground="#62FF91" FontFamily="Consolas" FontWeight="Bold"/>
                     </DockPanel>
                     <Grid Grid.Row="1">
                         <TextBox x:Name="Output" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
@@ -425,7 +435,7 @@
                                  TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
                                  UseLayoutRounding="True" SnapsToDevicePixels="True"
                                  Text="{loc:DesktopLabel Layout.ConsoleInitial}"/>
-                        <Grid IsHitTestVisible="False">
+                        <Grid x:Name="TerminalDecorations" IsHitTestVisible="False">
                             <Grid.Style><Style TargetType="Grid"><Setter Property="Visibility" Value="Collapsed"/>
                                 <Style.Triggers><DataTrigger Binding="{Binding IsChecked, ElementName=CrtEffects}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
                             </Style></Grid.Style>
