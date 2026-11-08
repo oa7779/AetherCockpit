@@ -64,6 +64,7 @@ public static class SkinCatalog
             _active.Add(dictionary);
         }
         _activeId = id;
+        ModernWindowAppearance.RefreshCharts(application);
     }
 
     public static readonly string[] RequiredKeys =

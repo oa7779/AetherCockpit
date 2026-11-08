@@ -501,6 +501,54 @@ internal static class ModernDesktopTests
         }
         SkinCatalog.Apply(app, "retro-neon");
         DesktopText.Configure("de");
+        var originalChartBackground = new SolidColorBrush(Color.FromRgb(10, 7, 23));
+        var originalChartBorder = Brushes.MediumPurple;
+        var originalGridStroke = Brushes.Purple;
+        var originalTraceStroke = Brushes.Turquoise;
+        var cyclingCanvas = new Canvas { Name = "PaletteCycleCanvas", Tag = "chart-canvas",
+            Width = 280, Height = 56, Background = originalChartBackground };
+        var cyclingGrid = new System.Windows.Shapes.Line { X2 = 280, Y1 = 28, Y2 = 28, Stroke = originalGridStroke };
+        var cyclingTrace = new System.Windows.Shapes.Polyline { Stroke = originalTraceStroke, StrokeThickness = 2,
+            Points = new PointCollection([new Point(0, 40), new Point(280, 10)]) };
+        var cyclingHalo = new System.Windows.Shapes.Polyline { Stroke = originalTraceStroke, StrokeThickness = 7,
+            Opacity = .12, Points = cyclingTrace.Points };
+        cyclingCanvas.Children.Add(cyclingGrid); cyclingCanvas.Children.Add(cyclingHalo); cyclingCanvas.Children.Add(cyclingTrace);
+        var cyclingPanel = new Border { Tag = "chart-panel", Background = originalChartBackground,
+            BorderBrush = originalChartBorder, Child = new Viewbox { Child = cyclingCanvas } };
+        var cyclingWindow = new Window { Width = 400, Height = 200, Content = cyclingPanel };
+        try
+        {
+            cyclingWindow.Show();
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            foreach (var lightMode in new[] { true, false, true })
+            {
+                SkinCatalog.Apply(app, "windows-modern", lightMode);
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(ReferenceEquals(cyclingCanvas.Background, app.Resources["SceneBackdrop"]) &&
+                    ReferenceEquals(cyclingPanel.Background, app.Resources["GlossPanel"]) &&
+                    ReferenceEquals(cyclingPanel.BorderBrush, app.Resources["ModernBorder"]) &&
+                    ReferenceEquals(cyclingGrid.Stroke, app.Resources["ModernBorder"]) &&
+                    ReferenceEquals(cyclingTrace.Stroke, app.Resources["ModernAccent"]) &&
+                    cyclingHalo.Visibility == Visibility.Collapsed,
+                    "Live code-created chart under Viewbox repaints across Modern light/dark/light palette cycles");
+                var bitmap = new RenderTargetBitmap(280, 56, 96, 96, PixelFormats.Pbgra32);
+                bitmap.Render(cyclingCanvas);
+                var pixel = new byte[4];
+                bitmap.CopyPixels(new Int32Rect(10, 5, 1, 1), pixel, 4, 0);
+                var expected = ((SolidColorBrush)app.Resources["SceneBackdrop"]).Color;
+                CheckUi(pixel[0] == expected.B && pixel[1] == expected.G && pixel[2] == expected.R && pixel[3] == 255,
+                    "Actual chart background pixels match the current Modern palette");
+            }
+            SkinCatalog.Apply(app, "retro-neon");
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            CheckUi(ReferenceEquals(cyclingCanvas.Background, originalChartBackground) &&
+                ReferenceEquals(cyclingPanel.Background, originalChartBackground) &&
+                ReferenceEquals(cyclingPanel.BorderBrush, originalChartBorder) &&
+                ReferenceEquals(cyclingGrid.Stroke, originalGridStroke) &&
+                ReferenceEquals(cyclingTrace.Stroke, originalTraceStroke) && cyclingHalo.Visibility == Visibility.Visible,
+                "Switching a live chart back to Neon restores exact original background/border/trace/grid/halo state");
+        }
+        finally { cyclingWindow.Close(); SkinCatalog.Apply(app, "retro-neon"); }
         var neonModel = new CockpitModel { Settings = new CockpitSettings(), MotionEnabled = false };
         var neonBoard = new HardwareBoardView { DataContext = neonModel };
         neonBoard.Apply(HardwareBoardTests.IllustrationExample);
@@ -617,7 +665,8 @@ internal static class ModernDesktopTests
                 foreach (var chart in chartCanvases)
                 {
                     CheckUi(ReferenceEquals(chart.Background, app.Resources["SceneBackdrop"]),
-                        $"Modern {modeName} {name} chart canvas paints the semantic scene background, actual={DescribeBrush(chart.Background)}");
+                        $"Modern {modeName} {name} chart canvas paints the semantic scene background, " +
+                        $"actual={DescribeBrush(chart.Background)}, {DescribeVisual(chart)}");
                     CheckUi(chart.Children.OfType<System.Windows.Shapes.Line>().All(line =>
                         ReferenceEquals(line.Stroke, app.Resources["ModernBorder"])) &&
                         chart.Children.OfType<System.Windows.Shapes.Polyline>().Where(line => line.Visibility == Visibility.Visible)
@@ -679,6 +728,16 @@ internal static class ModernDesktopTests
     }
     private static string DescribeBrush(Brush brush) =>
         brush is SolidColorBrush solid ? $"{solid.Color} (opacity={solid.Opacity})" : brush?.ToString() ?? "<null>";
+
+    private static string DescribeVisual(FrameworkElement element)
+    {
+        var parents = new List<string>();
+        for (DependencyObject? parent = element; parent is not null; parent = VisualTreeHelper.GetParent(parent))
+            parents.Add(parent is FrameworkElement framework
+                ? $"{framework.GetType().Name}(name={framework.Name},tag={framework.Tag},template={framework.TemplatedParent?.GetType().Name ?? "<none>"})"
+                : parent.GetType().Name);
+        return string.Join(" <- ", parents);
+    }
 
     private static IEnumerable<Brush> DrawingBrushes(Drawing drawing)
     {
