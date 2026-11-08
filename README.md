@@ -68,15 +68,15 @@ Testdaten. Sie sind kein Laufzeitnachweis für die neuen Pakete.
 
 **Mainframe im Tagmodus mit getrennten Gerätedetails**
 
-![AETHER-Mainframe im blauen Tagmodus](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-mainframe-day.png)
+![AETHER-Mainframe im blauen Tagmodus](docs/screenshots/beta37-mainframe-day.png)
 
 **Mainframe im Nachtmodus mit korrigierten GPU-Lüftern**
 
-![AETHER-Mainframe im schwarzen Nachtmodus](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-mainframe-night.png)
+![AETHER-Mainframe im schwarzen Nachtmodus](docs/screenshots/beta37-mainframe-night.png)
 
 **Bildschirmschoner mit Neon-Platine und eigener Sekundenanzeige**
 
-![AETHER-Bildschirmschoner mit schwarzem Hintergrund und synthetischen Testdaten](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.37/beta37-saver.png)
+![AETHER-Bildschirmschoner mit schwarzem Hintergrund und synthetischen Testdaten](docs/screenshots/beta37-saver.png)
 
 ## Installation
 

@@ -66,8 +66,11 @@ nachgetragen werden. Annahme, Zertifikat und Signing-Anbindung stehen aus.
 Der Nutzer hat die Beantragung bestätigt und die Veröffentlichung des
 Status beauftragt. README, Sicherheitsdokumentation und Buildanleitung
 nennen den Antrag mit ausstehender Entscheidung; keine Signaturzusage.
-Der geprüfte Quell-/CI-Stand wird samt Dokumentation per Fast-forward auf
-`main` übernommen. Keine neue Paketierung oder Releaseveröffentlichung.
+Der geprüfte Quell-/CI-Stand wurde samt Dokumentation per Fast-forward auf
+`main` übernommen (`26afc27`). Keine neue Paketierung oder Releaseveröffentlichung.
+Die drei Beta-37-Screenshots sind im Repository enthalten. Die README-Galerie
+verlinkt sie direkt unter `docs/screenshots`, statt auf den noch nicht
+veröffentlichten Beta-37-Release zu verweisen.
 
 Beta 36 veröffentlicht mit sechs aufgabenbezogenen Navigationsgruppen,
 getrennten Mainframe-/Gerätebereichen und Board-Zoom; GPU-Lüfter auf der
