@@ -2,6 +2,19 @@
 
 ## Stand
 
+Beta 38 zur Veröffentlichung freigegeben: Windows Modern zunächst deutsch,
+Retro-Neon bleibt Standard. Englisch-Auswahl entfernt, Ressourcen als
+Entwicklungsstand erhalten. Neutrale Hell-/Dunkelansichten, animiertes
+System-Schema, Schoner-Sperre und bestätigter Neustart implementiert.
+Windows-CI 42493583268 auf `4208eb5` erfolgreich: Build ohne Warnungen/Fehler,
+3884 Grund-/publizierte Assertions, 44 Verwaltung, 3048 Ressourcen,
+3381 Modern-/Neon-Smoke-Assertions. 22 synthetische Desktopbilder erzeugt.
+Mehrere visuelle Durchläufe korrigierten echte Neonreste und Kontrastfehler.
+Keine lokale Schutzrichtlinie verändert; keine Hardware-/Installationstests.
+Der Nutzer hat getrennte Beta-38-Pakete mit Setup, Portable, Server,
+Intune und Screenshots beauftragt. Pakete stammen aus diesem Windows-CI-Lauf;
+SignPath-Annahme steht aus, Dateien bleiben unsigniert.
+
 Neuer Auftrag am 08.11.2026: zusätzlicher Desktopmodus „Windows Modern“
 mit neutralen Oberflächen und Hell-/Dunkelwahl nach Windows-Einstellung.
 Retro-Neon bleibt Standard. Im Modern-Modus heißt das Mainframe
@@ -11,13 +24,12 @@ Cockpit erzeugten Oberflächentexte einschließlich Dialogen, Gadgets, xBar
 und Assistenten umfassen. Externe Werkzeugausgaben bleiben im Original.
 Der Nutzer hat einen bestätigten App-Neustart nach Design-/Sprachwahl
 gewählt. Serveroberfläche und Installer werden später umgestellt.
-Implementierung und Prüfungen laufen; noch keine Behauptung vollständiger
-Abdeckung und keine neuen Releasepakete.
+Die Umsetzung dieses Auftrags ist im obigen Beta-38-Stand zusammengefasst.
 Nach der Übersetzungsprüfung hat der Nutzer den Umfang geändert:
 zuerst Windows Modern vollständig prüfen und veröffentlichen. Die
 unvollständige Englisch-Auswahl darf noch nicht angeboten werden.
 Sprachressourcen bleiben Entwicklungsarbeit; die freigegebene Oberfläche
-bleibt zunächst deutsch. Modern-Laufzeitprüfung steht noch aus.
+bleibt zunächst deutsch. Die synthetische Modern-Laufzeitprüfung ist inzwischen bestanden.
 
 Beta 37 in Vorbereitung: Nacht-Hintergründe schwarz
 statt blau/violett, Tag-Hintergründe blau. Hauptfenster, Mainframe-Himmel,

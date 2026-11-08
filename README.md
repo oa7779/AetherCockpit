@@ -67,7 +67,20 @@ die Szene, echte Messwerte stehen daneben.
 Windows Modern verwendet neutrale Karten, Segoe UI und dezente Animation
 ohne Neon-Effekte. [Design wechseln](docs/USER-GUIDE.md#windows-modern).
 
-### Einblicke in Beta 37
+### Windows Modern in Beta 38
+
+Aufnahmen aus dem Windows-CI-Smoke-Test mit synthetischen Daten, ohne
+Hardwareinitialisierung. Das Original-Logo bleibt Bestandteil beider Designs.
+
+![Windows Modern – Dashboard hell](docs/screenshots/beta38/windows-modern-light-dashboard-navigation.png)
+
+![Windows Modern – animiertes System-Schema dunkel](docs/screenshots/beta38/windows-modern-dark-system-schema.png)
+
+![Windows Modern – Systemkontrolle hell](docs/screenshots/beta38/windows-modern-light-control-center-admin.png)
+
+![Windows Modern – xBar dunkel](docs/screenshots/beta38/windows-modern-dark-xbar.png)
+
+### Retro-Neon: Schwarz-/Blau-Ansichten
 
 Die Aufnahmen stammen aus dem bestandenen UI-Test der Schwarz-/Blau-Korrektur
 vor dem Beta-37-Versionsbuild. Mainframe und Schoner verwenden synthetische

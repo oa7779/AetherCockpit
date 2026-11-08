@@ -1,5 +1,18 @@
 # Tests
 
+## Prüfstatus Beta 38
+
+[Windows-CI 42493583268](https://github.com/oa7779/AetherCockpit/actions/runs/42493583268)
+prüfte Quellcommit `4208eb5`: Build ohne Warnungen/Fehler,
+3884 Grundassertions, 44 Verwaltungsassertions, 3048 Ressourcen- und
+Kompatibilitätsassertions sowie 3381 deutsche Modern-/Neon-Smoke-Assertions
+bestanden. Der Grundlauf bestand zusätzlich mit den publizierten Assemblies.
+22 synthetische Hell-/Dunkelbilder wurden erzeugt; die Bildkontrolle führte
+zu Korrekturen von Diagrammen, Auswahlfeldern und Katalogkontrasten.
+Diese Tests führen keine Reparaturen, Installation oder Hardwareinitialisierung
+aus. Hardwarebetrieb und Intune-Rollout sind separat zu prüfen.
+Die lokale Code-Integrity-Sperre wurde nicht verändert.
+
 ## Prüfstatus Beta 37
 
 Der Versionsbuild ist ohne Warnungen oder Fehler abgeschlossen. Windows
