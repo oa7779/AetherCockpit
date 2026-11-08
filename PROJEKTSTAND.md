@@ -12,6 +12,24 @@ Katalog mit bisherigen Geräte- und Änderungsfreigaben. Desktopfunktionen
 ohne sichere Remoteanbindung werden nicht als zentral ausführbar ausgegeben.
 Implementierung, Rollen- und Flottenprüfungen laufen; noch keine neue Version
 oder Behauptung einer produktionsfertigen Netzwerkverwaltung.
+Der freigegebene separate Testbranch `feature/professional-server` ist
+hochgeladen; `main` und Beta 38 bleiben unverändert.
+[Windows-CI 42504760899](https://github.com/oa7779/AetherCockpit/actions/runs/42504760899)
+auf `20b0ae4` erfolgreich: null Buildwarnungen/-fehler,
+364 Verwaltungsassertions (44 bestehende, 156 HTTPS/Konten/Rollen/CSRF/
+Sitzungen, 150 lokale Konten, 14 Flotte/Telemetrie), Browserprüfung mit
+48 synthetischen Geräten und zwölf Screenshots bestanden.
+Desktopregression: 3884 Grund-/publizierte Assertions, 3048 Ressourcen,
+3381 Modern-/Neon-Smoke bestanden. Keine Windows-Aktion ausgeführt.
+Neon-Flotte, Modern hell, mobile Ansicht und Operatoransicht visuell gelesen.
+Konten verwenden Identity-Kennworthash; Sitzungen sind zeitlich begrenzt,
+HttpOnly/SameSite Strict und mutationsseitig CSRF-geschützt.
+Nach Bootstrap ist der alte Admin-API-Zugang standardmäßig aus; explizite
+Kompatibilität nur für Nicht-Browser-Werkzeuge. Bootstrap/Migration muss
+vor produktiver Übernahme geplant werden.
+Einzelserver-JSON-Persistenz, keine HA oder storeübergreifende Transaktionen,
+keine MFA oder vollständige Übernahme aller Desktopfunktionen.
+Noch kein Merge nach `main` oder neuer Release.
 
 Beta 38 veröffentlicht: Windows Modern zunächst deutsch,
 Retro-Neon bleibt Standard. Englisch-Auswahl entfernt, Ressourcen als

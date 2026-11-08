@@ -42,9 +42,23 @@ eingebaut.
 
 Die Benutzerverwaltung verwendet einmaliges Bootstrap mit dem bestehenden
 privilegierten Token, kennwortgeschützte Konten und zeitlich begrenzte
-Browsersitzungen. Die vollständige Rollen-, HTTPS- und Browserprüfung
-läuft noch. Keine freie Fernkonsole und keine automatische Übernahme
+Browsersitzungen. Die CI-Rollen-, HTTPS- und Browserprüfung mit 48 synthetischen Geräten
+ist bestanden; produktive Installation und Migration sind damit nicht geprüft.
+Keine freie Fernkonsole und keine automatische Übernahme
 aller lokalen Desktopaktionen.
+
+Der alte Administrator-Token dient dem einmaligen Bootstrap außerhalb des
+Browsers. Nach Anlegen des ersten Administrators ist der alte Admin-API-
+Zugang standardmäßig aus. `AETHER_MANAGER_LEGACY_ADMIN_API=true` erlaubt
+explizit vorhandene Nicht-Browser-Administrationswerkzeuge, nicht den
+Browser-Tokenlogin oder erneutes Bootstrap.
+Browsersitzungen laufen nach 30 Minuten absolut ab; Konto-, Rollen- und
+Kennwortänderungen widerrufen die Sitzungen des betroffenen Kontos.
+Der letzte aktive Administrator kann nicht entfernt oder herabgestuft werden.
+
+Der Entwicklungsstand bleibt eine Einzelserverlösung mit geschütztem
+JSON-Datenordner. Mehrfaktoranmeldung, Hochverfügbarkeit, Selbstbedienungs-
+Kontowiederherstellung und storeübergreifende Transaktionen sind nicht enthalten.
 
 ## Desktopclient
 

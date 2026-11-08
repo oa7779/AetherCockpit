@@ -1,5 +1,16 @@
 # Tests
 
+## Serverentwicklungsbranch
+
+[Windows-CI 42504760899](https://github.com/oa7779/AetherCockpit/actions/runs/42504760899)
+auf `20b0ae4` bestand 364 Verwaltungsassertions einschließlich
+156 HTTPS-/Rollen-/CSRF-/Sitzungsprüfungen, 150 lokaler Kontenprüfungen
+und 14 Flotten-/Telemetrieprüfungen zusätzlich zu den bestehenden 44.
+Die Browserprüfung bestand mit 48 synthetischen Geräten und zwölf
+Screenshots. Kein Clientexecutor oder Windows-Verwaltungsauftrag wurde
+ausgeführt. Der Stand liegt auf `feature/professional-server`, nicht im
+veröffentlichten Beta-38-Release.
+
 ## Prüfstatus Beta 38
 
 [Windows-CI 42493583268](https://github.com/oa7779/AetherCockpit/actions/runs/42493583268)
