@@ -73,6 +73,32 @@ Die Uhr verwendet die aktuelle lokale Systemzeit, nicht den Zeitpunkt der
 letzten Hardwareprobe. Die Uptime läuft zwischen erfolgreichen Windows-Proben
 weiter. Zeitkorrekturen von Windows werden in der Uhranzeige übernommen.
 
+## Windows Modern
+
+Retro-Neon bleibt das Standarddesign. Nach der Installation lässt sich unter
+**Darstellung / Desktop → Design** oder
+**Systemkontrolle → Einstellungen → Skin / Fensteroberfläche**
+**Windows Modern** wählen. Die neutrale Oberfläche folgt der Windows-
+Einstellung für helle oder dunkle Apps. Beim Speichern bietet AETHER
+**Jetzt neu starten** oder **Später** an; das laufende Cockpit wechselt
+erst beim Neustart.
+
+Das Mainframe heißt dort **System-Schema**. Geräte erscheinen in neutralen
+Karten mit anklickbaren Details. Die animierten Verbindungen sind illustrative
+Datenflüsse, keine gemessenen Leiterbahnen oder Transferraten.
+Der Animationsschalter und die Windows-Einstellung für reduzierte Bewegung
+bleiben wirksam.
+
+Mit gespeichertem Windows Modern startet der AETHER-Bildschirmschoner nicht;
+eine laufende Sitzung endet bei der nächsten Einstellungsprüfung.
+Diese Sperre gilt bereits vor dem aufgeschobenen Cockpit-Neustart.
+Zurück zu Retro-Neon macht den Schoner wieder verfügbar; die Windows-Auswahl
+und Wartezeit werden dabei nicht automatisch geändert.
+
+Die Desktopoberfläche bleibt zunächst deutsch. Englisch ist in Vorbereitung
+und wird noch nicht zur Auswahl angeboten. Installer, Windows-Dialoge und
+externe Werkzeugausgaben behalten ihre jeweils vorhandene Sprache.
+
 ## xBar, Gadgets und Overlay
 
 **Diagnose → AETHER xBar an/aus** öffnet die Diagrammleiste. Im Zahnradmenü

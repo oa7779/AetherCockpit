@@ -47,7 +47,9 @@ public partial class MainWindow : Window
     private bool _exitRequested, _monitoringStarted;
     internal CockpitModel Model => _model;
 
-    public MainWindow()
+    public MainWindow() : this(null) { }
+
+    internal MainWindow(CockpitSettings? syntheticSettings)
     {
         InitializeComponent();
         InitializeNavigation();
@@ -95,14 +97,14 @@ public partial class MainWindow : Window
             ? "ACCESS / ADMINISTRATOR" : "ACCESS / STANDARD";
         try
         {
-            _model.Settings = CockpitSettings.Load();
+            _model.Settings = syntheticSettings ?? CockpitSettings.Load();
             var optionalWarnings = _model.Settings.OptionalFileWarnings();
             if (optionalWarnings.Count > 0)
             {
                 _configurationIssue = string.Join("\n", optionalWarnings);
                 _model.Footer = _configurationIssue;
             }
-            LoadCacheTargets(0);
+            if (syntheticSettings is null) LoadCacheTargets(0);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException or ArgumentException)
         {
@@ -112,12 +114,28 @@ public partial class MainWindow : Window
         }
         Loaded += (_, _) =>
         {
+            if (syntheticSettings is not null) return;
             _displayPulse.Start();
             StartBackgroundServices();
         };
-        IsVisibleChanged += (_, _) => { if (IsVisible && IsLoaded) _displayPulse.Start(); else _displayPulse.Stop(); };
+        IsVisibleChanged += (_, _) => { if (syntheticSettings is null && IsVisible && IsLoaded) _displayPulse.Start(); else _displayPulse.Stop(); };
+        if (syntheticSettings is not null)
+        {
+            _allowClose = true;
+            Operations.Shutdown();
+            foreach (var board in SyntheticDescendants(this).OfType<Controls.HardwareBoardView>()) board.Shutdown();
+        }
         Closed += (_, _) => _displayPulse.Dispose();
         Closing += OnClosing;
+    }
+
+    private static IEnumerable<DependencyObject> SyntheticDescendants(DependencyObject root)
+    {
+        foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
+        {
+            yield return child;
+            foreach (var descendant in SyntheticDescendants(child)) yield return descendant;
+        }
     }
 
     internal void StartBackgroundServices()

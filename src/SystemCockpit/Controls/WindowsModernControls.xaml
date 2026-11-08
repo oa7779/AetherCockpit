@@ -61,23 +61,88 @@
         <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
     </Style>
-    <Style TargetType="{x:Type ComboBox}">
+    <Style x:Key="ModernComboBox" TargetType="{x:Type ComboBox}">
         <Setter Property="Background" Value="{DynamicResource ModernInput}"/>
         <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ModernBorder}"/>
         <Setter Property="Padding" Value="6,4"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid>
+                        <Border x:Name="Frame" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="4"/>
+                        <ToggleButton Focusable="False" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent"><Grid>
+                                        <Path HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"
+                                              Data="M 0 0 L 4 4 L 8 0"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}"
+                                              StrokeThickness="1.5"/>
+                                    </Grid></Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <ContentPresenter x:Name="Selection" Margin="8,5,32,5" IsHitTestVisible="False"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center"/>
+                        <TextBox x:Name="PART_EditableTextBox" Margin="4,3,30,3" Visibility="Collapsed"
+                                 Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}"
+                                 BorderThickness="0" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                        <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom"
+                               AllowsTransparency="True" Focusable="False" PopupAnimation="None">
+                            <Border x:Name="PopupFrame" Background="{DynamicResource ModernInput}"
+                                    BorderBrush="{DynamicResource ModernBorder}" BorderThickness="1"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <ScrollViewer CanContentScroll="True"><ItemsPresenter/></ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEditable" Value="True">
+                            <Setter TargetName="Selection" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Frame" Property="BorderBrush" Value="{DynamicResource ModernAccent}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
+                            <Setter TargetName="Frame" Property="Background" Value="{DynamicResource ModernDisabledBackground}"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ModernComboBox}"/>
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="Background" Value="{DynamicResource ModernInput}"/>
         <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
         <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Template">
+            <Setter.Value><ControlTemplate TargetType="ComboBoxItem">
+                <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                    <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+                </Border>
+            </ControlTemplate></Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter Property="Background" Value="{DynamicResource ModernHover}"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{DynamicResource ModernSelection}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource ModernTextDisabled}"/>
+                <Setter Property="Background" Value="{DynamicResource ModernDisabledBackground}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

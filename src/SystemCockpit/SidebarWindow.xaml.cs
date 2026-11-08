@@ -24,17 +24,22 @@ public partial class SidebarWindow : Window
     private DateTime _pointerLeftAt;
 
     public SidebarWindow(CockpitModel model, CockpitSettings settings,
-        Action<CockpitSettings> saveSettings)
+        Action<CockpitSettings> saveSettings) : this(model, settings, saveSettings, false) { }
+
+    internal SidebarWindow(CockpitModel model, CockpitSettings settings,
+        Action<CockpitSettings> saveSettings, bool synthetic)
     {
         InitializeComponent();
         _model = model;
         _settings = settings;
         _saveSettings = saveSettings;
+        _synthetic = synthetic;
         DataContext = model;
         _behaviorTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _behaviorTimer.Tick += BehaviorTimerTick;
         _model.PropertyChanged += ModelChanged;
     }
+    private readonly bool _synthetic;
 
     private void ModelChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -43,6 +48,7 @@ public partial class SidebarWindow : Window
 
     private void WindowLoaded(object sender, RoutedEventArgs e)
     {
+        if (_synthetic) return;
         try
         {
             _initializing = true;

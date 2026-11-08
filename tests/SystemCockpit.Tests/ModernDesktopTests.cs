@@ -329,7 +329,7 @@ internal static class ModernDesktopTests
             root.Children.Add(board);
             var caption = new TextBlock
             {
-                Text = "SYNTHETIC TEST DATA / no hardware read",
+                Text = "SYNTHETISCHE TESTDATEN / keine Hardwareabfrage",
                 Margin = new Thickness(12),
                 Foreground = (Brush)app.Resources["ModernTextSecondary"]
             };
@@ -348,6 +348,35 @@ internal static class ModernDesktopTests
                 window.Show();
                 ModernWindowAppearance.Apply(window);
                 Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                var zoom = (ComboBox)board.FindName("BoardZoom");
+                var details = (Border)board.FindName("DeviceDetails");
+                CheckUi(ReferenceEquals(details.BorderBrush, app.Resources["ModernBorder"]) &&
+                    ReferenceEquals(zoom.Background, app.Resources["ModernInput"]) &&
+                    zoom.Template.FindName("Frame", zoom) is Border zoomFrame &&
+                    ReferenceEquals(zoomFrame.Background, app.Resources["ModernInput"]),
+                    "Schema detail border and closed ComboBox template use actual Modern semantic brushes");
+                zoom.IsDropDownOpen = true;
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(zoom.Template.FindName("PopupFrame", zoom) is Border popupFrame &&
+                    ReferenceEquals(popupFrame.Background, app.Resources["ModernInput"]),
+                    "Modern ComboBox popup has a semantic background rather than the native white template");
+                zoom.IsDropDownOpen = false;
+                CheckUi(zoom.Items.Cast<ComboBoxItem>().All(item =>
+                    ReferenceEquals(item.Foreground, app.Resources["ModernTextPrimary"]) &&
+                    new[] { "ModernInput", "ModernSelection", "ModernHover" }.Any(key =>
+                        ReferenceEquals(item.Background, app.Resources[key]))),
+                    "Modern popup items retain neutral normal, selected and highlighted colors");
+                zoom.IsEnabled = false;
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(ReferenceEquals(zoom.Foreground, app.Resources["ModernTextDisabled"]) &&
+                    zoom.Template.FindName("Frame", zoom) is Border disabledFrame &&
+                    ReferenceEquals(disabledFrame.Background, app.Resources["ModernDisabledBackground"]),
+                    "Disabled Modern ComboBox uses readable semantic disabled colors");
+                zoom.IsEnabled = true;
+                CheckUi(Contrast((SolidColorBrush)app.Resources["ModernTextPrimary"],
+                    (SolidColorBrush)app.Resources["ModernInput"]) >= 4.5,
+                    "Modern input/text palette meets 4.5:1 contrast in both light and dark mode");
+                CaptureMajorSurfaces(modeName, model);
                 CheckUi(!SystemParameters.ClientAreaAnimation ||
                     board.SceneAnimating && board.FlowAnimating && flows.All(item => item.HasAnimatedProperties) &&
                     indicators.All(item => item.HasAnimatedProperties),
@@ -439,6 +468,103 @@ internal static class ModernDesktopTests
             "Returning to default German Neon preserves the landscape, stopped-motion toggle and saver eligibility");
         neonBoard.Shutdown();
         return assertions;
+
+        void CaptureMajorSurfaces(string modeName, CockpitModel model)
+        {
+            void NoSave(CockpitSettings _) => throw new InvalidOperationException("Synthetic UI must not write settings.");
+            var main = new MainWindow(model.Settings) { Width = 1440, Height = 960 };
+            var control = new ControlCenterWindow(model) { Width = 1320, Height = 900 };
+            var desktop = new DesktopSettingsWindow(model, NoSave, () => { });
+            var sidebar = new SidebarWindow(model, model.Settings, NoSave, synthetic: true);
+            var gadget = new GadgetWindow("CPU", model.DetailGraphs[0], "MetricTemplate",
+                new GadgetLayout("CPU", 0, 0, 1), _ => throw new InvalidOperationException("Synthetic gadget must not write."),
+                _ => throw new InvalidOperationException("Synthetic gadget failure."), synthetic: true);
+            var boot = new BootWindow();
+            var firstRun = new FirstRunWindow();
+            var confirmation = new ActionConfirmationWindow(DesktopUiText.Get("Center.CommandTitle"),
+                DesktopUiText.Get("Safety.ExplorerRestart"));
+            try
+            {
+                Capture(main, "dashboard-navigation");
+                var pages = (TabControl)main.FindName("Pages");
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Superadmin"));
+                Capture(main, "superadmin");
+                var tabs = (TabControl)control.FindName("Modules");
+                tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Einstellungen"));
+                Capture(control, "control-center-settings");
+                tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Wartung"));
+                Capture(control, "control-center-admin");
+                Capture(desktop, "desktop-settings");
+                Capture(sidebar, "xbar");
+                Capture(gadget, "gadget");
+                boot.Report("SYNTHETISCHE VORSCHAU / keine Hardwareabfrage", 65);
+                Capture(boot, "boot");
+                Capture(firstRun, "first-run");
+                Capture(confirmation, "action-confirmation");
+                CheckUi(!confirmation.Confirm.IsEnabled && confirmation.Consent.IsChecked != true,
+                    "Synthetic action preview remains unapproved and executes nothing");
+            }
+            finally
+            {
+                main.Close(); control.Close(); desktop.Close(); sidebar.Close(); gadget.Close();
+                boot.CloseAfterStartup(); firstRun.Close(); confirmation.Close();
+            }
+
+            void Capture(Window surface, string name)
+            {
+                surface.Show();
+                ModernWindowAppearance.Apply(surface);
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                surface.UpdateLayout();
+                var elements = VisualElements(surface).ToArray();
+                CheckUi(elements.All(element => element.Effect is null &&
+                    !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element)),
+                    $"Modern {modeName} {name} contains no neon glow effects");
+                CheckUi(ReferenceEquals(surface.Foreground, app.Resources["ModernTextPrimary"]) &&
+                    ReferenceEquals(surface.Background, app.Resources["WindowBackdrop"]),
+                    $"Modern {modeName} {name} uses semantic window/text palette");
+                CheckUi(elements.OfType<TextBox>().All(text =>
+                    ReferenceEquals(text.Foreground, app.Resources["ModernTextPrimary"]) &&
+                    ReferenceEquals(text.Background, app.Resources["ModernInput"])),
+                    $"Modern {modeName} {name} text inputs retain semantic contrast");
+                if (outputDirectory is not null)
+                {
+                    var bitmap = new RenderTargetBitmap(Math.Max(1, (int)Math.Ceiling(surface.ActualWidth)),
+                        Math.Max(1, (int)Math.Ceiling(surface.ActualHeight)), 96, 96, PixelFormats.Pbgra32);
+                    bitmap.Render(surface);
+                    var path = Path.Combine(outputDirectory, $"windows-modern-{modeName}-{name}.png");
+                    using var stream = File.Create(path);
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(bitmap)); encoder.Save(stream);
+                    Console.WriteLine($"SCREENSHOT: {path}");
+                }
+                surface.Hide();
+            }
+        }
     }
 
+    private static IEnumerable<FrameworkElement> VisualElements(DependencyObject root)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            if (child is FrameworkElement element) yield return element;
+            foreach (var descendant in VisualElements(child)) yield return descendant;
+        }
+    }
+        private static double Contrast(SolidColorBrush foreground, SolidColorBrush background)
+        {
+            static double Luminance(Color color)
+            {
+                static double Channel(byte value)
+                {
+                    var v = value / 255d;
+                    return v <= 0.04045 ? v / 12.92 : Math.Pow((v + 0.055) / 1.055, 2.4);
+                }
+                return 0.2126 * Channel(color.R) + 0.7152 * Channel(color.G) + 0.0722 * Channel(color.B);
+            }
+            var a = Luminance(foreground.Color);
+            var b = Luminance(background.Color);
+            return (Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05);
+    }
 }

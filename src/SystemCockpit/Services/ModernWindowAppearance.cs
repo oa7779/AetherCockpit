@@ -29,6 +29,15 @@ internal static class ModernWindowAppearance
 
     private static void ApplyElement(FrameworkElement element)
     {
+            element.Effect = null;
+            SystemCockpit.Controls.FrameGlow.SetVisible(element, false);
+            SystemCockpit.Controls.FrameGlow.SetEnabled(element, false);
+            if (element is Control styled && styled is Button or ComboBox or ComboBoxItem or TabItem or DataGrid)
+            {
+                if (Application.Current.TryFindResource(styled.GetType()) is Style modernStyle &&
+                    !ReferenceEquals(styled.Style, modernStyle))
+                    styled.Style = modernStyle;
+            }
             if (element is SystemCockpit.Controls.NeonGauge gauge)
                 gauge.SetResourceReference(SystemCockpit.Controls.NeonGauge.AccentProperty, "ModernAccent");
             if (element is SystemCockpit.Controls.LedDisplay led)
@@ -40,11 +49,18 @@ internal static class ModernWindowAppearance
             }
             if (element is SystemCockpit.Controls.SensorPlot plot)
                 plot.SetResourceReference(SystemCockpit.Controls.SensorPlot.PaletteBrushProperty, "ModernAccent");
-            if (element is TextBlock text)
+            if (element is TextBlock text && !IsSemanticTextBrush(text.Foreground))
                 text.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
-            if (element is Control control)
+            if (element is Control control && control.TemplatedParent is not ComboBox)
             {
-                control.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
+                if (control is ComboBox or ComboBoxItem)
+                {
+                    control.ClearValue(Control.ForegroundProperty);
+                    control.ClearValue(Control.BackgroundProperty);
+                    control.ClearValue(Control.BorderBrushProperty);
+                }
+                else if (!IsSemanticTextBrush(control.Foreground))
+                    control.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
                 if (control is TextBox or PasswordBox)
                 {
                     control.SetResourceReference(Control.BackgroundProperty, "ModernInput");
@@ -55,20 +71,25 @@ internal static class ModernWindowAppearance
                     control.SetResourceReference(Control.BackgroundProperty, "GlossButton");
                     control.SetResourceReference(Control.BorderBrushProperty, "ButtonBorder");
                 }
-                else if (control is ListBox or ComboBox or DataGrid)
+                else if (control is ListBox or DataGrid)
                 {
                     control.SetResourceReference(Control.BackgroundProperty, "SceneBackdrop");
                     control.SetResourceReference(Control.BorderBrushProperty, "ModernBorder");
+                }
             }
-            if (element is Border border)
+            if (element is Border border && border.TemplatedParent is null)
             {
-                border.SetResourceReference(Border.BackgroundProperty, "GlossPanel");
-                border.SetResourceReference(Border.BorderBrushProperty, "ModernBorder");
+                if (HasPaintedBackground(border.Background))
+                    border.SetResourceReference(Border.BackgroundProperty, "GlossPanel");
+                if (border.BorderBrush is not null)
+                    border.SetResourceReference(Border.BorderBrushProperty, "ModernBorder");
             }
-            else if (element is Panel panel)
+            else if (element is Panel panel && panel.TemplatedParent is null && HasPaintedBackground(panel.Background))
                 panel.SetResourceReference(Panel.BackgroundProperty, "SceneBackdrop");
-            if (element is Shape shape)
+            if (element is Shape shape && shape.TemplatedParent is null)
             {
+                if (shape is Polyline && shape.StrokeThickness > 2 && shape.Opacity < 0.5)
+                    shape.Visibility = Visibility.Collapsed;
                 var modernTag = shape.Tag as string ?? "";
                 shape.SetResourceReference(Shape.StrokeProperty,
                     modernTag.StartsWith("modern-schema-flow:", StringComparison.Ordinal)
@@ -77,9 +98,15 @@ internal static class ModernWindowAppearance
                     shape.SetResourceReference(Shape.FillProperty,
                         modernTag.StartsWith("modern-schema-active-device:", StringComparison.Ordinal)
                             ? "ModernAccent" : "ModernSelection");
-            }
         }
     }
+
+    private static bool IsSemanticTextBrush(Brush brush) =>
+        new[] { "ModernTextPrimary", "ModernTextSecondary", "ModernWarning", "ModernPositive", "ModernTextDisabled" }
+            .Any(key => ReferenceEquals(brush, Application.Current.TryFindResource(key)));
+
+    private static bool HasPaintedBackground(Brush? brush) =>
+        brush is not null && brush is not SolidColorBrush { Color.A: 0 };
 
     private static void WindowLoaded(object sender, RoutedEventArgs e)
     {

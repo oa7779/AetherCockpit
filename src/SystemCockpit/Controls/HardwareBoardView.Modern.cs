@@ -130,6 +130,10 @@ public partial class HardwareBoardView
     private void ApplyModernChrome()
     {
         if (!SkinCatalog.IsModern) return;
+        DeviceDetails.SetResourceReference(Border.BorderBrushProperty, "ModernBorder");
+        BoardZoom.Style = (Style)FindResource("ModernComboBox");
+        BoardZoom.SetResourceReference(Control.BackgroundProperty, "ModernInput");
+        BoardZoom.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");
         BoardTitleText.Text = DesktopText.Get("Board.SystemSchemaTitle");
         BoardTitleText.SetResourceReference(TextBlock.ForegroundProperty, "ModernTextPrimary");
         BoardTitleText.FontFamily = new FontFamily("Segoe UI");

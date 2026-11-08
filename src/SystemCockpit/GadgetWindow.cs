@@ -22,7 +22,10 @@ internal sealed class GadgetWindow : Window
     private IntPtr _desktop;
 
     public GadgetWindow(string id, object data, string template, GadgetLayout layout, Action<GadgetLayout> save,
-        Action<string> failure)
+        Action<string> failure) : this(id, data, template, layout, save, failure, false) { }
+
+    internal GadgetWindow(string id, object data, string template, GadgetLayout layout, Action<GadgetLayout> save,
+        Action<string> failure, bool synthetic)
     {
         GadgetId = id;
         _save = save;
@@ -90,6 +93,7 @@ internal sealed class GadgetWindow : Window
         };
         Loaded += (_, _) =>
         {
+            if (synthetic) return;
             try
             {
                 _desktop = DesktopLayer.Find();

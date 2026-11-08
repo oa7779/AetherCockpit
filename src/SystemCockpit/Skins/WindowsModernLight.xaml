@@ -17,4 +17,6 @@
     <SolidColorBrush x:Key="ModernHover" Color="#EAEAEA"/>
     <SolidColorBrush x:Key="ModernPositive" Color="#237A3B"/>
     <SolidColorBrush x:Key="ModernWarning" Color="#8A5A00"/>
+    <SolidColorBrush x:Key="ModernTextDisabled" Color="#666666"/>
+    <SolidColorBrush x:Key="ModernDisabledBackground" Color="#E8E8E8"/>
 </ResourceDictionary>
