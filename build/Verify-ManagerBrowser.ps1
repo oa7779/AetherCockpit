@@ -24,7 +24,7 @@ try {
     } until ($credentials -or (Get-Date) -ge $deadline)
     if (!$credentials -or !(Test-Path -LiteralPath $credentials)) { throw 'Browser fixture readiness timed out.' }
     $fixtureRoot = Split-Path $credentials -Parent
-    & node (Join-Path $root 'tests\AetherManager.Tests\browser-smoke.mjs') $credentials (Join-Path $logs 'screenshots')
+    & node (Join-Path $root 'tests\AetherManager.Tests\browser-smoke.mjs') $credentials (Join-Path $root 'tests\browser-screenshots')
     if ($LASTEXITCODE -ne 0) { throw "Browser smoke failed: $LASTEXITCODE" }
 }
 finally {
