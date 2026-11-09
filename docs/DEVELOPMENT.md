@@ -86,14 +86,13 @@ Versions- oder Paketänderung umgesetzt; siehe
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell lokal `0.7.0-beta.44`, Dateiversion `0.7.0.44`,
+aktuell `0.7.0-beta.45`, Dateiversion `0.7.0.45`,
 Assembly-Version `0.7.0.0`.
 
-Beta 44 ist ein lokaler Cockpit-Testinstaller mit gebündelten Datenträgerkarten,
-stärkerem Neon-Glow, animiertem Branding, ursprünglicher Cockpit-Anordnung,
-Wake-on-LAN und erweitertem Wartungskatalog,
-kein veröffentlichter Release.
-Beta 38 bleibt die öffentliche Version.
+Beta 45 paketiert die technische Konsolidierung und die ruhigen Neonrahmen
+als GitHub-Vorabversion. Bestehende Datenträgerkarten, Branding,
+Cockpit-Anordnung, Wake-on-LAN und Wartungsfunktionen bleiben erhalten.
+Der separate Server wird durch diesen Cockpit-Installer nicht veröffentlicht.
 Die folgenden Beta-38-Pfade sind historische Paketierungsbeispiele; sie dürfen
 nicht überschrieben werden. Neue Ausgaben verwenden die aktuelle Profilversion.
 

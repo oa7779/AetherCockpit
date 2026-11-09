@@ -12,24 +12,29 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Aktuelle Beta: 0.7.0-beta.38**
+**Aktuelle Beta: 0.7.0-beta.45**
 
-**Lokaler Cockpit-Teststand: 0.7.0-beta.44**, nicht auf GitHub veröffentlicht.
-Zeigt wieder das ursprüngliche Cockpit mit allen bisherigen Anzeigen direkt
+Ruhige Neonrahmen mit scharfer Kernkontur, getrenntem Glow und langsamer,
+abschaltbarer Atmung ersetzen die umlaufenden Panel-Laufspuren.
+Windows Modern bleibt neutral. Technische Quellen-/Ergebnisverträge,
+Fehlerprotokollierung und Ressourcenfreigabe sind konsolidiert.
+Das ursprüngliche Cockpit zeigt alle bisherigen Anzeigen direkt
 auf der Seite, ohne vorgeschaltete Übersicht oder zusätzliche Detailklappe.
 Datenträger bündeln Lesen, Schreiben, Aktivität und Queue in einer roten
 Karte mit vier farbigen Messreihen und getrennt beschrifteten Skalen.
-Neonrahmen, Kurven und Mainboard erhalten stärkeren Glow.
+Kurven und Mainboard behalten ihren kräftigen Glow.
 Das Logo im Retro-Neon-Cockpit und Bildschirmschoner ist mit Neon-Puls,
 Lichtreflex und Chromschriftzug gestaltet. Enthält bestätigtes Wake-on-LAN und den erweiterten
 Windows-Wartungs- und Deploymentkatalog. Microsoft Graph bleibt Teil des
 separaten Verwaltungsservers. [Versionsgeschichte](CHANGELOG.md).
 
-**Prüfstatus:** Windows-CI prüft Build, Konsolenassertions und synthetische
-Desktopansichten. Hardwarebetrieb, Installation und Intune-Verteilung sind
+**Prüfstatus:** Lokale Releasebuilds, Konsolenassertions und synthetische
+Desktopansichten sind geprüft. Rahmenvergleich und offene Produktmessungen:
+[Performance-Baseline](docs/PERFORMANCE-BASELINE.md#meilenstein-2-neonrahmenvergleich).
+Hardwarebetrieb, Installation und Intune-Verteilung sind
 nicht durch diese Tests abgedeckt. Die Pakete sind weiterhin unsigniert.
 
-Beta 38 ergänzt **Windows Modern** als wählbare neutrale Desktopoberfläche.
+**Windows Modern** ist als neutrale Desktopoberfläche wählbar.
 Hell und dunkel folgen Windows; das animierte **System-Schema** ersetzt dort
 das Mainframe. In diesem Design ist der AETHER-Bildschirmschoner deaktiviert.
 Retro-Neon und Deutsch bleiben Standard; Englisch ist noch nicht auswählbar.
@@ -49,7 +54,7 @@ Synchronisierungen und Änderungen an bestehenden Bereitstellungen werden
 einzeln bestätigt.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Beta-38-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38)
+[Beta-45-Installer und SHA256-Prüfsumme](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)
 · [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
 · [Versionsgeschichte](CHANGELOG.md)
 

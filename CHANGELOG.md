@@ -9,6 +9,22 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.45 — ruhige Neonrahmen und technische Konsolidierung
+
+- Zentrale Neonrahmen mit scharfer Kernkontur, getrenntem innerem/äußerem
+  Glow und ruhiger abschaltbarer Atmung ersetzen die umlaufenden
+  Panel-Laufspuren in Cockpit, xBar, Diagrammen, Eingaben und Schoner.
+- Neun explizite Rahmenzustände, ReducedMotion und kontrollierte Freigabe
+  bei Unsichtbarkeit, Minimierung und Unload; Windows Modern bleibt neutral.
+- Cockpit-Anordnung, Messwerte, Funktionen, Branding- und Boardanimationen
+  bleiben erhalten.
+- Kompatible Quellen-/Ergebnis-/Datenschutzgrundlage, additive technische
+  Journale sowie korrigierte Ausgabegrenzen und Ressourcenfreigabe.
+- Mehrere synthetische Alt-/Neu-Vergleiche, Lifecycle-/DPI-/Bewegungstests;
+  keine daraus abgeleitete allgemeine Produktperformancefreigabe.
+- Neu revisionierter unsignierter Windows-x64-Installer mit SHA256 für
+  eine GitHub-Vorabversion; keine RC- oder Installationsabnahme.
+
 ## 0.7.0-beta.44 — Datenträgerkarten und Neon-Glow
 
 - Eine rote Karte pro physischem Datenträger bündelt Lesen, Schreiben,

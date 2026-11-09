@@ -1,5 +1,22 @@
 # Tests
 
+## Paketprüfung Beta 45
+
+Der lokale Releasebuild bestand mit 0 Warnungen / 0 Fehlern,
+der STA-Grundlauf mit 4.385 Assertions. Der zusätzliche Verwaltungsrunner
+brach zunächst in `https-account-api` mit `TaskCanceledException` nach dem
+unveränderten HttpClient-Limit von fünf Sekunden ab. Ein unmittelbar
+anschließender unveränderter Lauf bestand mit 384 Assertions.
+Die Ursache des Timeouts ist nicht belegt; der Folgelauf ist kein Nachweis
+einer Fehlerbehebung. Diese Beobachtung ist von der früheren
+Kontendatei-Abweichung zu unterscheiden. Keine Testgrenze, ACL oder
+Systemeinstellung wurde geändert und keine Windows-Aktion ausgeführt.
+
+Für Prüfungen mit publizierten DLLs den Testhost wie im Windows-Workflow
+mit denselben `Version`-, `AssemblyVersion`- und `FileVersion`-Werten bauen.
+Ein gewöhnlicher Testbuild mit Assembly-Version `1.0.0.0` ist kein passender
+Host für Releaseassemblies mit `0.7.0.0`.
+
 ## Neonrahmen
 
 Der Grundrunner prüft zusätzlich den zentralen AetherNeonFrame: Defaults,

@@ -2,11 +2,23 @@
 
 ## Stand
 
+Aktueller Folgeauftrag: Installer erstellen und auf GitHub hochladen.
+Hierfür ist Beta `0.7.0-beta.45`, Dateiversion `0.7.0.45`, freigegeben.
+Neue Ausgabe getrennt von bestehenden Paketen; GitHub-Vorabversion aus
+`rc/grosse-entfesselung`, kein Merge nach main und kein Meilenstein 3.
+Build-, Paket- und Uploadnachweis wird nach Ausführung ergänzt.
+Erneuter Releasebuild 0 Warnungen / 0 Fehler, STA 4.385.
+Zusätzlicher Verwaltungsrunner: neuer lokaler HTTPS-Fixturetimeout im
+ersten Lauf, unveränderter Folgelauf mit 384 Assertions bestanden.
+Ursache offen, keine behobene Abweichung behauptet;
+[Prüfdetails](docs/TESTING.md#paketprüfung-beta-45).
+
 Meilenstein 1 wurde ausdrücklich abgenommen. Meilenstein 2 „AETHER Neon
 Frame“ ist umgesetzt und **ABNAHMEBEREIT**, nicht als RC-Produktfreigabe.
 Ausgangscommit `4ba0497`, Branch `rc/grosse-entfesselung`.
 [Abschlussbericht mit allen lokalen M2-Commits](docs/MILESTONE-2-NEON-FRAME-REPORT.md).
-Stopp vor Meilenstein 3, keine neue Version oder Paketierung.
+Der damalige M2-Stopp vor Version/Paketierung wurde nur für den oben
+genannten Installer-/Uploadauftrag aufgehoben. Stopp vor Meilenstein 3.
 
 Zentrale Attached-/Adornerkomponente ersetzt die bisherigen umlaufenden
 Panelrahmen in Cockpit, xBar, Diagramm-/Eingabestyles und Schoner.
@@ -34,7 +46,8 @@ Multi-Monitor-/Hochkontrastabnahme bleibt offen.
 Die bekannte einmalige Kontendatei-Abweichung trat im finalen
 Verwaltungsrunner nicht erneut auf; Ursache weiterhin nicht belegt.
 Keine Reparatur-, Update-, Treiber-, Tenant- oder Captureaktion.
-Keine Installer, Pushes, Tags, Releases oder Merges.
+Im M2-Implementierungsauftrag keine Installer, Pushes, Tags, Releases oder
+Merges; die spätere Paketfreigabe ist oben getrennt dokumentiert.
 
 ### Abgeschlossener Meilenstein 1
 
