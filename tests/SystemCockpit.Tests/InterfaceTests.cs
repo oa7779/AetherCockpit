@@ -75,6 +75,17 @@ internal static class InterfaceTests
         try
         {
             host.Show(); Pump();
+            var shellFrame = (Border)main.FindName("ShellNeonFrame");
+            Check(AetherNeonFrame.GetEnabled(shellFrame) && !FrameGlow.GetVisible(shellFrame) &&
+                System.Windows.Documents.AdornerLayer.GetAdornerLayer(shellFrame)?.GetAdorners(shellFrame)?
+                    .OfType<AetherNeonFrame.NeonAdorner>().Count() == 1,
+                "Cockpit shell uses exactly one new frame and no legacy moving rim");
+            main.Model.MotionEnabled = false; Pump();
+            Check(!AetherNeonFrame.GetMotionActive(shellFrame) && AetherNeonFrame.GetEnabled(shellFrame),
+                "Cockpit motion switch retains static neon contour");
+            main.Model.MotionEnabled = true; Pump();
+            Check(AetherNeonFrame.GetMotionActive(shellFrame) == SystemParameters.ClientAreaAnimation,
+                "Cockpit breathing follows existing application and Windows gates");
             for (var index = 0; index < 30; index++)
                 main.Model.ApplyEvents(new(DateTimeOffset.Now, [], [],
                     [new("0 / SYNTHETISCH C:", index % 8 * 12, index % 5 * 9, index % 10 * 10, index % 4),

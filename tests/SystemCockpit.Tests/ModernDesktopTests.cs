@@ -845,7 +845,7 @@ internal static class ModernDesktopTests
                     text.FontFamily.Source == "Segoe UI" && text.Text != "NEON WAVE / GLASS CONTROL"),
                     $"Modern {modeName} {name} visible authored headings/body use Segoe UI and omit the neon design tagline");
                 CheckUi(elements.All(element => element.Effect is null &&
-                    !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element)),
+                    !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element) && !AetherNeonFrame.GetEnabled(element)),
                     $"Modern {modeName} {name} contains no neon glow effects");
                 CheckUi(ReferenceEquals(surface.Foreground, app.Resources["ModernTextPrimary"]) &&
                     ReferenceEquals(surface.Background, app.Resources["WindowBackdrop"]),

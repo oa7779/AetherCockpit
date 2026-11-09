@@ -26,8 +26,8 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style x:Key="Panel" TargetType="Border">
-            <Setter Property="controls:FrameGlow.Visible" Value="True"/>
-            <Setter Property="controls:FrameGlow.Enabled" Value="{Binding DataContext.MotionEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Setter Property="controls:AetherNeonFrame.Enabled" Value="True"/>
+            <Setter Property="controls:AetherNeonFrame.BreathingEnabled" Value="{Binding DataContext.MotionEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
             <Setter Property="Background" Value="{DynamicResource GlossPanel}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource GlassRim}"/>
             <Setter Property="BorderThickness" Value="2,1,1,2"/>
@@ -49,7 +49,7 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="DashboardGraphTemplate">
-            <Border Tag="chart-panel" controls:FrameGlow.Visible="True" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
+            <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
                 <StackPanel>
                     <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
                     <DockPanel Margin="0,4"><TextBlock DockPanel.Dock="Right" Text="{Binding Unit}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/><controls:LedDisplay Text="{Binding NumericValue}" Accent="{Binding Accent}" Height="30" HorizontalAlignment="Left" Width="128"/></DockPanel>
@@ -70,7 +70,7 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="CompactCoreTemplate">
-            <Border Tag="chart-panel" controls:FrameGlow.Visible="True" Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
+            <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
                 <Grid ToolTip="{Binding Detail}">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="5"/></Grid.RowDefinitions>
                     <DockPanel>
@@ -91,7 +91,7 @@
         </DataTemplate>
         <DataTemplate x:Key="CompactDiskTemplate">
             <Border Tag="chart-panel" Background="#120711" BorderBrush="#FF576E" BorderThickness="1" Margin="3" Padding="8" CornerRadius="6"
-                    controls:FrameGlow.Visible="True">
+                    controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False">
                 <StackPanel>
                     <TextBlock Text="{Binding Name, StringFormat=DATENTRÄGER {0}}" Foreground="#FF576E" FontFamily="Consolas" FontSize="12"
                                FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" Margin="0,0,0,6"/>
@@ -129,7 +129,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Border x:Name="ShellNeonFrame" Margin="6" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="12"
-            controls:FrameGlow.Visible="True" controls:FrameGlow.Enabled="{Binding MotionEnabled}">
+            controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="{Binding MotionEnabled}">
     <Grid Background="{StaticResource ConsoleGrid}">
         <Grid.ColumnDefinitions><ColumnDefinition Width="212"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
         <Border Background="{DynamicResource ChromeSidebar}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="0,0,3,0">
@@ -252,7 +252,7 @@
                                                             <MultiDataTrigger>
                                                                 <MultiDataTrigger.Conditions>
                                                                     <Condition Binding="{Binding MotionEnabled}" Value="True"/>
-                                                                    <Condition Binding="{Binding Path=(controls:FrameGlow.MotionActive), ElementName=ShellNeonFrame}" Value="True"/>
+                                                                    <Condition Binding="{Binding Path=(controls:AetherNeonFrame.MotionActive), ElementName=ShellNeonFrame}" Value="True"/>
                                                                     <Condition Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True"/>
                                                                 </MultiDataTrigger.Conditions>
                                                                 <MultiDataTrigger.EnterActions>

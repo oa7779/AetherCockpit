@@ -42,6 +42,7 @@ internal static class ModernWindowAppearance
             element.Effect = null;
             SystemCockpit.Controls.FrameGlow.SetVisible(element, false);
             SystemCockpit.Controls.FrameGlow.SetEnabled(element, false);
+            SystemCockpit.Controls.AetherNeonFrame.SetEnabled(element, false);
             if (element is Control styled && styled is Button or ComboBox or ComboBoxItem or TabItem or DataGrid or ProgressBar)
             {
                 if (Application.Current.TryFindResource(styled.GetType()) is Style modernStyle &&
