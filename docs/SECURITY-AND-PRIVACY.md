@@ -1,5 +1,59 @@
 # Sicherheit und Datenschutz
 
+## Datenschutz für Projekt und Support
+
+Verantwortlich für das AETHER-Projektangebot und dessen Support ist Olaf Weins.
+Anschrift und Kontakt stehen im [Impressum](IMPRESSUM.md).
+
+### Kontakt per E-Mail
+
+Bei einer Anfrage werden die E-Mail-Adresse, der Inhalt und die mitgesendeten
+Angaben zur Bearbeitung der Anfrage verwendet. Rechtsgrundlage ist
+Art. 6 Abs. 1 Buchstabe f DSGVO; das berechtigte Interesse ist die
+Beantwortung und Bearbeitung von Anfragen zum Projekt. Nach der Bearbeitung
+werden Support-E-Mails umgehend gelöscht, soweit keine gesetzliche
+Aufbewahrungspflicht entgegensteht. E-Mails werden über den vom Anbieter
+genutzten E-Mail-Dienst von Microsoft verarbeitet.
+
+### GitHub und öffentliche Beiträge
+
+Das Projekt und seine Downloads werden über GitHub bereitgestellt. Bei Issues
+und Pull Requests sind übermittelte Inhalte und GitHub-Profilangaben öffentlich
+sichtbar. Sie werden zur Bearbeitung von Rückmeldungen und zur Entwicklung von
+AETHER verwendet; Rechtsgrundlage ist Art. 6 Abs. 1 Buchstabe f DSGVO.
+Das berechtigte Interesse liegt in der Bearbeitung von Rückmeldungen und der
+nachvollziehbaren Entwicklung des Projekts. Beiträge und ihre Änderungshistorie
+bleiben grundsätzlich im Projekt sichtbar, solange sie für diese Zwecke
+benötigt werden. Bitte keine vertraulichen oder nicht zur Veröffentlichung
+bestimmten Daten in öffentliche Beiträge aufnehmen.
+
+GitHub verarbeitet bei der Nutzung seiner Plattform eigene Daten. Einzelheiten
+zu Verarbeitung, Empfängern, internationaler Datenübermittlung und
+Speicherdauer durch GitHub stehen in der
+[GitHub-Datenschutzerklärung](https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement).
+Für den E-Mail-Dienst gelten ergänzend die
+[Datenschutzhinweise von Microsoft](https://privacy.microsoft.com/de-de/privacystatement).
+Eine Weitergabe an andere Empfänger oder eine Übermittlung in Drittländer
+hängt vom jeweiligen Vorgang und den eingesetzten Diensten ab.
+
+### Rechte
+
+Betroffene können unter den gesetzlichen Voraussetzungen Auskunft,
+Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit
+verlangen sowie einer Verarbeitung nach Art. 6 Abs. 1 Buchstabe f DSGVO
+widersprechen. Sie können sich außerdem bei einer Datenschutzaufsichtsbehörde
+beschweren, etwa beim [Bayerischen Landesamt für Datenschutzaufsicht](https://www.lda.bayern.de/).
+Für Anfragen zu diesen Rechten kann die Adresse im Impressum verwendet werden.
+
+### AETHER und selbst betriebene Server
+
+Die folgenden Abschnitte beschreiben die Datenverarbeitung und die
+Netzwerkzugriffe der Software. Wer AETHER oder einen Verwaltungsserver selbst
+betreibt und dabei personenbezogene Daten anderer verarbeitet, muss die
+Verantwortlichkeiten und Informationspflichten für den eigenen Einsatz
+gesondert prüfen. Der Projektanbieter erhält nicht allein durch den Einsatz
+eines selbst betriebenen Servers dessen Berichte.
+
 ## Codesignierung
 
 Die kostenlose Codesignierung über die SignPath Foundation wurde am
