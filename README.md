@@ -3,6 +3,9 @@
 AETHER ist eine native Windows-Kommandozentrale für Hardwareüberwachung,
 Diagnose, Wartung und Systemverwaltung im eigenständigen Retro-Neon-Design.
 
+[Impressum](docs/IMPRESSUM.md) ·
+[Datenschutz für Projekt und Support](docs/SECURITY-AND-PRIVACY.md#datenschutz-für-projekt-und-support)
+
 Live-Instrumente, Verlaufskurven und das virtuelle Mainboard zeigen den
 Rechnerzustand. Windows-Assistenten helfen, Befunde einzuordnen und passende
 Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop.
