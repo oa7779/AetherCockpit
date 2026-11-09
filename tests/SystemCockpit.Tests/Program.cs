@@ -24,6 +24,12 @@ internal static class Program
                 {
                     Source = new Uri($"pack://application:,,,/SystemCockpit;component/{source}")
                 });
+            if (args.Length == 2 && args[0] == "--consolidation-baseline")
+            {
+                ConsolidationMeasurements.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
             if (args.Contains("--desktop-language-smoke"))
             {
                 var assertions = ModernDesktopTests.Run();

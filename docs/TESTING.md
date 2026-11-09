@@ -1,5 +1,27 @@
 # Tests
 
+## Technische Konsolidierung
+
+Der STA-Grundlauf enthält zusätzliche Quellen-/Ergebnis-/Datenschutzassertions
+und isolierte Prozessfixtures. Diese starten ausschließlich denselben
+.NET-Testhost, keine Windows-Verwaltungswerkzeuge. Geprüft werden die exakte
+Ausgabegrenze, Timeout, Abbruch, Start-Progressfehler und Workerfreigabe.
+Der interne Schalter `--command-fixture` ist kein Produktstartmodus.
+
+Der Verwaltungsrunner protokolliert bei einem Fehler Zeitpunkt, Testphase,
+Fixturepfad und HRESULT zusätzlich zur Exception. Die bekannte intermittierende
+Ausgangsabweichung bleibt im
+[Konsolidierungsbericht](MILESTONE-1-CONSOLIDATION-REPORT.md) dokumentiert;
+ein erfolgreicher Folgelauf erklärt ihre Ursache nicht.
+
+Eine separat aufgerufene synthetische Messung bietet
+`--consolidation-baseline` mit absolutem, noch nicht vorhandenem JSON-Ziel.
+Sie ist kein Teil des Grundlaufs und kein Leistungsfreigabegate.
+[Methode, Messwerte und offene Produktmessungen](PERFORMANCE-BASELINE.md).
+Der geplante sprachabhängige RC-Nachfolger ist in der
+[Sprachstrategie](RC-LANGUAGE-STRATEGY.md) beschrieben; das aktuelle
+Englischgate bleibt unverändert.
+
 ## Freigabeschranke Englisch
 
 Englisch bleibt deaktiviert, bis Quellstellen und datenflussabhängige
