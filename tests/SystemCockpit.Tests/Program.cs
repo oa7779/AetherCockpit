@@ -12,6 +12,7 @@ internal static class Program
     {
         try
         {
+            if (args.Length == 2 && args[0] == "--command-fixture") return CommandLifecycleTests.Fixture(args[1]);
             DesktopText.Configure("de");
             if (args.Length == 2 && args[0] == "--feed-server") return ScreensaverTests.PipeServer(args[1]);
             if (args.Length == 2 && args[0] == "--feed-client") return ScreensaverTests.PipeClient(args[1]);
@@ -68,6 +69,7 @@ internal static class Program
             TestCleaner();
             _assertions += ExtendedTests.Run();
             _assertions += ConsolidationTests.Run();
+            _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
             _assertions += BootTests.Run();
             _assertions += StorageTemperatureTests.Run();

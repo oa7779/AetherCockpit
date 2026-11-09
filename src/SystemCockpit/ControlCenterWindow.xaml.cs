@@ -797,7 +797,8 @@ public partial class ControlCenterWindow : Window
     private async void ExplorerClicked(object sender, RoutedEventArgs e) =>
         await RunAsync(DesktopUiText.Get("Center.ExplorerTitle"), async token =>
         {
-            var session = Process.GetCurrentProcess().SessionId;
+            using var current = Process.GetCurrentProcess();
+            var session = current.SessionId;
             var explorers = Process.GetProcessesByName("explorer");
             try
             {

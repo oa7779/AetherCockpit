@@ -35,6 +35,23 @@ Arbeitspaket Quellen-/Ergebnis-/Datenschutzgrundlage:
 Die übrigen Abschnitte halten bis zur abschließenden Zusammenführung
 den historischen Start-/Diagnosestand fest.
 
+Arbeitspaket Prozessresultate, Cancellation und Ressourcen:
+
+- Ausgabegrenze exakt geprüft: 2.000.000 Zeichen sind vollständig,
+  2.000.001 Zeichen werden explizit als gekürzt/Partial gekennzeichnet.
+  Vorher konnte das letzte überschriebene Zeichen ohne Kennzeichnung
+  verloren gehen. stdout und stderr werden weiterhin bis zum Ende gelesen.
+- Bereits angeforderter Abbruch und ungültiger Timeout werden vor dem
+  Prozessstart geprüft. Fehler im Start-Progress liegen jetzt innerhalb
+  der Prozessbereinigung. Abbruch/Timeout warten Prozessende und
+  Streamtasks ab; kein Rollbackversprechen.
+- WindowsIdentity und Process beim Ermitteln des Board-Pipenamens werden
+  deterministisch freigegeben, ebenso der aktuelle Processwrapper vor
+  der bestätigten Exploreraktion. Pipename und Aktion bleiben gleich.
+- Release-Gesamtbuild 0/0; 4.202 STA-Assertions bestanden, einschließlich
+  19 neuer isolierter Prozess-/Grenzprüfungen. Kein Windows-Verwaltungsbefehl
+  wurde für diese Tests gestartet.
+
 Stand: 9. November 2026. Meilenstein 0 und Freigabe 0.5 wurden vom
 Auftraggeber abgenommen. Der Baseline-Commit wurde erstellt. Der erste
 Verwaltungstestlauf zeigte einen ungeklärten Dateizugriffsfehler; der

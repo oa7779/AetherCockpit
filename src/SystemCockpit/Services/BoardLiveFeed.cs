@@ -14,9 +14,17 @@ public sealed record BoardFeedFrame(DateTimeOffset Timestamp, BoardSnapshot Hard
 
 public static class BoardLiveFeed
 {
-    internal static string PipeName => "AetherBoard-" +
-        (WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("Windows SID fehlt.")) +
-        "-" + Process.GetCurrentProcess().SessionId;
+    internal static string PipeName
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            using var process = Process.GetCurrentProcess();
+            return "AetherBoard-" +
+                (identity.User?.Value ?? throw new InvalidOperationException("Windows SID fehlt.")) +
+                "-" + process.SessionId;
+        }
+    }
     private const int MaxFrameBytes = 2_000_000;
 
     public static bool IsFresh(BoardFeedFrame frame, DateTimeOffset now) =>
