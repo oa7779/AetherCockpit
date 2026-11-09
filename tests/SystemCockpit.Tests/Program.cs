@@ -47,6 +47,16 @@ internal static class Program
                 HardwareBoardTests.RenderProfile(index + 1 < args.Length ? args[index + 1] : "");
                 return 0;
             }
+            if (args.Contains("--gpu-presentation"))
+            {
+                var index = Array.IndexOf(args, "--gpu-presentation");
+                var screenshotPrefix = index + 1 < args.Length && !args[index + 1].StartsWith("--", StringComparison.Ordinal)
+                    ? args[index + 1] : null;
+                var assertions = HardwareBoardTests.GpuPresentation(screenshotPrefix);
+                Console.WriteLine($"PASS: {assertions} GPU perspective and occlusion assertions.");
+                host.Shutdown();
+                return 0;
+            }
             TestCpu();
             TestSparklines();
             TestSensorSelection();

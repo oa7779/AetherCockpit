@@ -9,6 +9,71 @@ using SystemCockpit.Services;
 
 internal static class HardwareBoardTests
 {
+    internal static int GpuPresentation(string? screenshotPrefix)
+    {
+        var assertions = 0;
+        void Check(bool condition, string message) { assertions++; if (!condition) throw new InvalidOperationException(message); }
+        var model = new CockpitModel { MotionEnabled = false };
+        var view = new HardwareBoardView { DataContext = model };
+        view.Apply(IllustrationExample);
+        var window = new Window { Content = view, Width = 1600, Height = 900,
+            Background = Brushes.Black, ShowInTaskbar = false };
+        try
+        {
+            window.Show();
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            foreach (var day in new[] { false, true })
+            {
+                model.IsDaytime = day;
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                var canvas = (Canvas)view.FindName("BoardCanvas");
+                var elements = canvas.Children.Cast<UIElement>().ToArray();
+                var brackets = elements.OfType<Polygon>().Where(p => Equals(p.Tag, "gpu-bracket")).ToArray();
+                var face = elements.OfType<Polygon>().Single(p => Equals(p.Tag, "gpu-cooler-face"));
+                var fans = elements.OfType<Canvas>().Where(p => Equals(p.Tag, "gpu-fan-plane")).ToArray();
+                Check(brackets.Length == 12 && fans.Length == 3 &&
+                    brackets.All(p => Array.IndexOf(elements, p) < Array.IndexOf(elements, face)),
+                    "GPU bracket and ports are behind the cooler face, never painted over its fans");
+                var faceGeometry = new StreamGeometry();
+                using (var context = faceGeometry.Open())
+                {
+                    context.BeginFigure(face.Points[0], true, true);
+                    context.PolyLineTo(face.Points.Skip(1).ToArray(), true, false);
+                }
+                var matrices = fans.Select(f => ((MatrixTransform)f.RenderTransform).Matrix).ToArray();
+                Check(matrices.All(m => m.M11 > 0 && m.M12 > 0 && m.M21 == 0 && m.M22 < 0 &&
+                    Math.Abs(m.M11 - matrices[0].M11) < 0.0001 &&
+                    Math.Abs(m.M12 - matrices[0].M12) < 0.0001 &&
+                    Math.Abs(m.M22 - matrices[0].M22) < 0.0001),
+                    "All three GPU fans use the same projected vertical cooler plane");
+                Check(Math.Abs((matrices[1].OffsetX - matrices[0].OffsetX) -
+                    (matrices[2].OffsetX - matrices[1].OffsetX)) < 0.0001 &&
+                    Math.Abs((matrices[1].OffsetY - matrices[0].OffsetY) -
+                    (matrices[2].OffsetY - matrices[1].OffsetY)) < 0.0001,
+                    "GPU fan centers are evenly spaced in perspective");
+                foreach (var fan in fans)
+                {
+                    var matrix = ((MatrixTransform)fan.RenderTransform).Matrix;
+                    var samples = Enumerable.Range(0, 16).Select(i =>
+                        matrix.Transform(new Point(30 * Math.Cos(i * Math.PI / 8),
+                            30 * Math.Sin(i * Math.PI / 8)))).Append(matrix.Transform(new Point())).ToArray();
+                    Check(samples.All(faceGeometry.FillContains),
+                        "Each projected GPU fan fits completely within the cooler face");
+                    var laterPolygons = elements.Skip(Array.IndexOf(elements, fan) + 1).OfType<Polygon>();
+                    Check(laterPolygons.All(p => samples.All(point => !p.RenderedGeometry.FillContains(point))),
+                        "Later opaque component polygons do not cover the GPU fan");
+                    Check(fan.Children.OfType<Ellipse>().Count(e => Equals(e.Tag, "fan-hub")) == 1 &&
+                        ((Canvas)fan.Children[0]).Children.OfType<System.Windows.Shapes.Path>().Count() == 7,
+                        "Each GPU rotor retains seven blades and its hub");
+                }
+                if (screenshotPrefix is not null)
+                    ModuleTests.SaveScreenshot(view, screenshotPrefix + (day ? "-day.png" : "-night.png"));
+            }
+        }
+        finally { view.Shutdown(); window.Close(); }
+        return assertions;
+    }
+
     internal static void RenderProfile(string isolate)
     {
         if (isolate is not ("" or "no-rays" or "verify" or "4k"))

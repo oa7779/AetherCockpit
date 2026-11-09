@@ -97,6 +97,8 @@ jobs:
         run: |
           dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --desktop-modern-smoke
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --gpu-presentation (Join-Path $env:AETHER_SCREENSHOT_DIR 'gpu')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify professional desktop workflows
         env:

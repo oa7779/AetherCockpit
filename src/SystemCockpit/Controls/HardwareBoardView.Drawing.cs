@@ -137,12 +137,15 @@ public partial class HardwareBoardView
             Box(128, 335 + slot * 58, 350, 12, 1, 7, "#18252F", "#657B8D");
         if (gpu.Devices.Count > 0)
         {
+            Box(119, 318, 12, 94, 5, 74, "#68818C", "#C4D7DC", gpu, "gpu-bracket");
+            for (var port = 0; port < 3; port++)
+                Box(116, 327 + port * 22, 6, 14, 24, 11, "#0A1320", "#9FCED1", gpu, "gpu-bracket");
             Box(130, 320, 350, 90, 8, 64, "#1B2238", "#B6C7D5", gpu);
             Box(138, 322, 334, 86, 70, 8, "#34344E", gpu.Accent, gpu);
             Route([Project(138, 322, 80), Project(472, 322, 80), Project(472, 408, 80),
                 Project(138, 408, 80), Project(138, 322, 80)], gpu.Accent, true, "component-rim:gpu");
             Face([Project(138, 411, 10), Project(472, 411, 10), Project(472, 411, 78),
-                Project(138, 411, 78)], "#202A40", gpu.Accent, gpu);
+                Project(138, 411, 78)], "#202A40", gpu.Accent, gpu, "gpu-cooler-face");
             for (var fan = 0; fan < 3; fan++)
             {
                 var center = 195 + fan * 105;
@@ -155,9 +158,6 @@ public partial class HardwareBoardView
             }
             Segment(Project(145, 324, 79), Project(460, 324, 79), "#9A83C7", 1.4);
             Segment(Project(145, 406, 79), Project(460, 406, 79), "#77889B", 1.4);
-            Box(119, 318, 12, 94, 5, 74, "#68818C", "#C4D7DC", gpu);
-            for (var port = 0; port < 3; port++)
-                Box(116, 327 + port * 22, 6, 14, 24, 11, "#0A1320", "#9FCED1", gpu);
             for (var contact = 0; contact < 18; contact++)
             {
                 var start = 205 + contact * 11;
@@ -449,20 +449,20 @@ public partial class HardwareBoardView
         Face(Enumerable.Range(0, 25).Select(i => Project(u + radius * Math.Cos(i * Math.PI / 12),
             v + radius * Math.Sin(i * Math.PI / 12), z)).ToArray(), fill, stroke, group);
 
-    private void Box(double u, double v, double w, double d, double z, double h, string fill, string stroke, BoardGroup? group = null)
+    private void Box(double u, double v, double w, double d, double z, double h, string fill, string stroke, BoardGroup? group = null, string? tag = null)
     {
         Face([Project(u, v + d, z), Project(u + w, v + d, z), Project(u + w, v + d, z + h),
-            Project(u, v + d, z + h)], "#0C1726", stroke, group);
+            Project(u, v + d, z + h)], "#0C1726", stroke, group, tag);
         Face([Project(u + w, v, z), Project(u + w, v + d, z), Project(u + w, v + d, z + h),
-            Project(u + w, v, z + h)], "#172538", stroke, group);
+            Project(u + w, v, z + h)], "#172538", stroke, group, tag);
         Face([Project(u, v, z + h), Project(u + w, v, z + h), Project(u + w, v + d, z + h),
-            Project(u, v + d, z + h)], fill, stroke, group);
+            Project(u, v + d, z + h)], fill, stroke, group, tag);
     }
 
-    private void Face(Point[] points, string fill, string stroke, BoardGroup? group = null)
+    private void Face(Point[] points, string fill, string stroke, BoardGroup? group = null, string? tag = null)
     {
         var face = new Polygon { Points = new PointCollection(points), Fill = Ink(fill), Stroke = Ink(stroke),
-            StrokeThickness = 1.2, SnapsToDevicePixels = false, Tag = group?.Key };
+            StrokeThickness = 1.2, SnapsToDevicePixels = false, Tag = tag ?? group?.Key };
         face.Points.Freeze();
         if (group is not null)
         {

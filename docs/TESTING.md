@@ -145,6 +145,7 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--professional-ui` | Suche, Zielrouten, Expertensperre, Paketvorschau, synthetische Netzwerkfilter, Cleaner-Auswahl |
 | `--catalog-ui` | Katalog, Parameterbedienung, Enter-Routing und Entfernen sensibler Konsoleninhalte |
 | `--board-ui` | Synthetische Mainboardgeometrie, Auswahl und Darstellung |
+| `--gpu-presentation` | Drei GPU-Lüfter im selben projizierten Kühlflächenraum und ohne Überdeckung durch spätere Komponenten, jeweils bei Tag und Nacht; unabhängig von Windows-Animationen |
 | `--sensor-charts-ui` | Sensorverläufe und Lücken mit Testdaten |
 | `--xbar-ui` | Diagrammleiste und Anordnung |
 | `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
@@ -160,6 +161,9 @@ Optionale Screenshots verwenden `--board-screenshot`, `--sensor-charts-screensho
 `--professional-screenshot-prefix` benennt mehrere Workflow-Bilder.
 `--branding-screenshot-prefix` erzeugt Boot-, Dashboard- und xBar-Bilder.
 `--interface-screenshot-prefix` erzeugt Mainframebilder im Tag-/Nachtmodus.
+Ein optionaler Pfad direkt nach `--gpu-presentation` erzeugt Tag-/Nachtbilder
+mit diesem Präfix. Dieser spezielle Schalter läuft eigenständig und wird auch
+in der Windows-CI ausgeführt.
 Für `--desktop-modern-smoke` legt `AETHER_SCREENSHOT_DIR` den Screenshotordner fest;
 die 22 Bilder heißen `windows-modern-{light|dark}-{Bereich}.png`.
 Die System-Schema-Bilder verwenden den Bereich `system-schema`.

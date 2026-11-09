@@ -2,6 +2,15 @@
 
 ## Stand
 
+GPU-Darstellung im Neon-Mainframe korrigiert: Anschlussblende und ihre
+Ports werden vor der Kühlerfläche gezeichnet, sodass sie den ersten Lüfter
+nicht verdecken. Drei Rotoren behalten dieselbe projizierte Ebene. Der
+eigenständige UI-Test `--gpu-presentation` prüft Geometrie, Überdeckung
+und Tag-/Nachtansicht unabhängig von Windows-Bewegungseinstellungen; lokal
+bestanden 24 Assertions und der Releasebuild ohne Warnungen. Tag-/Nachtbilder
+mit synthetischen Geräten wurden visuell kontrolliert. Kein neuer Installer
+oder Release erstellt.
+
 RC-Entwicklung beauftragt: Desktop und professioneller Server gemeinsam,
 vollständige englische Oberfläche, praktische Installations-/Netzwerkprüfung
 in einer noch abzustimmenden isolierten Testumgebung und anschließend
