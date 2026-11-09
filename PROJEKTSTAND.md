@@ -29,6 +29,14 @@ Windows-Anwendungssteuerung blockiert AetherScreensaver.dll mit
 3527 Modern-/Neon-Assertions. Keine Windows-Aktion oder Installation
 ausgeführt.
 
+Für die Prüfung hat der Nutzer den separaten öffentlichen Testzweig
+`test/rc-localization` und GitHub-Windows-CI freigegeben, keinen Merge oder
+Release. CI-Lauf 42571561513 auf `3547c16` baute erfolgreich und bestand
+Grund-, Sprach-, Server- und synthetische Modern-Tests; die zusätzliche
+Board-UI-Prüfung schlug fehl, weil sie aktive Windows-Animationen erwartet.
+Der CI-Runner verwendet reduzierte Bewegung. Die Systemeinstellung bleibt
+unverändert; die separate Board-UI-Prüfung bleibt offen.
+
 Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
 kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der
 bestehenden HTTPS-/Clientbasis; animierte Ansicht für 40+ Geräte, lesende

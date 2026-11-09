@@ -104,7 +104,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path $env:AETHER_WORKFLOW_SCREENSHOTS -Force | Out-Null
           $prefix = Join-Path $env:AETHER_WORKFLOW_SCREENSHOTS 'workflow'
-          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --professional-ui --catalog-ui --board-ui --sensor-charts-ui --professional-screenshot-prefix $prefix
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --professional-ui --catalog-ui --sensor-charts-ui --professional-screenshot-prefix $prefix
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload desktop screenshots

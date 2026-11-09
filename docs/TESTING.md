@@ -21,10 +21,12 @@ die Schranke bei Versionsprofilen mit `-rc.` vor dem Build aus; Betaprofile
 werden dadurch nicht blockiert.
 
 Der Windows-CI-Lauf prüft außerdem die synthetischen Professional-,
-Katalog-, Board- und Sensorverlauf-Oberflächen. Die Professional-Prüfung
+Katalog- und Sensorverlauf-Oberflächen. Die Professional-Prüfung
 erzeugt getrennte Workflow-Screenshots mit Testdaten. Die teilweise englische
 Funktionssuche enthält weiterhin deutsche Katalogdaten; ihr Screenshot ist
-keine Freigabe der englischen Oberfläche.
+keine Freigabe der englischen Oberfläche. Die separate `--board-ui`-Prüfung
+setzt aktivierte Windows-Animationen voraus und läuft nicht auf dem
+CI-Runner mit reduzierter Bewegung; diese Systemeinstellung wird nicht geändert.
 
 ## Serverentwicklungsbranch
 
