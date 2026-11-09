@@ -27,10 +27,13 @@ public sealed record OperationOutcome(OperationState State, string Source, strin
                 (OperationState.AccessDenied, FailureKind.Access, "access-denied"),
             Win32Exception { NativeErrorCode: 5 } =>
                 (OperationState.AccessDenied, FailureKind.Access, "access-denied"),
+            Win32Exception { NativeErrorCode: 2 or 3 } =>
+                (OperationState.Unavailable, FailureKind.MissingTool, "executable-unavailable"),
             FileNotFoundException => (OperationState.Unavailable, FailureKind.MissingTool, "file-unavailable"),
             PlatformNotSupportedException or NotSupportedException =>
                 (OperationState.Unsupported, FailureKind.Provider, "unsupported"),
-            HttpRequestException => (OperationState.Failed, FailureKind.Network, "network-failed"),
+            HttpRequestException or System.Net.Sockets.SocketException or System.Net.NetworkInformation.NetworkInformationException =>
+                (OperationState.Failed, FailureKind.Network, "network-failed"),
             OperationCanceledException => (OperationState.Unknown, FailureKind.Unknown, "cancellation-origin-unknown"),
             _ => (OperationState.Failed, FailureKind.Provider, "operation-failed")
         };

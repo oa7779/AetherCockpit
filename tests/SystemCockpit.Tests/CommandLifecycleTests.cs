@@ -10,6 +10,11 @@ internal static class CommandLifecycleTests
     public static int Fixture(string mode)
     {
         if (mode == "wait") { Thread.Sleep(TimeSpan.FromMinutes(1)); return 0; }
+        if (mode.StartsWith("error:", StringComparison.Ordinal))
+        {
+            Console.Error.Write(new string('x', int.Parse(mode[6..], System.Globalization.CultureInfo.InvariantCulture)));
+            return 0;
+        }
         var length = int.Parse(mode, System.Globalization.CultureInfo.InvariantCulture);
         Console.Write(new string('x', length));
         return 0;
@@ -29,15 +34,18 @@ internal static class CommandLifecycleTests
         var executable = Environment.ProcessPath ?? throw new InvalidOperationException("Test host missing.");
         string[] Arguments(string mode) => Path.GetFileNameWithoutExtension(executable).Equals("dotnet", StringComparison.OrdinalIgnoreCase)
             ? [assembly, "--command-fixture", mode] : ["--command-fixture", mode];
+        foreach (var errorStream in new[] { false, true })
         foreach (var length in new[] { CommandRunner.MaximumCapturedCharacters, CommandRunner.MaximumCapturedCharacters + 1 })
         {
-            var result = await CommandRunner.RunAsync(executable, Arguments(length.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            var mode = (errorStream ? "error:" : "") + length.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var result = await CommandRunner.RunAsync(executable, Arguments(mode),
                 TimeSpan.FromSeconds(30), CancellationToken.None);
             Check(result.ExitCode == 0, "Output fixture exits successfully.");
             Check(result.OutputTruncated == (length > CommandRunner.MaximumCapturedCharacters), "Exact capture boundary is marked.");
             Check(result.Outcome().State == (result.OutputTruncated ? OperationState.Partial : OperationState.Success),
                 "Partial output cannot masquerade as complete success.");
-            Check(result.Output.Count(c => c == 'x') == CommandRunner.MaximumCapturedCharacters, "Capture retains exactly the permitted prefix.");
+            Check((errorStream ? result.Error : result.Output).Count(c => c == 'x') == CommandRunner.MaximumCapturedCharacters,
+                "Each stream retains exactly the permitted prefix.");
             Check(!JsonSerializer.Serialize(result).Contains("OutputTruncated", StringComparison.Ordinal), "Legacy command JSON unchanged.");
         }
         using var cancelled = new CancellationTokenSource();

@@ -96,15 +96,20 @@ public sealed class SourceObservation<T>
 
 public static class DiagnosticDataPolicy
 {
-    public static DataClassification Classify(string field) => field switch
+    public static DataClassification Classify(string field)
     {
-        "SerialNumber" or "MacAddress" or "MonitorId" or "PnpId" or "AudioId" or
-        "ComputerName" or "UserName" or "UserPath" or "IpAddress" or "Ipv6Address" or
-        "DeviceId" or "DumpInformation" => DataClassification.Sensitive,
-        "Password" or "Token" or "RecoveryKey" or "PrivateKey" or "CertificatePrivateKey" =>
-            DataClassification.Secret,
-        _ => DataClassification.Sensitive
-    };
+        ArgumentException.ThrowIfNullOrWhiteSpace(field);
+        return field.ToUpperInvariant() switch
+        {
+            "UNIT" or "SOURCETYPE" or "TIMESTAMP" or "AVAILABILITY" or "REQUIRESELEVATION" or
+            "ISESTIMATED" or "ISCALCULATED" or "OPERATIONSTATE" or "EXITCODE" => DataClassification.Normal,
+            "PASSWORD" or "PASSWORDHASH" or "TOKEN" or "DEVICETOKEN" or "ACCESSTOKEN" or
+            "REFRESHTOKEN" or "CLAIMTOKEN" or "CSRFTOKEN" or "PROTECTEDTOKEN" or "CLIENTSECRET" or
+            "RECOVERYKEY" or "RECOVERYPASSWORD" or "PRIVATEKEY" or "CERTIFICATEPRIVATEKEY" =>
+                DataClassification.Secret,
+            _ => DataClassification.Sensitive
+        };
+    }
 
     public static bool CanShare(DataClassification classification, bool sensitiveConsent) => classification switch
     {

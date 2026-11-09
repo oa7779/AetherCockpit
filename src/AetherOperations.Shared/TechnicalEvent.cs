@@ -30,6 +30,14 @@ public sealed record TechnicalEvent(
         stopBehavior = StopBehavior.ToString(),
         rollbackAvailable = RollbackAvailable,
         timeoutSeconds = TimeoutSeconds,
-        outcome = Outcome
+        outcome = Outcome is null ? null : new
+        {
+            state = Outcome.State.ToString(),
+            source = Outcome.Source,
+            code = Outcome.Code,
+            failure = Outcome.Failure.ToString(),
+            exitCode = Outcome.ExitCode,
+            hResult = Outcome.HResult
+        }
     };
 }

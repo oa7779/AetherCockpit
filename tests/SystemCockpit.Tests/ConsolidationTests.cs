@@ -53,6 +53,10 @@ internal static class ConsolidationTests
             Check(DiagnosticDataPolicy.Classify(field) == DataClassification.Sensitive, "Sensitive field: " + field);
         foreach (var field in new[] { "Password", "Token", "RecoveryKey", "PrivateKey", "CertificatePrivateKey" })
             Check(!DiagnosticDataPolicy.CanShare(DiagnosticDataPolicy.Classify(field), true), "Secrets never share: " + field);
+        foreach (var field in new[] { "deviceToken", "accessToken", "refreshToken", "claimToken", "csrfToken",
+                     "passwordHash", "protectedToken", "clientSecret", "recoveryPassword", "TOKEN" })
+            Check(DiagnosticDataPolicy.Classify(field) == DataClassification.Secret, "Wire field aliases remain secret: " + field);
+        Reject<ArgumentException>(() => DiagnosticDataPolicy.Classify(""));
         Check(!DiagnosticDataPolicy.CanShare(DiagnosticDataPolicy.Classify("new-unreviewed-field"), false), "Unknown fields default to sensitive.");
         Check(DiagnosticDataPolicy.CanShare(DataClassification.Normal, false), "Normal fields remain shareable.");
         Check(DiagnosticDataPolicy.CanShare(DataClassification.Sensitive, true), "Sensitive sharing requires explicit consent.");
@@ -62,6 +66,11 @@ internal static class ConsolidationTests
         Check(OperationOutcome.FromProcess("fixture", 1, true).State == OperationState.Failed, "Truncation cannot conceal process failure.");
         Check(OperationOutcome.FromException(new UnauthorizedAccessException(), "fixture").State == OperationState.AccessDenied, "Access denied distinct.");
         Check(OperationOutcome.FromException(new FileNotFoundException(), "fixture").Failure == FailureKind.MissingTool, "Missing tool distinct.");
+        Check(OperationOutcome.FromException(new System.ComponentModel.Win32Exception(2), "fixture").Failure == FailureKind.MissingTool,
+            "Native missing executable is classified without parsing its localized message.");
+        Check(OperationOutcome.FromException(new System.Net.Sockets.SocketException(10061), "fixture").Failure == FailureKind.Network,
+            "Socket errors retain their network category.");
+        Check(DiagnosticDataPolicy.Classify("Unit") == DataClassification.Normal, "Explicitly reviewed technical field remains normal.");
         Check(OperationOutcome.FromException(new TimeoutException(), "fixture").State == OperationState.TimedOut, "Timeout distinct.");
         Check(OperationOutcome.FromException(new PlatformNotSupportedException(), "fixture").State == OperationState.Unsupported, "Unsupported distinct.");
         Check(OperationOutcome.FromException(new System.Net.Http.HttpRequestException(), "fixture").Failure == FailureKind.Network, "Network failure distinct.");
@@ -89,6 +98,8 @@ internal static class ConsolidationTests
             Check(parsed.RootElement.GetProperty("userConfirmed").ValueKind == JsonValueKind.Null,
                 "Unknown confirmation cannot be asserted as consent.");
             Check(parsed.RootElement.GetProperty("rollbackAvailable").GetBoolean() == false, "No rollback is promised.");
+            Check(parsed.RootElement.GetProperty("outcome").GetProperty("state").GetString() == "Partial",
+                "Journal outcomes use explicit technical names rather than opaque enum numbers.");
             var finished = entry with { Phase = OperationPhase.Finished };
             Check(finished.OperationId == entry.OperationId, "Start and end retain their operation correlation.");
             using var envelope = JsonDocument.Parse(ActionJournal.FormatTechnical("fixture-end", entry, new { target = "fixture-target", report = "fixture-report", ExitCode = 0 }));
