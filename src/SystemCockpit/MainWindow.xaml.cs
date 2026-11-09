@@ -277,6 +277,8 @@ public partial class MainWindow : Window
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);
+        _managerReporting.Dispose();
+        _backgroundDiagnostics.Dispose();
         if (_desktop is not null)
         {
             await _desktop.StopAsync();
@@ -1084,6 +1086,8 @@ public partial class MainWindow : Window
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask);
+        _managerReporting.Dispose();
+        _backgroundDiagnostics.Dispose();
         await Task.WhenAll(Workbench.Pending, EmbeddedEvents.Pending, Operations.Pending, HardwareBoard.Pending);
         if (controlCenter is not null) await controlCenter.PendingOperations;
         await _sensorGate.WaitAsync();

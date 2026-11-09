@@ -81,6 +81,25 @@ internal static class CommandLifecycleTests
         catch (OperationCanceledException ex) { Check(ex.CancellationToken == stop.Token, "Caller cancellation remains cancellation."); }
         Check(cancellationProgress.ProcessId.HasValue && HasExited(cancellationProgress.ProcessId.Value),
             "Cancellation waits for its own process, without promising rollback.");
+        foreach (var name in new[] { "ManagerReportingService", "BackgroundDiagnosticMonitor" })
+        {
+            var type = typeof(CommandRunner).Assembly.GetType("SystemCockpit.Services." + name)
+                ?? throw new InvalidOperationException("Worker type missing.");
+            Action<string> callback = _ => throw new InvalidOperationException("Disabled worker performed work.");
+            var instance = Activator.CreateInstance(type, name == "ManagerReportingService"
+                ? [callback] : new object[] { callback, callback }) ?? throw new InvalidOperationException("Worker missing.");
+            using var workerStop = new CancellationTokenSource();
+            var run = (Task)type.GetMethod("RunAsync", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)!
+                .Invoke(instance, [workerStop.Token])!;
+            Check(!run.IsCompleted, "Disabled worker waits without polling: " + name);
+            workerStop.Cancel();
+            await run.WaitAsync(TimeSpan.FromSeconds(5));
+            ((IDisposable)instance).Dispose();
+            ((IDisposable)instance).Dispose();
+            var wake = (SemaphoreSlim)type.GetField("_wake", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+            try { wake.Release(); throw new InvalidOperationException("Worker semaphore leaked."); }
+            catch (ObjectDisposedException) { count++; }
+        }
         return count;
     }
 

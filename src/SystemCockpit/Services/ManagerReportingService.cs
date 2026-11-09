@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace SystemCockpit.Services;
 
-internal sealed class ManagerReportingService(Action<string> statusChanged)
+internal sealed class ManagerReportingService(Action<string> statusChanged) : IDisposable
 {
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromMinutes(2) };
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -18,6 +18,7 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
     private readonly SemaphoreSlim _wake = new(0, 1);
     private CockpitSettings _settings = new();
     private CancellationTokenSource? _activeCycle;
+    private bool _disposed;
 
     public bool HasDeviceToken => File.Exists(TokenPath);
 
@@ -26,13 +27,27 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
         CancellationTokenSource? active;
         lock (_sync)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             _settings = settings;
             active = _activeCycle;
         }
         try { active?.Cancel(); }
         catch (ObjectDisposedException) { }
-        if (_wake.CurrentCount == 0)
-            _wake.Release();
+        lock (_sync)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            if (_wake.CurrentCount == 0) _wake.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_sync)
+        {
+            if (_disposed) return;
+            _wake.Dispose();
+            _disposed = true;
+        }
     }
 
     public async Task<EnrollmentResult> EnrollAsync(string serverUrl, string code, CancellationToken cancellationToken)
