@@ -9,6 +9,51 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.44 — Datenträgerkarten und Neon-Glow
+
+- Eine rote Karte pro physischem Datenträger bündelt Lesen, Schreiben,
+  Aktivität und Queue mit getrennten Werten, Einheiten und Skalen.
+- Farbig unterscheidbare Kurven und Balken: Rot, Gold, Türkis und Violett.
+  Windows-Performanceabfragen und Polling bleiben unverändert.
+- Echter Weichzeichner-Glow auf separaten Rahmenkonturen und Kurvenhalos;
+  stärkere pulsierende Leuchtspuren an animierten Rahmen.
+- Gemeinsame, zwischengespeicherte Leuchtkontur für das Mainboard im Tool
+  und Bildschirmschoner sowie kräftigere Landschafts- und Leiterbahnhalos.
+- Texte und Messwerte bleiben scharf, Windows Modern bleibt neutral;
+  Animationsfreigaben und Stopp bei Unsichtbarkeit bleiben erhalten.
+- Neuer lokaler Build und Testinstaller; kein GitHub-Release.
+
+## 0.7.0-beta.43 — animiertes AETHER-Branding
+
+- Vorhandenes Logo links oben mit sanftem Neon-Puls und wanderndem Lichtreflex.
+- Schräger Chromschriftzug in Silber/Violett/Pink unter dem Logo.
+- Dasselbe animierte Branding rechts oben im Bildschirmschoner.
+- Bewegung folgt Animationsschalter, Windows-Freigabe und Sichtbarkeit;
+  Windows Modern bleibt neutral und statisch.
+- Instrumente, Kurven und Cockpit-Anordnung unverändert.
+- Neuer lokaler Build und Testinstaller; kein GitHub-Release.
+
+## 0.7.0-beta.42 — ursprüngliches Cockpit wiederhergestellt
+
+- Cockpit-Anordnung vor dem Übersichtsumbau wiederhergestellt: Instrumente,
+  Kurven, Prozess- und Ereignislisten sowie Systempuls und Datenkontrolle
+  stehen wieder direkt auf der Seite.
+- Neue Zusammenfassung und zusätzliche Detailklappe entfernt.
+- Bisherige Navigation, Messlogik, Wartungsfunktionen und Wake-on-LAN erhalten.
+- Lokaler Testinstaller, kein GitHub-Release.
+
+## 0.7.0-beta.41 — lokaler Cockpit-Teststand
+
+- Cockpit-Installer aus dem aktuellen Arbeitsstand; kein GitHub-Release.
+- Priorisierte Cockpit-Übersicht mit Funktionensuche, Schnellzugriffen und
+  ausklappbaren Detailansichten.
+- Wake-on-LAN mit MAC-Prüfung, Übernahme aus der LAN-Auswahl und Bestätigung
+  vor dem Magic-Packet-Versand.
+- Erweiterter PowerShell-Katalog für Windows-Wartung, Wiederherstellung,
+  WinRE, Treibersicherung, Features, Capabilities und Deploymentabfragen.
+- Microsoft Graph ist weiterhin Bestandteil des separaten Verwaltungsservers,
+  nicht des Cockpit-Installers.
+
 ## 0.7.0-beta.38
 
 - Wählbares Windows Modern mit neutralen Desktopfenstern, Diagrammen,

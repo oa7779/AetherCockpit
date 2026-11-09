@@ -2,14 +2,205 @@
 
 ## Stand
 
+Aktueller Auftrag: Freigabe 0.5 zum Abschluss von Meilenstein 0
+„Die große Entfesselung“: neue Inventur, Restlektüre und Baselinesicherung.
+Arbeitsbranch `rc/grosse-entfesselung`, Ausgangscommit `5382388`; die
+vorhandenen uncommitteten Änderungen bleiben erhalten. Die Bestandsaufnahme
+steht im [RC-Readiness-Audit](docs/RC-READINESS-AUDIT.md). Keine produktiven
+Änderungen, Versionsanhebung oder neue Paketierung in diesem Meilenstein.
+Der Audit unterscheidet statische Belege, frühere Prüfläufe und noch nicht
+verifizierten Realbetrieb. Der ursprüngliche Audit hatte eine dokumentierte
+Desktop-/UI-/Ressourcenleselücke. Den aktuellen Einzeldateistand führt das
+[Leseverzeichnis](docs/RC-SOURCE-READING-MANIFEST.md); das abschließende Urteil
+und die Commitentscheidungsvorlage stehen im
+[Abschlussbericht](docs/MILESTONE-0-CLOSURE-REPORT.md).
+Ergebnis Freigabe 0.5: **Meilenstein 0 abschlussbereit**. Das Verzeichnis
+weist 279 vollständige Textlektüren, drei strukturierte Sonderfälle und
+38 Binärdateien aus; keine offene Leseabdeckung eigener relevanter Quellen.
+Binärprüfung und fachliche Verifizierung aller externen Drive-Datenbankmatches
+sind davon nicht umfasst. Die reale RC-Abnahme bleibt offen.
+Externe Baseline: `D:\AetherBaselineSnapshots\rc05-20261109-212329`,
+8.720 Dateien einschließlich 8.403 dist-Artefakten hashgeprüft kopiert;
+317 Nicht-dist-Dateien zusätzlich rückkopiert und geprüft, Gitbundle verifiziert.
+Restore-Matrix im [Sicherungsplan](docs/RC-BASELINE-SNAPSHOT-PLAN.md).
+Der getrennte `closure-supplement` sichert die sechs finalen Dokumente,
+Lesebelege und aktuellen 320 Dateihashes mit eigener Restoreprobe.
+Kein Commit, Staging, Push, Tag oder Release. Stopp vor dem Baseline-Commit;
+Meilenstein 1 ist nicht freigegeben.
+Die folgenden Angaben zu Beta 44 beschreiben den bisherigen Teststand.
+
+Aktueller lokaler Cockpit-Testinstaller: `0.7.0-beta.44`, Dateiversion
+`0.7.0.44`, unter `dist\AetherCockpit-Setup-0.7.0-beta.44-win-x64.exe`
+mit SHA256-Datei. Eine rote Karte pro physischem Datenträger bündelt Lesen,
+Schreiben, Aktivität und Queue in vier farbigen Reihen mit Werten, Einheiten
+und getrennten Skalen. Polling, Messquellen und Umgang mit fehlenden Werten
+unverändert. Separate weichgezeichnete Rahmenkonturen und Kurvenhalos sowie
+kräftigere animierte Leuchtspuren; gemeinsame eingefrorene, gecachte
+Mainboard-Leuchtebene im Tool und Bildschirmschoner. Texte bleiben scharf,
+Windows Modern neutral, Bewegungsfreigaben erhalten.
+
+Releasebuild ohne Warnungen/Fehler; 4477 Grund-/Interface-/Branding-/
+Schonerassertions gegen die publizierten Assemblies sowie 3611
+Modern-/Neon-Smoke-Assertions bestanden. Synthetische Datenträgerkarten und
+Schoneransicht visuell geprüft. Gezieltes Board-Renderprofil bestand mit
+p95 25,0 ms unter 33,4 ms; das sind WPF-Kompositionsintervalle, keine GPU-FPS.
+Installer und Komponentenrevisionen sowie SHA256 geprüft. Keine Installation,
+produktive Hardwareinitialisierung, Windows-Verwaltungsaktion, Veröffentlichung
+oder Commits/Pushes ausgeführt. Vorhandene Pakete bleiben erhalten.
+
+Aktueller Quellstand ergänzt auf Nutzerauftrag animiertes Branding:
+vorhandenes Logo links oben mit Neon-Puls und wanderndem Lichtreflex,
+schräger Chromschriftzug in Silber/Violett/Pink; dasselbe gemeinsame Control
+rechts oben im Bildschirmschoner. Instrumente, Kurven und übrige
+Cockpit-Anzeigen unverändert. Bewegung respektiert AETHER-Schalter,
+Windows-Animationsfreigabe, Sichtbarkeit und Lebenszyklus; Modern bleibt
+neutral und statisch. Synthetische Cockpit-/Schonerbilder visuell geprüft.
+4421 Grund-/Branding-/Schonerassertions und 3611 Modern-/Neon-Smoke-Assertions
+bestanden; Diff-Prüfung ohne Befund. Keine produktive Hardwareinitialisierung
+oder Installation ausgeführt.
+Vorheriger Branding-Testinstaller: `0.7.0-beta.43`, Dateiversion `0.7.0.43`,
+unter `dist\AetherCockpit-Setup-0.7.0-beta.43-win-x64.exe` mit SHA256-Datei.
+Neuer Releasebuild ohne Warnungen/Fehler; 4421 Assertions gegen die tatsächlich
+publizierten Assemblies bestanden. Installerrevision und Prüfsumme geprüft.
+Auf Nutzerauftrag nach weiteren AETHER-Änderungen jeweils einen neuen lokalen
+Build und versionsgetrennten Installer erstellen; ältere Ausgaben erhalten.
+Keine Installation, Veröffentlichung, Commits oder Pushes ausgeführt.
+
+Die ursprüngliche Cockpit-Anordnung wurde wiederhergestellt: Instrumente,
+Kurven, Listen, Systempuls und Datenkontrolle bleiben direkt auf der Seite,
+ohne neue Zusammenfassung oder zusätzliche Detailklappe. Navigation,
+Wake-on-LAN und erweiterter Windows-Wartungs- und Deploymentkatalog bleiben
+erhalten. Keine weiteren Anzeigenumbauten ohne separate Freigabe.
+
+Vorheriger lokaler Cockpit-Testinstaller: `0.7.0-beta.42`, Dateiversion
+`0.7.0.42`, unter `dist\AetherCockpit-Setup-0.7.0-beta.42-win-x64.exe`
+mit SHA256-Datei. Auf ausdrücklichen Nutzerauftrag ist der Übersichtsumbau
+zurückgenommen: ursprüngliche Instrumente, Kurven, Listen, Systempuls und
+Datenkontrolle wieder direkt auf der Seite, ohne neue Zusammenfassung oder
+zusätzliche Detailklappe. Navigation, Wake-on-LAN und erweiterter
+Windows-Wartungs- und Deploymentkatalog bleiben erhalten. Keine weiteren
+Anzeigenumbauten ohne separate Freigabe. Die Cockpit-XAML entspricht bis auf
+den unsichtbaren Testnamen des ScrollViewers exakt dem Stand vor dem Umbau.
+Build ohne Warnungen/Fehler; 4171 STA-/Interface-Assertions gegen die tatsächlich
+publizierten Assemblies und 3611 Modern-/Neon-Smoke-Assertions bestanden.
+22 synthetische Hell-/Dunkelbilder erzeugt. Inno Setup meldet den bestehenden Hinweis zum veralteten
+Architekturbezeichner `x64`; Setup erfolgreich kompiliert. Keine Installation,
+Windows-Verwaltungsaktion, Veröffentlichung oder Git-Änderung per Commit/Push
+ausgeführt. Ältere Ausgaben bleiben erhalten. Beta 38 bleibt öffentlich.
+
+Der separate Server-Testinstaller liegt lokal als
+`dist\AetherManager-Setup-0.7.0-beta.40-win-x64.exe` mit SHA256-Datei vor;
+er enthält die optionale Graph-Anbindung. Kein echter Tenantzugriff geprüft.
+Die Graph-Verträge sind öffentlich mit XML-Kommentaren; HTTP-Beispiele stehen
+in `src\AetherManager.Server\Accounts.http`. Der Verwaltungsrunner bestand
+384 Assertions einschließlich 162 HTTPS-/Rollen-/CSRF-/Sitzungsassertions,
+150 Kontenassertions und 14 Flotten-/Telemetrieassertions. Der Browser-Smoke-Test
+bleibt wegen des lokal fehlenden Playwright offen.
+
+### Lokaler Windows-Wartungs- und Netzwerkausbau
+
+Auf Nutzerauftrag im bestehenden Arbeitsbranch ergänzt: Wake-on-LAN im
+Netzwerkbereich der Systemkontrolle. Das Ziel-MAC-Format wird validiert, eine
+eigene Bestätigung ist erforderlich, und der Magic-Packet-Versand meldet
+keinen unbestätigten Geräteerfolg. Eine Auswahl im LAN-Ergebnis übernimmt die
+gemeldete MAC in das Zielfeld.
+
+Der PowerShell-Befehlskatalog umfasst nun zusätzliche lesende WinRE-,
+Wiederherstellungs- und Deploymentabfragen sowie explizite Befehle für
+Wiederherstellungspunkte, Windows-Recovery-Einstellungen, Treibersicherung,
+Features, Capabilities und lokale Images. Reset/Cloud-Download wird nicht
+automatisch ausgeführt.
+
+### Optionale Microsoft-Graph-Anbindung
+
+Der Verwaltungsserver kann Microsoft Graph app-only mit einem Zertifikat aus
+`LocalMachine\My` verwenden. Die Weboberfläche bietet nach manuellem Abruf
+Intune-Geräte- und Autopatch-Bereitstellungslisten sowie einzeln bestätigte
+Intune-Synchronisierungen und Pause/Fortsetzen bestehender Autopatch-
+Bereitstellungen. Schreibaktionen sind auf Administratoren begrenzt und
+werden im lokalen Kontenaudit protokolliert. Neue Autopatch-Rollouts sind
+wegen der erforderlichen tenantbezogenen Zielgruppen- und Zeitplanfreigabe
+noch nicht enthalten. Dafür gelten Microsoft-Graph-Beta-Einschränkungen.
+
+Es fand keine echte Tenant-Anmeldung oder Verwaltungsaktion statt. Das
+isolierte HTTPS-Testfixture entfernt alle `AETHER_GRAPH_*`-Variablen.
+MSAL-, Graph-HTTP-, Rollen-/Konfigurations- und HTTPS-Assertions liefen mit
+synthetischen Anmeldedaten. Serverbuild ohne Warnungen/Fehler; 380 Verwaltungsassertions,
+160 HTTPS-/Rollen-/CSRF-/Sitzungsassertions, 150 Kontenassertions und 14
+Flotten-/Telemetrieassertions bestanden. Vorhandene uncommittete Änderungen
+blieben erhalten; kein Commit, Push, Installer oder Release erstellt.
+
+Releasebuild ohne Warnungen/Fehler; 4176 STA-/Interface-Assertions und drei
+Lokalisierungs-Audit-Unittests bestanden. Kein Magic Packet, Reparaturlauf,
+Windows-Update, Treiberwechsel, Cloud-Login, Remoteauftrag oder Installer
+ausgeführt. Versionsprofil und `dist` unverändert; kein Commit oder Push.
+Vorhandene uncommittete Änderungen des Arbeitsbranches wurden erhalten.
+
+Auf Nutzerauftrag lokaler Cockpit-Testinstaller Beta 40 erstellt:
+Version `0.7.0-beta.40`, Dateiversion `0.7.0.40`. Enthält den aktuellen
+Cockpit-Stand mit priorisierter Übersicht; nur Setup-EXE und SHA256-Datei
+bleiben als neue Installer-Ausgabe in `dist`. Beta 38 bleibt der öffentliche
+Release. Keine Installation oder Veröffentlichung ausgeführt.
+
+UX-Paket 2 ist auf dem freigegebenen Branch umgesetzt: Das Cockpit zeigt
+Windows-Prüfstatus, aktuelle Abfrage, gemeldete Befunde, vier vorhandene
+Live-Kernwerte, Funktionensuche und Schnellzugriffe. Bestehende Mess-,
+Prozess-, Sensor-, Ereignis- und Datenerfassungsansichten bleiben in einem
+anfangs geschlossenen Detailbereich erreichbar. Keine Mess- oder
+Aktionslogik wurde geändert.
+Releasebuild ohne Warnungen/Fehler; 4148 STA-UI-Assertions und 3605
+Modern-/Neon-Smoke-Assertions bestanden. Der Mindestfenster-Test meldet keinen
+horizontalen Überlauf. Die synthetischen Hell-/Dunkelansichten wurden
+visuell geprüft; der Ressourcen-Audit meldet keine fehlenden expliziten
+Einträge, Englisch bleibt gesperrt. Keine Hardwareabfrage, Reparatur,
+Installation, Veröffentlichung oder Commit ausgeführt. Paket 3 wartet auf
+eine separate Freigabe.
+
 GPU-Darstellung im Neon-Mainframe korrigiert: Anschlussblende und ihre
 Ports werden vor der Kühlerfläche gezeichnet, sodass sie den ersten Lüfter
 nicht verdecken. Drei Rotoren behalten dieselbe projizierte Ebene. Der
 eigenständige UI-Test `--gpu-presentation` prüft Geometrie, Überdeckung
 und Tag-/Nachtansicht unabhängig von Windows-Bewegungseinstellungen; lokal
 bestanden 24 Assertions und der Releasebuild ohne Warnungen. Tag-/Nachtbilder
-mit synthetischen Geräten wurden visuell kontrolliert. Kein neuer Installer
-oder Release erstellt.
+mit synthetischen Geräten wurden visuell kontrolliert.
+Windows-CI 42576478521 auf `5382388` vollständig bestanden.
+Auf Nutzerauftrag lokal Beta 39 paketiert: Profil und Setup verwenden
+`0.7.0-beta.39` / Dateiversion `0.7.0.39`. Neuer unsignierter Installer:
+`dist\AetherCockpit-Setup-0.7.0-beta.39-win-x64.exe`, SHA256-Datei daneben;
+selbstenthaltene Quelldateien unter `dist\AetherCockpit-0.7.0-beta.39-win-x64`.
+4063 Grundassertions und 24 GPU-Prüfungen gegen genau die publizierten
+Assemblies bestanden; Testreferenzen dafür mit AssemblyVersion 0.7.0.0 gebaut.
+Keine Installation ausgeführt, keine alten Pakete überschrieben, kein Upload,
+kein GitHub-Release. Beta 38 bleibt die letzte öffentliche Version; Englisch
+bleibt gesperrt. Versionsänderungen sind bisher nur lokal.
+
+Server Beta 39 ebenfalls nur lokal erzeugt:
+`dist\AetherManager-0.7.0-beta.39-win-x64` und gleichnamiges ZIP mit
+SHA256-Datei. Selbstenthaltenes Windows-x64-Paket inklusive Weboberfläche,
+Dokumentation und Installationsskript; kein Dienst installiert oder
+produktiver Server gestartet. Build ohne Warnungen/Fehler; 364
+Verwaltungsassertions bestanden (ein erster HTTPS-Lauf hatte einen lokalen
+5-Sekunden-Timeout, unveränderter Wiederholungslauf erfolgreich).
+Die Store-/Rollenprüfungen verwendeten die publizierten Serverassemblies;
+der HTTPS-Test startet separat den versionsgleichen Releasebuild.
+Alle 412 ZIP-Dateien per Größe und SHA256 gegen den Publishordner geprüft.
+Keine alten Ausgaben überschrieben und kein Upload.
+
+Separater grafischer Server-Installer lokal hinzugefügt:
+`build\Publish-ManagerSetup.ps1` kompiliert `build\AetherManager.iss` aus dem
+vorhandenen Server-Publishordner mit Profil-/Binärversionsabgleich und
+Überschreibschutz. Ausgabe:
+`dist\AetherManager-Setup-0.7.0-beta.39-win-x64.exe` mit SHA256-Datei,
+unsigniert, nicht hochgeladen. Installationsziel ist fest unter Program Files;
+keine automatische Dienstinstallation, Zertifikatserstellung oder Firewallfreigabe.
+Der optionale Konsolenassistent verlangt weiterhin JA. Ein registrierter
+Serverdienst blockiert Updates bis zu seiner manuellen Entfernung.
+Deinstallation entfernt nur den pfadgebundenen eigenen Dienst nach Bestätigung;
+stille Deinstallation verlangt dessen vorherige Entfernung. ProgramData bleibt
+erhalten. Pfadverknüpfungen und fremde bestehende Zielordner werden abgewiesen.
+Compiler, Versionsmetadaten, SHA256 und erneuter Aufruf mit bestehendem
+Installer geprüft; tatsächlicher Setup-/Dienst-/Uninstall-Lauf bleibt für die
+isolierte Windows-Prüfumgebung offen. Keine lokale Installation durchgeführt.
 
 RC-Entwicklung beauftragt: Desktop und professioneller Server gemeinsam,
 vollständige englische Oberfläche, praktische Installations-/Netzwerkprüfung

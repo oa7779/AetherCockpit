@@ -14,6 +14,8 @@ public sealed class DashboardGraph(string title, string unit, string accent) : O
     public Brush Accent { get; } = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
     private string _value = "--", _detail = "";
     private string _numericValue = "--";
+    private string _scaleLabel = "--";
+    public string ScaleLabel { get => _scaleLabel; private set => Set(ref _scaleLabel, value); }
     public string NumericValue { get => _numericValue; private set => Set(ref _numericValue, value); }
     private double _level;
     private PointCollection _trace = [];
@@ -29,6 +31,7 @@ public sealed class DashboardGraph(string title, string unit, string accent) : O
         {
             Value = "--";
             NumericValue = "--";
+            ScaleLabel = "--";
             Level = 0;
             _points.Clear();
             Trace = [];
@@ -37,6 +40,7 @@ public sealed class DashboardGraph(string title, string unit, string accent) : O
         _points.Add(number);
         if (_points.Count > 90) _points.RemoveAt(0);
         var scale = fixedScale ?? Math.Max(1, _points.Max());
+        ScaleLabel = $"0..{scale:0.0} {Unit}";
         Value = $"{number:0.0} {Unit}";
         NumericValue = $"{number:0.0}";
         Level = Math.Clamp(100 * number / scale, 0, 100);
@@ -46,6 +50,32 @@ public sealed class DashboardGraph(string title, string unit, string accent) : O
 }
 
 public sealed record EventBucket(string Label, int Count, double Height, string Detail);
+
+public sealed class DiskDashboardGraph(string name)
+{
+    public string Name { get; } = name;
+    public DashboardGraph[] Metrics { get; } =
+    [
+        new("LESEN", "MB/s", "#FF576E"),
+        new("SCHREIBEN", "MB/s", "#FFCE54"),
+        new("AKTIV", "%", "#24FFE3"),
+        new("QUEUE", "I/O", "#D45CFF")
+    ];
+
+    public void Update(DiskActivity disk)
+    {
+        const string detail = "Windows-Performancezähler / 15s Polling";
+        Metrics[0].Update(disk.ReadMbps, detail);
+        Metrics[1].Update(disk.WriteMbps, detail);
+        Metrics[2].Update(disk.BusyPercent, detail, 100);
+        Metrics[3].Update(disk.QueueLength, detail);
+    }
+
+    public void Unavailable()
+    {
+        foreach (var metric in Metrics) metric.Update(null, "Windows-Performanceabfrage fehlgeschlagen");
+    }
+}
 
 public sealed partial class CockpitModel
 {
@@ -59,7 +89,7 @@ public sealed partial class CockpitModel
     public ObservableCollection<DashboardGraph> AdapterGraphs { get; } = [];
     public ObservableCollection<DashboardGraph> SensorGraphs { get; } = [];
     public ObservableCollection<DashboardGraph> VolumeGraphs { get; } = [];
-    public ObservableCollection<DashboardGraph> DiskGraphs { get; } = [];
+    public ObservableCollection<DiskDashboardGraph> DiskGraphs { get; } = [];
     public ObservableCollection<ProcessMetric> Processes { get; } = [];
     public ObservableCollection<MonitorEvent> Events { get; } = [];
     public ObservableCollection<Check> EventCounts { get; } = [];
@@ -67,7 +97,7 @@ public sealed partial class CockpitModel
     private readonly Dictionary<string, DashboardGraph> _sensorGraphs = [];
     private readonly Dictionary<string, DashboardGraph> _adapterGraphs = [];
     private readonly Dictionary<string, DashboardGraph> _volumeGraphs = [];
-    private readonly Dictionary<string, DashboardGraph> _diskGraphs = [];
+    private readonly Dictionary<string, DiskDashboardGraph> _diskGraphs = [];
     private string _dashboardStatus = "Taskmanager-Messung wird vorbereitet.";
     private string _cpuSensorDetail = "Sensorprovider wird initialisiert.";
     public string CpuSensorDetail { get => _cpuSensorDetail; set => Set(ref _cpuSensorDetail, value); }
@@ -211,17 +241,10 @@ public sealed partial class CockpitModel
         var active = new HashSet<string>();
         foreach (var disk in snapshot.DiskActivity ?? [])
         {
-            foreach (var (suffix, value, unit, scale) in new (string, double?, string, double?)[]
-            {
-                ("READ", disk.ReadMbps, "MB/s", null), ("WRITE", disk.WriteMbps, "MB/s", null),
-                ("AKTIV", disk.BusyPercent, "%", 100), ("QUEUE", disk.QueueLength, "I/O", null)
-            })
-            {
-                var id = disk.Name + suffix;
-                active.Add(id);
-                if (!_diskGraphs.TryGetValue(id, out var graph)) _diskGraphs[id] = graph = new($"DISK {disk.Name} / {suffix}", unit, "#4294FF");
-                graph.Update(value, "Windows-Performancezaehler / 15s Polling", scale);
-            }
+            active.Add(disk.Name);
+            if (!_diskGraphs.TryGetValue(disk.Name, out var graph))
+                _diskGraphs[disk.Name] = graph = new(disk.Name);
+            graph.Update(disk);
         }
         foreach (var id in _diskGraphs.Keys.Except(active).ToArray()) _diskGraphs.Remove(id);
         Replace(DiskGraphs, _diskGraphs.Values);
@@ -232,7 +255,7 @@ public sealed partial class CockpitModel
         Events.Clear();
         EventCounts.Clear();
         EventBuckets.Clear();
-        foreach (var graph in DiskGraphs) graph.Update(null, "Windows-Performanceabfrage fehlgeschlagen");
+        foreach (var graph in DiskGraphs) graph.Unavailable();
         SelectedEvent = null;
         EventStatus = "Ereignismonitor nicht verfuegbar: " + message;
     }

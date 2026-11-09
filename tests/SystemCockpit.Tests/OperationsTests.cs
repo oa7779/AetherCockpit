@@ -17,6 +17,26 @@ internal static class OperationsTests
         var count = 0;
         void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
         count += ManagedActionTests.Run();
+        var magicPacket = WakeOnLan.BuildMagicPacket("00:11:22:33:44:55");
+        Check(magicPacket.Length == 102 && magicPacket.Take(6).All(value => value == byte.MaxValue) &&
+            Enumerable.Range(0, 16).All(copy => magicPacket.Skip(6 + copy * 6).Take(6)
+                .SequenceEqual(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 })),
+            "Wake-on-LAN packet contains six sync bytes and 16 exact target-MAC repetitions");
+        Check(WakeOnLan.ParseMacAddress("00-11-22-33-44-55").SequenceEqual(
+                new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 }) &&
+            WakeOnLan.ParseMacAddress("001122334455").SequenceEqual(
+                new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 }),
+            "Wake-on-LAN accepts colon, hyphen, and compact MAC formats");
+        foreach (var invalidMac in new[] { "01:11:22:33:44:55", "00:00:00:00:00:00", "GG:11:22:33:44:55", "00:11:22:33:44" })
+        {
+            try { WakeOnLan.BuildMagicPacket(invalidMac); throw new InvalidOperationException("Invalid Wake-on-LAN MAC accepted."); }
+            catch (ArgumentException) { count++; }
+        }
+        Check(AdminCommandCatalog.All.Any(command => command.Category == "Wiederherstellung" &&
+                command.Command == "reagentc.exe /info" && command.RiskLevel == 0) &&
+            AdminCommandCatalog.All.Any(command => command.Category == "Deployment" &&
+                command.Command.StartsWith("Get-WindowsOptionalFeature", StringComparison.Ordinal) && command.RiskLevel == 0),
+            "PowerShell catalog exposes read-only Windows recovery and deployment inventories");
         var valid = PerformanceIndex.Parse("""{"State":1,"Base":8.9,"Cpu":9.5,"Memory":9.4,"Graphics":9.2,"Disk":8.9,"StoredAt":null}""");
         Check(valid.Valid && valid.Base == 8.9 && valid.Cpu == 9.5, "Display real valid Windows scores");
         var invalid = PerformanceIndex.Parse("""{"State":2,"Base":9.9,"Cpu":9.9,"Memory":9.9,"Graphics":9.9,"Disk":9.9,"StoredAt":null}""");

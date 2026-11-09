@@ -103,8 +103,9 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release
 
 `tests\AetherManager.Tests` ist ein zusätzlicher Konsolenrunner für Anmeldung,
 Richtlinien, einmalige Auftragsübernahme, Ergebnisgrenzen, Persistenz,
-Gerätesperre und Client-URL-Prüfung. Er verwendet ausschließlich temporäre
-Testdaten und startet keine Windows-Werkzeugaktion:
+Gerätesperre, Client-URL-Prüfung und synthetische Microsoft-Graph-Anfragen.
+Er verwendet Testtoken und einen gefälschten HTTP-Handler, benötigt keinen
+Tenant und startet keine Windows- oder Graph-Verwaltungsaktion:
 
 ```powershell
 dotnet run --project .\tests\AetherManager.Tests -c Release
@@ -148,8 +149,8 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release -- --professional-ui
 | `--gpu-presentation` | Drei GPU-Lüfter im selben projizierten Kühlflächenraum und ohne Überdeckung durch spätere Komponenten, jeweils bei Tag und Nacht; unabhängig von Windows-Animationen |
 | `--sensor-charts-ui` | Sensorverläufe und Lücken mit Testdaten |
 | `--xbar-ui` | Diagrammleiste und Anordnung |
-| `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
-| `--interface-ui` | Aufgabengruppen, echte Zielrouten, getrennte Mainframe-Bereiche, GPU-Lüfterebene, Tag-/Nachtgrenzen, schwarze Nacht-Hintergründe und Sekunden-Takt mit synthetischer Animation |
+| `--branding-ui` | Dekodiertes Logo und sichtbare Abmessungen beim Start/im Dashboard, Chromschriftzug, Animationsfreigaben und Stopp bei Unsichtbarkeit, Layout und xBar-Glow; abgelöste UI ohne Produktdienste |
+| `--interface-ui` | Aufgabengruppen und Zielrouten, ursprüngliche Cockpit-Anzeigen ohne zusätzliche Detailklappe, synthetische Vier-Reihen-Datenträgerkarten und Mindestfensterbreite sowie Mainframe, GPU-Lüfterebene, Tag-/Nachtgrenzen und Sekunden-Takt |
 | `--desktop-ui` | Gadgets und Desktopparameter |
 | `--desktop-language-smoke` | Ressourcenbasierte Desktop-Sprachtexte und Darstellung |
 | `--desktop-modern-smoke` / `--desktop-ui-smoke` | Deutsche Windows-Modern-Darstellung in hell/dunkel, System-Schema, Dashboard, Systemkontrolle, Desktopparameter, xBar, Gadget, Start und Aktionsbestätigung; Neon-Kompatibilität |
@@ -160,12 +161,14 @@ Optionale Screenshots verwenden `--board-screenshot`, `--sensor-charts-screensho
 `--screensaver-screenshot`, `--inventory-screenshot` mit einem Zielpfad.
 `--professional-screenshot-prefix` benennt mehrere Workflow-Bilder.
 `--branding-screenshot-prefix` erzeugt Boot-, Dashboard- und xBar-Bilder.
-`--interface-screenshot-prefix` erzeugt Mainframebilder im Tag-/Nachtmodus.
+`--interface-screenshot-prefix` erzeugt Mainframebilder im Tag-/Nachtmodus
+und ein Cockpitbild mit zwei synthetischen Datenträgern (`-disks.png`).
 Ein optionaler Pfad direkt nach `--gpu-presentation` erzeugt Tag-/Nachtbilder
 mit diesem Präfix. Dieser spezielle Schalter läuft eigenständig und wird auch
 in der Windows-CI ausgeführt.
 Für `--desktop-modern-smoke` legt `AETHER_SCREENSHOT_DIR` den Screenshotordner fest;
-die 22 Bilder heißen `windows-modern-{light|dark}-{Bereich}.png`.
+die 22 Bilder heißen `windows-modern-{light|dark}-{Bereich}.png`. Das Cockpit
+wird in seiner ursprünglichen Anordnung ohne vorgeschaltete Übersicht erfasst.
 Die System-Schema-Bilder verwenden den Bereich `system-schema`.
 Dabei werden keine Sensoren,
 Reparaturen oder Produktinstallationen gestartet.

@@ -52,6 +52,14 @@ internal static partial class Runner
     private static async Task VerifyAccountApiAsync(HttpClient client, string url, string root)
     {
         var startCount = _assertions;
+        using (var response = await client.GetAsync(url + "/openapi/v1.json"))
+        {
+            Check(response.StatusCode == HttpStatusCode.OK, "OpenAPI document is available");
+            var openApi = await response.Content.ReadAsStringAsync();
+            Check(openApi.Contains("/api/v1/admin/cloud/status", StringComparison.Ordinal) &&
+                openApi.Contains("/api/v1/admin/cloud/deployments/{id}/state", StringComparison.Ordinal),
+                "OpenAPI describes Graph status and confirmed deployment action endpoints");
+        }
         var legacy = (await File.ReadAllTextAsync(Path.Combine(root, "admin-token.txt"))).Trim();
         using (var response = await SendAsync(client, url, "admin/devices", bearer: legacy))
             Check(response.StatusCode == HttpStatusCode.OK, "Legacy administrative tools continue before account bootstrap");
@@ -94,6 +102,17 @@ internal static partial class Runner
             Check(response.StatusCode == HttpStatusCode.BadRequest, "Account role must be supplied explicitly; omitted role cannot default to administrator");
         var reader = await SignInAsync(client, url, "api-reader", readerPassword);
         var op = await SignInAsync(client, url, "api-operator", operatorPassword);
+        using (var response = await SendAsync(client, url, "admin/cloud/status", session: reader))
+        {
+            Check(response.StatusCode == HttpStatusCode.OK, "Reader can inspect optional Graph configuration status");
+            var status = (await response.Content.ReadFromJsonAsync<GraphIntegrationStatusResponse>(WebJson))!;
+            Check(!status.Configured && status.State == "notConfigured", "Graph integration stays explicitly unavailable without configuration");
+        }
+        using (var response = await SendAsync(client, url, "admin/cloud/devices", session: op))
+            Check(response.StatusCode == HttpStatusCode.ServiceUnavailable,
+                "Graph inventory reports missing tenant configuration instead of returning empty data");
+        using (var response = await SendAsync(client, url, $"admin/cloud/devices/{Guid.NewGuid():D}/sync", "POST", session: reader))
+            Check(response.StatusCode == HttpStatusCode.Forbidden, "Reader cannot request an Intune device sync");
         Guid deviceId;
         string deviceToken;
         using (var response = await SendAsync(client, url, "admin/enrollment-codes", "POST", session: admin))

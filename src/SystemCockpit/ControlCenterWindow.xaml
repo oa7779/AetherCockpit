@@ -85,7 +85,7 @@
             </Border>
         </StackPanel>
         <TabControl x:Name="Modules" Grid.Row="1" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" SelectionChanged="ModuleChanged">
-            <TabItem Header="SMART" Tag="SMART" ToolTip="{loc:DesktopLabel Module.SmartTip}">
+            <TabItem Header="{loc:DesktopLabel Module.Smart}" Tag="SMART" ToolTip="{loc:DesktopLabel Module.SmartTip}">
                 <StackPanel Margin="14">
                     <TextBlock Text="{loc:DesktopLabel Layout.SmartHeading}" FontSize="19" Foreground="#24FFE3"/>
                     <TextBlock Text="{loc:DesktopLabel Layout.SmartNotice}" Margin="0,8,0,12"/>
@@ -120,6 +120,13 @@
                         <CheckBox x:Name="AutoLan" Content="{loc:DesktopLabel Ui.AutoScan}" Foreground="#24FFE3" VerticalAlignment="Center" Checked="AutoLanChanged" Unchecked="AutoLanChanged"/>
                     </WrapPanel>
                     <TextBlock Text="{loc:DesktopLabel Layout.LanNotice}" Margin="0,0,0,10"/>
+                    <TextBlock Text="{loc:DesktopLabel Layout.WakeOnLanHeading}" Foreground="#24FFE3" Margin="0,4,0,2"/>
+                    <WrapPanel>
+                        <TextBox x:Name="WakeMacAddress" Width="220" ToolTip="{loc:DesktopLabel Layout.WakeOnLanMacTip}"
+                                 AutomationProperties.Name="{loc:DesktopLabel Ui.WakeOnLanMac}"/>
+                        <Button x:Name="WakeOnLanButton" Content="{loc:DesktopLabel Layout.WakeOnLanSend}" Click="WakeOnLanClicked"/>
+                    </WrapPanel>
+                    <TextBlock Text="{loc:DesktopLabel Layout.WakeOnLanNotice}" Foreground="#A8A4C5" Margin="0,0,0,10"/>
                     <WrapPanel>
                         <Button Content="{loc:DesktopLabel Ui.WifiNetworks}" Tag="wlan" Click="ActionClicked"/>
                         <Button Content="{loc:DesktopLabel Ui.WifiProfiles}" Tag="wlan-profiles" Click="ActionClicked"/>
@@ -127,7 +134,7 @@
                         <Button Content="{loc:DesktopLabel Ui.ArpClear}" Tag="arp" Click="ActionClicked"/>
                         <Button Content="Bluetooth" Tag="bluetooth" Click="ActionClicked"/>
                     </WrapPanel>
-                    <DataGrid x:Name="LanGrid" Height="190"><DataGrid.Columns>
+                    <DataGrid x:Name="LanGrid" Height="190" SelectionChanged="LanDeviceSelected"><DataGrid.Columns>
                         <DataGridTextColumn Header="{loc:DesktopLabel Ui.AddressColumn}" Binding="{Binding Address}" Width="*"/>
                         <DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="*"/>
                         <DataGridTextColumn Header="MS" Binding="{Binding Milliseconds}" Width="*"/>

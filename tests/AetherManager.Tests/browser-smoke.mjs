@@ -43,6 +43,9 @@ try {
     await login(admin, credentials.administrator);
     assert.equal(await admin.locator("#devices .device").count(), 48);
     assert.ok(await admin.locator("#users-section").isVisible());
+    await admin.waitForFunction(() => document.querySelector("#cloud-status").textContent.includes("AETHER_GRAPH_TENANT_ID"));
+    assert.ok(await admin.locator("#cloud-section").isVisible());
+    assert.ok(await admin.locator("#cloud-refresh").isDisabled());
     assert.ok(await admin.locator("#page-info").innerText().then(x => x.includes("48 / 48")));
     await screenshot(admin, "neon-fleet-48");
     await admin.locator("#page-size").selectOption("24");
@@ -92,6 +95,8 @@ try {
     await login(operatorPage, credentials.operator);
     assert.ok(await operatorPage.locator("#users-section").isHidden());
     assert.ok(await operatorPage.locator("#enrollment").isHidden());
+    await operatorPage.waitForFunction(() => document.querySelector("#cloud-status").textContent.includes("AETHER_GRAPH_TENANT_ID"));
+    assert.ok(await operatorPage.locator("#cloud-refresh").isDisabled());
     assert.equal(await operatorPage.locator('#actions option[value="dns-cache-clear"]').count(), 0);
     assert.equal(await operatorPage.locator('#actions option[value="inventory"]').count(), 1);
     await operatorPage.locator("#devices .device").nth(1).click();
@@ -103,6 +108,8 @@ try {
     await login(reader, credentials.reader);
     assert.ok(await reader.locator("#queue").isHidden());
     assert.ok(await reader.locator("#users-section").isHidden());
+    await reader.waitForFunction(() => document.querySelector("#cloud-status").textContent.includes("AETHER_GRAPH_TENANT_ID"));
+    assert.ok(await reader.locator("#cloud-refresh").isDisabled());
     await screenshot(reader, "reader-fleet");
     const readerSession = await reader.evaluate(async () => (await fetch("/api/v1/auth/session")).json());
     await admin.evaluate(async id => {

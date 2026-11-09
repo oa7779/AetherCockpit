@@ -130,7 +130,26 @@ internal static class BootTests
             main.Content = null;
             CaptureSynthetic(content, main, main.Model, 1100, 760, "-dashboard", host =>
             {
-                VerifyLogo((Image)main.FindName("DashboardLogo"));
+                var brand = (SystemCockpit.Controls.AnimatedBrand)main.FindName("DashboardBrand");
+                main.Model.MotionEnabled = false; Pump();
+                VerifyLogo((Image)brand.FindName("Logo"));
+                Check(((TextBlock)brand.FindName("Wordmark")).FontStyle == FontStyles.Italic,
+                    "Dashboard wordmark uses the slanted retro chrome treatment");
+                main.Model.MotionEnabled = false; Pump();
+                Check(!brand.MotionActive, "Brand animation stops with application motion disabled");
+                main.Model.MotionEnabled = true; Pump();
+                Check(brand.MotionActive == (SystemParameters.ClientAreaAnimation && !SkinCatalog.IsModern),
+                    "Brand motion follows Windows animation permission and desktop design");
+                Check(((Image)brand.FindName("Logo")).HasAnimatedProperties == brand.MotionActive &&
+                    ((TranslateTransform)brand.FindName("Sweep")).HasAnimatedProperties == brand.MotionActive,
+                    "Logo pulse and reflection have animation clocks only when motion is permitted");
+                brand.Visibility = Visibility.Hidden; Pump();
+                Check(!brand.MotionActive && !((Image)brand.FindName("Logo")).HasAnimatedProperties,
+                    "Hidden branding removes its animation clocks");
+                brand.Visibility = Visibility.Visible; Pump();
+                main.Model.MotionEnabled = false; Pump();
+                Check(!brand.MotionActive && !((TranslateTransform)brand.FindName("Sweep")).HasAnimatedProperties,
+                    "Disabling branding motion removes reflection clocks");
                 var pages = (TabControl)main.FindName("Pages");
                 Check(pages.ActualWidth > 600 && pages.ActualHeight > 350,
                     "Dashboard retains usable content dimensions at minimum supported test window");

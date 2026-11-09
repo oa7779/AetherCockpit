@@ -30,7 +30,8 @@ Keine Release-Verzeichnisse als Arbeitskopie verwenden.
 - Inno Setup 6 für die Setup-Erzeugung.
 - NuGet-Zugriff bei fehlenden SDK-/Runtimepaketen.
 
-Der Server referenziert ASP.NET Core OpenAPI und WindowsServices.
+Der Server referenziert ASP.NET Core OpenAPI, WindowsServices und MSAL für
+die optionale zertifikatsbasierte Microsoft-Graph-Anmeldung.
 Die Cockpit-Abhängigkeit und mitgelieferten Messwerkzeuge sind unter
 [Drittanbieter-Hinweise](../THIRD-PARTY-NOTICES.md) dokumentiert.
 Keine Werkzeuge oder Lizenzen durch handgeschriebene Ersatzdateien ersetzen.
@@ -72,10 +73,22 @@ steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
 
 ## Versionsquelle
 
+Nach Änderungen an AETHER auf Nutzerauftrag jeweils einen neuen lokalen Build
+und Installer mit neuer Revision erstellen und prüfen. Bestehende Ausgaben
+bleiben erhalten; eine Veröffentlichung oder Installation folgt daraus nicht.
+
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.38`, Dateiversion `0.7.0.38`,
+aktuell lokal `0.7.0-beta.44`, Dateiversion `0.7.0.44`,
 Assembly-Version `0.7.0.0`.
+
+Beta 44 ist ein lokaler Cockpit-Testinstaller mit gebündelten Datenträgerkarten,
+stärkerem Neon-Glow, animiertem Branding, ursprünglicher Cockpit-Anordnung,
+Wake-on-LAN und erweitertem Wartungskatalog,
+kein veröffentlichter Release.
+Beta 38 bleibt die öffentliche Version.
+Die folgenden Beta-38-Pfade sind historische Paketierungsbeispiele; sie dürfen
+nicht überschrieben werden. Neue Ausgaben verwenden die aktuelle Profilversion.
 
 `build\AetherCockpit.iss` muss dazu passen: `AppVersion`, `PublishDir`,
 `VersionInfoVersion` und `VersionInfoProductVersion`.
@@ -128,6 +141,25 @@ Setup als Quelle und verweigert vorhandene versionsbezogene Intune-Ausgaben.
 [Deployment und Erkennungsregeln](INTUNE-DEPLOYMENT.md).
 
 ## ZIP, Setup und Prüfsummen
+
+### Separater Server-Installer
+
+Nach `build\Publish-Manager.ps1`:
+
+```powershell
+& .\build\Publish-ManagerSetup.ps1
+```
+
+Das Skript liest Version und Dateiversion aus dem bestehenden Publishprofil,
+prüft die Serverbinärversionen und die Übereinstimmung der Dienstskripte mit
+dem Quellstand und kompiliert `build\AetherManager.iss` mit Inno Setup 6.
+Ziel ist `dist\AetherManager-Setup-<Version>-win-x64.exe` mit SHA256-Datei.
+Vorhandene Installer werden nicht überschrieben; weder Installation noch
+Upload werden ausgeführt. Die lokale Beta 39 ist noch nicht veröffentlicht.
+Dienstfreigaben, Updategrenzen und Datenerhaltung stehen unter
+[Zentrale Verwaltung](CENTRAL-MANAGEMENT.md#separater-server-installer-lokale-beta-39).
+
+### Cockpit-Installer
 
 Für einen neu erzeugten, noch nicht archivierten Release:
 

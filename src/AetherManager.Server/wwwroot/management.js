@@ -37,7 +37,8 @@ function clearSession() {
     session = null; selected = null; selectedUpdate = null; fleet = null; visible = []; statuses = []; actions = [];
     clearTimeout(expiryTimer); stopAnimation();
     el("workspace").hidden = true; el("login").hidden = false; el("password").value = "";
-    for (const id of ["output", "update-eula", "audit", "users", "sessions", "devices", "device-detail", "server", "jobs", "reports"]) el(id).replaceChildren();
+    for (const id of ["output", "update-eula", "audit", "users", "sessions", "devices", "device-detail", "server", "jobs", "reports", "cloud-devices", "cloud-deployments"]) el(id).replaceChildren();
+    el("cloud-status").textContent = "";
     el("new-password").value = ""; el("update-plan").hidden = true; el("users-section").hidden = true;
 }
 function button(text, action, parent) { const b = document.createElement("button"); b.textContent = text; b.onclick = handle(action); parent.append(b); return b; }
@@ -99,6 +100,7 @@ async function enterWorkspace() {
     expiryTimer = setTimeout(() => { clearSession(); show("Sitzung abgelaufen. Erneut anmelden."); }, Math.max(0, Date.parse(session.expiresAt) - Date.now()));
     el("actions").onchange();
     await refresh(); el("workspace").hidden = false; el("login").hidden = true; show("Verbunden.");
+    handle(loadCloudStatus)();
     startAnimation();
 }
 el("login-form").onsubmit = event => {
@@ -252,6 +254,71 @@ el("create-user").onsubmit = event => {
         document.activeElement.blur(); await renderUsers(); show("Benutzer angelegt. Passwort nur über einen sicheren Kanal übergeben.");
     })();
 };
+async function loadCloudStatus() {
+    const status = await api("admin/cloud/status");
+    el("cloud-status").textContent = status.message;
+    el("cloud-refresh").disabled = !status.configured;
+}
+async function loadCloudData() {
+    const status = await api("admin/cloud/status");
+    el("cloud-status").textContent = status.message;
+    if (!status.configured) {
+        el("cloud-devices").replaceChildren();
+        el("cloud-deployments").replaceChildren();
+        return;
+    }
+    el("cloud-refresh").disabled = true;
+    try {
+        const [devicePage, deploymentPage] = await Promise.all([
+            api("admin/cloud/devices"), api("admin/cloud/deployments")
+        ]);
+        if (!session) return;
+        el("cloud-devices").replaceChildren();
+        for (const device of devicePage.devices) {
+            const row = document.createElement("fieldset");
+            const legend = document.createElement("legend");
+            legend.textContent = `${device.deviceName || "Gerätename nicht gemeldet"} · ${device.operatingSystem || "OS unbekannt"} ${device.osVersion || ""}`;
+            row.append(legend);
+            const details = document.createElement("p");
+            details.textContent = `Compliance: ${device.complianceState || "nicht gemeldet"} · Verwaltung: ${device.managementState || "nicht gemeldet"} · Letzte Synchronisierung: ${device.lastSyncDateTime ? new Date(device.lastSyncDateTime).toLocaleString() : "nicht gemeldet"}`;
+            row.append(details);
+            if (isAdmin()) button("Intune-Synchronisierung anfordern", async () => {
+                if (!confirm(`${device.deviceName}\nEine Synchronisierung bei Intune anfordern? Dadurch können die bereits konfigurierten Intune-Richtlinien und Aktionen beim nächsten Gerätekontakt wirksam werden.`)) return;
+                await api(`admin/cloud/devices/${device.id}/sync`, "POST");
+                show("Intune hat die Synchronisierungsanforderung angenommen.");
+                await loadCloudData();
+            }, row);
+            el("cloud-devices").append(row);
+        }
+        el("cloud-deployments").replaceChildren();
+        for (const deployment of deploymentPage.deployments) {
+            const row = document.createElement("fieldset");
+            const legend = document.createElement("legend");
+            legend.textContent = `Bereitstellung ${deployment.id} · ${deployment.effectiveState || "Status unbekannt"}`;
+            row.append(legend);
+            const details = document.createElement("p");
+            details.textContent = `Angefordert: ${deployment.requestedState || "nicht gemeldet"} · Katalogeintrag: ${deployment.catalogEntryId || "nicht gemeldet"} · geändert: ${deployment.lastModifiedDateTime ? new Date(deployment.lastModifiedDateTime).toLocaleString() : "nicht gemeldet"}`;
+            row.append(details);
+            if (isAdmin()) {
+                const paused = deployment.requestedState
+                    ? deployment.requestedState === "paused" : deployment.effectiveState === "paused";
+                button(paused ? "Fortsetzen" : "Pausieren", async () => {
+                    const action = paused ? "fortsetzen" : "pausieren";
+                    if (!confirm(`Windows Autopatch\nBereitstellung ${deployment.id}\n\nDiese Bereitstellung ${action}? Die Änderung wirkt auf ihre zugewiesene Zielgruppe.`)) return;
+                    await api(`admin/cloud/deployments/${deployment.id}/state`, "POST", { paused: !paused });
+                    show(`Autopatch-Anforderung zum ${action} wurde angenommen.`);
+                    await loadCloudData();
+                }, row);
+            }
+            el("cloud-deployments").append(row);
+        }
+        if (devicePage.hasMore || deploymentPage.hasMore)
+            el("cloud-status").textContent += " Angezeigt werden höchstens 500 Einträge je Liste.";
+        if (!devicePage.devices.length && !deploymentPage.deployments.length)
+            el("cloud-status").textContent += " Graph hat keine Intune-Geräte oder Autopatch-Bereitstellungen zurückgegeben.";
+    } finally { el("cloud-refresh").disabled = false; }
+}
+el("cloud-refresh").onclick = handle(loadCloudData);
 for (const id of ["search", "fleet-filter", "page-size"]) el(id).addEventListener("input", () => { page = 0; renderFleet(); });
 el("previous").onclick = () => { page--; renderFleet(); };
 el("next").onclick = () => { page++; renderFleet(); };

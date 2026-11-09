@@ -37,6 +37,13 @@ Berichtsmetadaten gelten nach einer Stunde als veraltet; der Bericht bleibt lesb
 <h3>Aufträge · Ausgabe</h3><div id="jobs"></div><pre id="output"></pre></section>
 <section id="update-plan" hidden><h2>Updateangebote · einzelne Freigabe</h2><div id="updates"></div><pre id="update-eula"></pre><button id="install-update" disabled>Dieses Update und seine Lizenz bestätigen</button></section>
 </div>
+<section id="cloud-section"><h2>Microsoft Graph · Intune und Windows Autopatch</h2>
+<p id="cloud-status" role="status">Konfigurationsstatus wird geprüft.</p>
+<p>Graph-Inventar wird erst auf Abruf geladen. Synchronisierung und Änderungen an Autopatch-Bereitstellungen erfordern jeweils eine Bestätigung und werden auditiert.
+Neue Rollouts werden hier nicht angelegt; Zielgruppe und Zeitplan müssen tenantbezogen festgelegt werden.</p>
+<button id="cloud-refresh">Graph-Daten abrufen</button>
+<h3>Intune-Geräte</h3><div id="cloud-devices"></div>
+<h3>Windows-Autopatch-Bereitstellungen</h3><div id="cloud-deployments"></div></section>
 <section><h2>Auditverlauf</h2><pre id="audit"></pre></section>
 <section id="users-section" hidden><h2>Lokale Benutzer und Sitzungen</h2>
 <p>Änderungen an Rolle, Sperre oder Passwort widerrufen alle Sitzungen des Kontos. Der letzte aktive Administrator bleibt erhalten.</p>

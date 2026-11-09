@@ -481,7 +481,7 @@ public partial class HardwareBoardView
         if (animate || tag == "board-neon-rim" || tag?.StartsWith("component-rim:", StringComparison.Ordinal) == true)
         {
             line.Points.Freeze();
-            foreach (var (spread, opacity) in new[] { (12.0, .12), (5.0, .28) })
+            foreach (var (spread, opacity) in new[] { (14.0, .20), (6.0, .40) })
             {
                 var halo = new Polyline { Points = line.Points, Stroke = line.Stroke,
                     StrokeThickness = line.StrokeThickness + spread, Opacity = opacity,

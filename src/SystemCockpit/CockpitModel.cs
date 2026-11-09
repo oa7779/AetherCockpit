@@ -12,7 +12,7 @@ public sealed partial class CockpitModel : Observable
     [
         new(DesktopUiText.Get("Metric.CpuLoad"), "%", "#24FFE3"),
         new(DesktopUiText.Get("Metric.RamUsage"), "%", "#4294FF"),
-        new("GPU / CORE LOAD", "%", "#D45CFF"),
+        new(DesktopUiText.Get("Metric.GpuCoreLoad"), "%", "#D45CFF"),
         new(DesktopUiText.Get("Metric.Download"), "Mbit/s", "#32D5FF")
     ];
     public ObservableCollection<Check> Checks { get; } = [];

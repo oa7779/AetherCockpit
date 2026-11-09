@@ -14,6 +14,17 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 **Aktuelle Beta: 0.7.0-beta.38**
 
+**Lokaler Cockpit-Teststand: 0.7.0-beta.44**, nicht auf GitHub veröffentlicht.
+Zeigt wieder das ursprüngliche Cockpit mit allen bisherigen Anzeigen direkt
+auf der Seite, ohne vorgeschaltete Übersicht oder zusätzliche Detailklappe.
+Datenträger bündeln Lesen, Schreiben, Aktivität und Queue in einer roten
+Karte mit vier farbigen Messreihen und getrennt beschrifteten Skalen.
+Neonrahmen, Kurven und Mainboard erhalten stärkeren Glow.
+Das Logo im Retro-Neon-Cockpit und Bildschirmschoner ist mit Neon-Puls,
+Lichtreflex und Chromschriftzug gestaltet. Enthält bestätigtes Wake-on-LAN und den erweiterten
+Windows-Wartungs- und Deploymentkatalog. Microsoft Graph bleibt Teil des
+separaten Verwaltungsservers. [Versionsgeschichte](CHANGELOG.md).
+
 **Prüfstatus:** Windows-CI prüft Build, Konsolenassertions und synthetische
 Desktopansichten. Hardwarebetrieb, Installation und Intune-Verteilung sind
 nicht durch diese Tests abgedeckt. Die Pakete sind weiterhin unsigniert.
@@ -32,7 +43,10 @@ Board und Komponenten erhalten stärkeren Glow. Der Tag-/Nachtmodus folgt
 der lokalen Uhrzeit oder einer manuellen Wahl. Die Uhr aktualisiert ihre
 Sekunden unabhängig von Hardwareabfragen. Konsolenassistenten ergänzen Windows-Diagnose
 und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
-HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
+HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge. Optional
+bindet der Server Intune- und Autopatch-Daten über Microsoft Graph ein;
+Synchronisierungen und Änderungen an bestehenden Bereitstellungen werden
+einzeln bestätigt.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
 [Beta-38-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38)
@@ -50,11 +64,12 @@ die Entscheidung steht aus. Die aktuellen Pakete sind weiterhin unsigniert.
 - **Auswerten:** Sensor-Momentaufnahmen, lokale Messaufzeichnung, Statistik,
   Logvergleich, SMART-Berichte und PresentMon-Framezeiten.
 - **Diagnostizieren:** Windows-Status, Ereignisse, Geräte und Treiber sowie
-  getrennte Assistenten für Systemdateien, Updates und Verbindungen.
+  getrennte Assistenten für Systemdateien, Updates, Wiederherstellung und Verbindungen.
 - **Verwalten:** Prozesse, Dienste, Aufgaben, Autostart, Windows-Features,
-  Softwarepakete und ausgewählte Systemeinstellungen.
-- **Warten:** vorbereitete Wartungspläne, Dateivorschau im Cleaner,
+  Softwarepakete, Deployment-Inventar und ausgewählte Systemeinstellungen.
+- **Warten:** vorbereitete Wartungspläne, Dateivorschau in der Cache-Bereinigung,
   Wiederherstellungspunkt und Einzelbestätigung vor Änderungen.
+- **Netzwerk:** bestätigtes Wake-on-LAN für MAC-Adressen im lokalen Netz.
 - **Auf dem Desktop nutzen:** Retro-Neon-Oberfläche, Skins, Gadgets, xBar,
   Tray und optionaler Multi-Monitor-Bildschirmschoner.
 
@@ -148,6 +163,9 @@ Details: [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md).
   Hintergrunddiagnose ist standardmäßig aus. Automatische Reparatur ist auf
   den freigegebenen DNS-Cache-Assistenten begrenzt; Updates und Treiberinstallation
   werden nicht unbeaufsichtigt ausgeführt.
+- Windows-Recovery, Cloud-Download und Deployment folgen den jeweiligen
+  Windows-/ADK-Funktionen und benötigen passende Editionen, Quellen und Rechte.
+  Eine direkte Microsoft-Graph-/Intune-Autopatch-Anbindung ist noch nicht integriert.
 - Mitschnitte brauchen separat installiertes Npcap. Die begrenzte Paketansicht
   entschlüsselt kein TLS und liefert keinen umfassenden Angriffsschutz.
 - Die x64-Beta ist nicht signiert. SmartScreen kann warnen. Windows 11 mit

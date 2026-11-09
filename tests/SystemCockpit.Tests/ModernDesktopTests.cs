@@ -671,6 +671,9 @@ internal static class ModernDesktopTests
         {
             neonSidebar.Show(); neonMain.Show(); neonBoot.Show();
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            CheckUi(neonMain.FindName("CockpitDetails") is null &&
+                ((DataGrid)neonMain.FindName("DashboardProcesses")).IsVisible,
+                "Neon cockpit shows its original panels without an enclosing detail expander");
             var neonPanels = VisualElements(neonSidebar).OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
             CheckUi(neonPanels.Length > 0 && neonPanels.All(item =>
                 item.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#60152239")),
@@ -705,6 +708,12 @@ internal static class ModernDesktopTests
             try
             {
                 Capture(main, "dashboard-navigation");
+                main.Show();
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(main.FindName("CockpitDetails") is null && main.FindName("CockpitOverview") is null &&
+                    ((DataGrid)main.FindName("DashboardProcesses")).IsVisible &&
+                    ((ItemsControl)main.FindName("CockpitCoreOverview")).IsVisible,
+                    $"Modern {modeName} cockpit shows original panels without a summary or enclosing detail expander");
                 var pages = (TabControl)main.FindName("Pages");
                 pages.SelectedItem = pages.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Superadmin"));
                 Capture(main, "superadmin");
@@ -813,7 +822,7 @@ internal static class ModernDesktopTests
                 }
                 var chartCanvases = elements.OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).ToArray();
                 var chartPanels = elements.OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
-                if (name is "dashboard-navigation" or "xbar" or "gadget")
+                if (name is "dashboard-details" or "xbar" or "gadget")
                     CheckUi(chartCanvases.Length > 0 && chartPanels.Length > 0,
                         $"Modern {modeName} {name} assertions inspect actual realized chart canvases and panels");
                 foreach (var chart in chartCanvases)

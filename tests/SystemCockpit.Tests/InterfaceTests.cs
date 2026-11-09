@@ -55,7 +55,7 @@ internal static class InterfaceTests
         try
         {
             var settingsPanel = (StackPanel)((ScrollViewer)settingsWindow.Content).Content;
-            var modeControl = settingsPanel.Children.OfType<ComboBox>().First();
+            var modeControl = settingsPanel.Children.OfType<ComboBox>().Single(control => control.Name == "DisplayModeSelector");
             Check(savedModes.Count == 0 && Equals(modeControl.SelectedValue, "day"),
                 "Opening display settings reflects the saved mode without writing any settings");
             foreach (var value in new[] { "night", "auto", "day" }) modeControl.SelectedValue = value;
@@ -75,6 +75,35 @@ internal static class InterfaceTests
         try
         {
             host.Show(); Pump();
+            for (var index = 0; index < 30; index++)
+                main.Model.ApplyEvents(new(DateTimeOffset.Now, [], [],
+                    [new("0 / SYNTHETISCH C:", index % 8 * 12, index % 5 * 9, index % 10 * 10, index % 4),
+                     new("1 / SYNTHETISCH D:", index % 6 * 7, index % 9 * 5, null, index % 3)]));
+            var disks = (ItemsControl)main.FindName("CockpitDiskOverview");
+            disks.BringIntoView(); Pump();
+            Check(disks.Items.Count == 2 &&
+                ReferenceEquals(disks.ItemsSource, main.Model.DiskGraphs) &&
+                main.Model.DiskGraphs.All(disk => disk.Metrics.Length == 4),
+                "Cockpit binds one four-series card per physical disk");
+            Check(main.Model.DiskGraphs[1].Metrics[2].Value == "--",
+                "Grouped disk UI never substitutes unavailable activity");
+            var diskCard = (FrameworkElement)disks.ItemContainerGenerator.ContainerFromIndex(0);
+            Check(diskCard.ActualWidth >= 280 && diskCard.ActualHeight >= 180,
+                "Grouped disk card reserves readable space for all four labeled histories");
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-disks.png");
+            ((ScrollViewer)main.FindName("CockpitScroll")).ScrollToTop(); Pump();
+            Check(main.FindName("CockpitOverview") is null && main.FindName("CockpitDetails") is null,
+                "Cockpit has no replacement summary or enclosing detail expander");
+            Check(((DataGrid)main.FindName("DashboardProcesses")).IsVisible &&
+                ((ItemsControl)main.FindName("CockpitCoreOverview")).IsVisible &&
+                ((DataGrid)main.FindName("DashboardEvents")).IsVisible &&
+                main.FindName("SensorToggle") is CheckBox && main.FindName("HistoryToggle") is CheckBox,
+                "Original process, CPU-core, event and data-control views are directly reachable");
+            var cockpitScroll = (ScrollViewer)main.FindName("CockpitScroll");
+            host.Width = 1060; host.Height = 680; Pump();
+            Check(cockpitScroll.ViewportWidth > 0 && cockpitScroll.ExtentWidth <= cockpitScroll.ViewportWidth + 1,
+                "Original cockpit fits the minimum supported window width without horizontal overflow");
+            host.Width = 1440; host.Height = 940; Pump();
             var groups = (StackPanel)main.FindName("NavigationGroups");
             Check(groups.Children.OfType<Expander>().Select(g => (string)g.Header)
                 .SequenceEqual(new[] { "Übersicht", "Hardware", "Diagnose", "Wartung", "Verwaltung", "Hilfe" }),
@@ -91,7 +120,7 @@ internal static class InterfaceTests
             {
                 var modules = (TabControl)center.FindName("Modules");
                 Check(routes.Where(b => external.Contains((string)b.Tag)).All(b =>
-                    modules.Items.Cast<TabItem>().Any(t => Equals(t.Header, b.Tag))),
+                    modules.Items.Cast<TabItem>().Any(t => Equals(t.Tag, b.Tag))),
                     "Secondary routes reference real modules without executing commands");
             }
             finally { center.Close(); }

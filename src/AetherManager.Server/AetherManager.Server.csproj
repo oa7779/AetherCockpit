@@ -12,6 +12,7 @@
     <Copyright>Copyright (c) 2026 Olaf Weins</Copyright>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.92.0" />
     <ProjectReference Include="..\AetherOperations.Shared\AetherOperations.Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.14" />

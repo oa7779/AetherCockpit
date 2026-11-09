@@ -213,6 +213,13 @@ internal static class ScreensaverTests
             saver.Show();
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
             if (!saver.ResizePreview()) throw new InvalidOperationException("SCR preview failed to attach to parent");
+            var brand = FindVisual<SystemCockpit.Controls.AnimatedBrand>(saver)
+                ?? throw new InvalidOperationException("Saver animated brand missing.");
+            if (!brand.IsVisible || brand.MotionActive != SystemParameters.ClientAreaAnimation)
+                throw new InvalidOperationException("Saver brand must be visible and honor Windows animation permission.");
+            saver.Present(frame.Hardware, frame with { Motion = false }, "SYNTHETIC");
+            if (brand.MotionActive) throw new InvalidOperationException("Saver brand must stop when live-feed motion is disabled.");
+            saver.Present(frame.Hardware, frame, "SYNTHETISCHER VORSCHAUTEST / KEINE ECHTEN LIVE-MESSWERTE");
             var board = FindVisual<SystemCockpit.Controls.HardwareBoardView>(saver)
                 ?? throw new InvalidOperationException("Saver scene missing.");
             var canvas = (System.Windows.Controls.Canvas)board.FindName("BoardCanvas");

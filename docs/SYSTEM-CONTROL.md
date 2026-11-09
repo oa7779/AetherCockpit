@@ -141,6 +141,8 @@ gibt Systemänderungen nicht frei.
 | Netzwerk | Adapter, DNS, Verbindungskonfiguration, Resolverprüfung und bestätigtes Cacheleeren |
 | Überwachung | Ereignisse, Dienste, Aufgaben, Prozesse/Leistungsdaten, Firewallstatus und vorhandene ETW-Sitzungen |
 | Schutz und Energie | Defender-Status und Windows-Energiedaten |
+| Wiederherstellung | WinRE-Status, lokale Wiederherstellungspunkte, Windows-Recovery-Einstellungen und Updateprotokoll |
+| Deployment | Windows-Edition, Features, Capabilities, provisionierte Apps, Treiber und lokale Images; optionale Komponentenaktivierung und Treibersicherung |
 
 Ausgabe und Abbruch bleiben in der Konsole sichtbar. Die gemeinsame Ausführung
 begrenzt normale Ausgaben auf 65.536 Zeichen und läuft höchstens 30 Minuten.
@@ -153,6 +155,22 @@ werden nicht als unsichtbarer Dienstauftrag gestartet.
 Nicht jede Windows-Edition oder Version liefert dieselben Werkzeuge.
 Windows 11 ab 24H2 wird deshalb über tatsächliche Verfügbarkeit geprüft,
 nicht über eine erfundene vollständige Werkzeugliste.
+
+Der Befehlskatalog ergänzt die geführten Assistenten um lesende
+Wiederherstellungs- und Deploymentabfragen. Ein Wiederherstellungspunkt kann
+über die PowerShell-Konsole angefordert werden; Computerschutz und Windows-
+Grenzen gelten weiter. Die Recovery-Einstellungen öffnen Microsofts eigenen
+Windows-Ablauf. Ein Zurücksetzen oder Cloud-Download wird nicht im Hintergrund
+gestartet und kann Apps oder persönliche Daten entfernen. Vorher sichern und
+die Windows-Bildschirme vollständig prüfen.
+
+Deployment-Befehle inventarisieren Features, Capabilities, Treiber und WIM-
+Images oder aktivieren explizit ausgewählte Komponenten. Image-Anwendung,
+Partitionierung und Betriebssystemverteilung bleiben bewusste Administrator-
+abläufe; AETHER startet keinen unbeaufsichtigten Reset, keine Installation
+von ADK-Komponenten und keinen Flotten-Rollout. Intune-Paketierung und
+Verteilung sind getrennte Schritte, siehe
+[Intune-Deployment](INTUNE-DEPLOYMENT.md).
 
 Treiberangebote und installierte Versionen getrennt vergleichen. Neue Treiber
 gezielt über Windows Update oder den Gerätehersteller auswählen; das Treiberdatum
@@ -213,14 +231,14 @@ wird nicht als aktuelle GPU-Bewertung ausgegeben.
 `WinSAT.exe formal` startet nur nach Last-/Dateischreibfreigabe.
 Es ist ein Benchmark, kein Bestandteil der Hintergrunddiagnose.
 
-## Cleaner und große Dateien
+## Cache-Bereinigung und große Dateien
 
 **Große Dateien finden** scannt einen gewählten Ordner lesend:
 höchstens 100.000 Einträge, 32 Ebenen und 1000 größte Treffer.
 Links/Junctions werden nicht verfolgt; Fehler und Limits stehen im Ergebnis.
 CSV enthält Pfade. **Im Explorer markieren** öffnet nicht die Datei.
 
-Der Cleaner verwendet feste Temp-, Browser-, App-, CrashDump- und
+Die Cache-Bereinigung verwendet feste Temp-, Browser-, App-, CrashDump- und
 WER-Cachekategorien. Prefetch braucht eine separate Freigabe.
 Nicht vorhandene Kategorien liefern keine erfundenen Pfade.
 Cookies, Lesezeichen, Profileinstellungen, Downloads, Spiele und

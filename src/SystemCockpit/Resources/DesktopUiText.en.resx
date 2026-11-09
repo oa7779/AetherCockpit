@@ -327,25 +327,29 @@ Otherwise the software exits.</value></data>
   <data name="Navigation.Maintenance"><value>Maintenance</value></data>
   <data name="Navigation.Administration"><value>Administration</value></data>
   <data name="Navigation.Help"><value>Help</value></data>
+  <data name="Navigation.Cockpit"><value>System overview</value></data>
   <data name="Navigation.Processes"><value>Processes / Performance</value></data>
   <data name="Navigation.Board"><value>Mainframe / Board</value></data>
   <data name="Navigation.Sensors"><value>Sensors</value></data>
   <data name="Navigation.Drives"><value>Drives</value></data>
+  <data name="Navigation.Smart"><value>SMART diagnostics ↗</value></data>
   <data name="Navigation.WindowsDiagnostics"><value>Windows diagnostics</value></data>
   <data name="Navigation.Protection"><value>Protection status</value></data>
   <data name="Navigation.Events"><value>Events</value></data>
-  <data name="Navigation.NetworkTests"><value>Network / Tests ↗</value></data>
-  <data name="Navigation.Measurements"><value>Measurement analysis</value></data>
-  <data name="Navigation.Plans"><value>Assistants / Plans</value></data>
+  <data name="Navigation.NetworkTests"><value>Network &amp; connections ↗</value></data>
+  <data name="Navigation.Measurements"><value>Analyze measurements</value></data>
+  <data name="Navigation.LogsGaming"><value>Measurement logs &amp; frame times ↗</value></data>
+  <data name="Navigation.Cleaner"><value>Cache cleanup</value></data>
+  <data name="Navigation.Plans"><value>Maintenance plans &amp; diagnostics</value></data>
   <data name="Navigation.WindowsTools"><value>Windows tools ↗</value></data>
-  <data name="Navigation.Packages"><value>Packages / Updates ↗</value></data>
+  <data name="Navigation.Packages"><value>Software packages &amp; updates ↗</value></data>
   <data name="Navigation.SystemAdministration"><value>System administration</value></data>
-  <data name="Navigation.Startup"><value>Startup ↗</value></data>
-  <data name="Navigation.Jobs"><value>Jobs ↗</value></data>
-  <data name="Navigation.Traces"><value>Folder traces ↗</value></data>
-  <data name="Navigation.Keys"><value>Keys ↗</value></data>
-  <data name="Navigation.HelpSearch"><value>Guide / Search</value></data>
-  <data name="Navigation.Parameters"><value>Parameters / Server ↗</value></data>
+  <data name="Navigation.Startup"><value>Startup apps ↗</value></data>
+  <data name="Navigation.Jobs"><value>Job status ↗</value></data>
+  <data name="Navigation.Traces"><value>Explorer history ↗</value></data>
+  <data name="Navigation.Keys"><value>Windows and Wi-Fi keys ↗</value></data>
+  <data name="Navigation.HelpSearch"><value>Help &amp; find a feature</value></data>
+  <data name="Navigation.Parameters"><value>Settings / Server ↗</value></data>
   <data name="Navigation.ExternalTooltip"><value>Opens the module in System Control; does not start an action.</value></data>
   <data name="Navigation.InternalTooltip"><value>Opens the area in the main window; does not start an action.</value></data>
   <data name="Module.Taskmanager"><value>Task manager</value></data>
@@ -358,13 +362,14 @@ Otherwise the software exits.</value></data>
   <data name="Module.Ereignisse"><value>Events</value></data>
   <data name="Module.Hilfe"><value>Help</value></data>
   <data name="Module.Netzwerk"><value>Network</value></data>
-  <data name="Module.Pakete"><value>Packages</value></data>
-  <data name="Module.Auftraege"><value>Jobs</value></data>
-  <data name="Module.Wartung"><value>Maintenance</value></data>
-  <data name="Module.Autostart"><value>Startup</value></data>
-  <data name="Module.Spuren"><value>Traces</value></data>
+  <data name="Module.Smart"><value>SMART diagnostics</value></data>
+  <data name="Module.Pakete"><value>Software packages</value></data>
+  <data name="Module.Auftraege"><value>Job status</value></data>
+  <data name="Module.Wartung"><value>Windows tools</value></data>
+  <data name="Module.Autostart"><value>Startup apps</value></data>
+  <data name="Module.Spuren"><value>Explorer history</value></data>
   <data name="Module.Einstellungen"><value>Settings</value></data>
-  <data name="Module.Schluessel"><value>Keys</value></data>
+  <data name="Module.Schluessel"><value>Windows and Wi-Fi keys</value></data>
   <data name="ControlCenter.Trail"><value>SYSTEM CONTROL  ▸  {0}</value></data>
   <data name="ControlCenter.BusyNavigation"><value>Wait for the current job to finish before changing modules.</value></data>
   <data name="ControlCenter.BusyCatalog"><value>Wait for the current job to finish before changing the catalog.</value></data>
@@ -547,6 +552,16 @@ Run now?</value></data>
   <data name="Main.Areas"><value>TASKS / AREAS</value></data>
   <data name="Main.Find"><value>FIND A FUNCTION</value></data>
   <data name="Main.FindTip"><value>Workspace with search and guided workflows (Ctrl+K). Opens areas only; does not start an action.</value></data>
+  <data name="Main.OverviewHeading"><value>SYSTEM STATUS / COCKPIT</value></data>
+  <data name="Main.OverviewDescription"><value>Windows check status, reported findings and current key readings at a glance.</value></data>
+  <data name="Main.WindowsChecks"><value>WINDOWS CHECKS</value></data>
+  <data name="Main.LastSystemRead"><value>LAST SYSTEM QUERY</value></data>
+  <data name="Main.OverviewMetrics"><value>LIVE KEY READINGS</value></data>
+  <data name="Main.OverviewFindings"><value>FINDINGS / CHECK NOTES</value></data>
+  <data name="Main.OverviewFindingsNotice"><value>Reported warnings, errors and unavailable check results appear here.</value></data>
+  <data name="Main.OverviewShortcuts"><value>QUICK ACCESS</value></data>
+  <data name="Main.OverviewDetails"><value>More live readings and detail views</value></data>
+  <data name="Main.OverviewDetailsTip"><value>Expand CPU cores, disks, sensors, process details, events and data recording.</value></data>
   <data name="Main.Desktop"><value>Appearance / Desktop</value></data>
   <data name="Main.DesktopTip"><value>Configure day/night mode, opacity, gadgets and background diagnostics.</value></data>
   <data name="Main.Motion"><value>Scanner animation</value></data>
@@ -630,6 +645,7 @@ Run now?</value></data>
   <data name="OptionalTool.AdkName"><value>Windows ADK / DISM tools</value></data>
   <data name="Metric.CpuLoad"><value>CPU / LOAD</value></data>
   <data name="Metric.RamUsage"><value>RAM / USAGE</value></data>
+  <data name="Metric.GpuCoreLoad"><value>GPU / CORE LOAD</value></data>
   <data name="Metric.Download"><value>NETWORK / DOWNLOAD</value></data>
   <data name="Metric.CpuTemperature"><value>CPU / TEMPERATURE</value></data>
   <data name="Metric.GpuTemperature"><value>GPU / TEMPERATURE</value></data>
@@ -872,7 +888,7 @@ Scale 0 to {1:0.##} {2}; not a measured limit.</value></data>
   <data name="Layout.Certificates"><value>Check certificates / root CAs</value></data>
   <data name="Layout.StartupEntry"><value>Startup entry</value></data>
   <data name="Layout.DisableStartup"><value>Disable selected startup entry</value></data>
-  <data name="Layout.ShellbagsHeading"><value>Shellbag analysis / Explorer folder traces (read-only)</value></data>
+  <data name="Layout.ShellbagsHeading"><value>Explorer history (read-only)</value></data>
   <data name="Layout.ShellbagsNotice"><value>Windows remembers view settings of visited folders in the registry (BagMRU), including deleted folders. This analysis only reads HKCU. Name decoding is best effort: undecodable elements are explicitly shown as unknown, never invented. AETHER intentionally offers no Shellbag deletion.</value></data>
   <data name="Layout.Reading"><value>READING</value></data>
   <data name="Layout.PresentMonNotice"><value>External PresentMon console required; no built-in service. ETW capture for the selected process. CSV analysis per swapchain: AVG FPS, P99 frame time and 1% low. Different rendering chains are not mixed.</value></data>
@@ -1003,6 +1019,7 @@ JSON / CAPABILITIES / LOGS:
   <data name="Control.SmartSaved"><value>SMART JSON saved. The file may contain local serial numbers; review before sharing.</value></data>
   <data name="Safety.Ping"><value>Sends ICMP to {0}. Host names use DNS. Only your own/authorized targets.</value></data>
   <data name="Safety.RouterPing"><value>Sends ICMP to the locally reported default gateway.</value></data>
+  <data name="Safety.WakeOnLan"><value>Sends a Wake-on-LAN magic packet for {0} as a local-network broadcast to UDP port 9. Only use with your own/authorized devices. Packet transmission does not confirm that the device wakes.</value></data>
   <data name="Control.SpeedSize"><value>Speedtest: specify an integer test size from {0} to {1} MiB.</value></data>
   <data name="Safety.SpeedTest" xml:space="preserve"><value>Download {0} MiB of test data from https://{1} now.
 Your IP address becomes visible to the measurement target; traffic counts on metered connections.
@@ -1161,6 +1178,10 @@ Current administrator account / Negotiate. No changes or WinRM setup. Collected 
   <data name="Layout.SmartHeading"><value>SMART / ATA / NVMe / error and self-test logs</value></data>
   <data name="Layout.ReadSmartLogs"><value>Read diagnostics / capabilities / logs</value></data>
   <data name="Layout.NetworkHeading"><value>LAN / Wi-Fi / connection control</value></data>
+  <data name="Layout.WakeOnLanHeading"><value>WAKE-ON-LAN / WAKE A DEVICE ON THE LOCAL NETWORK</value></data>
+  <data name="Layout.WakeOnLanMacTip"><value>Target MAC address, for example 00:11:22:33:44:55</value></data>
+  <data name="Layout.WakeOnLanSend"><value>Send magic packet</value></data>
+  <data name="Layout.WakeOnLanNotice"><value>UDP broadcast on port 9. BIOS/UEFI, network adapter and power state must support Wake-on-LAN; successful transmission does not prove wake-up.</value></data>
   <data name="Layout.SpeedNotice"><value>Download throughput of one HTTPS connection to speed.cloudflare.com; approval required, no upload test.</value></data>
   <data name="Layout.ReadArp"><value>Read ARP / MAC</value></data>
   <data name="Layout.OuiManufacturer"><value>OUI MANUFACTURER</value></data>
@@ -1280,7 +1301,7 @@ Current administrator account / Negotiate. No changes or WinRM setup. Collected 
   <data name="Layout.GodMode"><value>GodMode folder</value></data>
   <data name="Layout.WindowsToolsNotice"><value>Opens original Windows tools. Changes there are under your control. No background repairs or protection disabling.</value></data>
   <data name="Layout.SecurityTelemetry"><value>Security &amp; Windows telemetry</value></data>
-  <data name="Layout.CleanerHeading"><value>Cleaner / preview before control</value></data>
+  <data name="Layout.CleanerHeading"><value>Review and clean cache files</value></data>
   <data name="Layout.FindLargeFiles"><value>Find large files / read-only</value></data>
   <data name="Layout.UncheckAll"><value>Uncheck all</value></data>
   <data name="Layout.ModifiedUtc"><value>MODIFIED (UTC)</value></data>
@@ -1374,6 +1395,9 @@ Uninstallation permanently removes applications.</value></data>
   <data name="Center.LanResult" xml:space="preserve"><value>{0} replies/query errors in network {1}. Nonresponding devices cannot be ruled out.
 </value></data>
   <data name="Center.LanConsent" xml:space="preserve"><value>Probe private network {0} with up to 254 ICMP targets. Only with authorization in your own network.</value></data>
+  <data name="Center.WakeTitle" xml:space="preserve"><value>Wake-on-LAN</value></data>
+  <data name="Center.WakeSent" xml:space="preserve"><value>Sent {0} bytes as a broadcast for {1} to UDP port 9. There is no delivery confirmation.</value></data>
+  <data name="Center.WakeInvalid" xml:space="preserve"><value>Wake-on-LAN not started: {0}</value></data>
   <data name="Center.AutoLanPrevious" xml:space="preserve"><value>Let the previous automatic scan finish first.</value></data>
   <data name="Center.AutoLanConsent" xml:space="preserve"><value>Actively probe {0} using ICMP every 60 seconds while this window is open? Only in your own/authorized network. Stop at any time by cancelling or switching it off.</value></data>
   <data name="Center.AutoLanTitle" xml:space="preserve"><value>Approve recurring LAN scan</value></data>
@@ -1558,6 +1582,7 @@ No automatic elevation or changes to Defender or driver blocks. Enable sensor ac
   <data name="Ui.ListChannels" xml:space="preserve"><value>List channels</value></data>
   <data name="Ui.ConsoleCommand" xml:space="preserve"><value>Console command</value></data>
   <data name="Ui.LanNetwork" xml:space="preserve"><value>LAN network</value></data>
+  <data name="Ui.WakeOnLanMac" xml:space="preserve"><value>Target MAC address for Wake-on-LAN</value></data>
   <data name="Ui.LiveCharts" xml:space="preserve"><value>LIVE CHARTS</value></data>
   <data name="Ui.OpenBackgroundReport" xml:space="preserve"><value>Open latest background report</value></data>
   <data name="Ui.LogSeries" xml:space="preserve"><value>Log series</value></data>
@@ -1617,7 +1642,7 @@ No automatic elevation or changes to Defender or driver blocks. Enable sensor ac
   <data name="Ui.SensorBoot" xml:space="preserve"><value>Hardware sensors / initialized at boot</value></data>
   <data name="Ui.HistoryNotice" xml:space="preserve"><value>Live curves: up to 90 measurement points. Configurable JSONL interval (default 5s), max. 7 files / 16 MiB per day. Recording is off by default.</value></data>
   <data name="Ui.LogViewerTab" xml:space="preserve"><value>Log viewer / gaming / comparison</value></data>
-  <data name="Ui.LogsTab" xml:space="preserve"><value>Logs / gaming</value></data>
+  <data name="Ui.LogsTab" xml:space="preserve"><value>Measurement logs &amp; frame times</value></data>
   <data name="Ui.StatisticsHeading" xml:space="preserve"><value>Measurement analysis / MIN - MAX - AVG</value></data>
   <data name="Ui.LogViewerHeading" xml:space="preserve"><value>Measurement log viewer / comparison / frame telemetry</value></data>
   <data name="Ui.NetworkHeading" xml:space="preserve"><value>NETWORK / RX AND TX PER ACTIVE ADAPTER</value></data>

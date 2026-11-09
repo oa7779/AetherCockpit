@@ -8,13 +8,13 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 | Bereich | Umfang |
 |---|---|
-| Cockpit | CPU-Gesamtlast und logische Kerne, RAM/Commit/Cache, GPU, Netzwerkdurchsatz, Temperaturen und physische Datenträgerzähler |
+| Cockpit | Übersicht mit Windows-Prüfstatus, gemeldeten Auffälligkeiten, CPU-/RAM-/GPU-/Download-Kernwerten und Schnellzugriffen; ausklappbare Live-Details zu Kernen, Sensoren, Datenträgern, Prozessen, Ereignissen und Aufzeichnung |
 | Prozesse | Such- und sortierbare Tabelle, Intervall-CPU, Working Set, Threads, Handles, I/O und identitätsgesicherte Details |
 | Sensor-Matrix | Alle gemeldeten Sensorkanäle, Filter, Verlaufskurven nach Hardware und Einheit, gekennzeichnete Grenzwerte |
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
 | Desktop | Sechs xBar-Diagrammgruppen, Gadgets mit Position und Deckkraft, Tray, Temperatur-Overlay und Multi-Monitor-Bildschirmschoner |
-| Oberfläche | Retro-Neon als Standard, optionale Skins und Windows Modern nach Windows-Hell-/Dunkelwahl, unabhängige Sekundenanzeige, Animation ein/aus, aufgabenbezogene Navigation, Arbeitsplatzsuche und lokale Modulhilfe |
+| Oberfläche | Retro-Neon als Standard, optionale Skins und Windows Modern nach Windows-Hell-/Dunkelwahl, unabhängige Sekundenanzeige, Animation ein/aus, aufgabenbezogene Navigation mit handlungsbezogenen Modulnamen, Arbeitsplatzsuche und lokale Modulhilfe |
 | Neon-Effekte | Verstärkte Halos, Pulslicht und Energiebewegung in Schoner, Hauptfenster und Dashboard; Bewegung abschaltbar |
 
 Windows Modern verwendet ein animiertes **System-Schema**, neutrale Diagramme,
@@ -36,7 +36,10 @@ entsprechend gekennzeichnet. [Messwerte richtig lesen](HARDWARE-SENSORS.md).
 - Ereignisanzeige mit Kanalwahl, Zeitraum, Stufenfilter, Volltext und XML;
   begrenzter System-/Application-Ereignismonitor.
 - Windows-Assistenten für Systemdateien/Komponenten, Updatezustand,
-  Netzwerk sowie Geräte/Treiber.
+  Netzwerk, Geräte/Treiber und WinRE/Systemwiederherstellung.
+- PowerShell-Katalog für Windows-Features und Capabilities, Treibersicherung,
+  lokale Images, Wiederherstellungspunkte und Recovery-Einstellungen;
+  Änderungen sind als solche gekennzeichnet.
 - Einschaltbare 30-Minuten-Hintergrunddiagnose mit lokalem Bericht und
   Tray-Hinweisen auf neue Befunde.
 - Zertifikatsprüfung ohne Online-Sperrprüfung und lesende Shellbag-Auswertung.
@@ -61,18 +64,21 @@ und einzeln bestätigt. [Diagnose und Wartung](SYSTEM-CONTROL.md).
 - Durchsuchbarer Windows-Befehlskatalog und freie PowerShell-Administratorkonsole.
 - 25 feste Windows-Werkzeugaktionen mit Verfügbarkeitsprüfung und Konsolenausgabe;
   optionale Microsoft-Werkzeuge mit lokalen Start-/Downloadangeboten.
-- Cache-Cleaner mit Kategorie-, Datei- und Löschvorschau; große Dateien
+- Cache-Bereinigung mit Kategorie-, Datei- und Löschvorschau; große Dateien
   separat und lesend finden.
 
 Rücknahme ist nur für unterstützte Aktionen möglich. Die freie Konsole
 startet Befehle unmittelbar; geführte Aktionen behalten ihre Bestätigungen.
-Der Cleaner löscht endgültig ohne Papierkorb.
+Die Cache-Bereinigung löscht endgültig ohne Papierkorb.
 
 ## Netzwerk und Geräteverwaltung
 
 - Adapter-/IP-/TCP-Diagnose, Ziel- und Router-Ping, WLAN-/Bluetooth-Status,
   Captive-Portal-Probe und Download-Durchsatztest nach Freigabe.
 - Privater IPv4-LAN-Scan mit ARP/MAC und optional importierter OUI-Datenbank.
+- Bestätigtes Wake-on-LAN-Magic-Packet für eine MAC-Adresse im lokalen Netz.
+- Bestätigtes Wake-on-LAN-Magic-Packet für eine MAC-Adresse im lokalen Netz;
+  UDP-Broadcast, ohne Empfangsbestätigung.
 - Separat aktivierbare TCP-Verbindungszählung.
 - Npcap-Mitschnitt in PCAP, begrenzte Live-Metadaten, kombinierte Filter,
   CSV und regelbasierte Warnungen.
@@ -96,4 +102,5 @@ Einstellungen, Freigaben und Protokolle.
 
 Zertifikate, Netzwerkerreichbarkeit und Firewall werden vom Administrator
 eingerichtet. M365-/Copilot-Anzeigen prüfen lokale Voraussetzungen,
-keine Tenant-Daten oder Lizenzen.
+keine Tenant-Daten oder Lizenzen. Microsoft-Graph-/Intune-Autopatch-API-
+Anbindung ist noch nicht integriert.

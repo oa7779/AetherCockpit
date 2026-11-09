@@ -547,6 +547,29 @@ public partial class ControlCenterWindow : Window
         }, DesktopUiText.Format("Center.LanConsent", cidr));
     }
 
+    private async void WakeOnLanClicked(object sender, RoutedEventArgs e)
+    {
+        var macAddress = WakeMacAddress.Text.Trim();
+        try { _ = WakeOnLan.BuildMagicPacket(macAddress); }
+        catch (ArgumentException ex)
+        {
+            Status.Text = DesktopUiText.Format("Center.WakeInvalid", ex.Message);
+            return;
+        }
+
+        await RunAsync(DesktopUiText.Get("Center.WakeTitle"), async token =>
+        {
+            var sent = await WakeOnLan.SendAsync(macAddress, WakeOnLan.DefaultPort, token);
+            return DesktopUiText.Format("Center.WakeSent", sent, macAddress);
+        }, DesktopUiText.Format("Safety.WakeOnLan", macAddress));
+    }
+
+    private void LanDeviceSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (LanGrid.SelectedItem is LanDevice { Mac.Length: > 0 } device)
+            WakeMacAddress.Text = device.Mac;
+    }
+
     private async void AutoLanChanged(object sender, RoutedEventArgs e)
     {
         if (!IsLoaded || _closing) return;

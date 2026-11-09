@@ -96,6 +96,15 @@ builder.Services.AddRateLimiter(options =>
             QueueLimit = 0,
             AutoReplenishment = true
         }));
+    options.AddPolicy("cloud", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 30,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+            AutoReplenishment = true
+        }));
     options.AddPolicy("device-management", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions
@@ -125,6 +134,12 @@ builder.Services.AddHostedService(services => services.GetRequiredService<Server
 builder.Services.AddSingleton<IFleetService, FleetService>();
 builder.Services.AddSingleton<AdminTokenFilter>();
 builder.Services.AddSingleton<DeviceTokenFilter>();
+builder.Services.AddSingleton<IGraphTokenProvider, MicrosoftGraphTokenProvider>();
+builder.Services.AddHttpClient<IMicrosoftGraphService, MicrosoftGraphService>(client =>
+{
+    client.BaseAddress = new Uri("https://graph.microsoft.com/");
+    client.Timeout = TimeSpan.FromSeconds(20);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddHostedService<ReportRetentionWorker>();
 
 var app = builder.Build();
@@ -149,6 +164,7 @@ app.MapManagerEndpoints();
 app.MapManagementEndpoints();
 app.MapAccountEndpoints();
 app.MapFleetEndpoints();
+app.MapGraphEndpoints();
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     var store = app.Services.GetRequiredService<IManagerStore>();

@@ -560,8 +560,11 @@ internal static class HardwareBoardTests
             throw new InvalidOperationException("Component labels must not mask or cut off the horizon peaks.");
         if (canvas.Children.OfType<Polyline>().Count(p => Equals(p.Tag, "neon-halo:board-neon-rim")) != 2)
             throw new InvalidOperationException("Mainboard perimeter requires neon cyan glow.");
-        if (Descendants(view).OfType<UIElement>().Any(e => e.Effect is not null))
-            throw new InvalidOperationException("Animated scene must use vector glow, not per-frame offscreen blur effects.");
+        var bloom = canvas.Children.OfType<Image>().SingleOrDefault(image => Equals(image.Tag, "board-neon-bloom"));
+        if (bloom is not { IsHitTestVisible: false, CacheMode: BitmapCache,
+                Effect: System.Windows.Media.Effects.BlurEffect { Radius: >= 8 }, Source: DrawingImage { Drawing.IsFrozen: true } } ||
+            Descendants(view).OfType<UIElement>().Any(e => e.Effect is not null && !ReferenceEquals(e, bloom)))
+            throw new InvalidOperationException("Board bloom must use one cached, frozen stroke layer without blurring labels or animated components.");
         if (!skyGradient.GradientStops.Any(s => s.HasAnimatedProperties) && view.SceneAnimating)
             throw new InvalidOperationException("Enabled scene requires moving sky gradients, not a static sky.");
         return 8;

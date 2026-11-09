@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Windows.Media.Effects;
 
 namespace SystemCockpit.Controls;
 
@@ -68,17 +69,22 @@ public static class FrameGlow
         {
             Layer = layer;
             IsHitTestVisible = false;
-            var brush = new LinearGradientBrush(Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45);
+            Brush brush = element is Border { BorderBrush: { } rim }
+                ? rim.CloneCurrentValue()
+                : new LinearGradientBrush(Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45);
             brush.Freeze();
             var corners = element is Border border ? border.CornerRadius : new CornerRadius(12);
-            // Layered strokes give a halo without blurring/rasterizing the panel's text and children.
-            foreach (var (width, opacity) in new[] { (10d, .10), (5d, .22), (1.5, .85) })
+            // Only the empty outline is blurred; the adorned content stays sharp.
+            foreach (var (width, opacity) in new[] { (12d, .45), (5d, .48), (1.5, .95) })
                 _rims.Children.Add(new Border { BorderBrush = brush, BorderThickness = new Thickness(width),
-                    CornerRadius = corners, Opacity = opacity, Margin = new Thickness(-width / 2) });
+                    CornerRadius = corners, Opacity = opacity, Margin = new Thickness(-width / 2),
+                    Effect = width > 5 ? new BlurEffect { Radius = 14, RenderingBias = RenderingBias.Performance } : null,
+                    CacheMode = width > 5 ? new BitmapCache() : null });
             _trail = new Rectangle
             {
                 Stroke = brush, StrokeThickness = 5, StrokeDashArray = new DoubleCollection([8, 32]),
-                RadiusX = 12, RadiusY = 12, Opacity = .25, Visibility = Visibility.Hidden
+                RadiusX = 12, RadiusY = 12, Opacity = .55, Visibility = Visibility.Hidden,
+                Effect = new BlurEffect { Radius = 9, RenderingBias = RenderingBias.Performance }
             };
             _core = new Rectangle
             {
@@ -109,7 +115,7 @@ public static class FrameGlow
             _core.BeginAnimation(Shape.StrokeDashOffsetProperty, moving
                 ? new DoubleAnimation(0, -133.3333333333, TimeSpan.FromSeconds(5)) { RepeatBehavior = RepeatBehavior.Forever } : null);
             _trail.BeginAnimation(OpacityProperty, moving
-                ? new DoubleAnimation(.18, .42, TimeSpan.FromSeconds(2.5)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
+                ? new DoubleAnimation(.35, .8, TimeSpan.FromSeconds(2.5)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever } : null);
         }
         public void Stop()
         {

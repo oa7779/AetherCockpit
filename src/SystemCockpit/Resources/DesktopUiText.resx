@@ -328,25 +328,29 @@ und mit ihnen einverstanden zu sein. Andernfalls endet die Software.</value></da
   <data name="Navigation.Maintenance"><value>Wartung</value></data>
   <data name="Navigation.Administration"><value>Verwaltung</value></data>
   <data name="Navigation.Help"><value>Hilfe</value></data>
+  <data name="Navigation.Cockpit"><value>Systemübersicht</value></data>
   <data name="Navigation.Processes"><value>Prozesse / Leistung</value></data>
   <data name="Navigation.Board"><value>Mainframe / Board</value></data>
   <data name="Navigation.Sensors"><value>Sensoren</value></data>
   <data name="Navigation.Drives"><value>Laufwerke</value></data>
+  <data name="Navigation.Smart"><value>SMART-Diagnose ↗</value></data>
   <data name="Navigation.WindowsDiagnostics"><value>Windows-Diagnose</value></data>
   <data name="Navigation.Protection"><value>Schutzstatus</value></data>
   <data name="Navigation.Events"><value>Ereignisse</value></data>
-  <data name="Navigation.NetworkTests"><value>Netzwerk / Tests ↗</value></data>
-  <data name="Navigation.Measurements"><value>Messauswertung</value></data>
-  <data name="Navigation.Plans"><value>Assistenten / Pläne</value></data>
+  <data name="Navigation.NetworkTests"><value>Netzwerk &amp; Verbindungen ↗</value></data>
+  <data name="Navigation.Measurements"><value>Messungen auswerten</value></data>
+  <data name="Navigation.LogsGaming"><value>Messlogs &amp; Framezeiten ↗</value></data>
+  <data name="Navigation.Cleaner"><value>Cache-Bereinigung</value></data>
+  <data name="Navigation.Plans"><value>Wartungspläne &amp; Diagnose</value></data>
   <data name="Navigation.WindowsTools"><value>Windows-Werkzeuge ↗</value></data>
-  <data name="Navigation.Packages"><value>Pakete / Updates ↗</value></data>
+  <data name="Navigation.Packages"><value>Softwarepakete &amp; Updates ↗</value></data>
   <data name="Navigation.SystemAdministration"><value>Systemverwaltung</value></data>
-  <data name="Navigation.Startup"><value>Autostart ↗</value></data>
-  <data name="Navigation.Jobs"><value>Aufträge ↗</value></data>
-  <data name="Navigation.Traces"><value>Ordnerspuren ↗</value></data>
-  <data name="Navigation.Keys"><value>Schlüssel ↗</value></data>
-  <data name="Navigation.HelpSearch"><value>Anleitung / Suche</value></data>
-  <data name="Navigation.Parameters"><value>Parameter / Server ↗</value></data>
+  <data name="Navigation.Startup"><value>Autostart-Programme ↗</value></data>
+  <data name="Navigation.Jobs"><value>Auftragsstatus ↗</value></data>
+  <data name="Navigation.Traces"><value>Explorer-Verlauf ↗</value></data>
+  <data name="Navigation.Keys"><value>Windows- und WLAN-Schlüssel ↗</value></data>
+  <data name="Navigation.HelpSearch"><value>Hilfe &amp; Funktion finden</value></data>
+  <data name="Navigation.Parameters"><value>Einstellungen / Server ↗</value></data>
   <data name="Navigation.ExternalTooltip"><value>Öffnet das Modul in der Systemkontrolle; startet keine Aktion.</value></data>
   <data name="Navigation.InternalTooltip"><value>Öffnet den Bereich im Hauptfenster; startet keine Aktion.</value></data>
   <data name="Module.Taskmanager"><value>Taskmanager</value></data>
@@ -359,13 +363,14 @@ und mit ihnen einverstanden zu sein. Andernfalls endet die Software.</value></da
   <data name="Module.Ereignisse"><value>Ereignisse</value></data>
   <data name="Module.Hilfe"><value>Hilfe</value></data>
   <data name="Module.Netzwerk"><value>Netzwerk</value></data>
-  <data name="Module.Pakete"><value>Pakete</value></data>
-  <data name="Module.Auftraege"><value>Auftraege</value></data>
-  <data name="Module.Wartung"><value>Wartung</value></data>
-  <data name="Module.Autostart"><value>Autostart</value></data>
-  <data name="Module.Spuren"><value>Spuren</value></data>
+  <data name="Module.Smart"><value>SMART-Diagnose</value></data>
+  <data name="Module.Pakete"><value>Softwarepakete</value></data>
+  <data name="Module.Auftraege"><value>Auftragsstatus</value></data>
+  <data name="Module.Wartung"><value>Windows-Werkzeuge</value></data>
+  <data name="Module.Autostart"><value>Autostart-Programme</value></data>
+  <data name="Module.Spuren"><value>Explorer-Verlauf</value></data>
   <data name="Module.Einstellungen"><value>Einstellungen</value></data>
-  <data name="Module.Schluessel"><value>Schluessel</value></data>
+  <data name="Module.Schluessel"><value>Windows- und WLAN-Schlüssel</value></data>
   <data name="ControlCenter.Trail"><value>SYSTEMKONTROLLE  ▸  {0}</value></data>
   <data name="ControlCenter.BusyNavigation"><value>Modulwechsel erst nach Ende des laufenden Auftrags.</value></data>
   <data name="ControlCenter.BusyCatalog"><value>Katalogwechsel erst nach Ende des laufenden Auftrags.</value></data>
@@ -548,6 +553,16 @@ Jetzt ausfuehren?</value></data>
   <data name="Main.Areas"><value>AUFGABEN / BEREICHE</value></data>
   <data name="Main.Find"><value>FUNKTION FINDEN</value></data>
   <data name="Main.FindTip"><value>Arbeitsplatz mit Suchfunktion und gefuehrten Arbeitsablaeufen (Strg+K). Oeffnet nur Bereiche, startet keine Aktion.</value></data>
+  <data name="Main.OverviewHeading"><value>SYSTEMSTATUS / COCKPIT</value></data>
+  <data name="Main.OverviewDescription"><value>Windows-Prüfstatus, gemeldete Auffälligkeiten und aktuelle Kernwerte auf einen Blick.</value></data>
+  <data name="Main.WindowsChecks"><value>WINDOWS-PRÜFUNGEN</value></data>
+  <data name="Main.LastSystemRead"><value>LETZTE SYSTEMABFRAGE</value></data>
+  <data name="Main.OverviewMetrics"><value>LIVE-KERNWERTE</value></data>
+  <data name="Main.OverviewFindings"><value>AUFFÄLLIGKEITEN / PRÜFHINWEISE</value></data>
+  <data name="Main.OverviewFindingsNotice"><value>Hier erscheinen gemeldete Warnungen, Fehler und nicht verfügbare Prüfergebnisse.</value></data>
+  <data name="Main.OverviewShortcuts"><value>SCHNELLZUGRIFFE</value></data>
+  <data name="Main.OverviewDetails"><value>Weitere Live-Messwerte und Detailansichten</value></data>
+  <data name="Main.OverviewDetailsTip"><value>CPU-Kerne, Datenträger, Sensoren, Prozessdetails, Ereignisse und Datenerfassung ausklappen.</value></data>
   <data name="Main.Desktop"><value>Darstellung / Desktop</value></data>
   <data name="Main.DesktopTip"><value>Tag-/Nachtmodus, Transparenz, Gadgets und Hintergrunddiagnose einstellen.</value></data>
   <data name="Main.Motion"><value>Scanner-Animation</value></data>
@@ -631,6 +646,7 @@ Jetzt ausfuehren?</value></data>
   <data name="OptionalTool.AdkName"><value>Windows ADK / DISM-Werkzeuge</value></data>
   <data name="Metric.CpuLoad"><value>CPU / AUSLASTUNG</value></data>
   <data name="Metric.RamUsage"><value>RAM / BELEGUNG</value></data>
+  <data name="Metric.GpuCoreLoad"><value>GPU / KERNAUSLASTUNG</value></data>
   <data name="Metric.Download"><value>NETZ / DOWNLOAD</value></data>
   <data name="Metric.CpuTemperature"><value>CPU / TEMPERATUR</value></data>
   <data name="Metric.GpuTemperature"><value>GPU / TEMPERATUR</value></data>
@@ -873,7 +889,7 @@ Skala 0 bis {1:0.##} {2}; keine gemessene Grenze.</value></data>
   <data name="Layout.Certificates"><value>Zertifikate / Root-CAs pruefen</value></data>
   <data name="Layout.StartupEntry"><value>Autostarteintrag</value></data>
   <data name="Layout.DisableStartup"><value>Ausgewaehlten Autostart deaktivieren</value></data>
-  <data name="Layout.ShellbagsHeading"><value>Shellbag-Analyse / Explorer-Ordnerspuren (nur lesend)</value></data>
+  <data name="Layout.ShellbagsHeading"><value>Explorer-Verlauf (nur lesend)</value></data>
   <data name="Layout.ShellbagsNotice"><value>Windows merkt sich Ansichtseinstellungen besuchter Ordner in der Registry (BagMRU) - auch fuer inzwischen geloeschte Ordner. Diese Analyse liest HKCU ausschliesslich lesend. Die Namensdekodierung ist Best Effort: nicht dekodierbare Elemente werden ausdruecklich als unbekannt angezeigt, nie erfunden. AETHER bietet bewusst keine Shellbag-Loeschung an.</value></data>
   <data name="Layout.Reading"><value>MESSWERT</value></data>
   <data name="Layout.PresentMonNotice"><value>Externe PresentMon-Console benoetigt, kein eigener Dienst. ETW-Capture fuer gewaehlten Prozess. CSV-Auswertung pro Swapchain: AVG FPS, P99 Framezeit und 1%-low. Keine Vermischung verschiedener Renderketten.</value></data>
@@ -1004,6 +1020,7 @@ JSON / FAEHIGKEITEN / LOGS:
   <data name="Control.SmartSaved"><value>SMART JSON gespeichert. Datei kann lokale Seriennummern enthalten; nicht ungeprueft teilen.</value></data>
   <data name="Safety.Ping"><value>Sendet ICMP an {0}. Bei Hostnamen wird DNS verwendet. Nur eigene/freigegebene Ziele.</value></data>
   <data name="Safety.RouterPing"><value>Sendet ICMP an das lokal gemeldete Standardgateway.</value></data>
+  <data name="Safety.WakeOnLan"><value>Sendet ein Wake-on-LAN-Magic-Packet fuer {0} als Broadcast im lokalen Netz an UDP-Port 9. Nur fuer eigene/freigegebene Geraete. Das Paket bestaetigt nicht, dass das Geraet aufwacht.</value></data>
   <data name="Control.SpeedSize"><value>Speedtest: Testgroesse {0} bis {1} MiB als ganze Zahl angeben.</value></data>
   <data name="Safety.SpeedTest" xml:space="preserve"><value>Laedt jetzt {0} MiB Testdaten von https://{1} herunter.
 Deine IP-Adresse wird dem Messziel sichtbar; das Datenvolumen zaehlt bei getakteten Verbindungen.
@@ -1162,6 +1179,10 @@ Aktuelles Admin-Konto / Negotiate. Keine Aenderungen, keine WinRM-Einrichtung. E
   <data name="Layout.SmartHeading"><value>SMART / ATA / NVMe / Fehler- und Selbsttestlogs</value></data>
   <data name="Layout.ReadSmartLogs"><value>Diagnose / Faehigkeiten / Logs lesen</value></data>
   <data name="Layout.NetworkHeading"><value>LAN / WLAN / Verbindungskontrolle</value></data>
+  <data name="Layout.WakeOnLanHeading"><value>WAKE-ON-LAN / GERAET IM LOKALEN NETZ AUFWECKEN</value></data>
+  <data name="Layout.WakeOnLanMacTip"><value>Ziel-MAC-Adresse, z. B. 00:11:22:33:44:55</value></data>
+  <data name="Layout.WakeOnLanSend"><value>Magic Packet senden</value></data>
+  <data name="Layout.WakeOnLanNotice"><value>UDP-Broadcast auf Port 9. BIOS/UEFI, Netzwerkadapter und Energiezustand muessen Wake-on-LAN unterstuetzen; ein erfolgreicher Versand beweist kein Aufwachen.</value></data>
   <data name="Layout.SpeedNotice"><value>Download-Durchsatz einer HTTPS-Verbindung zu speed.cloudflare.com; nur nach Freigabe, kein Upload-Test.</value></data>
   <data name="Layout.ReadArp"><value>ARP / MAC lesen</value></data>
   <data name="Layout.OuiManufacturer"><value>OUI HERSTELLER</value></data>
@@ -1281,7 +1302,7 @@ Aktuelles Admin-Konto / Negotiate. Keine Aenderungen, keine WinRM-Einrichtung. E
   <data name="Layout.GodMode"><value>GodMode-Ordner</value></data>
   <data name="Layout.WindowsToolsNotice"><value>Oeffnet die originalen Windows-Werkzeuge. Aenderungen dort erfolgen unter deiner Kontrolle. Keine Hintergrund-Reparaturen, keine Schutzabschaltung.</value></data>
   <data name="Layout.SecurityTelemetry"><value>Sicherheit &amp; Windows-Telemetrie</value></data>
-  <data name="Layout.CleanerHeading"><value>Cleaner / Vorschau vor Kontrolle</value></data>
+  <data name="Layout.CleanerHeading"><value>Cache-Dateien prüfen und bereinigen</value></data>
   <data name="Layout.FindLargeFiles"><value>Grosse Dateien finden / nur lesen</value></data>
   <data name="Layout.UncheckAll"><value>Keine ankreuzen</value></data>
   <data name="Layout.ModifiedUtc"><value>GEAENDERT (UTC)</value></data>
@@ -1375,6 +1396,9 @@ Deinstallation entfernt Programme endgueltig.</value></data>
   <data name="Center.LanResult" xml:space="preserve"><value>{0} Antworten/Abfragefehler im Netz {1}. Nicht antwortende Geraete sind nicht ausgeschlossen.
 </value></data>
   <data name="Center.LanConsent" xml:space="preserve"><value>Privates Netz {0} mit bis zu 254 ICMP-Zielen pruefen. Nur mit Berechtigung im eigenen Netz.</value></data>
+  <data name="Center.WakeTitle" xml:space="preserve"><value>Wake-on-LAN</value></data>
+  <data name="Center.WakeSent" xml:space="preserve"><value>{0} Bytes als Broadcast fuer {1} an UDP-Port 9 gesendet. Es gibt keine Empfangsbestaetigung.</value></data>
+  <data name="Center.WakeInvalid" xml:space="preserve"><value>Wake-on-LAN nicht gestartet: {0}</value></data>
   <data name="Center.AutoLanPrevious" xml:space="preserve"><value>Vorherigen Auto-Scan erst beenden lassen.</value></data>
   <data name="Center.AutoLanConsent" xml:space="preserve"><value>{0} alle 60 Sekunden aktiv mit ICMP pruefen, solange dieses Fenster offen ist? Nur im eigenen/freigegebenen Netz. Mit Abbrechen oder Ausschalten jederzeit stoppen.</value></data>
   <data name="Center.AutoLanTitle" xml:space="preserve"><value>Wiederkehrenden LAN-Scan freigeben</value></data>
@@ -1559,6 +1583,7 @@ Keine automatische Rechteerhoehung, keine Aenderung von Defender oder Treiberspe
   <data name="Ui.ListChannels" xml:space="preserve"><value>Kanaele auflisten</value></data>
   <data name="Ui.ConsoleCommand" xml:space="preserve"><value>Konsolenbefehl</value></data>
   <data name="Ui.LanNetwork" xml:space="preserve"><value>LAN-Netz</value></data>
+  <data name="Ui.WakeOnLanMac" xml:space="preserve"><value>Ziel-MAC-Adresse fuer Wake-on-LAN</value></data>
   <data name="Ui.LiveCharts" xml:space="preserve"><value>LIVE-DIAGRAMME</value></data>
   <data name="Ui.OpenBackgroundReport" xml:space="preserve"><value>Letzten Hintergrundbericht oeffnen</value></data>
   <data name="Ui.LogSeries" xml:space="preserve"><value>Log-Messreihe</value></data>
@@ -1618,7 +1643,7 @@ Keine automatische Rechteerhoehung, keine Aenderung von Defender oder Treiberspe
   <data name="Ui.SensorBoot" xml:space="preserve"><value>Hardware-Sensoren / beim Boot initialisiert</value></data>
   <data name="Ui.HistoryNotice" xml:space="preserve"><value>Live-Kurven: bis zu 90 Messpunkte. JSONL-Intervall konfigurierbar (Standard 5s), max. 7 Dateien / 16 MiB pro Tag. Aufzeichnung ist standardmaessig aus.</value></data>
   <data name="Ui.LogViewerTab" xml:space="preserve"><value>Log-Viewer / Gaming / Vergleich</value></data>
-  <data name="Ui.LogsTab" xml:space="preserve"><value>Logs / Gaming</value></data>
+  <data name="Ui.LogsTab" xml:space="preserve"><value>Messlogs &amp; Framezeiten</value></data>
   <data name="Ui.StatisticsHeading" xml:space="preserve"><value>Messauswertung / MIN - MAX - AVG</value></data>
   <data name="Ui.LogViewerHeading" xml:space="preserve"><value>Messlog-Viewer / Vergleich / Frame-Telemetrie</value></data>
   <data name="Ui.NetworkHeading" xml:space="preserve"><value>NETZWERK / RX UND TX JE AKTIVEM ADAPTER</value></data>

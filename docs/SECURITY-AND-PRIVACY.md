@@ -153,6 +153,8 @@ AETHER hat keine allgemeine App-Telemetrie oder automatische Cloud-Anmeldung.
 **Einzelplatz** nimmt keinen Kontakt zum Verwaltungsserver auf.
 Ein eingerichteter Client sendet Diagnoseberichte nur nach Anmeldung,
 manueller Gerätefreigabe und gesondertem Übertragungs-Opt-in.
+Die lokale M365-/Copilot-Bereitschaftsanzeige meldet keine Tenantdaten und
+stellt keine Microsoft-Graph-/Intune-Verbindung her.
 
 Diese Berichte enthalten Rechner-/Windows-Daten, begrenzte Ereignisse,
 PnP-Geräte, Adapter, installierte Anwendungen, Treiber und Befunde.
@@ -172,8 +174,9 @@ erhalten; Gerätezugriff zusätzlich zentral sperren.
 
 Serverrichtlinien und lokales Opt-in begrenzen Systemänderungen; DNS-Cache-
 Autoreparatur braucht beide Automatikfreigaben und einen erneut geprüften Befund.
-Es gibt keine freie Fernkonsole. Administrator-Token nur über HTTPS/VPN
-verwenden. Die Webverwaltung hat keine Mehrbenutzerrollen oder eigene MFA.
+Es gibt keine freie Fernkonsole. Die Webverwaltung verwendet lokale Konten mit
+Administrator-, Operator- und Leserrolle; Mehrfaktoranmeldung ist nicht
+enthalten. Administratorzugriff nur über HTTPS/VPN verwenden.
 Auftragsausgaben können private Pfade und Kontodaten enthalten; keine
 Export-Musterschwärzung vor zentraler Speicherung. Aufträge und Audit werden
 nicht automatisch gelöscht. Laufende Windows-Aktionen können nach Abbruch
@@ -194,6 +197,26 @@ Lokale Verarbeitung bedeutet nicht, dass jede Funktion offline arbeitet:
 Die jeweiligen Netzwerkwerkzeuge zeigen ihre Wirkung vor dem Start.
 Verwaltungsserver, Netzwerkmonitor und Messaufzeichnung haben getrennte
 Einstellungen und Freigaben.
+
+### Optionale Microsoft-Graph-Verbindung des Verwaltungsservers
+
+Nur der gesondert konfigurierte Verwaltungsserver fordert mit seinem
+App-Zertifikat Zugriffstoken bei `login.microsoftonline.com` an und ruft
+`graph.microsoft.com` auf. Die Anbindung startet nicht automatisch beim
+Cockpit und sendet keine Daten an den Projektanbieter. Intune-Geräte- und
+Autopatch-Daten werden in der Zentralverwaltung nur auf ausdrücklichen Abruf
+geladen. Die Serveranmeldung verwendet den privaten Schlüssel aus
+`LocalMachine\My`; Zugriffstoken bleiben im Prozessspeicher und werden nicht
+im lokalen Datenbestand abgelegt. Graph-Geräte- und Bereitstellungsdaten
+werden von AETHER nicht dauerhaft gespeichert; Audit-Einträge enthalten die
+angeforderte Aktion und die betroffene Ressourcen-ID.
+
+Eine Intune-Synchronisierung oder das Pausieren/Fortsetzen einer vorhandenen
+Autopatch-Bereitstellung verlangt eine einzelne Bestätigung durch einen
+lokalen Administrator und erzeugt einen Audit-Eintrag. Der Graph-Dienst
+akzeptiert keine frei wählbaren URLs oder Graph-Befehle. Berechtigungen und
+Administratorzustimmung der Entra-App bestimmen den tatsächlichen Zugriff;
+Graph-Rollen ersetzen nicht die lokale AETHER-Rollenprüfung.
 
 ## Prüfungen richtig einordnen
 

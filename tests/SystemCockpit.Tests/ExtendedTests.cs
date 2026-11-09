@@ -154,11 +154,18 @@ internal static class ExtendedTests
 
             var window = new ControlCenterWindow(model);
             var tabs = (TabControl)window.FindName("Modules");
-            Check(tabs.Items.Count == 10 && tabs.Items.Cast<TabItem>().Any(t => Equals(t.Header, "Auftraege")),
+            Check(tabs.Items.Count == 10 && tabs.Items.Cast<TabItem>().Any(t => Equals(t.Tag, "Auftraege")),
                 "Existing advanced control tabs and operation history compiled");
-            Check(tabs.Items.Cast<TabItem>().Select(t => (string)t.Header)
+            Check(tabs.Items.Cast<TabItem>().Select(t => (string)t.Tag)
                     .Intersect(["Pakete", "Spuren"]).Count() == 2, "Package center and shellbag modules present");
             Check(((TextBox)window.FindName("Output")).IsReadOnly, "Advanced output read-only");
+            var wakeMac = (TextBox)window.FindName("WakeMacAddress");
+            var lanGrid = (DataGrid)window.FindName("LanGrid");
+            lanGrid.ItemsSource = new[] { new LanDevice("192.168.1.25", "Antwort", 1, "Fixture", "00:11:22:33:44:55") };
+            lanGrid.SelectedIndex = 0;
+            Check(wakeMac.Text == "00:11:22:33:44:55" &&
+                window.FindName("WakeOnLanButton") is Button { IsEnabled: true },
+                "Selecting a LAN result fills its MAC into the Wake-on-LAN target field");
             var terminal = (TextBox)window.FindName("Output");
             Check(terminal.Background is System.Windows.Media.SolidColorBrush black && black.Color == System.Windows.Media.Colors.Black,
                 "CRT terminal uses black background");
@@ -236,7 +243,7 @@ internal static class ExtendedTests
         try
         {
             var tabs = (TabControl)window.FindName("Modules");
-            tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(t => (string)t.Header == "Wartung");
+            tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(t => (string)t.Tag == "Wartung");
             var commands = (ListBox)window.FindName("CommandList");
             var input = (TextBox)window.FindName("CommandInput");
             var selected = AdminCommandCatalog.All.Single(c => c.Command == "sfc /verifyonly");
@@ -276,7 +283,7 @@ internal static class ExtendedTests
             input.CaretIndex = input.Text.Length;
             parameterButton.RaiseEvent(new System.Windows.RoutedEventArgs(Button.ClickEvent));
             if (input.Text != "sfc /verifyonly") throw new InvalidOperationException("Rendered parameter button not wired");
-            tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(t => (string)t.Header == "Schluessel");
+            tabs.SelectedItem = tabs.Items.Cast<TabItem>().Single(t => (string)t.Tag == "Schluessel");
             if (input.Text.Length != 0) throw new InvalidOperationException("Sensitive tab retains command input");
             Console.WriteLine($"CATALOG UI: {AdminCommandCatalog.All.Count} commands; actual WPF layout, repeat copy, rendered parameter click, Enter routing and private input clearing verified in non-elevated test host");
             return 5;

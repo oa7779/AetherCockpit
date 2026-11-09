@@ -12,8 +12,10 @@ Netzwerkbetrieb verwendet HTTPS mit normaler Zertifikatsprüfung. Für Internet-
 oder VPN-Zugriff DNS, vertrauenswürdiges Serverzertifikat und Zugriffsschutz
 einrichten. AETHER erstellt weder Zertifikate noch Firewallfreigaben.
 Für öffentliche Erreichbarkeit empfiehlt sich ein vorgeschalteter VPN-Zugang.
-Die Webverwaltung verwendet ein Administrator-Token; eigene Benutzerrollen
-oder Mehrfaktoranmeldung sind nicht enthalten.
+Der aktuelle Entwicklungsstand verwendet lokale Konten mit Administrator-,
+Operator- und Leserrolle; Mehrfaktoranmeldung ist nicht enthalten. Der
+Administrator-Token wird nur für den einmaligen Bootstrap und ausdrücklich
+freigegebene externe Verwaltungswerkzeuge verwendet.
 
 ### Weiterentwicklung zur Infrastrukturverwaltung
 
@@ -59,6 +61,64 @@ Der letzte aktive Administrator kann nicht entfernt oder herabgestuft werden.
 Der Entwicklungsstand bleibt eine Einzelserverlösung mit geschütztem
 JSON-Datenordner. Mehrfaktoranmeldung, Hochverfügbarkeit, Selbstbedienungs-
 Kontowiederherstellung und storeübergreifende Transaktionen sind nicht enthalten.
+
+## Separater Server-Installer (lokale Beta 39)
+
+`AetherManager-Setup-0.7.0-beta.39-win-x64.exe` ist zunächst nur lokal
+verfügbar und unsigniert. Das Setup benötigt Administratorrechte und kopiert
+den selbstenthaltenen Windows-x64-Server nach
+`C:\Program Files\AETHER Management Server`. Eine zusätzliche .NET-Installation
+ist nicht erforderlich. Der Cockpit-Installer enthält diesen Server nicht.
+
+**Die Dateiinstallation startet noch keinen Server.** Am Ende kann der
+Dienstassistent ausdrücklich ausgewählt werden; alternativ die
+Startmenü-Verknüpfung **Serverdienst einrichten (als Administrator)** über
+**Als Administrator ausführen** öffnen. Hostname und Zertifikatfingerabdruck
+werden im PowerShell-Fenster abgefragt. Für einen abweichenden Port:
+
+```powershell
+& 'C:\Program Files\AETHER Management Server\Install-ManagerServer.ps1' `
+    -HostName 'aether.example.net' -CertificateThumbprint '<SHA1-Fingerabdruck>' -Port 5187
+```
+
+Benötigt wird ein gültiges Serverzertifikat mit privatem Schlüssel im
+Zertifikatspeicher **Lokaler Computer / Eigene Zertifikate**. DNS/SAN,
+Vertrauenskette und Schlüsselzugriff für LocalSystem separat prüfen.
+Erst die Eingabe `JA` installiert und startet den Dienst
+`AetherManagerServer` als **LocalSystem** mit verzögertem automatischem Start.
+Es werden keine Zertifikate erzeugt, Firewallregeln angelegt oder
+Schutzrichtlinien beziehungsweise PowerShell-Ausführungsrichtlinien umgangen.
+Blockiert die lokale Richtlinie das Skript, bleibt der Server unkonfiguriert;
+die Freigabe muss nach den eigenen Administrationsrichtlinien erfolgen.
+VPN, DNS und erlaubten HTTPS-Zugriff separat einrichten.
+
+Geschützte Daten bleiben unter `%PROGRAMDATA%\AetherCockpit\Manager`.
+Vor Updates eine Sicherung dieses Verzeichnisses erstellen. Solange ein
+Serverdienst registriert ist, verweigert das Setup das Ersetzen von Dateien.
+Den bisherigen Dienst aus dessen Installationsordner als Administrator entfernen:
+
+```powershell
+& 'C:\Program Files\AETHER Management Server\Install-ManagerServer.ps1' `
+    -HostName localhost -CertificateThumbprint unused -Remove
+```
+
+Die beiden Platzhalterparameter werden bei der Dienstentfernung nicht für
+eine neue Verbindung oder Zertifikatsprüfung verwendet. Danach das Setup
+ausführen und den Dienst mit dem tatsächlichen Hostnamen, Zertifikat und
+gegebenenfalls abweichendem Port wieder einrichten. Ein transparentes
+In-place-Dienstupdate ist noch nicht implementiert.
+
+Bei interaktiver Deinstallation fragt der Uninstaller vor dem Stoppen und
+Entfernen eines zu dieser Installation gehörenden Dienstes ausdrücklich nach.
+Fremde Dienste werden nicht entfernt; bei Fehlern bleiben die Programmdateien
+erhalten. Für eine stille Deinstallation muss der Dienst vorher explizit
+entfernt sein. Berichte, Konten, Audit, Zugangsdaten und Zertifikate bleiben
+auch nach der Deinstallation erhalten und müssen bei einer endgültigen
+Stilllegung separat gesichert, widerrufen oder gelöscht werden.
+
+Der Installer wurde kompiliert und das Serverpaket mit synthetischen
+Verwaltungs-/HTTPS-Tests geprüft. Eine tatsächliche Installation,
+Dienstregistrierung oder Deinstallation ist damit noch nicht nachgewiesen.
 
 ## Desktopclient
 
@@ -238,6 +298,68 @@ API-Beschreibung: `/openapi/v1.json`.
 [HTTP-Beispiele](../src/AetherManager.Server/AetherManager.Server.http)
 decken Geräteanmeldung, Freigabe, Sperre, Berichte, Richtlinien, Heartbeats,
 Katalog, Aufträge, Ergebnisse, Stornierung und Audit ab.
+
+### Optionale Microsoft-Graph-Anbindung
+
+Der Server kann nach ausdrücklicher Einrichtung Microsoft Graph mit
+App-only-Zertifikatsauthentifizierung verwenden. Die Weboberfläche lädt
+Intune-Geräte und Windows-Autopatch-Bereitstellungen erst nach Auswahl von
+**Graph-Daten abrufen**. Administratoren können anschließend für ein
+ausgewähltes Gerät eine Intune-Synchronisierung anfordern und bestehende
+Autopatch-Bereitstellungen einzeln pausieren oder fortsetzen. Diese Aktionen
+werden im lokalen Kontenaudit erfasst. Operatoren und Leser können Daten
+anzeigen, aber keine Graph-Änderungen auslösen.
+
+Für die Einrichtung im Prozessumfeld des Servers sind drei Werte nötig:
+
+```powershell
+$env:AETHER_GRAPH_TENANT_ID = '<Tenant-GUID>'
+$env:AETHER_GRAPH_CLIENT_ID = '<App-Registrierungs-GUID>'
+$env:AETHER_GRAPH_CERT_THUMBPRINT = '<SHA1-Fingerabdruck>'
+```
+
+Das Zertifikat mit privatem Schlüssel muss im Zertifikatspeicher
+**Lokaler Computer / Eigene Zertifikate** liegen und für das Dienstkonto
+verwendbar sein. `AETHER_GRAPH_CERT_THUMBPRINT` ist unabhängig von
+`AETHER_MANAGER_CERT_THUMBPRINT`, das ausschließlich das HTTPS-Serverzertifikat
+bestimmt. Änderungen an der Prozessumgebung erfordern einen Serverneustart.
+Das öffentliche Zertifikat muss zusätzlich in der Entra-App-Registrierung
+hinterlegt sein. Die Anbindung verwendet derzeit die Microsoft Public Cloud,
+nicht Sovereign-Cloud-Endpunkte.
+Zertifikatsdateien, private Schlüssel und Zugriffstoken werden nicht in der
+Weboberfläche oder im Repository hinterlegt; MSAL hält Zugriffstoken nur im
+Arbeitsspeicher des Servers.
+
+Die App-Registrierung braucht Administratorzustimmung für die verwendeten
+Anwendungsberechtigungen:
+
+| Funktion | Microsoft-Graph-Berechtigung |
+|---|---|
+| Intune-Geräte lesen | `DeviceManagementManagedDevices.Read.All` |
+| Intune-Synchronisierung anfordern | `DeviceManagementManagedDevices.PrivilegedOperations.All` |
+| Autopatch-Bereitstellungen lesen | `WindowsUpdates.Read.All` |
+| Bestehende Autopatch-Bereitstellung pausieren/fortsetzen | `WindowsUpdates.ReadWrite.All` |
+
+Die Intune-Graph-API setzt eine aktive Intune-Lizenz voraus. Autopatch verlangt
+zusätzlich die jeweiligen Microsoft-Voraussetzungen. Die Statusanzeige prüft
+lokale Einstellungen und Zertifikat; die Anmeldung, Berechtigungen und
+Zustimmung werden erst beim tatsächlichen Graph-Aufruf geprüft. Nicht
+eingerichtete oder ungültige Verbindungen werden ausdrücklich gemeldet.
+
+Die Autopatch-Steuerung verwendet derzeit Microsoft-Graph-**Beta**-Endpunkte.
+Microsoft weist darauf hin, dass Beta-APIs Änderungen unterliegen und nicht
+für Produktionsanwendungen unterstützt werden. AETHER legt keine neuen
+Rollouts an: Geräteeinschreibung, Zielgruppe und Zeitplan benötigen eine
+gesonderte tenantbezogene Freigabe. Es gibt keinen freien Graph-Proxy oder
+eine Fernkonsole.
+
+Microsoft-Dokumentation:
+[MSAL-Client-Credentials](https://learn.microsoft.com/en-us/entra/msal/dotnet/acquiring-tokens/web-apps-apis/client-credential-flows),
+[Intune-Geräteliste](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-list?view=graph-rest-1.0),
+[Intune-Synchronisierung](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-syncdevice?view=graph-rest-1.0),
+[Autopatch-Bereitstellungen](https://learn.microsoft.com/en-us/graph/api/adminwindowsupdates-list-deployments?view=graph-rest-beta) und
+[Autopatch-Zustandsänderung](https://learn.microsoft.com/en-us/graph/api/windowsupdates-deployment-update?view=graph-rest-beta) sowie
+[Autopatch-Steuerung](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/manage/windows-autopatch-windows-feature-update-programmatic-controls).
 
 Der bestehende lesende WinRM-Geräteabgleich bleibt ein unabhängiger lokaler
 Operations-Ablauf. Keine TrustedHosts-Wildcards oder Zertifikatsumgehung.

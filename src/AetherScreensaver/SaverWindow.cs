@@ -21,6 +21,7 @@ internal sealed class SaverWindow : Window
     private readonly HardwareBoardView _board;
     private readonly TextBlock _status;
     private readonly TextBlock _readings;
+    private readonly AnimatedBrand _brand;
     private readonly CockpitModel _model = new();
     private BoardSnapshot? _hardware;
     private readonly System.Drawing.Rectangle _bounds;
@@ -65,6 +66,10 @@ internal sealed class SaverWindow : Window
         Grid.SetRow(_board, 1);
         panel.Children.Add(_board);
         panel.Children.Add(header);
+        _brand = new AnimatedBrand { Width = 112, HorizontalAlignment = HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(12) };
+        header.Margin = new Thickness(12, 12, 140, 12);
+        panel.Children.Add(_brand);
         _neonFrame = new Border { BorderBrush = new LinearGradientBrush(
             Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45),
             BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(12),
@@ -148,6 +153,7 @@ internal sealed class SaverWindow : Window
         enabled = enabled && !_closed && IsLoaded && IsVisible && SystemParameters.ClientAreaAnimation;
         if (_motion == enabled) return;
         _motion = enabled;
+        _brand.MotionEnabled = enabled;
         FrameGlow.SetEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,

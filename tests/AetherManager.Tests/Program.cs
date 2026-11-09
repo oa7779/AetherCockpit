@@ -92,6 +92,7 @@ internal static partial class Runner
             foreach (var url in new[] { "http://aether.example.net/", "https://user:pass@example.net/", "https://example.net/path", "https://example.net/?q=x" })
                 await Reject<InvalidDataException>(() => Task.FromResult(new ClientConfiguration(url, id, "").ServerUri()));
             await VerifyTlsAsync(root);
+            await VerifyGraphServiceAsync();
             await VerifyAccountsAsync(Path.Combine(root, "account-unit"));
             await VerifyFleetAsync(Path.Combine(root, "fleet-unit"));
             Console.WriteLine($"PASS {_assertions} management assertions; no Windows action executed.");
@@ -133,6 +134,7 @@ internal static partial class Runner
         start.ArgumentList.Add("--contentRoot");
         start.ArgumentList.Add(Path.Combine(repository, "src", "AetherManager.Server"));
         foreach (var name in start.Environment.Keys.Where(name => name.StartsWith("AETHER_MANAGER_", StringComparison.OrdinalIgnoreCase) ||
+            name.StartsWith("AETHER_GRAPH_", StringComparison.OrdinalIgnoreCase) ||
             name.StartsWith("ASPNETCORE_Kestrel__", StringComparison.OrdinalIgnoreCase) || name.StartsWith("Kestrel__", StringComparison.OrdinalIgnoreCase)).ToArray())
             start.Environment.Remove(name);
         start.Environment["AETHER_MANAGER_URLS"] = $"https://localhost:{port}";

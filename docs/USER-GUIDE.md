@@ -18,8 +18,17 @@ Die linke Navigation gruppiert die Funktionen in **Übersicht, Hardware,
 Diagnose, Wartung, Verwaltung und Hilfe**. Gruppen lassen sich ausklappen;
 die Gruppe des aktiven Bereichs wird geöffnet. Die vorhandenen Module
 bleiben erreichbar. **↗** kennzeichnet einen Wechsel in die separate
-Systemkontrolle, etwa für SMART, Netzwerk, Pakete oder Windows-Werkzeuge.
-Ein Klick öffnet den Bereich und startet keine Aktion.
+Systemkontrolle, etwa zu **SMART-Diagnose**, **Netzwerk & Verbindungen**,
+**Softwarepakete & Updates** oder **Windows-Werkzeuge**. Ein Klick öffnet
+das Zielmodul und startet keine Aktion.
+
+Weitere Bezeichnungen nennen die Aufgabe direkt: **Cache-Bereinigung** öffnet
+die Dateivorschau, **Wartungspläne & Diagnose** bündelt geführte Prüfungen,
+**Autostart-Programme** öffnet die Starttabelle und **Auftragsstatus** zeigt
+laufende beziehungsweise abgeschlossene Aufträge. **Explorer-Verlauf** ist
+eine lesende Auswertung gespeicherter Ordneransichten; **Windows- und
+WLAN-Schlüssel** zeigt vertrauliche Schlüssel- und Zugangsdaten. Die
+Bezeichnungen ändern weder interne Routen noch Sicherheitsabfragen.
 
 **Zurück/Vor**, Maus-Daumentasten und `Alt+Pfeil links/rechts` bewegen sich
 durch den lokalen Besuchsverlauf. Er hält bis zu 100 Schritte im RAM.
@@ -31,11 +40,36 @@ Die Suche selbst startet keinen Auftrag und aktiviert keinen Expertenmodus.
 
 ## Cockpit und Mainboard
 
-Das Cockpit zeigt Live-Instrumente, Verlaufskurven und Windows-Befunde.
-Ausklappbare Bereiche schaffen Platz für CPU-Kerne, Prozesse und
-Datenträger. Unlesbare Werte erscheinen als nicht verfügbar.
+Das Logo links oben erhält im Retro-Neon-Design einen sanften Neon-Puls und
+einen wandernden Lichtreflex. Darunter steht ein schräger Chromschriftzug in
+Silber, Violett und Pink. Das gleiche Branding erscheint rechts oben im
+Bildschirmschoner. Der Animationsschalter und die Windows-Animationsfreigabe
+gelten auch für das Logo; bei ausgeschalteter Bewegung bleibt es statisch.
+Windows Modern behält seine neutrale, statische Darstellung.
+
+Das Cockpit zeigt seine ursprünglichen Instrumente, Kurven und Listen:
+Live-Messwerte, CPU-Kerne, Datenträger, Prozesse, Ereignisse, Systempuls und
+Datenkontrolle stehen direkt auf der Seite. Die bisherigen einzelnen
+Netzwerk-, Datenträger- und Sensorbereiche behalten ihr Aufklappverhalten.
+Eine vorgeschaltete Zusammenfassung oder zusätzliche Detailklappe gibt es nicht.
+Unlesbare Werte und nicht verfügbare Prüfergebnisse bleiben als solche
+gekennzeichnet.
 Die Bedeutung von Skalen und Messkanälen steht unter
 [Hardware und Sensoren](HARDWARE-SENSORS.md).
+
+Die physischen Datenträger haben jeweils eine gemeinsame rote Karte:
+**Lesen** in Rot, **Schreiben** in Gold, **Aktiv** in Türkis und **Queue** in
+Violett. Jede Reihe zeigt Wert, Einheit, Verlauf und Balken. Aktivität hat
+die feste Skala 0–100 Prozent; Durchsatz und Queue skalieren mit dem jeweiligen
+Verlauf. Die Skala steht neben jeder Reihe, die Höhen verschiedener Reihen
+sind daher nicht direkt vergleichbar. Die Windows-Abfrage erfolgt weiterhin
+alle 15 Sekunden. Fehlende Werte bleiben `--`; nach einer fehlgeschlagenen
+Abfrage werden alte Verläufe geleert.
+
+Neonrahmen und Kurven verwenden separate weichgezeichnete Leuchtkonturen,
+damit Text und Messwerte scharf bleiben. Das Mainboard hat im Tool und
+Bildschirmschoner dieselbe zusätzliche Glow-Ebene. Bei ausgeschalteter
+Animation bleibt der statische Glow sichtbar.
 
 Unter **Hardware → Mainframe / Board** öffnet sich die Neon-Platine. Bauteile
 und Beschriftungen sind anklickbar; Details enthalten die erfassten

@@ -40,6 +40,14 @@ Auto-Scan braucht eine eigene Bestätigung. Er wartet 60 Sekunden nach
 Abschluss eines Durchlaufs und endet beim Ausschalten, Abbrechen oder
 Schließen des Fensters. Öffnen der Ansicht startet keinen Scan.
 
+Wake-on-LAN sendet nach einer eigenen Bestätigung ein Magic Packet als
+IPv4-Broadcast an UDP-Port 9. Eine gemeldete MAC-Adresse wird per Auswahl
+eines LAN-Ergebnisses in das Zielfeld übernommen. Das Ziel muss Wake-on-LAN in Firmware und Netzwerkadapter
+unterstützen; Energiezustand, Switch, VLAN und Router beeinflussen die
+Erreichbarkeit. Der Versand erzeugt keine Empfangsbestätigung und beweist
+nicht, dass das Zielgerät gestartet ist. AETHER richtet keine Firmware-,
+Adapter- oder Routeroptionen ein.
+
 Herstellerzuordnung nutzt eine selbst importierte
 [IEEE-MA-L-OUI-CSV](https://standards-oui.ieee.org/oui/oui.csv) mit den Spalten
 `Assignment` und `Organization Name`. Importlimit: 16 MiB und 100.000

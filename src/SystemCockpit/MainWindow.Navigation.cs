@@ -13,13 +13,13 @@ public partial class MainWindow
     {
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
-            ("Navigation.Overview", [("Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
+            ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
             ("Navigation.Hardware", [("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
-                ("Navigation.Drives", "Laufwerke", false), ("SMART ↗", "SMART", true)]),
+                ("Navigation.Drives", "Laufwerke", false), ("Navigation.Smart", "SMART", true)]),
             ("Navigation.Diagnostics", [("Navigation.WindowsDiagnostics", "Diagnose", false), ("Navigation.Protection", "Sicherheit", false),
                 ("Navigation.Events", "Ereignisse", false), ("Navigation.NetworkTests", "Netzwerk", true),
-                ("Navigation.Measurements", "Messauswertung", false), ("Logs / Gaming ↗", "Logs / Gaming", true)]),
-            ("Navigation.Maintenance", [("Cleaner", "Cleaner", false), ("Navigation.Plans", "Operations", false),
+                ("Navigation.Measurements", "Messauswertung", false), ("Navigation.LogsGaming", "Logs / Gaming", true)]),
+            ("Navigation.Maintenance", [("Navigation.Cleaner", "Cleaner", false), ("Navigation.Plans", "Operations", false),
                 ("Navigation.WindowsTools", "Wartung", true), ("Navigation.Packages", "Pakete", true)]),
             ("Navigation.Administration", [("Navigation.SystemAdministration", "Superadmin", false), ("Navigation.Startup", "Autostart", true),
                 ("Navigation.Jobs", "Auftraege", true), ("Navigation.Traces", "Spuren", true), ("Navigation.Keys", "Schluessel", true)]),

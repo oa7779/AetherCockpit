@@ -2,6 +2,8 @@
 @csrf = copy-from-session-response
 @accountId = copy-from-account-response
 @sessionId = copy-from-session-response
+@graphDeviceId = copy-from-Intune-device-response
+@graphDeploymentId = copy-from-Autopatch-deployment-response
 
 ### One-time bootstrap: HTTPS administrative tool only, not a browser. Never save credentials in this file.
 POST {{baseUrl}}/api/v1/auth/bootstrap
@@ -56,6 +58,36 @@ X-Aether-CSRF: {{csrf}}
 
 ### Account security audit (readable by signed-in roles)
 GET {{baseUrl}}/api/v1/admin/account-audit
+
+### Microsoft Graph local configuration status; does not request a Graph token
+GET {{baseUrl}}/api/v1/admin/cloud/status
+
+### Intune inventory; explicitly contacts the configured Microsoft tenant
+GET {{baseUrl}}/api/v1/admin/cloud/devices
+
+### Autopatch inventory; uses the Graph beta API
+GET {{baseUrl}}/api/v1/admin/cloud/deployments
+
+### CONFIRMATION REQUIRED: request one Intune synchronization in a test tenant
+POST {{baseUrl}}/api/v1/admin/cloud/devices/{{graphDeviceId}}/sync
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+
+### CONFIRMATION REQUIRED: pause one existing Autopatch deployment in a test tenant
+POST {{baseUrl}}/api/v1/admin/cloud/deployments/{{graphDeploymentId}}/state
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+Content-Type: application/json
+
+{"paused":true}
+
+### CONFIRMATION REQUIRED: resume one existing Autopatch deployment in a test tenant
+POST {{baseUrl}}/api/v1/admin/cloud/deployments/{{graphDeploymentId}}/state
+Origin: {{baseUrl}}
+X-Aether-CSRF: {{csrf}}
+Content-Type: application/json
+
+{"paused":false}
 
 ### CSRF failure: expect Problem Details 403
 POST {{baseUrl}}/api/v1/admin/enrollment-codes

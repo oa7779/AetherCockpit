@@ -46,6 +46,10 @@ public static class AdminCommandCatalog
             "Scans/Signaturupdates erzeugen Last und Netzwerkverkehr. Ein gruener Einzelwert ist kein Gesamturteil."),
         "Verwaltung" => ("Die originalen Windows-Verwaltungskonsolen direkt oeffnen.",
             "Aenderungen in den Konsolen erfolgen eigenverantwortlich und sofort; AETHER protokolliert sie nicht."),
+        "Wiederherstellung" => ("Windows-Wiederherstellungsumgebung, Systemschutz und Reparaturquellen pruefen.",
+            "Zuruecksetzen oder Cloud-Download kann Apps und Daten entfernen. AETHER startet keinen Reset; Optionen und Wirkungen vor Ort pruefen."),
+        "Deployment" => ("Windows-Features, Capabilities, Treiber und Images fuer Wartung oder Bereitstellung inventarisieren.",
+            "Feature-/Capability-Aenderungen koennen Komponenten nachladen oder Neustarts erfordern. Image- und Treiberdateien koennen sensible Daten enthalten."),
         "Hilfe" => ("Den vollen lokalen PowerShell-Funktionsumfang entdecken: Befehle, Syntax, Module.",
             "Nur lesend. Get-Help zeigt ggf. nur Basishilfe, wenn keine Hilfedateien installiert sind."),
         _ => ("Befehl und Beschreibung lesen; bei Unsicherheit zuerst die -WhatIf-/Hilfe-Parameter nutzen.",
@@ -213,6 +217,38 @@ public static class AdminCommandCatalog
         Add("System", "shutdown.exe /r /t 60", "Neustart in 60 Sekunden planen; vorher speichern. Mit shutdown /a abbrechen.", change,
             P("/r", "Neustarten."), P("/t 60", "Wartezeit in Sekunden."), P("/a", "Geplanten Neustart innerhalb der Wartezeit abbrechen."));
         Add("System", "shutdown.exe /a", "Geplanten Neustart/Shutdown abbrechen.", change);
+
+        Add("Wiederherstellung", "reagentc.exe /info", "Status und Speicherort der Windows-Wiederherstellungsumgebung (WinRE) lesen.", read);
+        Add("Wiederherstellung", "Get-ComputerRestorePoint | Select-Object SequenceNumber,Description,CreationTime,RestorePointType",
+            "Vorhandene lokale Systemwiederherstellungspunkte lesen; Computerschutz muss aktiv sein.", read);
+        Add("Wiederherstellung", "Checkpoint-Computer -Description 'AETHER-Wartung' -RestorePointType MODIFY_SETTINGS",
+            "Einen Windows-Wiederherstellungspunkt anfordern; Windows kann Erstellung oder Häufigkeit begrenzen.", change);
+        Add("Wiederherstellung", "Get-WindowsUpdateLog -LogPath \"$env:USERPROFILE\\Desktop\\WindowsUpdate.log\"",
+            "Windows-Update-ETW-Protokolle zu einer lokalen Textdatei zusammenfuehren.", change);
+        Add("Wiederherstellung", "Start-Process 'ms-settings:recovery'",
+            "Windows-Einstellungen fuer Wiederherstellung oeffnen. Zuruecksetzen/Cloud-Download wird nicht automatisch gestartet.", change);
+
+        Add("Deployment", "Get-WindowsOptionalFeature -Online | Sort-Object FeatureName | Format-Table FeatureName,State",
+            "Online-Windows-Features und Status inventarisieren; Verfuegbarkeit ist versionsabhaengig.", read);
+        Add("Deployment", "Get-WindowsCapability -Online | Sort-Object Name | Format-Table Name,State",
+            "Windows-Capabilities und Status inventarisieren.", read);
+        Add("Deployment", "dism.exe /Online /Get-CurrentEdition", "Installierte Windows-Edition lesen.", read);
+        Add("Deployment", "dism.exe /Online /Get-TargetEditions", "Moegliche Editionsziele dieses Windows-Images lesen; keine Lizenzpruefung.", read);
+        Add("Deployment", "dism.exe /Online /Get-ProvisionedAppxPackages",
+            "Fuer neue Benutzer bereitgestellte Appx-Pakete lesen.", read);
+        Add("Deployment", "dism.exe /Get-WimInfo /WimFile:\"C:\\SOURCES\\install.wim\"",
+            "Editionen und Indizes eines lokalen WIM-Images lesen; Quellpfad ersetzen.", read,
+            P("/WimFile:\"C:\\SOURCES\\install.wim\"", "Lokalen WIM- oder ESD-Pfad einsetzen."));
+        Add("Deployment", "Get-WindowsImage -ImagePath 'C:\\SOURCES\\install.wim' | Select-Object ImageIndex,ImageName,ImageDescription",
+            "Lokales Windows-Image mit dem DISM-PowerShell-Modul inventarisieren; Modul/Quellpfad muessen verfuegbar sein.", read);
+        Add("Deployment", "Export-WindowsDriver -Online -Destination \"$env:USERPROFILE\\Desktop\\AetherDriverBackup\"",
+            "Drittanbietertreiber in einen neuen lokalen Sicherungsordner exportieren.", change);
+        Add("Deployment", "Enable-WindowsOptionalFeature -Online -FeatureName 'FEATURE-NAME' -All -NoRestart",
+            "Ein vorher geprueftes Windows-Feature aktivieren; exakten Feature-Namen einsetzen.", change,
+            P("-FeatureName 'FEATURE-NAME'", "Exakten Namen aus Get-WindowsOptionalFeature uebernehmen."));
+        Add("Deployment", "Add-WindowsCapability -Online -Name 'CAPABILITY-NAME'",
+            "Eine vorher gepruefte Windows-Capability hinzufuegen; Windows kann Quelldateien nachladen.", change,
+            P("-Name 'CAPABILITY-NAME'", "Exakten Namen aus Get-WindowsCapability uebernehmen."));
         return items.AsReadOnly();
     }
 }
