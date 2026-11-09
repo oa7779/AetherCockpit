@@ -125,10 +125,107 @@ internal static class NeonFrameTests
             Check(ReferenceEquals(border.Child, text), "Content and geometry untouched");
         }
         finally { SkinCatalog.Apply(Application.Current, "retro-neon"); AetherNeonFrame.SetEnabled(border, false); window.Close(); }
+        count += DpiGeometry();
         return count;
 
         AetherNeonFrame.NeonAdorner Adorner() => root.AdornerLayer.GetAdorners(border)?.OfType<AetherNeonFrame.NeonAdorner>().Single()
             ?? throw new InvalidOperationException("Neon adorner missing.");
+    }
+
+    private static int DpiGeometry()
+    {
+        var count = 0;
+        foreach (var scale in new[] { 1d, 1.5, 2d })
+        foreach (var width in new[] { 180d, 480d })
+        {
+            var border = new Border { Margin = new Thickness(5), Background = Brushes.Black,
+                CornerRadius = new CornerRadius(18, 4, 18, 4) };
+            var root = new AdornerDecorator { Child = border, Width = width, Height = 160 };
+            VisualTreeHelper.SetRootDpi(root, new DpiScale(scale, scale));
+            AetherNeonFrame.SetEnabled(border, true);
+            try
+            {
+                root.Measure(new Size(width, 160));
+                root.Arrange(new Rect(0, 0, width, 160));
+                border.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+                root.UpdateLayout();
+                if (VisualTreeHelper.GetDpi(border).DpiScaleX != scale)
+                    throw new InvalidOperationException("Synthetic DPI did not propagate to frame.");
+                count++;
+                var adorner = root.AdornerLayer.GetAdorners(border)?.Single()
+                    ?? throw new InvalidOperationException("DPI frame missing.");
+                if (adorner.RenderSize != border.RenderSize || border.ActualWidth != width - 10)
+                    throw new InvalidOperationException("DPI frame changed content geometry.");
+                count++;
+                var bitmap = new RenderTargetBitmap((int)(width * scale), (int)(160 * scale),
+                    96 * scale, 96 * scale, PixelFormats.Pbgra32);
+                bitmap.Render(root);
+                var stride = bitmap.PixelWidth * 4;
+                var pixels = new byte[stride * bitmap.PixelHeight];
+                bitmap.CopyPixels(pixels, stride, 0);
+                var lit = false;
+                for (var y = 0; y < bitmap.PixelHeight; y++)
+                for (var x = 0; x < bitmap.PixelWidth; x++)
+                {
+                    var alpha = pixels[y * stride + x * 4 + 3];
+                    if ((x == 0 || y == 0 || x == bitmap.PixelWidth - 1 || y == bitmap.PixelHeight - 1) && alpha != 0)
+                        throw new InvalidOperationException("Glow reaches/clips the render edge at scale " + scale);
+                    lit |= alpha != 0;
+                }
+                if (!lit) throw new InvalidOperationException("DPI render is empty.");
+                count += 2;
+            }
+            finally { AetherNeonFrame.SetEnabled(border, false); }
+        }
+        return count;
+    }
+
+    internal static int Motion()
+    {
+        var border = new Border { Margin = new Thickness(24), BorderBrush = Brushes.Cyan, Background = Brushes.Black };
+        var root = new AdornerDecorator { Child = border };
+        var window = new Window { Content = root, Width = 480, Height = 300, ShowInTaskbar = false };
+        AetherNeonFrame.SetEnabled(border, true);
+        var count = 0;
+        try
+        {
+            window.Show();
+            NeonFrameProof.Pump(TimeSpan.FromMilliseconds(100));
+            var adorner = root.AdornerLayer.GetAdorners(border)!.Single();
+            var visuals = (Grid)VisualTreeHelper.GetChild(adorner, 0);
+            var glows = (Grid)visuals.Children[0];
+            var core = (Border)visuals.Children[1];
+            if (!SystemParameters.ClientAreaAnimation || SystemParameters.HighContrast)
+            {
+                if (glows.HasAnimatedProperties) throw new InvalidOperationException("System motion restriction ignored.");
+                Console.WriteLine("MOTION: system restriction active; no animated timing exercised.");
+                return 1;
+            }
+            var size = border.RenderSize;
+            var samples = new List<double>();
+            for (var second = 0; second < 15; second++)
+            {
+                samples.Add(glows.Opacity);
+                if (glows.Opacity is < .85 or > 1 || core.Opacity != 1 || core.HasAnimatedProperties || border.RenderSize != size)
+                    throw new InvalidOperationException("Breathing moved geometry/core or exceeded its intensity bounds.");
+                count++;
+                NeonFrameProof.Pump(TimeSpan.FromSeconds(1));
+            }
+            if (samples.Max() - samples.Min() < .03) throw new InvalidOperationException("Breathing intensity never changed.");
+            count++;
+            foreach (var status in new[] { NeonFrameStatus.Notice, NeonFrameStatus.Error, NeonFrameStatus.Analysis })
+            {
+                AetherNeonFrame.SetBreathingDuration(border, TimeSpan.FromSeconds(8));
+                AetherNeonFrame.SetStatus(border, status);
+                if (!glows.HasAnimatedProperties) throw new InvalidOperationException("Status pulse did not start: " + status);
+                NeonFrameProof.Pump(TimeSpan.FromSeconds(status == NeonFrameStatus.Notice ? 8.5 : 16.5));
+                if (glows.HasAnimatedProperties || AetherNeonFrame.GetMotionActive(border) || core.Opacity == 0)
+                    throw new InvalidOperationException("Finite status pulse retained a clock or hid the frame: " + status);
+                count += 2;
+            }
+        }
+        finally { AetherNeonFrame.SetEnabled(border, false); window.Close(); }
+        return count;
     }
 
     internal static int Gallery(string directory)
@@ -168,7 +265,7 @@ internal static class NeonFrameTests
                 NeonFrameProof.Pump(TimeSpan.FromMilliseconds(80));
                 var bitmap = new RenderTargetBitmap((int)(1000 * scale), (int)(680 * scale), 96 * scale, 96 * scale, PixelFormats.Pbgra32);
                 bitmap.Render(root);
-                var path = Path.Combine(directory, $"{mode}-{scale * 100:0}dpi.png");
+                var path = Path.Combine(directory, $"{mode}-{scale * 100:0}pct.png");
                 var encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(bitmap));
                 using var stream = new FileStream(path, FileMode.CreateNew);

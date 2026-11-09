@@ -44,6 +44,12 @@ internal static class Program
                 host.Shutdown();
                 return 0;
             }
+            if (args.Length == 1 && args[0] == "--neon-frame-motion")
+            {
+                Console.WriteLine($"PASS: {NeonFrameTests.Motion()} bounded real-time breathing assertions.");
+                host.Shutdown();
+                return 0;
+            }
             if (args.Contains("--desktop-language-smoke"))
             {
                 var assertions = ModernDesktopTests.Run();
