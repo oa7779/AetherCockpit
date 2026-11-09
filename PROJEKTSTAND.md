@@ -36,6 +36,10 @@ Grund-, Sprach-, Server- und synthetische Modern-Tests; die zusätzliche
 Board-UI-Prüfung schlug fehl, weil sie aktive Windows-Animationen erwartet.
 Der CI-Runner verwendet reduzierte Bewegung. Die Systemeinstellung bleibt
 unverändert; die separate Board-UI-Prüfung bleibt offen.
+Lauf 42571925970 prüfte anschließend den Arbeitsplatztitel-Umbruch und
+deckte auf, dass der implizite Textstil vom Listentemplate nicht übernommen
+wurde. Ein explizites Texttemplate wird geprüft; kein erfolgreicher
+UI-Abschluss für diese Änderung behauptet, bevor die CI-Prüfung besteht.
 
 Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
 kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der

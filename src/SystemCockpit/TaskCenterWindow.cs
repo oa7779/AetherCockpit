@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using SystemCockpit.Services;
@@ -11,7 +12,7 @@ public sealed class TaskCenterWindow : Window
     public CockpitTask? SelectedTask { get; private set; }
     internal TextBox SearchBox { get; } = new() { Margin = new Thickness(0, 8, 0, 8) };
     internal ComboBox CategoryBox { get; } = new() { Margin = new Thickness(0, 0, 0, 8) };
-    internal ListBox Results { get; } = new() { DisplayMemberPath = nameof(CockpitTask.Title) };
+    internal ListBox Results { get; } = new();
     private readonly TextBlock _count = new(), _title = new(), _effect = new(), _steps = new();
     private readonly Button _open = new() { Content = DesktopUiText.Get("TaskCenter.Open"), Margin = new Thickness(0, 16, 0, 0) };
 
@@ -47,9 +48,10 @@ public sealed class TaskCenterWindow : Window
         Results.Foreground = Brushes.Turquoise;
         Results.BorderBrush = Brushes.MediumPurple;
         Results.FontSize = 14;
-        var resultTextStyle = new Style(typeof(TextBlock));
-        resultTextStyle.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
-        Results.Resources.Add(typeof(TextBlock), resultTextStyle);
+        var resultText = new FrameworkElementFactory(typeof(TextBlock));
+        resultText.SetBinding(TextBlock.TextProperty, new Binding(nameof(CockpitTask.Title)));
+        resultText.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
+        Results.ItemTemplate = new DataTemplate { VisualTree = resultText };
         var itemStyle = new Style(typeof(ListBoxItem));
         itemStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
         itemStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
