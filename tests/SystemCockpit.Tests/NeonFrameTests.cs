@@ -39,6 +39,11 @@ internal static class NeonFrameTests
                 "Only empty halo layers blur; asymmetric corners and content stay intact");
             Check(glows.Children.Count == 2 && glows.Children.OfType<Border>().All(b => b.Effect is not null && b.CacheMode is BitmapCache) &&
                 glows.Clip is { IsFrozen: true }, "Inner and outer glow cached separately with bounded hollow clip");
+            Check(visuals.Children.Count == 2 && glows.Children.OfType<Border>().Count() == 2,
+                "Only complete border contours exist; no dash shapes or moving geometry");
+            Check(!typeof(AetherNeonFrame.NeonAdorner).GetFields(System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic).Any(field => field.FieldType.Name.Contains("Timer", StringComparison.Ordinal)),
+                "Frame owner has no timer");
             Check(AetherNeonFrame.GetMotionActive(border) == SystemParameters.ClientAreaAnimation &&
                 glows.HasAnimatedProperties == AetherNeonFrame.GetMotionActive(border), "Breathing honors Windows motion permission");
             foreach (var status in Enum.GetValues<NeonFrameStatus>())
@@ -67,6 +72,9 @@ internal static class NeonFrameTests
             window.Hide();
             Check(!glows.HasAnimatedProperties, "Hidden host has no breathing clock");
             window.Show();
+            border.IsEnabled = false;
+            Check(!glows.HasAnimatedProperties, "Disabled owner has no breathing clock");
+            border.IsEnabled = true;
             border.Visibility = Visibility.Collapsed;
             Check(!glows.HasAnimatedProperties, "Collapsed owner stops clock");
             border.Visibility = Visibility.Visible;
@@ -87,9 +95,11 @@ internal static class NeonFrameTests
             window.Width += 80;
             window.UpdateLayout();
             Check(core.CornerRadius == border.CornerRadius, "Dynamic corners refresh without replacing owner");
+            var released = new List<WeakReference>();
             for (var i = 0; i < 20; i++)
             {
                 var old = Adorner();
+                if (i > 0) released.Add(new WeakReference(old));
                 root.Child = null;
                 NeonFrameProof.Pump(TimeSpan.FromMilliseconds(5));
                 Check(!old.SubscriptionsActive && !((Grid)((Grid)VisualTreeHelper.GetChild(old, 0)).Children[0]).HasAnimatedProperties,
@@ -101,6 +111,11 @@ internal static class NeonFrameTests
             }
             AetherNeonFrame.SetEnabled(border, false);
             Check(root.AdornerLayer.GetAdorners(border) is not { Length: > 0 }, "Disable removes adorner");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            Check(released.Take(released.Count - 1).All(reference => !reference.IsAlive),
+                "Removed adorners are collectible; static and window events do not retain them");
             Check(ReferenceEquals(border.Child, text), "Content and geometry untouched");
         }
         finally { SkinCatalog.Apply(Application.Current, "retro-neon"); AetherNeonFrame.SetEnabled(border, false); window.Close(); }

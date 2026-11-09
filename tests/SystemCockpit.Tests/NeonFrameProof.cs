@@ -21,6 +21,7 @@ internal static class NeonFrameProof
         if (!Path.IsPathFullyQualified(output) || File.Exists(output))
             throw new ArgumentException("Choose a new absolute measurement JSON path.");
         var records = new List<Sample>();
+        var lifecycle = new List<object>();
         var border = new Border { Background = Brushes.Black, BorderBrush = Brushes.Cyan, Margin = new Thickness(24) };
         var root = new AdornerDecorator { Child = border };
         var window = new Window { Content = root, Width = 1280, Height = 720, ShowInTaskbar = false };
@@ -57,6 +58,27 @@ internal static class NeonFrameProof
                         AetherNeonFrame.SetEnabled(border, false);
                     }
                 }
+                AetherNeonFrame.SetEnabled(border, true);
+                for (var batch = 0; batch <= 5; batch++)
+                {
+                    if (batch > 0)
+                        for (var cycle = 0; cycle < 20; cycle++)
+                        {
+                            root.Child = null;
+                            Pump(TimeSpan.FromMilliseconds(5));
+                            if (root.AdornerLayer.GetAdorners(border) is { Length: > 0 } || AetherNeonFrame.GetMotionActive(border))
+                                throw new InvalidOperationException("Frame remained active after unload.");
+                            root.Child = border;
+                            Pump(TimeSpan.FromMilliseconds(5));
+                            if (root.AdornerLayer.GetAdorners(border)?.Length != 1)
+                                throw new InvalidOperationException("Frame count changed during lifecycle stress.");
+                        }
+                    Pump(TimeSpan.FromMilliseconds(100));
+                    using var process = Process.GetCurrentProcess();
+                    process.Refresh();
+                    lifecycle.Add(new { CompletedCycles = batch * 20, WorkingSet = process.WorkingSet64,
+                        PrivateBytes = process.PrivateMemorySize64, Threads = process.Threads.Count, Handles = process.HandleCount });
+                }
             }
         }
         finally
@@ -76,7 +98,7 @@ internal static class NeonFrameProof
             EnergyState = "Power-line state observed only; active power plan and competing workload not controlled.",
             WarmupSeconds = 1, MeasurementSeconds = 3, SourceCommit = Environment.GetEnvironmentVariable("AETHER_MEASUREMENT_COMMIT"),
             Scope = "Same synthetic STA host, no product start, no sensors or administrative commands.",
-            Records = records,
+            Records = records, Lifecycle = lifecycle,
             Summary = records.GroupBy(r => r.Scenario).Select(group => new
             {
                 Scenario = group.Key, Runs = group.Count(),
