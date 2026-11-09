@@ -188,10 +188,20 @@ public static class AetherNeonFrame
         private CornerRadius Corners => GetCornerRadius(_owner) ?? (_owner as Border)?.CornerRadius ?? new CornerRadius(12);
         private Brush? _lastRim;
         private CornerRadius _lastCorners;
+        private double _lastHaloSpace;
         private void LayoutChanged(object? sender, EventArgs e)
         {
             var rim = (_owner as Border)?.BorderBrush;
-            if (!ReferenceEquals(rim, _lastRim) || Corners != _lastCorners) Refresh();
+            if (!ReferenceEquals(rim, _lastRim) || Corners != _lastCorners ||
+                Math.Abs(AvailableHaloSpace() - _lastHaloSpace) > .01) Refresh();
+        }
+
+        private double AvailableHaloSpace()
+        {
+            if (_owner.FindCommonVisualAncestor(Layer) is null) return 0;
+            var bounds = _owner.TransformToVisual(Layer).TransformBounds(new Rect(_owner.RenderSize));
+            return Math.Max(0, Math.Min(Math.Min(bounds.Left, bounds.Top),
+                Math.Min(Layer.ActualWidth - bounds.Right, Layer.ActualHeight - bounds.Bottom)));
         }
 
         private bool Modern => SkinCatalog.IsModern || GetThemeMode(_owner) == NeonFrameTheme.Modern;
@@ -211,6 +221,7 @@ public static class AetherNeonFrame
             StopClock();
             _lastRim = (_owner as Border)?.BorderBrush;
             _lastCorners = Corners;
+            _lastHaloSpace = AvailableHaloSpace();
             var status = GetStatus(_owner);
             var highContrast = SystemParameters.HighContrast;
             var accent = highContrast ? SystemColors.WindowTextBrush : Modern ? Resource("ModernBorder") :
@@ -229,10 +240,12 @@ public static class AetherNeonFrame
             _core.Opacity = status == NeonFrameStatus.Disabled ? .6 : 1;
             _outer.Opacity = Math.Min(1, GetOuterGlowOpacity(_owner) * factor);
             _inner.Opacity = Math.Min(1, GetInnerGlowOpacity(_owner) * factor);
-            SetBlur(_outer, GetOuterGlowRadius(_owner));
-            SetBlur(_inner, GetInnerGlowRadius(_owner));
+            var outerRadius = Math.Min(GetOuterGlowRadius(_owner), Math.Max(0, _lastHaloSpace - 2));
+            var innerRadius = Math.Min(GetInnerGlowRadius(_owner), Math.Max(0, _lastHaloSpace - 2));
+            SetBlur(_outer, outerRadius);
+            SetBlur(_inner, innerRadius);
             _glows.Visibility = Modern || highContrast ? Visibility.Collapsed : Visibility.Visible;
-            _extent = Math.Max(GetOuterGlowRadius(_owner) + 3, GetInnerGlowRadius(_owner) + 2);
+            _extent = Math.Max(outerRadius + 2, innerRadius + 2);
             Visibility = GetIsVisible(_owner) ? Visibility.Visible : Visibility.Hidden;
             InvalidateMeasure();
             UpdateMotion();

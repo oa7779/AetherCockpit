@@ -75,6 +75,12 @@ internal static class NeonFrameTests
             border.IsEnabled = false;
             Check(!glows.HasAnimatedProperties, "Disabled owner has no breathing clock");
             border.IsEnabled = true;
+            border.Margin = new Thickness(5);
+            window.UpdateLayout();
+            Check(glows.Children.OfType<Border>().All(b => b.Effect is System.Windows.Media.Effects.BlurEffect { Radius: <= 3 }),
+                "Halo contracts within existing edge clearance without moving content");
+            border.Margin = new Thickness(24);
+            window.UpdateLayout();
             border.Visibility = Visibility.Collapsed;
             Check(!glows.HasAnimatedProperties, "Collapsed owner stops clock");
             border.Visibility = Visibility.Visible;
