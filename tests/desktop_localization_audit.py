@@ -108,6 +108,11 @@ def review_site(item):
         return "unreviewed-display", "New literal outside the reviewed static-caption inventory."
     if detection == "untranslated-display-confirmed":
         return detection, "Authored literal assigned directly to a text-bearing XAML property."
+    if name == "TaskCatalogEnglish.cs" and (
+        re.match(r'\["[^"]+"\]\s*=\s*new\(', text) or
+        re.match(r'"[^"]+"\s*=>\s*"[^"]+"', text)
+    ):
+        return "preserved-invariant-identifier", "German workflow or route lookup key; English display values are reviewed separately."
     if name == "ManagedActionTools.cs" and detection != "untranslated-direct-ui-confirmed":
         return "preserved-localized-definition", "Private OptionalDefinitions metadata is replaced by named resources in OptionalTools."
     if name == "MaintenancePlans.cs" and re.search(

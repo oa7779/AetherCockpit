@@ -209,7 +209,7 @@ internal static class ProfessionalWorkflowTests
             Pump();
             Check(tasks.Results.Items.Cast<CockpitTask>().Any(t => t.Destination == "Pakete"), "Visible task search really filters workflow list");
             tasks.SearchBox.Text = "";
-            tasks.CategoryBox.SelectedItem = "Netzwerk";
+            tasks.CategoryBox.SelectedValue = "Netzwerk";
             Pump();
             Check(tasks.Results.Items.Count >= 3 && tasks.Results.Items.Cast<CockpitTask>().All(t => t.Category == "Netzwerk"),
                 "Visible category selection narrows results");
@@ -235,16 +235,33 @@ internal static class ProfessionalWorkflowTests
                 englishTasks.Show(); Pump();
                 Check(englishTasks.Title == "AETHER | Workspace and feature search" &&
                     System.Windows.Automation.AutomationProperties.GetName(englishTasks.SearchBox) == "Feature search" &&
-                    Equals(englishTasks.CategoryBox.Items[0], "All areas") &&
+                    englishTasks.CategoryBox.SelectedValue as string == "" &&
                     Equals(Descendants(englishTasks).OfType<Button>().Single().Content, "Open area / do not run anything"),
                     "English workspace chrome and accessibility labels use authored translations");
                 englishTasks.Width = 780; englishTasks.Height = 560; Pump(); englishTasks.UpdateLayout();
                 var resultContainer = (ListBoxItem)englishTasks.Results.ItemContainerGenerator.ContainerFromIndex(0);
                 Check(resultContainer is not null &&
                     Descendants(resultContainer).OfType<TextBlock>().Any(text =>
-                        text.Text == ((CockpitTask)englishTasks.Results.Items[0]).Title &&
+                        text.Text == ((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay &&
                         text.TextWrapping == TextWrapping.Wrap && text.ActualWidth > 0),
                     "Workspace result titles wrap at narrow supported window sizes");
+                Check(((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay == "Troubleshoot Windows problems" &&
+                    Descendants(englishTasks).OfType<TextBlock>().Any(text =>
+                        text.Text.Contains("Only then approve an appropriate repair individually", StringComparison.Ordinal)),
+                    "English workflow details retain explicit individual repair approval");
+                englishTasks.SearchBox.Text = "connection problems";
+                Pump();
+                Check(englishTasks.Results.Items.Cast<CockpitTask>().Any(t =>
+                    t.Destination == "Netzwerk" && t.Surface == "Systemkontrolle"),
+                    "English search locates workflows without translating routing identifiers");
+                englishTasks.SearchBox.Text = "";
+                englishTasks.CategoryBox.SelectedValue = "Netzwerk";
+                Pump();
+                Check(englishTasks.Results.Items.Count == 3 &&
+                    englishTasks.Results.Items.Cast<CockpitTask>().All(t => t.CategoryDisplay == "Network"),
+                    "English category filtering preserves invariant category identifiers");
+                englishTasks.CategoryBox.SelectedIndex = 0;
+                Pump();
                 if (screenshotPrefix is not null)
                     ModuleTests.SaveScreenshot(englishTasks, screenshotPrefix + "-workspace-english.png");
                 englishTasks.SearchBox.Text = "zznichtvorhanden";

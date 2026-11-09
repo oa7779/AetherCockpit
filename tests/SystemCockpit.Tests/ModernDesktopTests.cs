@@ -76,6 +76,20 @@ internal static class ModernDesktopTests
             Check(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de",
                 "Both desktop and saver startup gate unfinished English before any authored UI");
             DesktopText.Configure("en");
+            var workflowTasks = TaskCatalog.All.Where(t => t.Command is null).ToArray();
+            Check(workflowTasks.Length == 25 && workflowTasks.All(t =>
+                    !string.IsNullOrWhiteSpace(t.TitleDisplay) && !string.IsNullOrWhiteSpace(t.EffectDisplay) &&
+                    !string.IsNullOrWhiteSpace(t.StepsDisplay) && !string.IsNullOrWhiteSpace(t.CategoryDisplay) &&
+                    !string.IsNullOrWhiteSpace(t.SurfaceDisplay) && !string.IsNullOrWhiteSpace(t.DestinationDisplay)),
+                "Every English workflow has an explicit title, effect, instructions and route labels");
+            Check(TaskCatalog.Search("connection problems").Any(t => t.Destination == "Netzwerk") &&
+                TaskCatalog.Search("Sensorverlaeufe").Any(t => t.Destination == "Sensoren"),
+                "English workflow search accepts English and original German terms with unchanged routes");
+            Check(workflowTasks.Single(t => t.Destination == "Cleaner").StepsDisplay.Contains(
+                    "Hidden checked files remain included", StringComparison.Ordinal) &&
+                workflowTasks.Single(t => t.Destination == "Sensoren").StepsDisplay.Contains(
+                    "temperature limits are not measurements", StringComparison.Ordinal),
+                "English workflow instructions preserve deletion and sensor safety boundaries");
             var reportModel = new CockpitModel();
             reportModel.ApplyProbe(new("Test-CPU", "Test-GPU", "Board", "RAM", "Windows 11",
                 [new("Original Device", "Original Value", "ok", "EXTERNAL OUTPUT / unveraendert")], []));

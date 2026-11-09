@@ -9,6 +9,7 @@ namespace SystemCockpit;
 
 public sealed class TaskCenterWindow : Window
 {
+    private sealed record CategoryChoice(string Id, string Name);
     public CockpitTask? SelectedTask { get; private set; }
     internal TextBox SearchBox { get; } = new() { Margin = new Thickness(0, 8, 0, 8) };
     internal ComboBox CategoryBox { get; } = new() { Margin = new Thickness(0, 0, 0, 8) };
@@ -35,7 +36,10 @@ public sealed class TaskCenterWindow : Window
         SearchBox.Style = (Style)FindResource("NeonTextBox");
         System.Windows.Automation.AutomationProperties.SetName(SearchBox, DesktopUiText.Get("TaskCenter.Search"));
         header.Children.Add(SearchBox);
-        CategoryBox.ItemsSource = new[] { DesktopUiText.Get("TaskCenter.AllCategories") }.Concat(TaskCatalog.All.Select(t => t.Category).Distinct()).ToArray();
+        CategoryBox.ItemsSource = new[] { new CategoryChoice("", DesktopUiText.Get("TaskCenter.AllCategories")) }
+            .Concat(TaskCatalog.All.GroupBy(t => t.Category).Select(group => new CategoryChoice(group.Key, group.First().CategoryDisplay))).ToArray();
+        CategoryBox.DisplayMemberPath = nameof(CategoryChoice.Name);
+        CategoryBox.SelectedValuePath = nameof(CategoryChoice.Id);
         CategoryBox.SelectedIndex = 0;
         System.Windows.Automation.AutomationProperties.SetName(CategoryBox, DesktopUiText.Get("TaskCenter.Category"));
         header.Children.Add(CategoryBox); header.Children.Add(_count);
@@ -49,7 +53,7 @@ public sealed class TaskCenterWindow : Window
         Results.BorderBrush = Brushes.MediumPurple;
         Results.FontSize = 14;
         var resultText = new FrameworkElementFactory(typeof(TextBlock));
-        resultText.SetBinding(TextBlock.TextProperty, new Binding(nameof(CockpitTask.Title)));
+        resultText.SetBinding(TextBlock.TextProperty, new Binding(nameof(CockpitTask.TitleDisplay)));
         resultText.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
         Results.ItemTemplate = new DataTemplate { VisualTree = resultText };
         var itemStyle = new Style(typeof(ListBoxItem));
@@ -88,7 +92,7 @@ public sealed class TaskCenterWindow : Window
 
     private void Refresh()
     {
-        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedItem as string : null);
+        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedValue as string : null);
         Results.ItemsSource = tasks;
         Results.SelectedIndex = tasks.Count > 0 ? 0 : -1;
         _count.Text = DesktopUiText.Format("TaskCenter.Count", tasks.Count);
@@ -98,9 +102,9 @@ public sealed class TaskCenterWindow : Window
     private void ShowSelection()
     {
         var task = Results.SelectedItem as CockpitTask;
-        _title.Text = task?.Title ?? DesktopUiText.Get("TaskCenter.NoResults");
-        _effect.Text = task is null ? "" : $"{task.Category} / {task.Surface} / {task.Destination}\n{task.Effect}";
-        _steps.Text = task?.Steps ?? DesktopUiText.Get("TaskCenter.NoResultsHint");
+        _title.Text = task?.TitleDisplay ?? DesktopUiText.Get("TaskCenter.NoResults");
+        _effect.Text = task is null ? "" : $"{task.CategoryDisplay} / {task.SurfaceDisplay} / {task.DestinationDisplay}\n{task.EffectDisplay}";
+        _steps.Text = task?.StepsDisplay ?? DesktopUiText.Get("TaskCenter.NoResultsHint");
         _open.IsEnabled = task is not null;
     }
 

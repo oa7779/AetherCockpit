@@ -1,6 +1,6 @@
 import unittest
 
-from desktop_localization_audit import release_blockers
+from desktop_localization_audit import release_blockers, review_site
 
 
 class ReleaseGateTests(unittest.TestCase):
@@ -30,6 +30,15 @@ class ReleaseGateTests(unittest.TestCase):
                 report = self.report()
                 report[key] = value
                 self.assertTrue(release_blockers(report))
+
+    def test_translation_lookup_key_does_not_hide_unreviewed_content(self):
+        item = {"path": r"src\SystemCockpit\Services\TaskCatalogEnglish.cs", "line": 1,
+                "classification": "authored-model-or-script-candidate-requires-review",
+                "text": '["Schutzstatus pruefen"] = new("Check protection", "READ ONLY",'}
+        self.assertEqual("preserved-invariant-identifier", review_site(item)[0])
+        item["classification"] = "untranslated-direct-ui-confirmed"
+        item["text"] = 'Status.Text = "Einstellungen pruefen";'
+        self.assertEqual("unreviewed-source", review_site(item)[0])
 
 
 if __name__ == "__main__":

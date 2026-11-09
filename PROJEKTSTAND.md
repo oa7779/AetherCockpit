@@ -15,7 +15,10 @@ explizit freigegebenes Gerät sendet Berichte. Titel in der Funktionssuche
 sollen auch bei schmalem Fenster umbrechen; diese UI-Änderung ist noch
 nicht laufzeit- oder bildgeprüft.
 Deutsche Ausgabe, Schwärzungsregeln, Ablauf-IDs und Aktionsargumente bleiben
-erhalten. Die Funktionssuche selbst enthält weiterhin deutsche Katalogdaten.
+erhalten. Die 25 geführten Arbeitsabläufe in der Funktionssuche haben nun
+englische Titel, Wirkungen, Anweisungen, Suchbegriffe und Routenbezeichnungen;
+interne Routen bleiben unverändert. Die zusätzlich eingebundenen
+Befehlskatalogeinträge enthalten weiterhin deutsche Beschreibungen.
 Englisch bleibt deaktiviert: Die Quellbestandsaufnahme zählt noch 824 nicht übersetzte
 Textstellen und beweist keine vollständige semantische Abdeckung.
 Eine explizite englische Freigabeschranke wird für `-rc.` im Windows-CI

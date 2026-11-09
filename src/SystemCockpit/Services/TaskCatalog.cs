@@ -3,7 +3,16 @@ namespace SystemCockpit.Services;
 public sealed record CockpitTask(string Category, string Title, string Destination, string Surface,
     string Effect, string Steps, string Keywords, string? Command = null)
 {
-    public string SearchText => $"{Category} {Title} {Destination} {Effect} {Steps} {Keywords}";
+    private bool English => System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en";
+    private TaskTranslation? Translation => English && Command is null ? TaskCatalogEnglish.Get(Title) : null;
+    public string CategoryDisplay => English ? TaskCatalogEnglish.Label(Category) : Category;
+    public string DestinationDisplay => English ? TaskCatalogEnglish.Label(Destination) : Destination;
+    public string SurfaceDisplay => English ? TaskCatalogEnglish.Label(Surface) : Surface;
+    public string TitleDisplay => Translation?.Title ?? Title;
+    public string EffectDisplay => Translation?.Effect ?? Effect;
+    public string StepsDisplay => Translation?.Steps ?? Steps;
+    public string SearchText => $"{Category} {Title} {Destination} {Effect} {Steps} {Keywords} " +
+        $"{CategoryDisplay} {TitleDisplay} {DestinationDisplay} {EffectDisplay} {StepsDisplay} {Translation?.Keywords}";
 }
 
 public static class TaskCatalog
