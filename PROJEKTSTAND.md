@@ -2,6 +2,34 @@
 
 ## Stand
 
+Aktueller Auftrag: Meilenstein 1 „Technische Konsolidierung“ ist freigegeben.
+Meilenstein 0 und Freigabe 0.5 wurden abgenommen. Der freigegebene lokale
+Baseline-Commit ist `cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10` auf
+`rc/grosse-entfesselung`; alle 320 Dateien stimmten vor dem Commit mit
+dem finalen 0.5-Hashnachweis überein. Kein Push, Tag, Release oder Merge.
+
+Vor technischen Änderungen: Release-Gesamtbuild ohne Warnungen/Fehler
+und 4.128 STA-Grundassertions bestanden. Der erste Verwaltungsrunner
+scheiterte beim Austausch der synthetischen Kontendatei mit
+`UnauthorizedAccessException`; ein unveränderter zweiter Lauf bestand
+alle 384 Verwaltungsassertions. Ursache noch ungeklärt, daher
+vorsorglicher Stopp vor Konsolidierungsänderungen und Entscheidung
+zum weiteren Diagnosevorgehen. Keine produktiven Daten betroffen.
+Die anschließend freigegebene gezielte Diagnose ist ausgeführt:
+zwei weitere unveränderte Verwaltungsrunnerläufe bestanden je 384
+Assertions; zwei isolierte Serien mit je 500 Dateiaustauschvorgängen
+bestanden ohne gehaltenen Reader. Bewusst gehaltene Lesestreams
+reproduzieren `UnauthorizedAccessException` / `0x80070005`;
+der tatsächliche Sperrhalter des ursprünglichen Laufs ist nicht belegt.
+Keine passende Defender-Zugriffsschutzmeldung gefunden, kein
+Virenscanner als Ursache behauptet. Keine Rechteänderung oder
+Produktreparatur, Konsolidierungsarbeit weiterhin angehalten.
+[Meilenstein-1-Zwischenbericht](docs/MILESTONE-1-CONSOLIDATION-REPORT.md).
+Keine Versionsanhebung oder neue Paketierung. Meilenstein 1 ist
+noch nicht abnahmebereit.
+
+### Abgeschlossener Ausgangsstand Freigabe 0.5
+
 Aktueller Auftrag: Freigabe 0.5 zum Abschluss von Meilenstein 0
 „Die große Entfesselung“: neue Inventur, Restlektüre und Baselinesicherung.
 Arbeitsbranch `rc/grosse-entfesselung`, Ausgangscommit `5382388`; die
@@ -25,8 +53,9 @@ Externe Baseline: `D:\AetherBaselineSnapshots\rc05-20261109-212329`,
 Restore-Matrix im [Sicherungsplan](docs/RC-BASELINE-SNAPSHOT-PLAN.md).
 Der getrennte `closure-supplement` sichert die sechs finalen Dokumente,
 Lesebelege und aktuellen 320 Dateihashes mit eigener Restoreprobe.
-Kein Commit, Staging, Push, Tag oder Release. Stopp vor dem Baseline-Commit;
-Meilenstein 1 ist nicht freigegeben.
+Bis zum Abschluss von 0.5: kein Commit, Staging, Push, Tag oder Release;
+der damalige Stopp vor Baseline-Commit und Meilenstein 1 wurde erst durch
+die oben dokumentierte neue Freigabe aufgehoben.
 Die folgenden Angaben zu Beta 44 beschreiben den bisherigen Teststand.
 
 Aktueller lokaler Cockpit-Testinstaller: `0.7.0-beta.44`, Dateiversion
