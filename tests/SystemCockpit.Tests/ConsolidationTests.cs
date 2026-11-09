@@ -77,6 +77,27 @@ internal static class ConsolidationTests
         var command = new CommandResult(0, "fixture", "");
         Check(command.Outcome().State == OperationState.Success, "Command adapter is compatible.");
         Check(new ManagedActionResult(0, "fixture", true).Outcome().State == OperationState.Partial, "Shared adapter retains truncation.");
+        foreach (var classification in Enum.GetValues<DataClassification>())
+        {
+            var entry = new TechnicalEvent("fixture", "read", OperationPhase.Finished, DiagnosticSeverity.Audit,
+                "fixture-provider", new("SYNTHETIC-PRIVATE-VALUE", classification), true, null,
+                StopBehavior.WaitForCurrentStep, false, Outcome: OperationOutcome.FromProcess("fixture", 0, true));
+            var json = JsonSerializer.Serialize(entry.JournalDetails());
+            Check(json.Contains("SYNTHETIC-PRIVATE-VALUE", StringComparison.Ordinal) == (classification == DataClassification.Normal),
+                "Structured journal excludes sensitive and secret targets.");
+            using var parsed = JsonDocument.Parse(json);
+            Check(parsed.RootElement.GetProperty("userConfirmed").ValueKind == JsonValueKind.Null,
+                "Unknown confirmation cannot be asserted as consent.");
+            Check(parsed.RootElement.GetProperty("rollbackAvailable").GetBoolean() == false, "No rollback is promised.");
+            var finished = entry with { Phase = OperationPhase.Finished };
+            Check(finished.OperationId == entry.OperationId, "Start and end retain their operation correlation.");
+            using var envelope = JsonDocument.Parse(ActionJournal.FormatTechnical("fixture-end", entry, new { target = "fixture-target", report = "fixture-report", ExitCode = 0 }));
+            Check(envelope.RootElement.GetProperty("details").GetProperty("target").GetString() == "fixture-target" &&
+                envelope.RootElement.GetProperty("details").GetProperty("ExitCode").GetInt32() == 0,
+                "Existing journal details remain unchanged; technical metadata is additive.");
+        }
+        Check(Enum.GetValues<DiagnosticSeverity>().Length == 8, "All eight diagnostic/audit levels are represented.");
+        Check(ActionJournal.MaxFileBytes == 16 * 1024 * 1024 && ActionJournal.MaxFiles == 30, "Journal limits preserved.");
         return count;
     }
 }

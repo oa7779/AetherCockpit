@@ -19,6 +19,7 @@ internal static partial class Runner
         if (args.Length > 0) return await ServeFixtureAsync(args);
         var root = Path.Combine(Directory.GetCurrentDirectory(), "tests", ".manager-test-runs", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
+        var phase = "management";
         try
         {
             var token = CancellationToken.None;
@@ -91,14 +92,25 @@ internal static partial class Runner
             Check(new ClientConfiguration("https://aether.example.net:5187/", id, "").ServerUri().Scheme == "https", "HTTPS target accepted");
             foreach (var url in new[] { "http://aether.example.net/", "https://user:pass@example.net/", "https://example.net/path", "https://example.net/?q=x" })
                 await Reject<InvalidDataException>(() => Task.FromResult(new ClientConfiguration(url, id, "").ServerUri()));
+            phase = "https-account-api";
             await VerifyTlsAsync(root);
+            phase = "synthetic-graph";
             await VerifyGraphServiceAsync();
+            phase = "local-account";
             await VerifyAccountsAsync(Path.Combine(root, "account-unit"));
+            phase = "fleet";
             await VerifyFleetAsync(Path.Combine(root, "fleet-unit"));
             Console.WriteLine($"PASS {_assertions} management assertions; no Windows action executed.");
             return 0;
         }
-        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"FAIL at {DateTimeOffset.Now:O}; phase={phase}; fixture={root}; HRESULT=0x{ex.HResult:X8}");
+            if (phase == "local-account")
+                Console.Error.WriteLine("Account store: " + Path.Combine(root, "account-unit", "accounts.json"));
+            Console.Error.WriteLine(ex);
+            return 1;
+        }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
 

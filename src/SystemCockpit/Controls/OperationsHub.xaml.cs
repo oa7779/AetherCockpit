@@ -274,10 +274,19 @@ public partial class OperationsHub : UserControl
     {
         target ??= Environment.MachineName;
         Write("[BEFEHL]\n" + script + "\n");
-        ActionJournal.Append("operations-command-start", new { target, report });
         var timeout = _maintenance ? Timeout.InfiniteTimeSpan : target == Environment.MachineName ? TimeSpan.FromMinutes(90) : TimeSpan.FromMinutes(3);
+        var audit = new AetherOperations.TechnicalEvent("OperationsHub", "command",
+            AetherOperations.OperationPhase.Started, AetherOperations.DiagnosticSeverity.Audit,
+            "AdminShell", new(target == Environment.MachineName ? "local" : "remote",
+                AetherOperations.DataClassification.Normal), null, null,
+            _maintenance ? AetherOperations.StopBehavior.WaitForCurrentStep : AetherOperations.StopBehavior.TerminateProcessTree,
+            false, timeout == Timeout.InfiniteTimeSpan ? null : timeout.TotalSeconds);
+        ActionJournal.AppendTechnical("operations-command-start", audit, new { target, report });
         Exception? logError = null;
-        var result = await AdminShell.RunAsync("$ErrorActionPreference='Stop';\n" + script, timeout, token,
+        CommandResult result;
+        try
+        {
+            result = await AdminShell.RunAsync("$ErrorActionPreference='Stop';\n" + script, timeout, token,
             new DirectProgress(text => Dispatcher.Invoke(() =>
             {
                 if (report is not null && logError is null)
@@ -292,9 +301,35 @@ public partial class OperationsHub : UserControl
                 }
                 Write(text);
             })));
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException or IOException or
+            UnauthorizedAccessException or Win32Exception or InvalidOperationException)
+        {
+            var failure = audit with
+            {
+                Phase = AetherOperations.OperationPhase.Finished,
+                Severity = ex is OperationCanceledException ? AetherOperations.DiagnosticSeverity.Notice : AetherOperations.DiagnosticSeverity.Error,
+                Outcome = AetherOperations.OperationOutcome.FromException(ex, "AdminShell", token)
+            };
+            TechnicalLog.Write(failure);
+            try { ActionJournal.AppendTechnical("operations-command-ended", failure, new { target, report }); }
+            catch (Exception journalError) when (journalError is IOException or UnauthorizedAccessException)
+            {
+                throw new IOException("Aktionsprotokoll und Ausfuehrung fehlgeschlagen; Teilaenderungen moeglich.",
+                    new AggregateException(ex, journalError));
+            }
+            throw;
+        }
+        var outcome = logError is not null && result.ExitCode == 0
+            ? new AetherOperations.OperationOutcome(AetherOperations.OperationState.Partial, "OperationsHub", "live-log-incomplete")
+            : result.Outcome();
+        ActionJournal.AppendTechnical("operations-command-ended", audit with
+        {
+            Phase = AetherOperations.OperationPhase.Finished,
+            Outcome = outcome
+        }, new { target, report, result.ExitCode });
         if (logError is not null) throw new IOException("Live.log nicht vollstaendig geschrieben; Teilaenderungen moeglich.", logError);
         if (result.ExitCode != 0) throw new InvalidOperationException($"Exit {result.ExitCode}: {result.Error}. Teilaenderungen moeglich; Live-Protokoll beachten.");
-        ActionJournal.Append("operations-command-ended", new { target, report, result.ExitCode });
         return result;
     }
     private void LoadUpdates(string json)

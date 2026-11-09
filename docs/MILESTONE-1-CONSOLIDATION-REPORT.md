@@ -52,6 +52,29 @@ Arbeitspaket Prozessresultate, Cancellation und Ressourcen:
   19 neuer isolierter Prozess-/Grenzprüfungen. Kein Windows-Verwaltungsbefehl
   wurde für diese Tests gestartet.
 
+Arbeitspaket Logging/Journaling und Hintergrundressourcen:
+
+- Acht technische Severityklassen, sichere strukturierte Eventdarstellung
+  und Korrelations-ID ohne zusätzliches Logframework. Trace bleibt Trace;
+  der persistente Aktionsjournalpfad bleibt zuständig für Auditdaten.
+- OperationsHub zeichnet jetzt auch Fehler, Timeout und Abbruch als
+  Abschlussereignis auf. Vorhandene `details`-Felder und Actionnamen bleiben
+  erhalten; Metadaten unter `technical` sind additiv. Doppelfehler von
+  Prozess und Journal erhalten beide Ursachen.
+- Technische Metadaten enthalten nur lokalen/entfernten Zieltyp, keine
+  Befehle, Kennwörter, Rohresultate oder zusätzlichen persönlichen Pfade.
+  Neue sensitive/secret-Zielfelder werden redigiert. Bestehende Legacy-
+  Detaildaten und bestätigte Liveprotokolle werden nicht pauschal migriert.
+- Die bisherige 16-MiB-Tagesgrenze gilt jetzt auch bei einer ersten
+  übergroßen Zeile. Aufbewahrung bleibt bei 30 Journaldateien.
+- Reporting- und Hintergrunddiagnose-Semaphore werden nach dem Abwarten
+  ihrer Loops in beiden Fenster-Schließpfaden freigegeben. Wake-Signale
+  sind gegen parallele Konfiguration serialisiert.
+- Der Verwaltungsrunner ergänzt im Fehlerfall Zeitpunkt, Phase,
+  Fixturepfad und HRESULT, ohne Wiederholung oder Unterdrückung.
+- Release-Gesamtbuild 0/0, 4.223 STA- und 384 Verwaltungsassertions
+  bestanden. Die neue Ausgangsabweichung trat dabei nicht erneut auf.
+
 Stand: 9. November 2026. Meilenstein 0 und Freigabe 0.5 wurden vom
 Auftraggeber abgenommen. Der Baseline-Commit wurde erstellt. Der erste
 Verwaltungstestlauf zeigte einen ungeklärten Dateizugriffsfehler; der
