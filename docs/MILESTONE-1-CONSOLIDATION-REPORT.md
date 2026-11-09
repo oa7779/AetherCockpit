@@ -2,7 +2,38 @@
 
 ## Status
 
-**BEGONNEN, VOR TECHNISCHEN ÄNDERUNGEN ANGEHALTEN.**
+**IN BEARBEITUNG — Fortsetzung ausdrücklich freigegeben.**
+
+Die nachfolgend dokumentierte Ausgangsabweichung bleibt ursächlich
+ungeklärt und wird als **BEOBACHTETE INTERMITTIERENDE AUSGANGSABWEICHUNG –
+URSACHE NICHT BELEGT** weitergeführt. Die Fortsetzungsfreigabe erlaubt
+die Konsolidierung ohne weitere Dauerdiagnose. Nur ein reproduzierbarer
+oder wiederholt auftretender kritischer Ausgangsfehler löst erneut
+einen Stopp aus; neue ungeklärte Regressionen bleiben Stoppgründe.
+
+### Aktueller Umsetzungsnachweis
+
+Arbeitspaket Quellen-/Ergebnis-/Datenschutzgrundlage:
+
+- Ergänzende Shared-Verträge `SourceMetadata`, `SourceObservation<T>`,
+  `OperationOutcome`, Datenschutzklassen und explizite Freigabepolitik.
+- `HasValue` trennt fehlende Information von gemessener Null. Zustände
+  Available, Unavailable, AccessDenied, Unsupported, ProviderError, Stale
+  und Unknown bleiben getrennt. Stale behält den Originalzeitpunkt.
+- Herkunft Direct/Derived/Database/Unconfirmed und Vertrauen sind getrennt;
+  Unconfirmed kann keine bestätigte Confidence behaupten.
+- Kompatible Adapter für Sensor- und Prozessresultate, keine Änderung an
+  Sensor-, Pipe-, History-, Export- oder Verwaltungs-JSON-Verträgen.
+  Neue Prozess-Trunkierungsinformation ist ausdrücklich `JsonIgnore`.
+- Secret wird über den neuen Freigabehelfer auch mit Zustimmung abgewiesen;
+  unbekannte Felder gelten zunächst als Sensitive. Noch keine pauschale
+  Migration bestehender Exportformate.
+- Release-Gesamtbuild: null Warnungen/Fehler; STA-Grundrunner:
+  4.183 Assertions (55 neue Vertragsassertions); Verwaltungsrunner:
+  384 Assertions bestanden.
+
+Die übrigen Abschnitte halten bis zur abschließenden Zusammenführung
+den historischen Start-/Diagnosestand fest.
 
 Stand: 9. November 2026. Meilenstein 0 und Freigabe 0.5 wurden vom
 Auftraggeber abgenommen. Der Baseline-Commit wurde erstellt. Der erste

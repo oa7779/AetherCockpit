@@ -67,6 +67,7 @@ internal static class Program
             TestStatistics();
             TestCleaner();
             _assertions += ExtendedTests.Run();
+            _assertions += ConsolidationTests.Run();
             _assertions += DashboardTests.Run();
             _assertions += BootTests.Run();
             _assertions += StorageTemperatureTests.Run();

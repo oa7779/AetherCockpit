@@ -4,7 +4,11 @@ using System.Text;
 
 namespace SystemCockpit.Services;
 
-public sealed record CommandResult(int ExitCode, string Output, string Error);
+public sealed record CommandResult(int ExitCode, string Output, string Error)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool OutputTruncated { get; init; }
+}
 
 public static class CommandRunner
 {
