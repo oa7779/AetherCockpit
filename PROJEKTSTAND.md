@@ -2,9 +2,46 @@
 
 ## Stand
 
+Meilenstein 1 wurde ausdrücklich abgenommen. Meilenstein 2 „AETHER Neon
+Frame“ ist umgesetzt und **ABNAHMEBEREIT**, nicht als RC-Produktfreigabe.
+Ausgangscommit `4ba0497`, Branch `rc/grosse-entfesselung`.
+[Abschlussbericht mit allen lokalen M2-Commits](docs/MILESTONE-2-NEON-FRAME-REPORT.md).
+Stopp vor Meilenstein 3, keine neue Version oder Paketierung.
+
+Zentrale Attached-/Adornerkomponente ersetzt die bisherigen umlaufenden
+Panelrahmen in Cockpit, xBar, Diagramm-/Eingabestyles und Schoner.
+Scharfer Kern, getrennter innerer/äußerer Glow, ruhige abschaltbare Atmung,
+neun explizite Zustände und ReducedMotion. Windows Modern bleibt neutral.
+Inhalte, Anordnung, Datenverträge und unabhängige Animationen unverändert.
+Kein produktiver FrameGlow-Aufruf mehr; alter Code bleibt ausschließlich
+für isolierten Vergleich und technischen Rückfall erhalten.
+[Architektur und Parameter](docs/AETHER-NEON-FRAME-SPECIFICATION.md).
+
+Finaler Releasebuild 0 Warnungen / 0 Fehler; STA 4.385,
+kombiniert mit synthetischem Interface/Schoner/Branding 4.737,
+Modern-Smoke 3.611, Ressourcen 3.277, Verwaltung 384 und drei Python-Tests
+bestanden. 135 Rahmenassertions einschließlich Root-DPI 100/150/200 Prozent;
+22 zusätzliche Echtzeitassertions prüfen vollständige Atmung und begrenzte
+Statusclocks. Zustands-/Themegalerie mit 21 neuen Bildern, Modern mit 22.
+
+[Sechs gültige Alt-/Neu-Serien](docs/PERFORMANCE-BASELINE.md#meilenstein-2-neonrahmenvergleich),
+je drei Runden: final CPU-Median eines Kerns alt 15,1050 Prozent,
+neu atmend 2,0797 Prozent. Kein allgemeiner Produktbenchmark.
+300 Reloadzyklen je erweitertem Profil, keine Adornerakkumulation oder
+ungebremste Ressourcenfolge beobachtet. Reale GPU-/Langzeit-/Resume-/
+Multi-Monitor-/Hochkontrastabnahme bleibt offen.
+
+Die bekannte einmalige Kontendatei-Abweichung trat im finalen
+Verwaltungsrunner nicht erneut auf; Ursache weiterhin nicht belegt.
+Keine Reparatur-, Update-, Treiber-, Tenant- oder Captureaktion.
+Keine Installer, Pushes, Tags, Releases oder Merges.
+
+### Abgeschlossener Meilenstein 1
+
 Meilenstein 1 „Technische Konsolidierung“ ist nach ausdrücklicher
-Fortsetzungsfreigabe abgeschlossen und **ABNAHMEBEREIT für die technische
-Grundlage**, nicht als RC-Produktfreigabe. Stopp vor Meilenstein 2 und 3.
+Fortsetzungsfreigabe abgeschlossen und als technische Grundlage abgenommen,
+nicht als RC-Produktfreigabe. Der damalige Stopp vor Meilenstein 2 wurde
+durch dessen ausdrückliche Freigabe aufgehoben.
 Meilenstein 0 und Freigabe 0.5 sind abgenommen. Lokaler Baseline-Commit:
 `cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10`, Branch
 `rc/grosse-entfesselung`; vorher alle 320 Dateien hashidentisch zum
@@ -36,8 +73,8 @@ ACL-/Schutzänderung oder versteckten Retries. Details und künftige
 Fehleraufzeichnung stehen im Abschlussbericht.
 
 Keine Versionsanhebung, neue Installer, Pushes, Tags, Releases oder Merges.
-Bestehende Pakete bleiben erhalten. Abnahme durch den Auftraggeber und
-neuer Auftrag vor weiteren Meilensteinen erforderlich.
+Bestehende Pakete bleiben erhalten. Die damalige Abnahme und Freigabe für Meilenstein 2 sind inzwischen erfolgt;
+weitere Meilensteine benötigen einen neuen Auftrag.
 
 ### Abgeschlossener Ausgangsstand Freigabe 0.5
 

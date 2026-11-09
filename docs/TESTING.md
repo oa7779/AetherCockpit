@@ -1,5 +1,47 @@
 # Tests
 
+## Neonrahmen
+
+Der Grundrunner prüft zusätzlich den zentralen AetherNeonFrame: Defaults,
+neun Zustände, Paletten, statischen Kern, Bewegungsgates, Themes,
+Minimierung/Sichtbarkeit, Unload/Reload, Event-/Clockfreigabe sowie
+sammelbare entfernte Adorner. Eine explizite GC-Prüfung prüft Referenzen,
+nicht Produktperformance. Synthetische Root-DPI 100/150/200 Prozent mit
+zwei Größen prüfen Geometrie und äußere Bildkanten.
+
+```powershell
+dotnet build .\SystemCockpit.slnx -c Release --no-restore
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --neon-frame-motion
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --neon-frame-gallery C:\Temp\aether-frame-gallery-01
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --neon-frame-profile C:\Temp\aether-frame-profile-01.json
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --interface-ui --screensaver-ui --branding-ui
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --desktop-modern-smoke C:\Temp\aether-frame-modern-01
+```
+
+Diese optionalen Modi verwenden grafisches Windows und synthetische
+Testdaten. Sie starten keine produktiven MainWindow-Abfrageloops oder
+Hardwareprovider, verändern keine Systemeinstellung und führen keine
+Windows-Verwaltungsaktion aus. `--dashboard-ui` ist dagegen ein vorhandener
+Livepfad und nicht Bestandteil dieser Rahmenvalidierung.
+
+`--neon-frame-motion` beobachtet einen vollständigen 14-Sekunden-Zyklus
+und das tatsächliche Ende von Notice/Error/Analysis mit verkürzter, aber
+weiterhin langsamer Testdauer. Bei systemweit abgeschalteter Animation
+prüft er statische Darstellung und meldet die nicht ausgeübte Zeitprüfung.
+Er aktiviert Windows-Animationen nicht eigenmächtig.
+
+Galerie- und Profilziele müssen absolut und neu sein; ihr übergeordneter
+Ordner muss existieren. Die Galerie erzeugt 21 Bilder: neun Zustände in
+Nacht/Tag/Animation aus/Modern hell/dunkel/Vista Aero/Candy Gloss,
+jeweils als Raster bei 100/150/200 Prozent. Das sind keine physischen
+Monitorwechsel. Der Profilmodus misst drei gepaarte Alt-/Neu-Runden und
+300 Reloadzyklen mit Ressourcenwerten, ohne erzwungene GC.
+
+[Spezifikation](AETHER-NEON-FRAME-SPECIFICATION.md),
+[Vergleichsmethode und Rohwerte](PERFORMANCE-BASELINE.md#meilenstein-2-neonrahmenvergleich),
+[Abschluss und tatsächliche Ergebnisse](MILESTONE-2-NEON-FRAME-REPORT.md).
+
 ## Technische Konsolidierung
 
 Der STA-Grundlauf enthält zusätzliche Quellen-/Ergebnis-/Datenschutzassertions

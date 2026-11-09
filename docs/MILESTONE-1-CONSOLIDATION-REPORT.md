@@ -6,6 +6,11 @@ Die neun Arbeitspakete sind bearbeitet; Umfang und verbleibende Grenzen
 stehen unten. Die ausdrücklich freigegebene Fortsetzung ist abgeschlossen.
 Stopp vor Meilenstein 2 und 3, ohne neue Version oder Paketierung.
 
+Nachträglicher Abnahmestand: Der Auftraggeber hat Meilenstein 1 ausdrücklich
+abgenommen und anschließend Meilenstein 2 freigegeben.
+Der folgende Bericht hält den damaligen Abschluss fest;
+[Fortsetzung und Ergebnis](MILESTONE-2-NEON-FRAME-REPORT.md).
+
 ## 1. Baseline-Commit
 
 Branch: `rc/grosse-entfesselung`.

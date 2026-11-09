@@ -78,9 +78,10 @@ steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
 Nach Änderungen an AETHER auf Nutzerauftrag jeweils einen neuen lokalen Build
 und Installer mit neuer Revision erstellen und prüfen. Bestehende Ausgaben
 bleiben erhalten; eine Veröffentlichung oder Installation folgt daraus nicht.
-Ausdrückliche Auftragsgrenzen gehen vor: Meilenstein 1 ist ohne Versions-
-oder Paketänderung konsolidiert; siehe
-[Abschlussbericht](MILESTONE-1-CONSOLIDATION-REPORT.md). Der separate
+Ausdrückliche Auftragsgrenzen gehen vor: Meilenstein 1 und 2 sind ohne
+Versions- oder Paketänderung umgesetzt; siehe
+[Konsolidierung](MILESTONE-1-CONSOLIDATION-REPORT.md) und
+[Neonrahmen](MILESTONE-2-NEON-FRAME-REPORT.md). Der separate
 [Messmodus](PERFORMANCE-BASELINE.md) benötigt nur einen Releasebuild.
 
 Die Release-Version steht in

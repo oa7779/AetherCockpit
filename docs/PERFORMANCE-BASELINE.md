@@ -136,3 +136,183 @@ Invalidierung durch Resume/PnP/Netzänderung, Neuaufbau der Zählerbaselines,
 keine Weitergabe alter Werte als neue Messung und Tests für Refreshfehler.
 **Tatsächlich eingeführte Caches: keine.** Die Messung rechtfertigt noch
 keinen invasiven Umbau der voneinander abweichenden Abfrageverträge.
+
+## Meilenstein 2: Neonrahmenvergleich
+
+### Methode und Trennung von der Produktmessung
+
+Der M1-Wert des alten FrameGlow bleibt unverändert: 22,42 Prozent eines
+Kerns, 0,934 Prozent normalisiert, 133,73 MiB Working Set des ganzen
+Testhosts, 18 Threads und 640 Handles. Er ist **kein** direkt abziehbarer
+Vorherwert für später gestartete Prozesse.
+
+Für M2 werden alter und neuer Rahmen aus derselben Assembly im selben
+STA-Testhost gemessen: 1280 × 720 DIP, tatsächliche DPI 150 Prozent,
+identischer Border mit Margin 24, schwarzem Hintergrund und Cyan-Kontur,
+eine Sekunde Einlauf und drei Sekunden angefordertes Messfenster je Phase.
+Je drei Runden; Runde zwei tauscht die Alt-/Neu-Reihenfolge.
+Vor jeder Phase wird die exklusive Aktivierung ihres Rahmenbesitzers
+geprüft. Neu wird statisch, atmend und bei verborgenem Fenster gemessen.
+Kein Cockpit-/Sensorstart.
+
+```powershell
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --neon-frame-profile C:\Temp\aether-frame-01.json
+```
+
+Ziel muss absolut und neu sein. `AETHER_MEASUREMENT_COMMIT` kann den
+Quellstand in der Rohdatei benennen. Testcode:
+[NeonFrameProof](../tests/SystemCockpit.Tests/NeonFrameProof.cs).
+Der Modus endet und entfernt beide Rahmen sowie das Fenster.
+
+Umgebung des finalen Laufs vom 9. November 2026, 22:48 Uhr:
+.NET 10.0.14, Windows 26300, 24 logische Prozessoren, WPF-Tier 2,
+Windows-Animationen an, hoher Kontrast aus, Netzbetrieb `Online`.
+Energieplan und konkurrierende Hostlast wurden nicht verändert oder
+vollständig erfasst. Der tatsächliche Dispatcher-Timerabschluss streut;
+final 2999,84–4233,12 ms. Alle CPU-Prozente verwenden die jeweils
+**tatsächlich verstrichene** Zeit, nicht pauschal drei Sekunden.
+
+### Mehrere gültige Vergleichsserien
+
+CPU eines Kerns, Prozent; je Median aus drei Runden, Klammer Min–Max.
+Serien werden wegen wechselnder Last und gemeinsamem JIT-/Cachezustand
+nicht zu einem scheinbar präziseren Gesamtwert zusammengelegt.
+
+| Serie / Quellstand | Alt laufend | Neu statisch | Neu atmend |
+|---|---:|---:|---:|
+| Erster unintegrierter Proof `d558463` | 31,2493 (30,2123–38,0176) | 1,7620 (0,4801–2,1602) | 2,6057 (2,6018–3,1122) |
+| Abgesicherter Proof `0caeedc` | 22,4267 (18,7500–28,6441) | 1,0450 (0–1,4619) | 2,5986 (1,5633–3,5994) |
+| Cockpit-Migrationsstand vor `d1eaadf` | 13,0228 (13,0200–19,2699) | 0,9561 (0,5178–1,3589) | 1,5510 (1,5264–3,1241) |
+| Sidebar-/Eingabestand vor `ea5ed52` | 20,3415 (18,7511–29,1596) | 1,9367 (1,5512–2,6037) | 2,0805 (1,5571–2,6104) |
+| Schonerstand vor `cfa096c` | 33,8675 (30,7269–35,9385) | 1,5326 (0,9980–2,9589) | 1,5550 (1,5511–2,0746) |
+| Finaler Rendercode `2066ba9` | 15,1050 (13,5389–34,3738) | 2,8870 (0,4558–3,4817) | 2,0797 (1,0069–4,1484) |
+
+Der neue Rahmen war in jeder gültigen Serie im Median günstiger als
+der alte. Keine allgemeine Produktbeschleunigung daraus ableiten.
+Ein gemessener Null-CPU-Delta-Wert bedeutet nur keine zusätzliche
+Prozess-CPU-Zeit innerhalb der Zählerauflösung dieses Fensters.
+
+Die Zwischenserie `m2-lifecycle-comparison.json` ist **kein gültiger
+Alt-/Neu-Nachweis**: Ihr erster Stressmodus ließ den neuen Rahmen für
+die nächste Runde aktiv. Das fiel bei der Rohdatenauswertung vor der
+ersten Migration auf. `0caeedc` entfernt ihn ausdrücklich und ergänzt
+die Exklusivitätsprüfung. Die Datei bleibt als Diagnosebeleg erhalten,
+wird aber weder in diese Tabelle noch in eine Verbesserungszahl gemischt.
+
+### Finale Phase: Median und Streuung
+
+| Phase | CPU eines Kerns Median / Min–Max % | Normalisierter Median % | Working Set Min–Max MiB | Threads | Handles |
+|---|---:|---:|---:|---:|---:|
+| Idle | 2,0821 / 0,9422–5,1923 | 0,0868 | 104,15–146,10 | 13–18 | 621–626 |
+| Alter FrameGlow | 15,1050 / 13,5389–34,3738 | 0,6294 | 125,84–146,71 | 12–18 | 618–631 |
+| Neuer Rahmen statisch | 2,8870 / 0,4558–3,4817 | 0,1203 | 127,23–146,74 | 13–18 | 621–631 |
+| Neuer Rahmen atmend | 2,0797 / 1,0069–4,1484 | 0,0867 | 127,11–145,00 | 13–18 | 621–631 |
+| Neuer Rahmen verborgen | 1,8456 / 0,8608–2,0278 | 0,0769 | 127,72–145,04 | 12–18 | 618–631 |
+
+Working Set gehört zum gesamten Prozess; Reihenfolge, GC und Caches
+erklären mit, warum statisch nicht in jeder Serie unter atmend liegt.
+Keine exklusive Control-Speicherzahl aus den Differenzen berechnen.
+Der verborgene Rahmen hat nach Lifecycleassertions keinen Atmungsclock;
+die verbleibende Testhost-CPU enthält das Messabonnement.
+
+### Finale Rohwerte
+
+Verstrichene Zeit und Prozess-CPU in ms, Working Set/Private Bytes in
+Bytes. L = LayoutUpdated-Ereignisse im Messfenster. Sie sind ein
+Indikator für Layoutarbeit, keine exakte Zählung interner Measureaufrufe.
+
+| Runde / Phase | Dauer | CPU | Working Set | Private Bytes | Threads / Handles | L |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 idle | 3009,2607 | 156,25 | 109211648 | 88735744 | 18 / 626 | 0 |
+| 1 alt | 3000,1048 | 1031,25 | 131952640 | 213905408 | 18 / 631 | 720 |
+| 1 statisch | 3247,3438 | 93,75 | 133414912 | 202309632 | 18 / 631 | 0 |
+| 1 atmend | 3005,1997 | 62,5 | 133279744 | 232452096 | 18 / 631 | 0 |
+| 1 verborgen | 3082,2065 | 62,5 | 133922816 | 233058304 | 18 / 631 | 0 |
+| 2 idle | 3316,6806 | 31,25 | 151990272 | 216416256 | 16 / 623 | 0 |
+| 2 statisch | 4038,9668 | 140,625 | 152023040 | 216416256 | 16 / 623 | 0 |
+| 2 atmend | 3103,5469 | 31,25 | 152043520 | 231555072 | 17 / 626 | 0 |
+| 2 verborgen | 3630,3931 | 31,25 | 152088576 | 231575552 | 17 / 626 | 0 |
+| 2 alt | 2999,8434 | 453,125 | 152788992 | 227332096 | 17 / 626 | 720 |
+| 3 idle | 3001,8052 | 62,5 | 153198592 | 220479488 | 13 / 621 | 0 |
+| 3 alt | 3000,6187 | 406,25 | 153833472 | 230084608 | 12 / 618 | 720 |
+| 3 statisch | 3427,8202 | 15,625 | 153870336 | 246206464 | 13 / 621 | 0 |
+| 3 atmend | 3013,1809 | 125 | 140693504 | 199913472 | 13 / 621 | 0 |
+| 3 verborgen | 4233,1155 | 78,125 | 139345920 | 190218240 | 12 / 618 | 0 |
+
+WPF-Kompositionsintervalle des alten Rahmens: Median 4,1667 ms,
+p95 4,1668–4,1669 ms. Neu statisch/atmend: Median 16,7364 ms,
+p95 16,7364–25,1046 ms. Das Rendering-Abonnement kann selbst
+Komposition anfordern. **Keine GPU-FPS, kein globales UI-Framelimit.**
+
+### Ressourcen über 300 Reloadzyklen
+
+Je Runde folgen 100 tatsächliche Unload/Reload-Zyklen mit eindeutiger
+Adornerzählung; keine erzwungene GC im Messmodus.
+
+| Vollendete Zyklen | Working Set Bytes | Private Bytes | Threads / Handles |
+|---:|---:|---:|---:|
+| 0 | 134070272 | 233218048 | 18 / 631 |
+| 20 | 139071488 | 205647872 | 18 / 631 |
+| 60 | 151932928 | 216461312 | 17 / 626 |
+| 100 | 152047616 | 216498176 | 17 / 626 |
+| 120 | 152514560 | 219820032 | 13 / 621 |
+| 160 | 152514560 | 219820032 | 13 / 621 |
+| 200, Ende Runde 2 | 153190400 | 220483584 | 13 / 621 |
+| 200, Beginn Runde 3 nach Vergleichsphasen | 139431936 | 206147584 | 13 / 621 |
+| 240 | 139431936 | 206147584 | 13 / 621 |
+| 280 | 140398592 | 207323136 | 13 / 621 |
+| 300 | 140406784 | 207331328 | 13 / 621 |
+
+Initialer Aufbau, Plateaus und spätere Speicherfreigabe sind sichtbar.
+Kein ungebremstes Ressourcenwachstum in diesem begrenzten Lauf beobachtet.
+Das ist **kein Langzeit-Leakfreiheitsbeweis**. Zusätzlich prüft der
+Grundrunner per WeakReference, dass entfernte Adorner sammelbar sind.
+
+### Lokale Rohdateien und Integrität
+
+Die JSON-Dateien liegen im persistenten Sessionverzeichnis
+`%USERPROFILE%\.copilot\session-state\64a11d20-8d22-4d0e-9eca-a7e030f0d975\files`.
+Sie enthalten die ungerundeten Einzelwerte, Umgebungsangaben und
+Quellstand, keine Adapteridentitäten oder produktiven Hardwaredaten.
+
+| Datei | SHA256 |
+|---|---|
+| `m2-proof-comparison.json` | `9BDB3F9E7002D490A30FE3FF84CBB3C3F745DCECD8A507EAB82FBDDD28E3D5A1` |
+| `m2-gated-proof-comparison.json` | `EB0EB657321064C5E1D41512AB22D1AEDD7D51F5E3320A36119E5B2B2D48A2D0` |
+| `m2-cockpit-comparison.json` | `6345AB3CDF1FAE6B6D9AFCD9D66690572CFFA5D85421FF0BD53AA7E1DEB6C003` |
+| `m2-sidebar-comparison.json` | `CDEF164CA8B64B5889673ECB274F7B9665D71BA1E17CD3D21384F053EC8C34FF` |
+| `m2-saver-comparison.json` | `FB30E564387EB3896530636901F823D841574616386DBB08A5AE935D06B0E85A` |
+| `m2-final-comparison.json` | `8B543555FF3DCA699B1E05E65CB2337CA6D4E84C93511F4EFEA858CD6E7E77C4` |
+
+Die produktbezogene NICHT-GEMESSEN-Matrix oben bleibt vollständig gültig.
+Es wurden keine Systemtimerauflösung, Energieeinstellung, Treiber,
+Animationseinstellung oder Hintergrunddienste für bessere Zahlen verändert.
+
+### Gezielte .NET-Musterprüfung der neuen Renderkomponente
+
+Ausgeführte Rezepte in AetherNeonFrame, vor Befundklassifikation:
+
+| Rezept | Treffer |
+|---|---:|
+| IndexOf mit Literal / Substring / StartsWith-EndsWith-Contains | 0 / 0 / 0 |
+| ToLower-ToUpper / Replace / params | 0 / 0 / 0 |
+| Select-Where-OrderBy-GroupBy / All-Any | 0 / 1 |
+| neue Dictionary-List / static readonly Dictionary | 0 / 0 |
+| RegexOptions.Compiled / new Regex / GeneratedRegex | 0 / 0 / 0 |
+| unversiegelte / versiegelte Instanzklassen | 0 / 1; eine von einer versiegelt |
+| IEquatable / string.Format | 0 / 0 |
+| `+=` | 11, ausschließlich Eventabonnements, keine Stringakkumulation |
+
+Der einzelne All-Aufruf validiert CornerRadius bei einer Parameteränderung,
+nicht pro Atmungstick. Refresh erzeugt neue Brushes/Effects bei tatsächlichen
+Zustands-/Layoutänderungen; keine solche Änderung wurde pro Atmungstick
+beobachtet. Keine spekulative Mikrooptimierung aus statischen Treffern.
+
+| Schwere | Bestätigte Performancebefunde |
+|---|---:|
+| Kritisch | 0 |
+| Moderat | 0 |
+| Information | 0 |
+
+Diese begrenzte KI-gestützte Musterprüfung kann Fehler übersehen und ersetzt
+keine menschliche Prüfung oder reale Produktprofilierung.
