@@ -285,7 +285,10 @@ public partial class MainWindow : Window
             _desktop.Dispose();
             _desktop = null;
         }
-        await Task.Run(_sensors.Dispose);
+        await _sensorGate.WaitAsync();
+        try { await Task.Run(_sensors.Dispose); }
+        finally { _sensorGate.Release(); }
+        _sensorGate.Dispose();
         _stop.Dispose();
         _allowClose = true;
     }
@@ -1093,6 +1096,7 @@ public partial class MainWindow : Window
         await _sensorGate.WaitAsync();
         try { await Task.Run(_sensors.Dispose); }
         finally { _sensorGate.Release(); }
+        _sensorGate.Dispose();
         _stop.Dispose();
         _allowClose = true;
         await Dispatcher.InvokeAsync(Close);

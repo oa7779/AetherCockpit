@@ -174,6 +174,10 @@ public static class ManagedActionRunner
     {
         try { if (!process.HasExited) process.Kill(entireProcessTree: true); }
         catch (InvalidOperationException) { }
-        catch (System.ComponentModel.Win32Exception) { }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            Trace.TraceError("AETHER managed process cleanup failed: PID {0}, native error {1}, HRESULT 0x{2:X8}.",
+                process.Id, ex.NativeErrorCode, ex.HResult);
+        }
     }
 }

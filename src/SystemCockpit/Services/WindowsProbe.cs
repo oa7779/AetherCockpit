@@ -10,6 +10,7 @@ public sealed class WindowsProbe
 {
     public async Task<ProbeReport> ReadAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -28,8 +29,8 @@ public sealed class WindowsProbe
                      Convert.ToBase64String(Encoding.Unicode.GetBytes(Script)) })
             process.StartInfo.ArgumentList.Add(argument);
         if (!process.Start()) throw new InvalidOperationException("Windows-Abfrage konnte nicht starten.");
-        var stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
-        var stderr = process.StandardError.ReadToEndAsync(cancellationToken);
+        var stdout = process.StandardOutput.ReadToEndAsync();
+        var stderr = process.StandardError.ReadToEndAsync();
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(TimeSpan.FromSeconds(45));
         try
@@ -52,6 +53,8 @@ public sealed class WindowsProbe
         finally
         {
             if (!process.HasExited) process.Kill(entireProcessTree: true);
+            await process.WaitForExitAsync(CancellationToken.None);
+            await Task.WhenAll(stdout, stderr);
         }
     }
 
