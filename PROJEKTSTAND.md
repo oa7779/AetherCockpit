@@ -2,11 +2,24 @@
 
 ## Stand
 
-Aktueller Folgeauftrag: Installer erstellen und auf GitHub hochladen.
-Hierfür ist Beta `0.7.0-beta.45`, Dateiversion `0.7.0.45`, freigegeben.
-Neue Ausgabe getrennt von bestehenden Paketen; GitHub-Vorabversion aus
-`rc/grosse-entfesselung`, kein Merge nach main und kein Meilenstein 3.
-Build-, Paket- und Uploadnachweis wird nach Ausführung ergänzt.
+Installer-/Uploadauftrag abgeschlossen:
+[Beta `0.7.0-beta.45`](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)
+ist als GitHub-Vorabversion veröffentlicht, Dateiversion `0.7.0.45`.
+Binärquellstand und Tagziel: `792fa3db6f08826c1b5e7acd52faccb1c56ef542`
+auf `rc/grosse-entfesselung`. Dieser nachträgliche Dokumentationsnachweis
+ändert weder Paket noch Tag. Kein Merge nach main und kein Meilenstein 3.
+Bestehende Pakete und die bisherige Latest-Markierung bleiben erhalten.
+
+Installer: `dist\AetherCockpit-Setup-0.7.0-beta.45-win-x64.exe`,
+83.885.678 Bytes, unsigniert; zugehörige `.exe.sha256` ebenfalls hochgeladen.
+SHA256: `c93557c68b91019fe0484d574a3e6e2471a2c3c139fee8f0ea2a55bc61535733`.
+GitHub-Assetdigests und Größen stimmen mit beiden lokalen Dateien überein;
+Tagziel und Vorabversionsstatus geprüft.
+Gegen die publizierten DLLs: STA 4.385, Echtzeit-Rahmen 22,
+Ressourcen/Kompatibilität 3.277 bestanden. Cockpit, Schoner und optionaler
+Clientdienst tragen die korrekte Version und denselben Quellcommit.
+Keine Installation ausgeführt; keine Hardware-/RC-Freigabe.
+
 Erneuter Releasebuild 0 Warnungen / 0 Fehler, STA 4.385.
 Zusätzlicher Verwaltungsrunner: neuer lokaler HTTPS-Fixturetimeout im
 ersten Lauf, unveränderter Folgelauf mit 384 Assertions bestanden.

@@ -2,6 +2,14 @@
 
 ## Paketprüfung Beta 45
 
+Die endgültigen publizierten DLLs aus Quellcommit
+`792fa3db6f08826c1b5e7acd52faccb1c56ef542` bestanden 4.385 STA-,
+22 Echtzeit-Rahmen- und 3.277 Ressourcen-/Kompatibilitätsassertions.
+Die Paketversionen und der eingebettete Quellcommit wurden abgeglichen.
+Installer und Prüfsummendatei sind hochgeladen; deren GitHub-Digests und
+Größen stimmen mit den lokalen Dateien überein. Das unsignierte Setup wurde
+nicht installiert. Dieser nachträgliche Prüfvermerk verändert das Paket nicht.
+
 Der lokale Releasebuild bestand mit 0 Warnungen / 0 Fehlern,
 der STA-Grundlauf mit 4.385 Assertions. Der zusätzliche Verwaltungsrunner
 brach zunächst in `https-account-api` mit `TaskCanceledException` nach dem
