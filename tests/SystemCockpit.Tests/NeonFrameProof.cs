@@ -76,9 +76,10 @@ internal static class NeonFrameProof
                     Pump(TimeSpan.FromMilliseconds(100));
                     using var process = Process.GetCurrentProcess();
                     process.Refresh();
-                    lifecycle.Add(new { CompletedCycles = batch * 20, WorkingSet = process.WorkingSet64,
+                    lifecycle.Add(new { Round = round, CompletedCycles = (round - 1) * 100 + batch * 20, WorkingSet = process.WorkingSet64,
                         PrivateBytes = process.PrivateMemorySize64, Threads = process.Threads.Count, Handles = process.HandleCount });
                 }
+                AetherNeonFrame.SetEnabled(border, false);
             }
         }
         finally
@@ -116,6 +117,12 @@ internal static class NeonFrameProof
 
     private static Sample Measure(int round, string scenario, FrameworkElement element)
     {
+        var oldEnabled = FrameGlow.GetVisible(element) || FrameGlow.GetEnabled(element);
+        var newEnabled = AetherNeonFrame.GetEnabled(element);
+        if (scenario == "idle" && (oldEnabled || newEnabled) ||
+            scenario == "old-moving" && (!oldEnabled || newEnabled) ||
+            scenario.StartsWith("new-", StringComparison.Ordinal) && (oldEnabled || !newEnabled))
+            throw new InvalidOperationException("Comparison phase has overlapping or missing frame owners: " + scenario);
         Pump(TimeSpan.FromSeconds(1));
         using var process = Process.GetCurrentProcess();
         process.Refresh();
