@@ -25,7 +25,7 @@
         </Viewbox>
     </DataTemplate>
     <DataTemplate x:Key="MetricTemplate">
-        <Border Tag="chart-panel" controls:FrameGlow.Visible="True" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
+        <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11"/>
@@ -42,7 +42,7 @@
         </Border>
     </DataTemplate>
     <DataTemplate x:Key="HistoryTemplate">
-        <Border Tag="chart-panel" controls:FrameGlow.Visible="True" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
+        <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="{Binding Accent}"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <DockPanel>
@@ -56,7 +56,7 @@
         </Border>
     </DataTemplate>
     <DataTemplate x:Key="VolumeTemplate">
-        <Border Tag="chart-panel" controls:FrameGlow.Visible="True" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#32D5FF"
+        <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Margin="2,3" Padding="9" Background="#60152239" BorderBrush="#32D5FF"
                 BorderThickness="1" CornerRadius="7" ToolTip="{Binding Detail}">
             <StackPanel>
                 <TextBlock Text="{Binding Name}" Foreground="#32D5FF" FontFamily="Consolas" FontWeight="Bold"/>

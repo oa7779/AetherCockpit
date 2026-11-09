@@ -167,15 +167,15 @@ internal static class BootTests
             {
                 var frame = (Border)bar.FindName("BarNeonFrame");
                 var layer = System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame);
-                Check(layer?.GetAdorners(frame)?.Length == 1 && !SystemCockpit.Controls.FrameGlow.GetMotionActive(frame),
+                Check(layer?.GetAdorners(frame)?.Length == 1 && !SystemCockpit.Controls.AetherNeonFrame.GetMotionActive(frame),
                     "Bar has a static halo with motion disabled and its own adorner layer");
                 model.MotionEnabled = true;
                 Pump();
-                Check(SystemCockpit.Controls.FrameGlow.GetMotionActive(frame) == SystemParameters.ClientAreaAnimation,
+                Check(SystemCockpit.Controls.AetherNeonFrame.GetMotionActive(frame) == SystemParameters.ClientAreaAnimation,
                     "Bar motion follows both the AETHER switch and Windows animation permission");
                 model.MotionEnabled = false;
                 Pump();
-                Check(!SystemCockpit.Controls.FrameGlow.GetMotionActive(frame), "Disabling bar motion immediately removes energy clocks");
+                Check(!SystemCockpit.Controls.AetherNeonFrame.GetMotionActive(frame), "Disabling bar motion immediately removes breathing clocks");
                 var curves = ((DataTemplate)bar.Resources["CurveTemplate"]).LoadContent() as Viewbox;
                 var canvas = (Canvas)curves!.Child;
                 Check(canvas.Children.OfType<System.Windows.Shapes.Polyline>().Count() == 3,

@@ -11,7 +11,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Frame" controls:FrameGlow.Visible="True" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2,1,1,1" CornerRadius="18,4,18,4" Padding="{TemplateBinding Padding}">
+                    <Border x:Name="Frame" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2,1,1,1" CornerRadius="18,4,18,4" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -24,7 +24,8 @@
         </Setter>
     </Style>
     <Style x:Key="NeonTextBox" TargetType="TextBox">
-        <Setter Property="controls:FrameGlow.Visible" Value="True"/>
+        <Setter Property="controls:AetherNeonFrame.Enabled" Value="True"/>
+        <Setter Property="controls:AetherNeonFrame.BreathingEnabled" Value="False"/>
         <Setter Property="Background" Value="#1A1230"/>
         <Setter Property="Foreground" Value="#E1EAF7"/>
         <Setter Property="BorderBrush" Value="#7944B5"/>
@@ -35,7 +36,7 @@
         <Setter Property="Background" Value="#211536"/>
         <Setter Property="Padding" Value="14,9"/>
         <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabItem">
-            <Border x:Name="TabFrame" controls:FrameGlow.Visible="True" Background="{TemplateBinding Background}" BorderBrush="#7944B5" BorderThickness="1" CornerRadius="7,7,0,0" Padding="{TemplateBinding Padding}" Margin="0,0,4,0">
+            <Border x:Name="TabFrame" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="{TemplateBinding Background}" BorderBrush="#7944B5" BorderThickness="1" CornerRadius="7,7,0,0" Padding="{TemplateBinding Padding}" Margin="0,0,4,0">
                 <ContentPresenter ContentSource="Header"/>
             </Border>
             <ControlTemplate.Triggers>
