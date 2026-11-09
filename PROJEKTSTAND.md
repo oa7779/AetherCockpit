@@ -2,31 +2,42 @@
 
 ## Stand
 
-Aktueller Auftrag: Meilenstein 1 „Technische Konsolidierung“ ist freigegeben.
-Meilenstein 0 und Freigabe 0.5 wurden abgenommen. Der freigegebene lokale
-Baseline-Commit ist `cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10` auf
-`rc/grosse-entfesselung`; alle 320 Dateien stimmten vor dem Commit mit
-dem finalen 0.5-Hashnachweis überein. Kein Push, Tag, Release oder Merge.
+Meilenstein 1 „Technische Konsolidierung“ ist nach ausdrücklicher
+Fortsetzungsfreigabe abgeschlossen und **ABNAHMEBEREIT für die technische
+Grundlage**, nicht als RC-Produktfreigabe. Stopp vor Meilenstein 2 und 3.
+Meilenstein 0 und Freigabe 0.5 sind abgenommen. Lokaler Baseline-Commit:
+`cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10`, Branch
+`rc/grosse-entfesselung`; vorher alle 320 Dateien hashidentisch zum
+finalen 0.5-Nachweis. Lokale M1-Paketcommits und verbleibende Grenzen:
+[Abschlussbericht](docs/MILESTONE-1-CONSOLIDATION-REPORT.md).
 
-Vor technischen Änderungen: Release-Gesamtbuild ohne Warnungen/Fehler
-und 4.128 STA-Grundassertions bestanden. Der erste Verwaltungsrunner
-scheiterte beim Austausch der synthetischen Kontendatei mit
-`UnauthorizedAccessException`; ein unveränderter zweiter Lauf bestand
-alle 384 Verwaltungsassertions. Ursache noch ungeklärt, daher
-vorsorglicher Stopp vor Konsolidierungsänderungen und Entscheidung
-zum weiteren Diagnosevorgehen. Keine produktiven Daten betroffen.
-Die anschließend freigegebene gezielte Diagnose ist ausgeführt:
-zwei weitere unveränderte Verwaltungsrunnerläufe bestanden je 384
-Assertions; zwei isolierte Serien mit je 500 Dateiaustauschvorgängen
-bestanden ohne gehaltenen Reader. Bewusst gehaltene Lesestreams
-reproduzieren `UnauthorizedAccessException` / `0x80070005`;
-der tatsächliche Sperrhalter des ursprünglichen Laufs ist nicht belegt.
-Keine passende Defender-Zugriffsschutzmeldung gefunden, kein
-Virenscanner als Ursache behauptet. Keine Rechteänderung oder
-Produktreparatur, Konsolidierungsarbeit weiterhin angehalten.
-[Meilenstein-1-Zwischenbericht](docs/MILESTONE-1-CONSOLIDATION-REPORT.md).
-Keine Versionsanhebung oder neue Paketierung. Meilenstein 1 ist
-noch nicht abnahmebereit.
+Umgesetzt: kompatible Quellen-/Ergebnis-/Datenschutzverträge, additive
+technische Journalereignisse, explizite Ausgabegrenzen und Fehlerzustände,
+geprüfte Prozess-/Stream-/Semaphorefreigabe. Keine Migration sämtlicher
+Legacydaten behauptet. Anzeigen, Retro-Neon, Funktionen, Messquellen und
+Zustimmungen unverändert; keine aktiven Telemetriepfade abgeschaltet.
+
+Finaler Release-Gesamtbuild 0 Warnungen / 0 Fehler; 4.250 STA- und
+384 Verwaltungsassertions bestanden. Zusätzlich Ressourcenprüfung 3.277,
+synthetischer deutscher Modern-/Neon-Smoke 3.611 und drei Python-Tests
+bestanden. Keine Windows-Verwaltungsaktion oder echte Sensorinitialisierung.
+[Frische synthetische Teilmessungen und offene Produktmessmatrix](docs/PERFORMANCE-BASELINE.md);
+keine neuen Caches und keine unbelegte Performanceverbesserung.
+[RC1-DE-Sprachstrategie](docs/RC-LANGUAGE-STRATEGY.md) ist ein Entwurf;
+Englischressourcen und heutiges CI-Gate bleiben unverändert.
+
+**BEOBACHTETE INTERMITTIERENDE AUSGANGSABWEICHUNG – URSACHE NICHT BELEGT:**
+Der erste Verwaltungsrunner vor technischen Änderungen scheiterte beim
+Austausch der synthetischen Kontendatei mit UnauthorizedAccessException.
+Drei unveränderte Folgeläufe und die späteren M1-Prüfungen bestanden.
+Begrenzte Diagnose belegt einen möglichen Lesestream-Sperrmechanismus,
+nicht den ursprünglichen Sperrhalter. Keine AV-Ursache behauptet, keine
+ACL-/Schutzänderung oder versteckten Retries. Details und künftige
+Fehleraufzeichnung stehen im Abschlussbericht.
+
+Keine Versionsanhebung, neue Installer, Pushes, Tags, Releases oder Merges.
+Bestehende Pakete bleiben erhalten. Abnahme durch den Auftraggeber und
+neuer Auftrag vor weiteren Meilensteinen erforderlich.
 
 ### Abgeschlossener Ausgangsstand Freigabe 0.5
 

@@ -87,6 +87,29 @@ LocalSystem-Rechten; dies ist nicht der Rechtekontext der Desktop-App.
 Vor Änderungen aktuelle Daten sichern; Abbruch und Wiederherstellungspunkt
 sind keine vollständige Rücknahme.
 
+## Klassifizierte technische Metadaten
+
+Die Konsolidierungsgrundlage unterscheidet Normal, Sensitive und Secret.
+Hardwarekennungen, Computer-/Benutzernamen, persönliche Pfade, IP-/IPv6-
+Adressen und Dumpinformationen gelten als Sensitive; unbekannte Feldnamen
+ebenfalls. Bekannte Token-, Kennwort-, Recovery- und private Schlüsselfelder
+werden als Secret klassifiziert. Der neue Freigabehelfer erlaubt Sensitive
+nur mit expliziter Zustimmung und Secret auch damit nicht.
+
+Neue technische Journalziele werden ohne Sensitive-Zustimmung redigiert.
+OperationsHub ergänzt Korrelations-ID, Ablaufzustand und Fehlercodes,
+keine neuen Rohbefehle oder persönlichen Kennungen im technischen Teil.
+Die bestehende 16-MiB-Tagesgrenze des Aktionsjournals gilt auch für eine
+erste übergroße Zeile; die Aufbewahrung bleibt bei 30 Dateien.
+
+Das ist kein Geheimnisscanner für beliebige Texte und keine automatische
+Migration alter Exporte, Reports, Journal-`details` oder Liveprotokolle.
+Vorhandene Vorschau-/Zustimmungsregeln bleiben erforderlich; die bestehende
+Exportredaktion belegt keine vollständige IPv6-Abdeckung. Live.log besitzt
+weiterhin keine allgemeine Rotation. Integrationsumfang und offene
+Folgearbeiten stehen im
+[Konsolidierungsbericht](MILESTONE-1-CONSOLIDATION-REPORT.md).
+
 ## Lokale Speicherung
 
 Basis: `%LOCALAPPDATA%\AetherCockpit` des ausführenden Kontos.

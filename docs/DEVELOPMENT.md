@@ -18,8 +18,10 @@
 | `dist` | Bestehende portable Builds, ZIPs, Setups und historische Intune-Ausgabe |
 
 Der Workspace ist mit der bestehenden GitHub-Historie von
-`oa7779/AetherCockpit` verbunden; Arbeitsbranch ist `main` mit
-Upstream `origin/main`. Vor Veröffentlichungen Status und Remote-Stand prüfen.
+`oa7779/AetherCockpit` verbunden; Hauptbranch ist `main` mit
+Upstream `origin/main`. Aktueller Arbeitsbranch und freigegebener Auftrag
+stehen in der [Projektübergabe](../PROJEKTSTAND.md).
+Vor Veröffentlichungen Status und Remote-Stand prüfen.
 Keine Release-Verzeichnisse als Arbeitskopie verwenden.
 
 ## Voraussetzungen
@@ -76,6 +78,10 @@ steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
 Nach Änderungen an AETHER auf Nutzerauftrag jeweils einen neuen lokalen Build
 und Installer mit neuer Revision erstellen und prüfen. Bestehende Ausgaben
 bleiben erhalten; eine Veröffentlichung oder Installation folgt daraus nicht.
+Ausdrückliche Auftragsgrenzen gehen vor: Meilenstein 1 ist ohne Versions-
+oder Paketänderung konsolidiert; siehe
+[Abschlussbericht](MILESTONE-1-CONSOLIDATION-REPORT.md). Der separate
+[Messmodus](PERFORMANCE-BASELINE.md) benötigt nur einen Releasebuild.
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:

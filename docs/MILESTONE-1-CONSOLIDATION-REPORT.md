@@ -1,227 +1,342 @@
 # AETHER — Meilenstein 1: technische Konsolidierung
 
-## Status
-
-**IN BEARBEITUNG — Fortsetzung ausdrücklich freigegeben.**
-
-Die nachfolgend dokumentierte Ausgangsabweichung bleibt ursächlich
-ungeklärt und wird als **BEOBACHTETE INTERMITTIERENDE AUSGANGSABWEICHUNG –
-URSACHE NICHT BELEGT** weitergeführt. Die Fortsetzungsfreigabe erlaubt
-die Konsolidierung ohne weitere Dauerdiagnose. Nur ein reproduzierbarer
-oder wiederholt auftretender kritischer Ausgangsfehler löst erneut
-einen Stopp aus; neue ungeklärte Regressionen bleiben Stoppgründe.
-
-### Aktueller Umsetzungsnachweis
-
-Arbeitspaket Quellen-/Ergebnis-/Datenschutzgrundlage:
-
-- Ergänzende Shared-Verträge `SourceMetadata`, `SourceObservation<T>`,
-  `OperationOutcome`, Datenschutzklassen und explizite Freigabepolitik.
-- `HasValue` trennt fehlende Information von gemessener Null. Zustände
-  Available, Unavailable, AccessDenied, Unsupported, ProviderError, Stale
-  und Unknown bleiben getrennt. Stale behält den Originalzeitpunkt.
-- Herkunft Direct/Derived/Database/Unconfirmed und Vertrauen sind getrennt;
-  Unconfirmed kann keine bestätigte Confidence behaupten.
-- Kompatible Adapter für Sensor- und Prozessresultate, keine Änderung an
-  Sensor-, Pipe-, History-, Export- oder Verwaltungs-JSON-Verträgen.
-  Neue Prozess-Trunkierungsinformation ist ausdrücklich `JsonIgnore`.
-- Secret wird über den neuen Freigabehelfer auch mit Zustimmung abgewiesen;
-  unbekannte Felder gelten zunächst als Sensitive. Noch keine pauschale
-  Migration bestehender Exportformate.
-- Release-Gesamtbuild: null Warnungen/Fehler; STA-Grundrunner:
-  4.183 Assertions (55 neue Vertragsassertions); Verwaltungsrunner:
-  384 Assertions bestanden.
-
-Die übrigen Abschnitte halten bis zur abschließenden Zusammenführung
-den historischen Start-/Diagnosestand fest.
-
-Arbeitspaket Prozessresultate, Cancellation und Ressourcen:
-
-- Ausgabegrenze exakt geprüft: 2.000.000 Zeichen sind vollständig,
-  2.000.001 Zeichen werden explizit als gekürzt/Partial gekennzeichnet.
-  Vorher konnte das letzte überschriebene Zeichen ohne Kennzeichnung
-  verloren gehen. stdout und stderr werden weiterhin bis zum Ende gelesen.
-- Bereits angeforderter Abbruch und ungültiger Timeout werden vor dem
-  Prozessstart geprüft. Fehler im Start-Progress liegen jetzt innerhalb
-  der Prozessbereinigung. Abbruch/Timeout warten Prozessende und
-  Streamtasks ab; kein Rollbackversprechen.
-- WindowsIdentity und Process beim Ermitteln des Board-Pipenamens werden
-  deterministisch freigegeben, ebenso der aktuelle Processwrapper vor
-  der bestätigten Exploreraktion. Pipename und Aktion bleiben gleich.
-- Release-Gesamtbuild 0/0; 4.202 STA-Assertions bestanden, einschließlich
-  19 neuer isolierter Prozess-/Grenzprüfungen. Kein Windows-Verwaltungsbefehl
-  wurde für diese Tests gestartet.
-
-Arbeitspaket Logging/Journaling und Hintergrundressourcen:
-
-- Acht technische Severityklassen, sichere strukturierte Eventdarstellung
-  und Korrelations-ID ohne zusätzliches Logframework. Trace bleibt Trace;
-  der persistente Aktionsjournalpfad bleibt zuständig für Auditdaten.
-- OperationsHub zeichnet jetzt auch Fehler, Timeout und Abbruch als
-  Abschlussereignis auf. Vorhandene `details`-Felder und Actionnamen bleiben
-  erhalten; Metadaten unter `technical` sind additiv. Doppelfehler von
-  Prozess und Journal erhalten beide Ursachen.
-- Technische Metadaten enthalten nur lokalen/entfernten Zieltyp, keine
-  Befehle, Kennwörter, Rohresultate oder zusätzlichen persönlichen Pfade.
-  Neue sensitive/secret-Zielfelder werden redigiert. Bestehende Legacy-
-  Detaildaten und bestätigte Liveprotokolle werden nicht pauschal migriert.
-- Die bisherige 16-MiB-Tagesgrenze gilt jetzt auch bei einer ersten
-  übergroßen Zeile. Aufbewahrung bleibt bei 30 Journaldateien.
-- Reporting- und Hintergrunddiagnose-Semaphore werden nach dem Abwarten
-  ihrer Loops in beiden Fenster-Schließpfaden freigegeben. Wake-Signale
-  sind gegen parallele Konfiguration serialisiert.
-- Der Verwaltungsrunner ergänzt im Fehlerfall Zeitpunkt, Phase,
-  Fixturepfad und HRESULT, ohne Wiederholung oder Unterdrückung.
-- Release-Gesamtbuild 0/0, 4.223 STA- und 384 Verwaltungsassertions
-  bestanden. Die neue Ausgangsabweichung trat dabei nicht erneut auf.
-
-Stand: 9. November 2026. Meilenstein 0 und Freigabe 0.5 wurden vom
-Auftraggeber abgenommen. Der Baseline-Commit wurde erstellt. Der erste
-Verwaltungstestlauf zeigte einen ungeklärten Dateizugriffsfehler; der
-unveränderte Wiederholungslauf bestand. Diese Abweichung wird nicht durch
-den erfolgreichen Wiederholungslauf als geklärt behandelt.
-
-Die technische Konsolidierung ist noch nicht abnahmebereit. Die weiteren
-Arbeitspakete warten auf die Entscheidung zum unten beschriebenen Befund.
-Es gibt keinen Push, Tag, Release, Merge oder Versionssprung.
-Auf die anschließende Entscheidung „Zuerst den Dateizugriffsfehler gezielt
-weiter untersuchen“ wurden die begrenzten Diagnoseprüfungen in Abschnitt 15
-ausgeführt. Sie belegen einen reproduzierbaren Sperrmechanismus, aber noch
-nicht die Ursache oder den Sperrhalter des ursprünglichen Fehlers.
+Stand: 9. November 2026. **MEILENSTEIN 1 ABNAHMEBEREIT** für die
+freigegebene technische Grundlage. Kein RC-Freigabenachweis.
+Die neun Arbeitspakete sind bearbeitet; Umfang und verbleibende Grenzen
+stehen unten. Die ausdrücklich freigegebene Fortsetzung ist abgeschlossen.
+Stopp vor Meilenstein 2 und 3, ohne neue Version oder Paketierung.
 
 ## 1. Baseline-Commit
 
 Branch: `rc/grosse-entfesselung`.
+Baseline: `cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10`
+(`chore(rc): establish pre-consolidation baseline`).
+Vor dem Commit stimmten alle 320 Git-relevanten Dateien nach Größe und
+SHA256 mit dem finalen Nachweis aus Freigabe 0.5 überein. Alle 66
+freigegebenen Kandidaten wurden aufgenommen; danach sauberer Arbeitsbaum.
+Das ist der vorhandene Entwicklungsstand vor technischen M1-Änderungen.
 
-Commit: `cc39d0f3a4d03a1d94fb6f84fcc26e58e14bff10`
+Die externe Sicherung `D:\AetherBaselineSnapshots\rc05-20261109-212329`
+mit 8.720 geprüften Dateien, Gitbundle und separatem Abschlusssupplement
+bleibt erhalten. Gleicher Datenträger, keine unabhängige Katastrophensicherung.
+[Sicherungs- und Restorenachweise](MILESTONE-0-CLOSURE-REPORT.md).
+Ignorierte Builds, Pakete, Testausgaben und Diagnosefixtures sind nicht
+Bestandteil der neuen Commits.
 
-Betreff: `chore(rc): establish pre-consolidation baseline`
+## 2. Lokale Meilenstein-1-Commits
 
-Vor dem Commit wurden sämtliche 320 Git-relevanten Dateien mit den finalen
-Größen-/SHA256-Belegen aus Freigabe 0.5 verglichen. Keine zusätzlichen oder
-fehlenden Pfade, keine Hashabweichung. Die 66 freigegebenen Kandidaten
-(48 geänderte getrackte und 18 untracked Dateien) wurden aufgenommen.
-Danach war der Arbeitsbaum sauber. Der Commit enthält den bereits
-vorhandenen Entwicklungsstand, keine neue Konsolidierungsimplementierung.
+| Commit | Inhalt |
+|---|---|
+| `3a46fe8` | Ausgangsvalidierung und begrenzte Dateizugriffsdiagnose |
+| `191742c` | Kompatible Quellen-, Ergebnis- und Datenschutzverträge |
+| `7c95714` | Ausgabegrenzen, Abbruch und deterministische Prozessfreigabe |
+| `83dae2c` | Additives technisches Journal und explizite Fehlerdiagnostik |
+| `d48e3a2` | Lebenszyklus und serialisierte Wake-Signale der Hintergrundworker |
+| `19091ab` | Native Fehlerklassen, Secret-Feldnamen, lesbare Journalzustände und stderr-Grenzen |
+| `a29781e` | Ausführbarer synthetischer Messmodus, Messbericht und RC-Sprachstrategie |
+| `7a6f007` | Probe-Streamabschluss, Sensorsemaphore und sichtbare native Bereinigungsfehler |
+| Abschlusscommit dieses Berichts | `docs(rc): close milestone one consolidation` |
 
-Keine ignorierten dist-, bin-/obj- oder Testausgaben, Sicherungsordner oder
-zusätzlichen Intune-Werkzeuge wurden aufgenommen. Der vorherige
-Secret-Suchbefund aus 0.5 gilt für die hashidentischen Dateien; er ist kein
-vollständiger Secret- oder Historienaudit.
+Der letzte Hash steht nach dem Commit in `git log`; kein selbstreferenzielles
+Umschreiben oder Amend. Alle Commits bleiben lokal. Kein Push, Tag, Release
+oder Merge und keine Änderung von Versionsprofilen oder historischen Paketen.
 
-Der externe Rückkehrpunkt aus 0.5 bleibt erhalten:
-`D:\AetherBaselineSnapshots\rc05-20261109-212329`.
-Siehe [Abschlussbericht 0.5](MILESTONE-0-CLOSURE-REPORT.md).
+## 3. Veränderte technische Verträge und Kompatibilität
 
-## 2. Bisherige Änderungen aus Meilenstein 1
+| Oberfläche | Änderung / erhaltene Kompatibilität |
+|---|---|
+| Shared-Bibliothek | Neue `SourceMetadata`, `SourceObservation<T>`, `OperationOutcome`, Datenschutz- und Eventtypen; keine Ersetzung des Verwaltungsprotokolls |
+| `SensorReading` | Unverändert; expliziter `Observe(metadata)`-Adapter, keine erfundene Herkunft aus nullable Werten |
+| `CommandResult` | Bestehender Konstruktor und Deconstruction unverändert; zusätzliches `OutputTruncated` ist `JsonIgnore` |
+| `ManagedActionResult` | Unverändert; vorhandene Kürzungsinformation wird im Ergebnisadapter verwendet |
+| BoardFeed / Named Pipe | Name, Frame und Wireformat unverändert; Name wird mit freigegebenen Windows-/Processwrappern ermittelt |
+| History / LiveSample / Exporte | Formate unverändert; keine pauschale Migration oder automatische Neuklassifikation alter Dateien |
+| Aktionsjournal | Bestehende Actionnamen, `timestamp` und `details` bleiben; strukturierte Metadaten unter additivem `technical` mit Schema 1 |
+| Server / Client / Ressourcen | DTOs, Sprachressourcen, Sprachwahl und Zustimmungslogik unverändert |
 
-Nur dieser Bericht und der aktuelle Auftragsstatus in der
-[Projektübergabe](../PROJEKTSTAND.md). Keine Produktionsänderungen.
-Keine weiteren Meilenstein-1-Commits erstellt.
+Adapter sind die vorbereitete Integrationsgrenze, **keine Behauptung einer
+vollständigen Migration aller Live-Modelle**. Laufende Anzeigen, Skalen,
+Aktualisierungsfrequenzen und der Retro-Neon-/Modern-Funktionsumfang bleiben.
 
-## 3. Technische Verträge
+## 4. Quellen- und Metadatenmodell
 
-Noch nicht geändert. Die erste Sichtung umfasst die bestehenden
-[Sensormodelle](../src/SystemCockpit/Models.cs),
-[Sensorsemantik](../src/SystemCockpit/Services/SensorSemantics.cs),
-[Board-Pipe](../src/SystemCockpit/Services/BoardLiveFeed.cs) und das
-[Verwaltungsprotokoll](../src/AetherOperations.Shared/ManagementProtocol.cs).
-Ein neues Quellen-/Metadatenmodell ist noch nicht implementiert.
+[Verträge](../src/AetherOperations.Shared/SourceObservation.cs) und
+[Adapter](../src/SystemCockpit/Services/SourceAdapters.cs) bilden ab:
 
-## 4. Fehlerbehandlungsmodell
+- Value, Unit und explizites `HasValue`; gemessene Null bleibt ein Wert.
+- Source, SourceType, Timestamp, Confidence und Availability.
+- RequiresElevation, IsEstimated, IsCalculated, IsSensitive,
+  Classification, Error und optionalen DocumentationLink.
+- Herkunft `Direct`, `Derived`, `Database`, `Unconfirmed`, getrennt von
+  Confidence `Unknown`, `Unconfirmed`, `ProviderReported`, `Corroborated`.
+- Verfügbarkeit `Available`, `Unavailable`, `AccessDenied`, `Unsupported`,
+  `ProviderError`, `Stale`, `Unknown`.
 
-Noch nicht konsolidiert. Der nachstehende Testfehler muss technisch
-eingeordnet werden. Es wurde weder ein Catch ergänzt noch ein Fehler
-unterdrückt oder in Erfolg umgedeutet.
+`Present` akzeptiert nur vorhandene, endliche numerische Werte mit
+Available/Stale. `Missing` verlangt einen expliziten anderen Zustand;
+ein `default(T)` ohne `HasValue` ist kein Messwert. `AsStale` bewahrt
+Originalzeitpunkt und Wert. Fehlgeschlagener Refresh wird dadurch nicht
+als neue Messung ausgegeben. Unbestätigte Herkunft kann kein bestätigtes
+Vertrauen beanspruchen; abgeleitete Werte sind als Derived erkennbar.
+Datenbankherkunft wird nicht in Direct umgewandelt.
+Dokumentationslinks müssen absolute HTTP(S)-URLs ohne Zugangsdaten sein.
+Die Semantik wird mit gültigen und ungültigen Fällen geprüft.
 
-## 5. Loggingmodell
+Die bestehende Board-Hardwarecache-Zeitbasis ist davon noch nicht
+umgestellt; die Grenze wird in Abschnitt 10 ausdrücklich erhalten.
 
-Noch nicht geändert. Vorhandenes
-[Aktionsjournal](../src/SystemCockpit/Services/ActionJournal.cs),
-[lokale Messhistorie](../src/SystemCockpit/Services/LocalHistory.cs)
-und die vorhandenen Trace-/ILogger-Pfade bleiben unverändert.
-Keine neuen Logframeworks oder zusätzlichen personenbezogenen Logdaten.
+## 5. Fehlerbehandlungsmodell
 
-## 6. Cancellation und Timeouts
+[OperationOutcome](../src/AetherOperations.Shared/OperationOutcome.cs)
+trennt Success, Partial, Failed, Cancelled, TimedOut, Unavailable,
+AccessDenied, Unsupported und Unknown mit Quelle, stabilem Code,
+FailureKind, optionalem Exit-Code und HRESULT.
 
-Noch nicht geändert. Die unterschiedlichen Modelle aus
-[Shared-Runner](../src/AetherOperations.Shared/ManagedActionRunner.cs),
-[CommandRunner](../src/SystemCockpit/Services/CommandRunner.cs) und
-OperationsHub bleiben erhalten. Es wird keine neue Abbruch- oder
-Rollbackgarantie behauptet.
+| Ereignis | Neue technische Einordnung |
+|---|---|
+| Prozess-Exit 0, vollständig / gekürzt | Success / Partial |
+| Generischer Prozess-Exit ungleich 0 | Failed/Process, ursprünglicher Exit-Code |
+| Angeforderter Caller-Abbruch | Cancelled/Cancellation |
+| `TimeoutException` | TimedOut/Timeout |
+| OCE ohne nachgewiesenen Caller-Abbruch | Unknown, nicht automatisch Timeout oder Erfolg |
+| Rechtefehler einschließlich Win32 5 | AccessDenied/Access |
+| Fehlende Datei / Win32 2 oder 3 | Unavailable/MissingTool |
+| Nicht unterstützter Provider / Plattform | Unsupported/Provider |
+| HTTP-, Socket- oder Adapternetzfehler | Failed/Network |
+| Übrige Exception | Failed/Provider, keine Erfolgsersatzdaten |
 
-## 7. Lebenszyklen
+Der generische Exit-Adapter ersetzt **nicht** werkzeugspezifische
+Semantik, insbesondere smartctl-Bitmasken, Update-/Neustartzustände und
+bereits wirksam gewordene Windows-Schritte. OperationsHub bewahrt
+Fehler und möglichen Teilerfolg; scheitert zugleich das Auditjournal,
+bleiben beide Ursachen in einer AggregateException erhalten.
+Ein Live.log-Schreibfehler stoppt Folgewartung und führt nicht zu Erfolg.
+Keine neue versteckte Wiederholung, keine gelöschten Assertions.
 
-Noch keine Korrekturen vorgenommen. Keine Timer, Provider, Streams,
-Prozesshandler, Animationen oder laufenden Funktionen abgeschaltet.
+Erwartete Shutdown-OCE und „Prozess bereits beendet“ bleiben gezielte
+Lebenszyklusbehandlung. Native Win32-Fehler beim Shared-Prozessbereinigen
+werden jetzt mit PID, Fehlercode und HRESULT über Trace sichtbar.
+Bestehende sichtbare Modulfehler werden nicht blind global umgeschrieben.
 
-## 8. Doppelte Abfragen
+## 6. Logging- und Journalmodell
 
-Die angeforderte Bewertung nach Kosten, Änderungsrate, Nutzern,
-Aktualitätsbedarf und Invalidierung ist noch nicht durchgeführt.
-Aus dem Audit bekannte Kandidaten sind weiterhin nur Kandidaten.
+Die acht Severityklassen sind TRACE, DEBUG, INFO, NOTICE, WARNING, ERROR,
+CRITICAL und AUDIT. [TechnicalLog](../src/SystemCockpit/Services/TechnicalLog.cs)
+nutzt vorhandenes Trace: Error/Critical als TraceError, Warning als
+TraceWarning, übrige Kategorien bleiben benannt. Kein weiteres Framework;
+Server-ILogger bleibt erhalten. Trace hat damit **keinen neuen dauerhaften
+Sink** und ersetzt kein persistentes Audit.
 
-## 9. Tatsächlich optimierte Abfragen
+[TechnicalEvent](../src/AetherOperations.Shared/TechnicalEvent.cs) enthält
+Korrelations-ID, Modul, Aktion, Quelle, klassifiziertes Ziel, Rechte- und
+Bestätigungsangabe, Start/Ende, StopBehavior, Timeout, Rücknahmemöglichkeit
+und Outcome einschließlich Teilresultat/Exit/HRESULT. Der Zeitstempel
+liegt im äußeren Aktionsjournal. Unbekannte Rechte-/Bestätigungsangaben
+bleiben nullable statt erfunden. OperationsHub verwendet lokale/entfernte
+Zieltypen; keine neuen Rohbefehle oder Exceptiontexte im technischen Teil.
+Abschlussereignisse existieren jetzt auch bei Fehler, Timeout und Abbruch.
 
-Keine. Kein Cache eingeführt, keine Messquelle ersetzt.
+| Bestehender Pfad | Größen-/Aufbewahrungsstand und Grenze |
+|---|---|
+| ActionJournal | 16 MiB je Tagesdatei, höchstens 30 Dateien; erste übergroße Zeile wird jetzt ebenfalls abgewiesen |
+| LocalHistory | Opt-in; 16 MiB je Tagesdatei, sieben Dateien |
+| NetworkAlerts | Bestehende Prüfung um 2 MiB und Bereinigung nach sieben Tagen; kein neuer globaler Logvertrag |
+| Operations-`Live.log` | Bestehendes bestätigtes Ablaufprotokoll; keine allgemeine Rotation/Größenbegrenzung ergänzt |
+| Server-/Kontenaudit | Bestehende 100.000-Eintragsgrenzen; JSON-Speicherregeln separat |
+| Host-ILogger / Trace | Vorhandene Providerkonfiguration; keine neue persistente Rotation behauptet |
+| PCAP | Eigenes bestehendes Größen-/Zeit-/Aufbewahrungsmodell, kein Textjournal |
 
-## 10. Performance-Ausgangswerte
+Technische Zielwerte Sensitive/Secret werden redigiert. Das migriert
+**nicht** die alten `details` mit Ziel-/Berichtspfaden oder bestätigte
+Liveprotokolle. Bestehende Exportwarnungen bleiben erforderlich.
+Weitere Datenschutzgrenzen: Abschnitt 12 und
+[Sicherheit und Datenschutz](SECURITY-AND-PRIVACY.md).
 
-Keine neuen Produktmesswerte. Der Build dauerte laut Buildausgabe
-27,98 Sekunden; dies ist keine Kaltstart-, UI-, CPU-, GPU- oder
-Hardwareabfrage-Messung.
+## 7. Cancellation- und Timeoutmodell
 
-Das angeforderte reproduzierbare Messprotokoll
-`PERFORMANCE-BASELINE.md` wird nach Fortsetzungsentscheidung erstellt.
-Historische UI-Kompositionswerte werden nicht als neue Ausgangswerte
-übernommen.
+Die unterschiedlichen Betriebsmodelle bleiben absichtlich erhalten.
+„Prozessbaum“ meint den eigenen lokalen Baum; es ist keine Garantie,
+dass gestartete Dienste, Remoteprozesse oder Geräteaktionen enden.
 
-## 11. Datenschutzklassifikation
+| Pfad | Abbruch / Prozess / Timeout | Teilresultat, Änderungen und Rücknahme |
+|---|---|---|
+| Shared ManagedActionRunner | Caller-Cancellation, eigener Baum; 30 Minuten | Ausgabe begrenzt, Kürzung explizit; Tooländerungen nicht automatisch zurückgenommen |
+| CommandRunner / AdminShell | Caller-Cancellation, eigener Baum, Timeout je Aufruf | Wartet Prozess und beide Streams ab; 2.000.000 Zeichen je stdout/stderr, Überlauf explizit; keine implizite Rücknahme |
+| OperationsHub lokal / remote | Sofortiges Signal an Runner; lokal 90 Minuten, remote drei Minuten | Live-/Journalteilresultate; Remoteeffekte können fortbestehen |
+| Geführte Wartung | Stop nach laufendem Schritt, Timeout unendlich | Folgeaktionen stoppen; bereits abgeschlossene Schritte bleiben, Wiederherstellungspunkt kein Vollrollback |
+| Paketqueue | Serialisiert; Abbruch/Journalfehler beenden Folgearbeit; pro Paket 180 Minuten, Listenabfrage drei Minuten | Gewöhnliche Paketfehler können Folgepakete zulassen; Rest wird markiert; keine Transaktion |
+| Freie Konsole | Gewählte Minuten, eigener Shellbaum | Sensible freie Befehle nicht durch neuen technischen Logger protokolliert; Änderungen bleiben möglich |
+| Exakte Windows-Updates | Shared-Ausführung 30 Minuten; frische Auswahl, GUID/Revision/EULA/Zustimmung und verbrauchter Plan bleiben Pflicht | Teilinstallation/Neustart werkzeugspezifisch; kein Rollbackversprechen |
+| WindowsProbe / Topologie | Eigene PowerShellprozesse, 45 / 60 Sekunden | Probe wartet jetzt Stream-/Prozessende auch auf Fehlerpfaden; Topologie-Fallbacks bleiben erkennbar |
+| Ping / LAN | Ping zwei Sekunden; LAN 700 ms je Probe, höchstens 16 parallel / 254 Hosts | Abbruch an bestehender Probe-/Schleifengrenze; kein Scan für diese Abnahme ausgeführt |
+| Speedtest | Explizite Zustimmung; 120 Sekunden Gesamtfrist | Bereits gesendete Daten nicht rückholbar; kein Test ausgeführt |
+| smartctl / PresentMon | Eigener Werkzeugprozess; smartctl 90 Sekunden, PresentMon begrenztes Messfenster | Geräte-Selbsttest kann CLI überleben; vorhandene Logs/Bitmasken bleiben, kein Test gestartet |
+| Npcap | Nichtblockierende 20-ms-Pollschleife, 15 Minuten / 100.000.000 Bytes | Stop nach aktuellem Poll; Datei bleibt, Handle wird geschlossen; kein Mitschnitt ausgeführt |
+| Reporting / Server / Client | Bestehende Loop-/Request-/Hosttokens; Reporting-HttpClient zwei Minuten, feste Aufträge über Shared | Kein globaler Timeout erfunden; Opt-ins, Rechte und Bestätigungen unverändert; Tenantaktionen nicht geprüft |
 
-Noch kein neues feldbezogenes Modell implementiert. Vorhandene
-Exportwarnungen, Reporting-Zustimmungen und Schutzabfragen bleiben
-unverändert. Kein Zugriff auf produktive Konten oder Serverdaten.
+CommandRunner prüft bereits angeforderten Abbruch und ungültigen Timeout
+vor Prozessstart. Reader laufen vor möglichem Progressfehler; dessen
+Prozess wird im finally beendet und vollständig abgewartet. Caller-Token
+bleibt erhalten, Timeout bleibt eine eigene Exception. Hinweise auf
+Teilveränderungen und fehlende automatische Rücknahme bleiben sichtbar.
+**Stopp und Timeout sind kein Rollback.**
 
-## 12. RC1-Sprachstrategie
+## 8. Lebenszyklen und Ressourcen
 
-Vorgabe bleibt Deutsch zuerst bei erhaltener Mehrsprachigkeitsarchitektur.
-Das bestehende Englisch-Gate wurde nicht geändert, deaktiviert oder
-umgangen. Der angeforderte ausführliche Entwurf
-`RC-LANGUAGE-STRATEGY.md` steht noch aus. Keine RC-Version erzeugt.
+Prüfbasis sind die vollständige relevante Quelllektüre aus 0.5 und die
+gezielte M1-Nachverfolgung der Besitzer, Start-/Stop- und Fehlerpfade.
+Suchtreffer sind keine belegte Fehlerzahl. Statische Kontrolle und
+isolierte Tests werden nicht als realer Dauerbetriebstest ausgegeben.
 
-## 13. Ausgeführte Prüfungen
+| Ressource / Besitzer | Befund und tatsächliche Maßnahme |
+|---|---|
+| Prozesse / WindowsIdentity | Board-Pipename und Explorer-Prozesswrapper jetzt deterministisch freigegeben |
+| CommandRunner-Tasks / stdout / stderr | Initialer Progressfehler war außerhalb des Cleanupbereichs; korrigiert, eigener Baum und Reader vor Freigabe abgewartet |
+| WindowsProbe-Streams | Reader jetzt ohne vorzeitiges Caller-Cancel, nach Kill/Exit beide Tasks auch im finally abgewartet; Vorab-Cancellation verhindert Start |
+| CTS / Prozess-Events | using/finally in Runnern bleibt; keine neuen globalen Process-Events oder Fire-and-forget-Reader |
+| Worker-Tasks / Semaphore | Diagnose und Reporting nach Loopende entsorgt; Wake-Konfiguration unter Lock, beide MainWindow-Schließpfade warten Besitzer ab |
+| Sensorsemaphore / Hardwareprovider | Beide Schließpfade warten exklusiven Sensorzugriff und Providerfreigabe ab, anschließend Semaphore entsorgt; keine aktive Sensorfunktion abgeschaltet |
+| Timer / DispatcherTimer | DisplayPulse stoppt und entfernt Tick; Desktop-/Eventbrowser-/Sidebar-Lebenszyklen behalten Stop/Cancel; kein pauschales Stoppen bei minimiertem Hauptfenster |
+| Eventhandler / Adorner / AnimationClocks | FrameGlow/Branding behalten Unload-/Sichtbarkeits-/Systemanimationsregeln und entfernen globale Handler/Animationen; kein neues Neon-Design |
+| Named Pipes | Bestehende using-/Loop-Cancellation und Besitzgrenzen beibehalten; Wireformat unverändert, realer Host-/Schonerwechsel noch nicht abgenommen |
+| Sockets / HttpClient | Vorhandene endliche Requests, using/factory bzw. langlebige Clients nicht pro Tick entsorgt; keine Socket-/HTTP-Massenneuanlage eingeführt |
+| FileSystemWatcher / PerformanceCounter | Keine entsprechenden verwalteten Besitzer im eigenen C#-Code gefunden; Windows-Counterabfragen laufen in bestehenden subprocessbasierten Pfaden |
+| WMI / Audio / Display | Bounded PowerShell-/Interop-Abfragen bleiben; kein neuer langlebiger WMI-Searcher oder Topologiecache |
+| PresentMon / smartctl | Existierende Werkzeugbesitzer, Messgrenzen und Auswertung erhalten; Gerätewirkung nicht mit Wrapperlebensdauer gleichgesetzt |
+| Npcap / Dateien / native Handles | Bestehende finally-/Dispose-Pfade für Geräteliste, Capture und DLL sowie Dateigrenzen erhalten; keine Live-Capture-Abnahme |
+| Graph / Server | Zertifikatsprovider besitzt Dispose, bestehende HTTP-/Hostlebensdauer erhalten; keine neuen Zugangsdaten oder Tenantzugriffe |
 
-Nach dem Baseline-Commit, vor jeder technischen Änderung:
+xBar, Gadgets, Alarmierung, BoardFeed, Tray, Aufzeichnung und Server/Client
+wurden nicht für vermeintliche Idle-Gewinne abgeschaltet. Keine neue
+Telemetrie-Sichtbarkeitsregel. Realer Langzeit-/Resume-/Hardwarebetrieb
+bleibt separat zu messen.
 
-```powershell
-dotnet build .\SystemCockpit.slnx -c Release --no-restore
-dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build
-dotnet run --project .\tests\AetherManager.Tests -c Release --no-build
-```
+## 9. Performance-Baseline
 
-Der Verwaltungsrunner wurde anschließend unverändert ein zweites Mal
-ausgeführt. Im freigegebenen Diagnoseschritt folgten zwei weitere
-unveränderte Verwaltungsrunnerläufe. Beide Runner verwenden ihre vorhandenen synthetischen
-Fixtures; keine Reparaturen, Updates, Installation, Hardwareinitialisierung
-oder Tenantaktionen wurden ausgeführt.
+[PERFORMANCE-BASELINE](PERFORMANCE-BASELINE.md) enthält Methode,
+Reproduktionsbefehl, Umgebung, aktuelle Rohdatenauswertung und vollständige
+Produktmessmatrix. Der optionale Testmodus erzeugt ausschließlich ein
+synthetisches Fenster; lokale Adapterenumeration ohne Adress-/ID-Protokoll.
+
+Frisch gemessen: leeres Testfenster 2,60 Prozent Prozess-CPU bezogen auf
+einen Kern, bestehender FrameGlow 22,42 Prozent, synthetisches Board
+sichtbar 144,32 Prozent, Collapsed 0,49 Prozent. Auf 24 logische
+Prozessoren normalisiert: 0,108 / 0,934 / 6,013 / 0,020 Prozent.
+Board-Kompositionsintervalle p95 24,98 ms; **keine GPU-FPS**.
+Lokale Adapter-API: erster Aufruf 18,144 ms, Warmmedian 11,5983 ms bei
+25 Aufrufen. Keine neue Performanceverbesserung daraus behauptet.
+
+Produktkalt-/Warmstart, Bedienbarkeit, erste Hardwaredaten, Idle, GPU,
+Charts, echte Board-/Schonerhosts, Minimierung/Tray, xBar/Gadgets,
+Multi-Monitor/DPI, Offline/Providerfehler, Resume und Langzeitwerte sind
+**NICHT GEMESSEN**. CPU/Speicher/Threads/Handles des Testhosts ersetzen
+diese Produktwerte nicht. Keine historischen Werte als neue Baseline.
+
+## 10. Untersuchte doppelte Abfragen
+
+Bewertet wurden Netzadapter/Zähler in NativeMetrics und DashboardMetrics,
+Adapterinventar/Gateway, WindowsProbe/Diagnose/Clientinventar, Hardware-,
+Audio-/Displaytopologie, Geräteidentitäten und Monitorinformationen.
+Die [Cachematrix](PERFORMANCE-BASELINE.md#doppelte-abfragen-und-cacheentscheidung)
+dokumentiert Quelle, Verbraucher, Frequenz, Änderungsrate, Kostenbeleg
+und nötige Invalidierung. Nur der lokale Adapter-API-Teil ist frisch
+gemessen; vollständige Abfragekosten ansonsten NICHT GEMESSEN.
+
+Der vorhandene BoardFeed-Hardwarecache von ungefähr einer Minute hat im
+Legacyframe keinen eigenen Hardwarezeitstempel; Framefrische ist nicht
+gleich Topologiefrische. Keine neue PnP-/Resume-Invalidierung zugesichert.
+Ein geteilter Snapshot benötigt eigene Erfassungszeitpunkte, explizite
+Fehler/Stale-Semantik und Neuaufbau der Zählerbaselines nach Wechseln.
+
+## 11. Tatsächlich durchgeführte Optimierungen
+
+**Keine Abfragen zusammengelegt und keine neuen Caches eingeführt.**
+Der einzelne API-Kostenwert rechtfertigt keine Vermischung unterschiedlicher
+Zeitbasen, Zustimmungen und Fehlerverträge. Keine Abfragequelle oder
+Pollingfrequenz geändert. Die belegten Verbesserungen betreffen
+Lebensdauer, explizite Ausgabekürzung und nachvollziehbare Fehler,
+nicht behauptete Laufzeitbeschleunigung. Gemeinsame Ressourcen und
+eingefrorene UI-Objekte aus dem Ausgangsstand bleiben erhalten.
+
+## 12. Datenschutzklassifikation
+
+Neue Grundlage: Normal / Sensitive / Secret, Feldklassifikation unabhängig
+von Groß-/Kleinschreibung. Unbekannte Feldnamen gelten als Sensitive,
+leere Namen werden abgewiesen. Die explizite Normal-Allowlist enthält
+technische Metafelder wie Unit, SourceType, Timestamp, Availability,
+RequiresElevation, IsEstimated, IsCalculated, OperationState und ExitCode.
+
+| Geprüfte Datenklasse | Behandlung in der neuen Grundlage |
+|---|---|
+| Seriennummer, MAC, Monitor-/PnP-/Audio-ID, Gerätekennung | Sensitive |
+| Computer-/Benutzername, Benutzerpfad, IPv4/IPv6, Dumpinformationen | Sensitive, nicht aus vermeintlich anonymen Kennungen Normal ableiten |
+| Password/PasswordHash, Token/DeviceToken/AccessToken/RefreshToken/ClaimToken/CsrfToken/ProtectedToken | Secret |
+| ClientSecret, RecoveryKey/RecoveryPassword, PrivateKey/CertificatePrivateKey | Secret |
+
+`CanShare` erlaubt Normal, Sensitive nur mit expliziter Zustimmung,
+Secret auch mit dieser Zustimmung niemals. Ungültige Klassen bleiben
+gesperrt. Technische Journalziele werden ohne Sensitive-Zustimmung
+redigiert; dort keine zusätzlichen Hardwareidentitäten oder Pfade.
+
+Das ist eine feldbezogene Grundlage, **kein Scanner beliebiger Texte,
+keine automatische Nachrüstung aller Export-/Reportingpfade und keine
+pauschale Geheimnisfreiheit alter Protokolle**. Bestehende funktionale
+Gerätedetails bleiben sichtbar. Diagnostikexport hat weiterhin Vorschau,
+Zustimmung und bestehende Heuristik; vollständige IPv6-Redaktion ist
+damit nicht belegt. Alte Pfade/Formate müssen einzeln migriert werden.
+Keine Secrets, produktiven Kontendaten oder realen Dumps für Tests verwendet.
+
+## 13. RC1-Sprachstrategie
+
+[RC-LANGUAGE-STRATEGY](RC-LANGUAGE-STRATEGY.md) beschreibt den
+sprachabhängigen Releasevertrag: explizite erweiterbare `releaseLanguages`,
+sprachbezogener Status released/experimental, Prüf-/Reviewnachweise,
+Parität und Formatvalidierung für alle Ressourcen sowie vollständige
+Freigabe der tatsächlich erklärten Releasesprachen.
+
+RC1-DE ist das Ziel, nicht bereits abgenommen. Englisch bleibt vorhanden,
+**NICHT VOLLSTÄNDIG FREIGEGEBEN** und nicht auswählbar. Das heutige
+Englischgate bleibt unverändert aktiv, auch wenn es RC1-DE noch blockiert.
+Umstellung erst atomar mit vollständig getestetem sprachbewusstem
+Nachfolger; Negativtests und spätere eigene Englischfreigabe sind geplant.
+Keine CI-Änderung, kein Gate-Bypass, keine Sprach-/RESX-Entfernung.
 
 ## 14. Testergebnisse
 
+Die [Testanleitung](TESTING.md) enthält Runner und Nebenwirkungen.
+Nach logischen Codepaketen wurden Releasebuild und gezielte STA-Prüfungen
+ausgeführt; nach den letzten Ressourcenänderungen nochmals Gesamtbuild,
+beide Grundrunner und synthetischer Desktop-Smoke.
+
 | Prüfung | Tatsächliches Ergebnis |
 |---|---|
-| Lösungsbuild Release | Bestanden, null Warnungen und null Fehler |
-| STA-Grundrunner | Bestanden, 4.128 Assertions |
-| Verwaltungsrunner, erster Lauf | Fehlgeschlagen nach 162 HTTPS-/Konten-/Rollen-/CSRF-/Sitzungsassertions |
-| Verwaltungsrunner, unveränderter zweiter Lauf | Bestanden: 162 HTTPS-, 150 lokale Konten-, 14 Flottenprüfungen; insgesamt 384 Verwaltungsassertions |
-| Verwaltungsrunner, Diagnosewiederholungen 1 und 2 | Beide bestanden, jeweils 384 Verwaltungsassertions |
+| Finaler Release-Gesamtbuild, `--no-restore` | Bestanden, 0 Warnungen / 0 Fehler |
+| Finaler STA-Grundrunner | 4.250 Assertions bestanden, gegenüber Ausgangsstand 4.128: 122 zusätzliche |
+| Finaler Verwaltungsrunner | 384 Assertions bestanden; 162 HTTPS-, 150 Konten-, 14 Flottenprüfungen sind Teilmengen, nicht zusätzlich zu addieren |
+| Ressourcen-/Sprachkompatibilität | 3.277 Assertions bestanden |
+| Finaler synthetischer deutscher Modern-/Neon-Smoke | 3.611 Assertions bestanden; 22 Hell-/Dunkel-Testbilder, kein Realbetrieb |
+| Python-Lokalisierungstests | Drei Tests bestanden |
+| Optionaler Konsolidierungsmessmodus | Beendet, lokale Rohdatei erzeugt; kein Produktbenchmark |
+| Dokumentlinks / Diff | 63 relative Dateiziele geprüft, keine neuen fehlenden Ziele; zehn bereits in der Baseline enthaltene historische Paketlinks der Übergabe fehlen weiterhin; `git diff --check` bestanden |
 
-Die Abschnittszahlen des Verwaltungsrunners werden nicht nochmals zur
-ausgegebenen Gesamtsumme addiert. Der STA-Grundlauf ohne optionale
-UI-Schalter ist nicht mit früheren kombinierten UI-Läufen gleichzusetzen.
+Neue Tests prüfen Quellen-/Stale-/Nullsemantik, Herkunft und Confidence,
+Datenschutzklassen/Feldaliasse, technische Journalform und Größenlimits,
+exakt 2.000.000 / 2.000.001 Zeichen jeweils stdout **und** stderr,
+Caller-Abbruch, Timeout, Pre-Cancel, ungültigen Timeout, Progressfehler
+mit nachgewiesen beendetem eigenem Fixtureprozess und Worker-Dispose.
+Keine bestehenden Assertions gelöscht oder geschwächt.
 
-## 15. Testabweichung und Ursachenstand
+Keine Reparatur, Windows-Verwaltungsaktion, Updateinstallation, Erhebung
+produktiver Hardware/Sensoren, Treiberänderung, PCAP-Aufnahme, Speedtest,
+Netzscan, Tenantaktion, Installerprüfung oder Veröffentlichung ausgeführt.
+Kein Paket installiert oder neue Abhängigkeit benötigt.
 
-Erster Lauf:
+## 15. Bekannte intermittierende Ausgangsabweichung
+
+**BEOBACHTETE INTERMITTIERENDE AUSGANGSABWEICHUNG – URSACHE NICHT BELEGT**
+
+Vor technischen M1-Änderungen scheiterte der erste Verwaltungsrunner nach
+162 HTTPS-Assertions beim Austausch der synthetischen Kontendatei:
 
 ```text
 System.UnauthorizedAccessException: Access to the path is denied.
@@ -231,97 +346,96 @@ LocalAccountService.LoginAsync(...):102
 VerifyAccountsAsync(...):54
 ```
 
-Betroffen ist der atomare Austausch der synthetischen Kontendatei beim
-Anmelden im vorhandenen Testpfad. Belege:
-[Persistenz](../src/AetherManager.Server/Services/LocalAccountService.cs),
-[Kontenfixture](../tests/AetherManager.Tests/AccountAssertions.cs).
-Die Fixture legt ihren eigenen zufälligen Datenordner unter
-`tests\.manager-test-runs` an.
+Betroffen: zufälliger eigener Ordner unter `tests\.manager-test-runs`,
+keine produktiven Daten. Für den ursprünglichen Fehler wurden weder
+exakter Zielpfad/HRESULT noch Handlehalter protokolliert. Keine Ursache
+aus dem späteren Erfolg ableiten.
 
-Die bisherige Sichtung und der erfolgreiche unveränderte Wiederholungslauf
-belegen keine eindeutige Ursache. Eine externe Dateisperre oder
-Schutzsoftware ist nicht nachgewiesen und wird nicht als Erklärung
-behauptet. Es wurde nichts an Dateirechten oder Schutzrichtlinien geändert.
+Die ausdrücklich freigegebene begrenzte Diagnose ergab:
 
-Da noch keine technische Konsolidierungsänderung vorgenommen wurde, ist
-dies keine nachgewiesene durch Meilenstein 1 verursachte Regression.
-Es ist jedoch ein ungeklärter Fehler des Ausgangslaufs. Vorsorglicher
-Stopp entsprechend der angeforderten Test- und Stoppregeln, statt
-einen Wiederholungserfolg als Ursachenklärung zu behandeln.
+1. Schreibstream wird vor atomarem Move abgewartet/geschlossen;
+   Zustand erst nach erfolgreichem Austausch übernommen, Semaphore
+   schützt interne Zugriffe. Kein eigener offener Leser belegt.
+2. Unveränderter direkter Folgelauf und zwei weitere unveränderte
+   Diagnoseläufe bestanden jeweils 384 Assertions.
+3. Zwei isolierte Serien mit je 500 Austauschen ohne gehaltenen Reader
+   bestanden; PowerShell-.NET-Probe, kein weiterer Produktkontentest.
+4. Bewusst gehaltene Leser reproduzierten in allen vier getesteten
+   FileShare-Kombinationen UnauthorizedAccessException / `0x80070005`.
+   Ziel blieb unverändert, Dateiattribut Archive, nicht ReadOnly.
+5. Im begrenzten Zeitfenster ab 21:50 keine passenden Defender-Ereignisse
+   1123/1124 zum Fixturepfad. Kein allgemeiner AV-Ausschluss.
 
-### Freigegebene gezielte Diagnose
+Ein Handle kann die Exceptionklasse auslösen; Sperrhalter und Ursache
+des ursprünglichen Laufs bleiben unbelegt. **Kein Virenscanner als
+Ursache behauptet.** Keine ACL-/Schutzänderung, versteckten Retries oder
+systemweite Daueraufzeichnung. Die spätere ausdrückliche Fortsetzungsfreigabe
+ersetzte den vorsorglichen Stopp. Kein erneutes Auftreten in den danach
+ausgeführten M1-Verwaltungsläufen.
 
-1. **Kontrollfluss:** `SaveAsync` erstellt eine neue zufällige Stagingdatei,
-   schreibt und flusht sie, wartet `DisposeAsync` des Schreibstreams ab und
-   führt erst dann `File.Move(..., overwrite: true)` aus. Der interne
-   Kontenzustand wird erst nach erfolgreichem Dateiaustausch übernommen.
-   Die Methoden sind durch den vorhandenen Semaphore geschützt.
-   Die sichtbaren Testlesevorgänge werden vor der folgenden Anmeldung
-   abgewartet. Daraus ergibt sich kein belegter eigener parallel
-   offengehaltener Lesestream im ursprünglichen Fehlerpfad.
-2. **Reproduktion ohne Sperre:** Zwei isolierte Serien mit jeweils
-   500 Austauschvorgängen auf neu angelegten synthetischen JSON-Dateien
-   bestanden. Schreiboptionen, Flush und asynchrones Schließen entsprechen
-   dem Dateipersistenzablauf. Diese Probe läuft im PowerShell-.NET-Host
-   und ist kein zusätzlicher Produkt- oder Kontentestinhalte-Nachweis.
-3. **Kontrollierte Sperre:** Bei bewusst geöffnetem Lesestream scheitert
-   derselbe Dateiaustausch reproduzierbar mit
-   `UnauthorizedAccessException`, HRESULT `0x80070005`.
-   Dies wurde für `FileShare.Read`, `Read | Delete`, `ReadWrite` sowie
-   `ReadWrite | Delete` beobachtet. In allen vier Fällen blieb die
-   Zieldatei unverändert. Die Dateien hatten das Attribut `Archive`,
-   nicht `ReadOnly`. Nach Schließen und Entfernen der eigenen
-   Fixturedateien wurden die beiden Diagnoseordner entfernt.
-4. **Unveränderter Produktpfad:** Zwei zusätzliche Verwaltungsrunnerläufe
-   bestanden jeweils 384 Assertions. Zusammen mit dem unmittelbaren
-   Wiederholungslauf liegen damit drei erfolgreiche Läufe nach dem
-   ursprünglichen Fehler vor. Kein produktiver Quellcode und kein Test
-   wurde dafür geändert.
-5. **Windows-Ereignisse:** Im untersuchten Zeitfenster ab 21:50 wurden
-   keine zum konkreten Fixturepfad passenden Defender-Ereignisse 1123/1124
-   gefunden. Das ist weder ein allgemeiner AV-Ausschluss noch ein Beweis,
-   dass keine andere Dateisperre bestand.
+Der Runner gibt künftig beim echten Fehler Zeitpunkt, Phase,
+synthetischen Fixturepfad und HRESULT aus und endet weiterhin fehlerhaft.
+Bei Wiederkehr begrenzte Handleprüfung nur bei vertretbarem Aufwand,
+danach technische Blockerbewertung; keine Wiederholung bis Grün.
 
-**Einordnung:** Ein dauerhaft fehlendes Schreibrecht ist für die neu
-erzeugten erfolgreichen Fixtures nicht nachgewiesen. Ein offener Handle
-kann die beobachtete Exceptionklasse auslösen, ohne dass ein
-Berechtigungswechsel nötig ist. Für den ursprünglichen Lauf wurden
-jedoch weder ein HRESULT noch der Handlehalter aufgezeichnet. Daher ist
-„externe Sperre“, insbesondere „Virenscanner“, weiterhin nur eine
-Hypothese, keine nachgewiesene Ursache. Keine Produktionsreparatur,
-keine Retrylogik und keine Änderung von ACLs oder Schutzsoftware.
+## 16. Neue Regressionen
 
-## 16. Offene Punkte und Entscheidung
+In den ausgeführten Prüfungen **keine neuen Regressionen beobachtet**.
+Das ist keine Aussage über ungetestete Hardware-, Installer-, Tenant-,
+Resume- oder Langzeitpfade. Die Ausgangsabweichung wird weder als neue
+M1-Regression noch als gelöst umetikettiert. Keine neue ungeklärte
+Testabweichung, beschädigte Schutzabfrage oder Datenverlust beobachtet.
 
-Der freigegebene begrenzte Diagnoseschritt ist ausgeführt. Eine endgültige
-Ursachenzuordnung bleibt offen; dazu müsste der ursprüngliche Fehler mit
-gleichzeitiger auf die Fixture begrenzter Handle-/Dateioperationsdiagnose
-erneut auftreten. Keine systemweite Aufzeichnung oder dauerhafte
-Überwachung wurde eingerichtet.
+## 17. Offene technische Schulden
 
-Die technische Konsolidierung bleibt vorerst angehalten. Eine Fortsetzung
-trotz der dokumentierten intermittierenden Ausgangsabweichung erfordert
-eine ausdrückliche Entscheidung; eine bloße Wiederholung bis Grün
-ersetzt sie nicht.
+- Schrittweise Integration der Metadaten in vorhandene Verbraucher;
+  getrennte Quellen-/Hardwarezeitpunkte und Stale-Verhalten pro Legacy-Pfad.
+- Klassifizierte Migration alter `details`, Exporte, Reports und Live.log;
+  allgemeine Live.log-Größen-/Aufbewahrungsregeln, vollständige IPv6-Prüfung.
+- Ursache der dokumentierten einmaligen Kontendatei-Abweichung.
+- Produktmessmatrix einschließlich GPU, Resume, Multi-Monitor und
+  Langzeit-Ressourcenverlauf; keine Grenzwerte ohne reale Messbasis.
+- Nachweis echter Prozess-/Dienst-/Remote-/Gerätefolgen bei Abbruch;
+  Prozessende bleibt kein universelles Ende externer Arbeit.
+- Sprachbezogener Auditvertrag/Validator, atomarer CI-Wechsel und
+  reale vollständige deutsche Abnahme; spätere Englischfreigabe separat.
+- Reale Hardware-/Sensor-/Capture-/Schoner-/Installations-/Tenantabnahme
+  und weitere RC-Risiken aus dem [Readiness-Audit](RC-READINESS-AUDIT.md).
+- Zehn alte Paketverweise der Übergabe zeigen auf nicht vorhandene
+  historische Ausgaben; keine Ersatzpakete erzeugt oder Geschichte verändert.
 
-Bis dahin bleiben alle neun Konsolidierungsarbeitspakete offen:
-Quellenmodell, Fehler, Logging, Cancellation, Lebenszyklen, Messbarkeit,
-Abfragebewertung, Datenschutz und RC1-Sprachstrategie.
-Keine Assertions gelöscht, abgeschwächt oder Test-Snapshots aktualisiert.
+Das sind benannte Folgearbeiten, keine stillen Erfolgsersatzwerte oder
+entfernten Funktionen. Dieser Meilenstein erklärt sie nicht für erledigt.
 
-## 17. Risiken
+## 18. Auswirkungen auf Meilenstein 2
 
-Der erfolgreiche zweite Lauf ist kein Stabilitätsnachweis für den
-Dateiaustausch. Eine pauschale Wiederholungslogik, das Ignorieren der
-Exception oder das Aufweichen der Dateirechte würde die Ursache
-verdecken und wurde nicht implementiert.
+Quellen-/Ergebnisverträge, sichere technische Metadaten und reproduzierbarer
+Teilmessmodus sind als Ausgangspunkt vorhanden. Vor weiteren Optimierungen
+Produktmessmatrix/Budgets und Invalidierungsvertrag festlegen. Vollständige
+Verbrauchermigration nur kompatibel und mit Zustands-/Fehlernachweisen.
+Keine Meilenstein-2-Umsetzung oder neue Funktionsplanung begonnen.
 
-Die übrigen RC-Risiken aus dem
-[Readiness-Audit](RC-READINESS-AUDIT.md) bleiben bestehen.
+## 19. Auswirkungen auf Meilenstein 3
 
-## 18. Auswirkungen auf Meilenstein 2 und 3
+Die Sprachstrategie verhindert eine dauerhafte Deutsch-Sackgasse;
+Release-/Hardware-/Installerabnahme bleibt separat. Kein neuer Renderer,
+FrameGlow-Ersatz, UI-Umbau oder Featureabbau. Retro-Neon, umlaufende Linien,
+Animationen und Anzeigen bleiben erhalten. Meilenstein 3 nicht begonnen.
 
-Keine Umsetzung und keine Vorwegnahme. Retro-Neon, Cockpitanzeigen,
-umlaufende Linien, Animationen und Funktionsumfang bleiben erhalten.
-Meilenstein 1 ist noch nicht abnahmebereit; Meilenstein 2 und 3 starten
-nicht aufgrund dieses Zwischenberichts.
+## 20. Abnahmestatus und Stopp
+
+**MEILENSTEIN 1 ABNAHMEBEREIT.**
+
+Begründung: alle neun freigegebenen Themen sind durch kompatible Grundlage,
+belegte Lebenszyklus-/Fehlerkorrekturen, ausführbare Tests, frische
+Teilmessungen, begründete Nicht-Caching-Entscheidung und die verlangte
+Sprachstrategie bearbeitet. Die erlaubten nicht gemessenen Produktfälle
+und noch nicht migrierten Legacyflächen sind ausdrücklich ausgewiesen.
+Build/Runner bestehen; die bekannte Ausgangsabweichung bleibt ursächlich
+offen und wurde entsprechend der Fortsetzungsfreigabe nicht verdeckt.
+
+Das Urteil betrifft die technische Grundlage, **nicht RC-Reife, vollständige
+Datenschutzmigration oder reale Produktperformance**. Abnahme durch den
+Auftraggeber steht aus. Keine Versionsanhebung, neue Installer, Pushes,
+Tags, Releases oder Merges. **Hier Stopp; Meilenstein 2 und 3 benötigen
+einen neuen Auftrag.**
