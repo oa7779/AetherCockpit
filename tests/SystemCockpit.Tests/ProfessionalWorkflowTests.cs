@@ -226,6 +226,51 @@ internal static class ProfessionalWorkflowTests
             Check(tasks.Results.Items.Count == 0 && !Descendants(tasks).OfType<Button>().Single().IsEnabled, "No-result state disables opening, not a fake default action");
         }
         finally { tasks.Close(); }
+        DesktopText.Configure("en");
+        try
+        {
+            var englishTasks = new TaskCenterWindow { ShowInTaskbar = false };
+            try
+            {
+                englishTasks.Show(); Pump();
+                Check(englishTasks.Title == "AETHER | Workspace and feature search" &&
+                    System.Windows.Automation.AutomationProperties.GetName(englishTasks.SearchBox) == "Feature search" &&
+                    Equals(englishTasks.CategoryBox.Items[0], "All areas") &&
+                    Equals(Descendants(englishTasks).OfType<Button>().Single().Content, "Open area / do not run anything"),
+                    "English workspace chrome and accessibility labels use authored translations");
+                englishTasks.Width = 780; englishTasks.Height = 560; Pump(); englishTasks.UpdateLayout();
+                var resultContainer = (ListBoxItem)englishTasks.Results.ItemContainerGenerator.ContainerFromIndex(0);
+                Check(resultContainer is not null &&
+                    Descendants(resultContainer).OfType<TextBlock>().Any(text =>
+                        text.Text == ((CockpitTask)englishTasks.Results.Items[0]).Title &&
+                        text.TextWrapping == TextWrapping.Wrap && text.ActualWidth > 0),
+                    "Workspace result titles wrap at narrow supported window sizes");
+                if (screenshotPrefix is not null)
+                    ModuleTests.SaveScreenshot(englishTasks, screenshotPrefix + "-workspace-english.png");
+                englishTasks.SearchBox.Text = "zznichtvorhanden";
+                Pump();
+                Check(englishTasks.Results.Items.Count == 0 &&
+                    Descendants(englishTasks).OfType<TextBlock>().Any(text => text.Text == "No matching feature") &&
+                    !Descendants(englishTasks).OfType<Button>().Single().IsEnabled,
+                    "English empty search remains safe and disables opening");
+            }
+            finally { englishTasks.Close(); Pump(); }
+            var events = new SystemCockpit.Controls.EventBrowser();
+            try
+            {
+                ((TextBox)events.FindName("Days")).Text = "31";
+                var controls = (WrapPanel)events.FindName("QueryControls");
+                var readButton = controls.Children.OfType<Button>()
+                    .Single(button => Equals(button.Content, DesktopUiText.Get("Layout.ReadChannel")));
+                readButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Pump();
+                Check(((TextBlock)events.FindName("Status")).Text ==
+                    "Event query failed: Enter days 1..30 and a limit of 1..2000.",
+                    "English event query validation reports failure without reading Windows events");
+            }
+            finally { events.Shutdown(); }
+        }
+        finally { DesktopText.Configure("de"); }
         var model = new CockpitModel();
         var center = new ControlCenterWindow(model) { ShowInTaskbar = false };
         try
@@ -262,8 +307,10 @@ internal static class ProfessionalWorkflowTests
             network.Show(); Pump();
             var grid = Descendants(network).OfType<DataGrid>().Single();
             Check(grid.Items.Count == 2 && !watch.IsCapturing, "Network UI renders synthetic packets without capture/monitoring");
-            var protocol = Descendants(network).OfType<ComboBox>().Single(c => c.ItemsSource == PacketFilter.Protocols);
-            protocol.SelectedItem = "DNS";
+            var protocol = Descendants(network).OfType<ComboBox>().Single(c =>
+                c.SelectedValuePath == "Key" && c.Items.Cast<KeyValuePair<string, string>>()
+                    .Select(item => item.Key).SequenceEqual(PacketFilter.Protocols));
+            protocol.SelectedValue = "DNS";
             Descendants(network).OfType<Button>().Single(b => Equals(b.Content, "Filter anwenden")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             grid.SelectedIndex = 0; Pump();
             if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(network, screenshotPrefix + "-netzwerk.png");

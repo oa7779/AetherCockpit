@@ -26,7 +26,7 @@ public static class SpeedTest
     public static async Task<string> DownloadAsync(int mib, CancellationToken token, IProgress<string>? progress = null)
     {
         if (mib is < MinMiB or > MaxMiB)
-            throw new ArgumentException($"Testgroesse: {MinMiB} bis {MaxMiB} MiB.");
+            throw new ArgumentException(DesktopUiText.Format("Speed.InvalidSize", MinMiB, MaxMiB));
         var requested = (long)mib * 1048576;
         using var client = new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
         using var limit = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -52,15 +52,13 @@ public static class SpeedTest
                 }
             }
             watch.Stop();
-            if (total == 0) throw new InvalidOperationException("Messziel lieferte keine Daten.");
-            return $"Download-Durchsatz: {FormatResult(total, watch.Elapsed.TotalSeconds)}\n" +
-                $"Messziel: https://{TargetHost} (eine HTTPS-Verbindung, {total / 1048576d:0.0} MiB uebertragen)\n" +
-                "Hinweis: Anwendungsdurchsatz dieser einen Verbindung. WLAN, VPN, Auslastung und Serverlimits " +
-                "wirken mit; kein Upload-Test, keine Tarif- oder Leitungsgarantie.";
+            if (total == 0) throw new InvalidOperationException(DesktopUiText.Get("Speed.NoData"));
+            return DesktopUiText.Format("Speed.Result", FormatResult(total, watch.Elapsed.TotalSeconds),
+                TargetHost, total / 1048576d);
         }
         catch (OperationCanceledException) when (!token.IsCancellationRequested)
         {
-            throw new TimeoutException("Speedtest-Zeitlimit von 120 s erreicht.");
+            throw new TimeoutException(DesktopUiText.Get("Speed.Timeout"));
         }
     }
 }

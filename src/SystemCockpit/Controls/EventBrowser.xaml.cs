@@ -29,15 +29,15 @@ public partial class EventBrowser : UserControl
     private async void ReadClicked(object sender, RoutedEventArgs e) => await ReadAsync();
     private Task ReadAsync() => RunAsync(async token =>
     {
-        var channel = Channel.SelectedItem as string ?? throw new ArgumentException("Ereigniskanal auswaehlen.");
+        var channel = Channel.SelectedItem as string ?? throw new ArgumentException(DesktopUiText.Get("EventBrowser.SelectChannel"));
         if (!int.TryParse(Days.Text, out var days) || days is < 1 or > 30 ||
             !int.TryParse(Limit.Text, out var limit) || limit is < 1 or > 2000)
-            throw new ArgumentException("Tage 1..30 und Limit 1..2000 eingeben.");
+            throw new ArgumentException(DesktopUiText.Get("EventBrowser.InvalidRange"));
         var snapshot = await EventMonitor.ReadChannelAsync(channel, days, limit, token);
         Records.ItemsSource = snapshot.Events.OrderByDescending(r => r.Timestamp).ToList();
         Filter();
-        Status.Text = $"{channel} / {snapshot.Events.Count} Ereignisse / bis {limit} Eintraege / {days} Tage / {DateTime.Now:HH:mm:ss}" +
-            (snapshot.Issues.Count > 0 ? " / HINWEISE: " + string.Join(" | ", snapshot.Issues) : "");
+        Status.Text = DesktopUiText.Format("EventBrowser.Status", channel, snapshot.Events.Count, limit, days, DateTime.Now) +
+            (snapshot.Issues.Count > 0 ? DesktopUiText.Format("EventBrowser.Issues", string.Join(" | ", snapshot.Issues)) : "");
         Details.Clear();
     });
     private async void ChannelsClicked(object sender, RoutedEventArgs e) => await RunAsync(async token =>
@@ -46,11 +46,11 @@ public partial class EventBrowser : UserControl
             "$errors=@(); $logs=@(Get-WinEvent -ListLog * -ErrorAction SilentlyContinue -ErrorVariable errors | Select-Object -ExpandProperty LogName); " +
             "@{Logs=@($logs);Issues=@($errors | ForEach-Object {$_.Exception.Message})} | ConvertTo-Json -Compress", token);
         using var doc = JsonDocument.Parse(json);
-        var logs = doc.RootElement.GetProperty("Logs").Deserialize<List<string>>() ?? throw new InvalidOperationException("Kein Kanalformat.");
+        var logs = doc.RootElement.GetProperty("Logs").Deserialize<List<string>>() ?? throw new InvalidOperationException(DesktopUiText.Get("EventBrowser.InvalidChannels"));
         Channel.ItemsSource = logs.Order().ToList();
         Channel.SelectedIndex = 0;
         var issues = doc.RootElement.GetProperty("Issues").Deserialize<List<string>>() ?? [];
-        Status.Text = $"{logs.Count} Ereigniskanaele / {issues.Count} Abfragefehler";
+        Status.Text = DesktopUiText.Format("EventBrowser.ChannelsStatus", logs.Count, issues.Count);
         Details.Text = string.Join("\n", issues);
     });
     private void FilterChanged(object sender, TextChangedEventArgs e) => Filter();
@@ -69,31 +69,31 @@ public partial class EventBrowser : UserControl
     }
     private async void FullDetailsClicked(object sender, RoutedEventArgs e) => await RunAsync(async token =>
     {
-        if (Records.SelectedItem is not MonitorEvent record || record.RecordId < 0) throw new ArgumentException("Ereignis auswaehlen.");
+        if (Records.SelectedItem is not MonitorEvent record || record.RecordId < 0) throw new ArgumentException(DesktopUiText.Get("EventBrowser.SelectEvent"));
         var result = await CommandRunner.PowerShellAsync(
             $"$e=Get-WinEvent -LogName {AdminManagement.Quote(record.Log)} -FilterXPath '*[System[EventRecordID={record.RecordId}]]' -MaxEvents 1; " +
             "$e | Format-List TimeCreated,Id,RecordId,ProviderName,LevelDisplayName,Message; $e.ToXml()", token);
         Details.Text = result;
-        Status.Text = "Ausgewaehltes Ereignis / Volltext + XML gelesen.";
+        Status.Text = DesktopUiText.Get("EventBrowser.DetailsRead");
     });
     private void CancelClicked(object sender, RoutedEventArgs e) => Cancel();
     private Task RunAsync(Func<CancellationToken, Task> action)
     {
-        if (_stop is not null) { Status.Text = "Abfrage laeuft bereits."; return Task.CompletedTask; }
+        if (_stop is not null) { Status.Text = DesktopUiText.Get("EventBrowser.AlreadyRunning"); return Task.CompletedTask; }
         _pending = Execute();
         return _pending;
         async Task Execute()
         {
             _stop = new();
-            Status.Text = "Ereignisdaten werden gelesen ...";
+            Status.Text = DesktopUiText.Get("EventBrowser.Reading");
             Channel.IsEnabled = Days.IsEnabled = Limit.IsEnabled = false;
             try { await action(_stop.Token); }
-            catch (OperationCanceledException) { Status.Text = "Ereignisabfrage abgebrochen."; }
+            catch (OperationCanceledException) { Status.Text = DesktopUiText.Get("EventBrowser.Cancelled"); }
             catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or JsonException or TimeoutException or
                 System.ComponentModel.Win32Exception or System.IO.IOException or System.Xml.XmlException)
             {
                 Records.ItemsSource = null;
-                Status.Text = "Ereignisabfrage fehlgeschlagen: " + ex.Message;
+                Status.Text = DesktopUiText.Format("EventBrowser.Failed", ex.Message);
                 Details.Text = ex.Message;
                 Trace.TraceError("Eventbrowser: {0}", ex);
             }

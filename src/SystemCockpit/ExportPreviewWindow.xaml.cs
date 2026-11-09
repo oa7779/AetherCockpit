@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
+using SystemCockpit.Services;
 
 namespace SystemCockpit;
 
@@ -26,7 +27,7 @@ public partial class ExportPreviewWindow : Window
     {
         var dialog = new SaveFileDialog
         {
-            Filter = "Textdatei (*.txt)|*.txt",
+            Filter = DesktopUiText.Get("Export.TextFilter"),
             FileName = $"AETHER-Diagnose-{DateTime.Now:yyyyMMdd-HHmmss}{(RedactToggle.IsChecked == true ? "-geschwaerzt" : "")}.txt"
         };
         if (dialog.ShowDialog(this) != true) return;
@@ -38,7 +39,7 @@ public partial class ExportPreviewWindow : Window
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            MessageBox.Show(this, ex.Message, "Bericht nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, DesktopUiText.Get("Export.SaveFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

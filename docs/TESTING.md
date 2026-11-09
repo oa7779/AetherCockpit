@@ -1,5 +1,31 @@
 # Tests
 
+## Freigabeschranke Englisch
+
+Englisch bleibt deaktiviert, bis Quellstellen und datenflussabhängige
+Anzeigen geprüft und beide Oberflächen zur Laufzeit kontrolliert sind.
+Die Bestandsaufnahme ist nicht vollständig und kann die manuelle Prüfung
+nicht ersetzen. Für eine englische Veröffentlichung muss zusätzlich diese
+Schranke bestehen:
+
+```powershell
+python .\tests\desktop_localization_audit.py --require-complete
+python -m unittest discover -s .\tests -p test_desktop_localization_audit.py
+```
+
+Die Schranke schlägt bei fehlenden Ressourcen, offenen Textstellen,
+ungeprüften Anzeigen oder ausstehender Gesamtprüfung fehl. Ohne
+`--require-complete` bleibt die Bestandsaufnahme für Entwicklungsstände
+ausführbar und bedeutet keine Freigabe. Der Windows-Buildworkflow führt
+die Schranke bei Versionsprofilen mit `-rc.` vor dem Build aus; Betaprofile
+werden dadurch nicht blockiert.
+
+Der Windows-CI-Lauf prüft außerdem die synthetischen Professional-,
+Katalog-, Board- und Sensorverlauf-Oberflächen. Die Professional-Prüfung
+erzeugt getrennte Workflow-Screenshots mit Testdaten. Die teilweise englische
+Funktionssuche enthält weiterhin deutsche Katalogdaten; ihr Screenshot ist
+keine Freigabe der englischen Oberfläche.
+
 ## Serverentwicklungsbranch
 
 [Windows-CI 42504760899](https://github.com/oa7779/AetherCockpit/actions/runs/42504760899)

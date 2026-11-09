@@ -4,6 +4,89 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="ManagerClient.InvalidCode" xml:space="preserve"><value>Einen gueltigen einmaligen Anmeldecode eingeben.</value></data>
+  <data name="ManagerClient.EmptyEnrollment" xml:space="preserve"><value>Der Server lieferte keine Geraeteanmeldung.</value></data>
+  <data name="ManagerClient.InvalidEnrollment" xml:space="preserve"><value>Der Server lieferte eine ungueltige Geraeteanmeldung.</value></data>
+  <data name="ManagerClient.NotEnrolled" xml:space="preserve"><value>Zentralverwaltung: aktiviert, aber dieses Geraet ist noch nicht angemeldet.</value></data>
+  <data name="ManagerClient.Pending" xml:space="preserve"><value>Zentralverwaltung: Geraet wartet auf manuelle Freigabe (pending).</value></data>
+  <data name="ManagerClient.Revoked" xml:space="preserve"><value>Zentralverwaltung: Geraet wurde gesperrt (revoked); keine Berichte werden gesendet.</value></data>
+  <data name="ManagerClient.UnknownState" xml:space="preserve"><value>Zentralverwaltung: unbekannter Geraetestatus ({0}); keine Berichte werden gesendet.</value></data>
+  <data name="ManagerClient.MissingState" xml:space="preserve"><value>nicht gemeldet</value></data>
+  <data name="ManagerClient.NextReport" xml:space="preserve"><value>Zentralverwaltung: freigegeben; naechster Bericht zur vollen Stundenfrist.</value></data>
+  <data name="ManagerClient.ReportSent" xml:space="preserve"><value>Zentralverwaltung: Diagnosebericht gesendet ({0:HH:mm}).</value></data>
+  <data name="ManagerClient.Timeout" xml:space="preserve"><value>Zentralverwaltung: Anfragezeitlimit erreicht: {0}</value></data>
+  <data name="ManagerClient.Failure" xml:space="preserve"><value>Zentralverwaltung: Uebertragung/Abfrage fehlgeschlagen: {0}</value></data>
+  <data name="ManagerClient.EmptyStatus" xml:space="preserve"><value>Der Server lieferte keinen Geraetestatus.</value></data>
+  <data name="ManagerClient.InvalidUrl" xml:space="preserve"><value>Server-URL: HTTPS fuer Netzwerkziele; HTTP nur fuer localhost. URL ohne Pfad oder Zugangsdaten eingeben.</value></data>
+  <data name="History.Summary" xml:space="preserve"><value>{0} Punkte | MIN {1:0.##} | MAX {2:0.##} | AVG {3:0.##} {4}</value></data>
+  <data name="History.FileTooLarge" xml:space="preserve"><value>Logdatei groesser als 16 MiB.</value></data>
+  <data name="History.TooManyPoints" xml:space="preserve"><value>Mehr als 43200 Messpunkte pro Datei.</value></data>
+  <data name="History.LineTooLarge" xml:space="preserve"><value>Logzeile groesser als 1 MiB.</value></data>
+  <data name="History.UnknownSchema" xml:space="preserve"><value>Unbekanntes Logschema.</value></data>
+  <data name="History.TotalCpu" xml:space="preserve"><value>CPU Gesamt</value></data>
+  <data name="History.MemoryUsage" xml:space="preserve"><value>RAM Belegung</value></data>
+  <data name="History.MissingSensorId" xml:space="preserve"><value>Sensor-ID fehlt</value></data>
+  <data name="History.TooManyNotices" xml:space="preserve"><value>Mehr als 100 Loghinweise.</value></data>
+  <data name="History.LineError" xml:space="preserve"><value>Zeile {0}: {1}</value></data>
+  <data name="History.TooManyDamagedLines" xml:space="preserve"><value>Mehr als 100 beschaedigte Logzeilen.</value></data>
+  <data name="History.TooManySeries" xml:space="preserve"><value>Mehr als 2048 Messreihen.</value></data>
+  <data name="History.NonFiniteValue" xml:space="preserve"><value>Nicht-endlicher Messwert.</value></data>
+  <data name="History.NoMatchingSeries" xml:space="preserve"><value>Keine gemeinsamen Messreihen.</value></data>
+  <data name="Frame.InvalidProcess" xml:space="preserve"><value>Exakten Prozessnamen ohne Pfad eingeben, z.B. Spiel.exe.</value></data>
+  <data name="Frame.InvalidDuration" xml:space="preserve"><value>Capture-Dauer 5 bis 600 Sekunden.</value></data>
+  <data name="Frame.AbsolutePath" xml:space="preserve"><value>Absoluter CSV-Pfad erforderlich.</value></data>
+  <data name="Frame.TooLarge" xml:space="preserve"><value>Frame-CSV groesser als 64 MiB.</value></data>
+  <data name="Frame.Empty" xml:space="preserve"><value>Frame-CSV ist leer.</value></data>
+  <data name="Frame.MissingColumns" xml:space="preserve"><value>PresentMon-Framezeit-/Application-Spalten fehlen.</value></data>
+  <data name="Frame.TooManyFrames" xml:space="preserve"><value>Mehr als 1 Million Frames.</value></data>
+  <data name="Frame.InvalidRow" xml:space="preserve"><value>Ungueltige CSV-Zeile.</value></data>
+  <data name="Frame.InvalidColumnCount" xml:space="preserve"><value>CSV-Spaltenanzahl Zeile {0} ungueltig.</value></data>
+  <data name="Frame.InvalidTime" xml:space="preserve"><value>Ungueltige Framezeit Zeile {0}.</value></data>
+  <data name="Frame.NotReported" xml:space="preserve"><value>nicht gemeldet</value></data>
+  <data name="Frame.TooManySwapchains" xml:space="preserve"><value>Mehr als 256 Swapchains.</value></data>
+  <data name="Sensor.DuplicateIds" xml:space="preserve"><value>{0} mehrfach gemeldete Sensor-IDs: unterschiedliche Kanalnamen getrennt; identische Meldungen zusammengefasst.</value></data>
+  <data name="Sensor.ConflictingChannels" xml:space="preserve"><value> {0} widerspruechliche Kanaele nicht verfuegbar.</value></data>
+  <data name="Speed.InvalidSize" xml:space="preserve"><value>Testgroesse: {0} bis {1} MiB.</value></data>
+  <data name="Speed.NoData" xml:space="preserve"><value>Messziel lieferte keine Daten.</value></data>
+  <data name="Speed.Result" xml:space="preserve"><value>Download-Durchsatz: {0}
+Messziel: https://{1} (eine HTTPS-Verbindung, {2:0.0} MiB uebertragen)
+Hinweis: Anwendungsdurchsatz dieser einen Verbindung. WLAN, VPN, Auslastung und Serverlimits wirken mit; kein Upload-Test, keine Tarif- oder Leitungsgarantie.</value></data>
+  <data name="Speed.Timeout" xml:space="preserve"><value>Speedtest-Zeitlimit von 120 s erreicht.</value></data>
+  <data name="EventBrowser.SelectChannel" xml:space="preserve"><value>Ereigniskanal auswaehlen.</value></data>
+  <data name="EventBrowser.InvalidRange" xml:space="preserve"><value>Tage 1..30 und Limit 1..2000 eingeben.</value></data>
+  <data name="EventBrowser.Status" xml:space="preserve"><value>{0} / {1} Ereignisse / bis {2} Eintraege / {3} Tage / {4:HH:mm:ss}</value></data>
+  <data name="EventBrowser.Issues" xml:space="preserve"><value> / HINWEISE: {0}</value></data>
+  <data name="EventBrowser.InvalidChannels" xml:space="preserve"><value>Kein Kanalformat.</value></data>
+  <data name="EventBrowser.ChannelsStatus" xml:space="preserve"><value>{0} Ereigniskanaele / {1} Abfragefehler</value></data>
+  <data name="EventBrowser.SelectEvent" xml:space="preserve"><value>Ereignis auswaehlen.</value></data>
+  <data name="EventBrowser.DetailsRead" xml:space="preserve"><value>Ausgewaehltes Ereignis / Volltext + XML gelesen.</value></data>
+  <data name="EventBrowser.AlreadyRunning" xml:space="preserve"><value>Abfrage laeuft bereits.</value></data>
+  <data name="EventBrowser.Reading" xml:space="preserve"><value>Ereignisdaten werden gelesen ...</value></data>
+  <data name="EventBrowser.Cancelled" xml:space="preserve"><value>Ereignisabfrage abgebrochen.</value></data>
+  <data name="EventBrowser.Failed" xml:space="preserve"><value>Ereignisabfrage fehlgeschlagen: {0}</value></data>
+  <data name="TaskCenter.Open" xml:space="preserve"><value>Bereich oeffnen / nichts ausfuehren</value></data>
+  <data name="TaskCenter.Title" xml:space="preserve"><value>AETHER | Arbeitsplatz und Funktionssuche</value></data>
+  <data name="TaskCenter.Heading" xml:space="preserve"><value>ARBEITSPLATZ // FINDEN · PRUEFEN · GEZIELT HANDELN</value></data>
+  <data name="TaskCenter.Notice" xml:space="preserve"><value>Suchbegriffe kombinieren. Die Auswahl oeffnet nur einen Bereich; Reparaturen, Updates und Mitschnitte starten hier nie.</value></data>
+  <data name="TaskCenter.Search" xml:space="preserve"><value>Funktionssuche</value></data>
+  <data name="TaskCenter.AllCategories" xml:space="preserve"><value>Alle Bereiche</value></data>
+  <data name="TaskCenter.Category" xml:space="preserve"><value>Arbeitsbereich</value></data>
+  <data name="TaskCenter.Results" xml:space="preserve"><value>Gefundene Funktionen</value></data>
+  <data name="TaskCenter.Count" xml:space="preserve"><value>{0} Funktionen / Enter in der Ergebnisliste oeffnet den Bereich / Esc schliesst</value></data>
+  <data name="TaskCenter.NoResults" xml:space="preserve"><value>Keine passende Funktion</value></data>
+  <data name="TaskCenter.NoResultsHint" xml:space="preserve"><value>Suchbegriffe reduzieren oder einen anderen Arbeitsbereich waehlen.</value></data>
+  <data name="Export.ReportTitle" xml:space="preserve"><value>AETHER DIAGNOSEBERICHT / {0:yyyy-MM-dd HH:mm:ss}</value></data>
+  <data name="Export.Identity" xml:space="preserve"><value>Rechner: {0} / Benutzer: {1}</value></data>
+  <data name="Export.ReadOnly" xml:space="preserve"><value>Lesender Bericht aus den zuletzt angezeigten Cockpit-Werten; keine neue Messung.</value></data>
+  <data name="Export.NoEntries" xml:space="preserve"><value>(keine Eintraege)</value></data>
+  <data name="Export.WindowsChecks" xml:space="preserve"><value>WINDOWS-PRUEFUNGEN</value></data>
+  <data name="Export.Diagnostics" xml:space="preserve"><value>ERWEITERTE DIAGNOSE</value></data>
+  <data name="Export.Alerts" xml:space="preserve"><value>AKTUELLE HINWEISE / SYSTEMPULS</value></data>
+  <data name="Export.SensorsHeading" xml:space="preserve"><value>== SENSOREN (AKTUELLE ANZEIGE) ==</value></data>
+  <data name="Export.NoSensors" xml:space="preserve"><value>(keine Sensorwerte in der aktuellen Anzeige)</value></data>
+  <data name="Export.SensorNotice" xml:space="preserve"><value>Hinweis: 'Nicht verfuegbar' bedeutet kein Messwert, nicht 0. Grenzwertkanaele sind gekennzeichnet und keine Ist-Temperaturen.</value></data>
+  <data name="Export.TextFilter" xml:space="preserve"><value>Textdatei (*.txt)|*.txt</value></data>
+  <data name="Export.SaveFailed" xml:space="preserve"><value>Bericht nicht gespeichert</value></data>
   <data name="FirstRun.Title" xml:space="preserve"><value>AETHER | Willkommen</value></data>
   <data name="FirstRun.StepIntro" xml:space="preserve"><value>Schritt 1 von 3 - Willkommen</value></data>
   <data name="FirstRun.StepLicense" xml:space="preserve"><value>Schritt 2 von 3 - Lizenzvereinbarung</value></data>

@@ -22,8 +22,8 @@ public static class SensorSemantics
             channels.Add(group.Key, sensor);
         }
         var warning = duplicateIds == 0 ? "" :
-            $"{duplicateIds} mehrfach gemeldete Sensor-IDs: unterschiedliche Kanalnamen getrennt; identische Meldungen zusammengefasst." +
-            (conflicts == 0 ? "" : $" {conflicts} widerspruechliche Kanaele nicht verfuegbar.");
+            DesktopUiText.Format("Sensor.DuplicateIds", duplicateIds) +
+            (conflicts == 0 ? "" : DesktopUiText.Format("Sensor.ConflictingChannels", conflicts));
         return (channels, warning);
     }
 

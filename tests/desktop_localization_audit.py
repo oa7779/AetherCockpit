@@ -277,9 +277,30 @@ def inventory():
     }
 
 
+def release_blockers(report):
+    blockers = []
+    if report["missing_explicit_resources"]:
+        blockers.append("Missing explicit resources.")
+    if not all(report["source_safety_checks"].values()):
+        blockers.append("A source safety check failed.")
+    if report["confirmed_untranslated_sites_detected"]:
+        blockers.append(
+            f'{report["confirmed_untranslated_sites_detected"]} untranslated source sites remain.'
+        )
+    if report["counts_by_classification"].get("unreviewed-display", 0):
+        blockers.append("Unreviewed display literals remain.")
+    if report["counts_by_classification"].get("unreviewed-source", 0):
+        blockers.append("Unreviewed source sites remain.")
+    if not report["english_complete"]:
+        blockers.append("Full English coverage and runtime review are not confirmed.")
+    return blockers
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=pathlib.Path)
+    parser.add_argument("--require-complete", action="store_true",
+                        help="Fail unless English is reviewed and ready for release.")
     args = parser.parse_args()
     report = inventory()
     if args.output:
@@ -288,6 +309,11 @@ def main():
             parser.error("Output must stay inside the project.")
         output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({key: value for key, value in report.items() if key != "sites"}, ensure_ascii=True, indent=2))
+    if args.require_complete:
+        blockers = release_blockers(report)
+        if blockers:
+            print("English release gate failed: " + " ".join(blockers))
+            return 1
     return 1 if report["missing_explicit_resources"] or not all(report["source_safety_checks"].values()) else 0
 
 

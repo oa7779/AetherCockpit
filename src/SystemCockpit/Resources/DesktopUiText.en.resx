@@ -4,6 +4,89 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="ManagerClient.InvalidCode" xml:space="preserve"><value>Enter a valid single-use enrollment code.</value></data>
+  <data name="ManagerClient.EmptyEnrollment" xml:space="preserve"><value>The server returned no device enrollment.</value></data>
+  <data name="ManagerClient.InvalidEnrollment" xml:space="preserve"><value>The server returned an invalid device enrollment.</value></data>
+  <data name="ManagerClient.NotEnrolled" xml:space="preserve"><value>Central management: enabled, but this device is not enrolled.</value></data>
+  <data name="ManagerClient.Pending" xml:space="preserve"><value>Central management: device awaits manual approval (pending).</value></data>
+  <data name="ManagerClient.Revoked" xml:space="preserve"><value>Central management: device access was revoked; no reports will be sent.</value></data>
+  <data name="ManagerClient.UnknownState" xml:space="preserve"><value>Central management: unknown device state ({0}); no reports will be sent.</value></data>
+  <data name="ManagerClient.MissingState" xml:space="preserve"><value>not reported</value></data>
+  <data name="ManagerClient.NextReport" xml:space="preserve"><value>Central management: approved; next report after the full hourly interval.</value></data>
+  <data name="ManagerClient.ReportSent" xml:space="preserve"><value>Central management: diagnostic report sent ({0:HH:mm}).</value></data>
+  <data name="ManagerClient.Timeout" xml:space="preserve"><value>Central management: request timed out: {0}</value></data>
+  <data name="ManagerClient.Failure" xml:space="preserve"><value>Central management: transmission or query failed: {0}</value></data>
+  <data name="ManagerClient.EmptyStatus" xml:space="preserve"><value>The server returned no device status.</value></data>
+  <data name="ManagerClient.InvalidUrl" xml:space="preserve"><value>Server URL: HTTPS for network hosts; HTTP only for localhost. Enter a URL without a path or credentials.</value></data>
+  <data name="History.Summary" xml:space="preserve"><value>{0} points | MIN {1:0.##} | MAX {2:0.##} | AVG {3:0.##} {4}</value></data>
+  <data name="History.FileTooLarge" xml:space="preserve"><value>Log file exceeds 16 MiB.</value></data>
+  <data name="History.TooManyPoints" xml:space="preserve"><value>More than 43200 measurements per file.</value></data>
+  <data name="History.LineTooLarge" xml:space="preserve"><value>Log line exceeds 1 MiB.</value></data>
+  <data name="History.UnknownSchema" xml:space="preserve"><value>Unknown log schema.</value></data>
+  <data name="History.TotalCpu" xml:space="preserve"><value>Total CPU</value></data>
+  <data name="History.MemoryUsage" xml:space="preserve"><value>RAM usage</value></data>
+  <data name="History.MissingSensorId" xml:space="preserve"><value>Sensor ID is missing</value></data>
+  <data name="History.TooManyNotices" xml:space="preserve"><value>More than 100 log notices.</value></data>
+  <data name="History.LineError" xml:space="preserve"><value>Line {0}: {1}</value></data>
+  <data name="History.TooManyDamagedLines" xml:space="preserve"><value>More than 100 damaged log lines.</value></data>
+  <data name="History.TooManySeries" xml:space="preserve"><value>More than 2048 measurement series.</value></data>
+  <data name="History.NonFiniteValue" xml:space="preserve"><value>Non-finite measurement.</value></data>
+  <data name="History.NoMatchingSeries" xml:space="preserve"><value>No common measurement series.</value></data>
+  <data name="Frame.InvalidProcess" xml:space="preserve"><value>Enter the exact process name without a path, e.g. Game.exe.</value></data>
+  <data name="Frame.InvalidDuration" xml:space="preserve"><value>Capture duration must be 5 to 600 seconds.</value></data>
+  <data name="Frame.AbsolutePath" xml:space="preserve"><value>An absolute CSV path is required.</value></data>
+  <data name="Frame.TooLarge" xml:space="preserve"><value>Frame CSV exceeds 64 MiB.</value></data>
+  <data name="Frame.Empty" xml:space="preserve"><value>Frame CSV is empty.</value></data>
+  <data name="Frame.MissingColumns" xml:space="preserve"><value>PresentMon frame-time or Application columns are missing.</value></data>
+  <data name="Frame.TooManyFrames" xml:space="preserve"><value>More than 1 million frames.</value></data>
+  <data name="Frame.InvalidRow" xml:space="preserve"><value>Invalid CSV row.</value></data>
+  <data name="Frame.InvalidColumnCount" xml:space="preserve"><value>Invalid CSV column count on line {0}.</value></data>
+  <data name="Frame.InvalidTime" xml:space="preserve"><value>Invalid frame time on line {0}.</value></data>
+  <data name="Frame.NotReported" xml:space="preserve"><value>not reported</value></data>
+  <data name="Frame.TooManySwapchains" xml:space="preserve"><value>More than 256 swapchains.</value></data>
+  <data name="Sensor.DuplicateIds" xml:space="preserve"><value>{0} duplicate sensor IDs: different channel names are kept separate; identical reports are combined.</value></data>
+  <data name="Sensor.ConflictingChannels" xml:space="preserve"><value> {0} conflicting channels are unavailable.</value></data>
+  <data name="Speed.InvalidSize" xml:space="preserve"><value>Test size: {0} to {1} MiB.</value></data>
+  <data name="Speed.NoData" xml:space="preserve"><value>The test endpoint returned no data.</value></data>
+  <data name="Speed.Result" xml:space="preserve"><value>Download throughput: {0}
+Test endpoint: https://{1} (one HTTPS connection, {2:0.0} MiB transferred)
+Note: Application throughput for this single connection. Wi-Fi, VPN, load and server limits affect the result; no upload test and no plan or line guarantee.</value></data>
+  <data name="Speed.Timeout" xml:space="preserve"><value>The 120-second speed test time limit was reached.</value></data>
+  <data name="EventBrowser.SelectChannel" xml:space="preserve"><value>Select an event channel.</value></data>
+  <data name="EventBrowser.InvalidRange" xml:space="preserve"><value>Enter days 1..30 and a limit of 1..2000.</value></data>
+  <data name="EventBrowser.Status" xml:space="preserve"><value>{0} / {1} events / up to {2} entries / {3} days / {4:HH:mm:ss}</value></data>
+  <data name="EventBrowser.Issues" xml:space="preserve"><value> / NOTICES: {0}</value></data>
+  <data name="EventBrowser.InvalidChannels" xml:space="preserve"><value>Invalid channel format.</value></data>
+  <data name="EventBrowser.ChannelsStatus" xml:space="preserve"><value>{0} event channels / {1} query errors</value></data>
+  <data name="EventBrowser.SelectEvent" xml:space="preserve"><value>Select an event.</value></data>
+  <data name="EventBrowser.DetailsRead" xml:space="preserve"><value>Selected event / full text and XML read.</value></data>
+  <data name="EventBrowser.AlreadyRunning" xml:space="preserve"><value>A query is already running.</value></data>
+  <data name="EventBrowser.Reading" xml:space="preserve"><value>Reading event data ...</value></data>
+  <data name="EventBrowser.Cancelled" xml:space="preserve"><value>Event query cancelled.</value></data>
+  <data name="EventBrowser.Failed" xml:space="preserve"><value>Event query failed: {0}</value></data>
+  <data name="TaskCenter.Open" xml:space="preserve"><value>Open area / do not run anything</value></data>
+  <data name="TaskCenter.Title" xml:space="preserve"><value>AETHER | Workspace and feature search</value></data>
+  <data name="TaskCenter.Heading" xml:space="preserve"><value>WORKSPACE // FIND · REVIEW · ACT WITH PURPOSE</value></data>
+  <data name="TaskCenter.Notice" xml:space="preserve"><value>Combine search terms. Selecting an item only opens an area; repairs, updates and captures never start here.</value></data>
+  <data name="TaskCenter.Search" xml:space="preserve"><value>Feature search</value></data>
+  <data name="TaskCenter.AllCategories" xml:space="preserve"><value>All areas</value></data>
+  <data name="TaskCenter.Category" xml:space="preserve"><value>Work area</value></data>
+  <data name="TaskCenter.Results" xml:space="preserve"><value>Features found</value></data>
+  <data name="TaskCenter.Count" xml:space="preserve"><value>{0} features / Enter in the results opens the area / Esc closes</value></data>
+  <data name="TaskCenter.NoResults" xml:space="preserve"><value>No matching feature</value></data>
+  <data name="TaskCenter.NoResultsHint" xml:space="preserve"><value>Use fewer search terms or choose another work area.</value></data>
+  <data name="Export.ReportTitle" xml:space="preserve"><value>AETHER DIAGNOSTIC REPORT / {0:yyyy-MM-dd HH:mm:ss}</value></data>
+  <data name="Export.Identity" xml:space="preserve"><value>Computer: {0} / User: {1}</value></data>
+  <data name="Export.ReadOnly" xml:space="preserve"><value>Read-only report from the last displayed cockpit values; no new measurement.</value></data>
+  <data name="Export.NoEntries" xml:space="preserve"><value>(no entries)</value></data>
+  <data name="Export.WindowsChecks" xml:space="preserve"><value>WINDOWS CHECKS</value></data>
+  <data name="Export.Diagnostics" xml:space="preserve"><value>EXTENDED DIAGNOSTICS</value></data>
+  <data name="Export.Alerts" xml:space="preserve"><value>CURRENT NOTICES / SYSTEM PULSE</value></data>
+  <data name="Export.SensorsHeading" xml:space="preserve"><value>== SENSORS (CURRENT DISPLAY) ==</value></data>
+  <data name="Export.NoSensors" xml:space="preserve"><value>(no sensor readings in the current display)</value></data>
+  <data name="Export.SensorNotice" xml:space="preserve"><value>Notice: 'Unavailable' means no reading, not 0. Limit channels are identified and are not actual temperatures.</value></data>
+  <data name="Export.TextFilter" xml:space="preserve"><value>Text file (*.txt)|*.txt</value></data>
+  <data name="Export.SaveFailed" xml:space="preserve"><value>Report not saved</value></data>
   <data name="FirstRun.Title" xml:space="preserve"><value>AETHER | Welcome</value></data>
   <data name="FirstRun.StepIntro" xml:space="preserve"><value>Step 1 of 3 - Welcome</value></data>
   <data name="FirstRun.StepLicense" xml:space="preserve"><value>Step 2 of 3 - License agreement</value></data>

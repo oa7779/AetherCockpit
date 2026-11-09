@@ -2,6 +2,33 @@
 
 ## Stand
 
+RC-Entwicklung beauftragt: Desktop und professioneller Server gemeinsam,
+vollständige englische Oberfläche, praktische Installations-/Netzwerkprüfung
+in einer noch abzustimmenden isolierten Testumgebung und anschließend
+GitHub-Prerelease bei bestandenen Prüfungen. Kein RC veröffentlicht.
+Arbeitsstand: Diagnoseexport und Speicherdialog, Oberfläche der
+Funktionssuche, Ereignisbrowser-Meldungen, Sensor-Konfliktwarnung,
+Speedtest-Meldungen, Frame-CSV-Validierung und Messlog-Auswertung für
+Englisch vorbereitet. Die Desktop-Zentralverwaltung unterscheidet nun
+ausstehende Freigabe, gesperrtes Gerät und unbekannten Zustand; nur ein
+explizit freigegebenes Gerät sendet Berichte. Titel in der Funktionssuche
+sollen auch bei schmalem Fenster umbrechen; diese UI-Änderung ist noch
+nicht laufzeit- oder bildgeprüft.
+Deutsche Ausgabe, Schwärzungsregeln, Ablauf-IDs und Aktionsargumente bleiben
+erhalten. Die Funktionssuche selbst enthält weiterhin deutsche Katalogdaten.
+Englisch bleibt deaktiviert: Die Quellbestandsaufnahme zählt noch 824 nicht übersetzte
+Textstellen und beweist keine vollständige semantische Abdeckung.
+Eine explizite englische Freigabeschranke wird für `-rc.` im Windows-CI
+ausgeführt und blockiert diesen CI-Build bis zur vollständigen Prüfung.
+Eine manuelle GitHub-Veröffentlichung verhindert sie nicht. Lokal:
+Aktueller Releasebuild ohne Warnungen/Fehler und 364 Serverassertions
+bestanden. Die neuen Desktop- und UI-Tests konnten lokal nicht laufen:
+Windows-Anwendungssteuerung blockiert AetherScreensaver.dll mit
+0x800711C7. Die Schutzrichtlinie wurde nicht verändert. Vor dieser letzten
+Änderung bestanden 4054 Desktop-/Professional-UI-, 3194 Sprach- und
+3527 Modern-/Neon-Assertions. Keine Windows-Aktion oder Installation
+ausgeführt.
+
 Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
 kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der
 bestehenden HTTPS-/Clientbasis; animierte Ansicht für 40+ Geräte, lesende
