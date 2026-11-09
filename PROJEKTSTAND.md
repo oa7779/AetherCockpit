@@ -38,8 +38,17 @@ Der CI-Runner verwendet reduzierte Bewegung. Die Systemeinstellung bleibt
 unverändert; die separate Board-UI-Prüfung bleibt offen.
 Lauf 42571925970 prüfte anschließend den Arbeitsplatztitel-Umbruch und
 deckte auf, dass der implizite Textstil vom Listentemplate nicht übernommen
-wurde. Ein explizites Texttemplate wird geprüft; kein erfolgreicher
-UI-Abschluss für diese Änderung behauptet, bevor die CI-Prüfung besteht.
+wurde. Das korrigierte explizite Texttemplate bestand in
+[CI 42572283885](https://github.com/oa7779/AetherCockpit/actions/runs/42572283885)
+auf `bc9939c`: Build ohne Warnungen/Fehler, 4060 Grund- und publizierte,
+3224 Sprach-, 3557 Modern-/Neon-, 4098 Professional-/Katalog-/Sensor-UI-
+und 364 Serverassertions; Browserprüfung mit 48 synthetischen Geräten.
+Neon-Arbeitsplatz und Paketansicht visuell kontrolliert. Der englische
+Arbeitsplatz zeigt weiterhin deutsche Katalogdaten; Englisch bleibt gesperrt.
+Die CI-Artefakte tragen noch Beta-38-Versionsnummern und sind kein RC.
+Die RC-Sprachschranke wurde im Betaprofil erwartungsgemäß nicht ausgeführt.
+Installation, produktive Geräte und die Board-Animation bei aktivierter
+Windows-Bewegung wurden nicht geprüft.
 
 Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
 kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der
