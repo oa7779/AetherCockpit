@@ -74,7 +74,7 @@ internal sealed class SaverWindow : Window
             Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45),
             BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(12),
             Margin = new Thickness(8), IsHitTestVisible = false };
-        FrameGlow.SetVisible(_neonFrame, true);
+        AetherNeonFrame.SetEnabled(_neonFrame, true);
         Grid.SetRowSpan(_neonFrame, 2);
         panel.Children.Add(_neonFrame);
         header.RenderTransform = _headerDrift;
@@ -102,7 +102,7 @@ internal sealed class SaverWindow : Window
             _closed = true;
             _displayPulse.Dispose();
             SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
-            _board.Shutdown(); SetMotion(false); FrameGlow.SetVisible(_neonFrame, false);
+            _board.Shutdown(); SetMotion(false); AetherNeonFrame.SetEnabled(_neonFrame, false);
         };
     }
 
@@ -154,7 +154,7 @@ internal sealed class SaverWindow : Window
         if (_motion == enabled) return;
         _motion = enabled;
         _brand.MotionEnabled = enabled;
-        FrameGlow.SetEnabled(_neonFrame, enabled);
+        AetherNeonFrame.SetBreathingEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,
                 _model.IsDaytime ? Color.FromRgb(62, 92, 128) : Colors.Black, TimeSpan.FromSeconds(43 + stop.Offset * 19)) {
