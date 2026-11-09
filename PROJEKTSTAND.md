@@ -53,6 +53,15 @@ Die RC-Sprachschranke wurde im Betaprofil erwartungsgemäß nicht ausgeführt.
 Installation, produktive Geräte und die Board-Animation bei aktivierter
 Windows-Bewegung wurden nicht geprüft.
 
+[CI 42573272946](https://github.com/oa7779/AetherCockpit/actions/runs/42573272946)
+auf `38e1b36` bestand nach Übersetzung der 25 geführten Suchabläufe:
+4063 Grund- und publizierte, 3227 Sprach-, 3560 Modern-/Neon-,
+4104 Professional-/Katalog-/Sensor-UI- und 364 Serverassertions.
+Der englische Neon-Arbeitsplatz wurde mit synthetischen Daten visuell
+kontrolliert; Suche und Kategorieauswahl behalten interne Routen bei.
+Die Befehlskatalogtexte und weitere Oberflächen bleiben unübersetzt;
+die Freigabeschranke meldet weiterhin 824 Quellstellen und ist bewusst aktiv.
+
 Neuer Serverauftrag: Zielgruppe Administratoren und Semi-Administratoren
 kleiner/mittlerer Infrastrukturen. Professionelle Zentralverwaltung auf der
 bestehenden HTTPS-/Clientbasis; animierte Ansicht für 40+ Geräte, lesende
