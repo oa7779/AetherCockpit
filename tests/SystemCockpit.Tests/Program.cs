@@ -30,6 +30,20 @@ internal static class Program
                 host.Shutdown();
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--neon-frame-profile")
+            {
+                NeonFrameProof.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--neon-frame-gallery")
+            {
+                var assertions = NeonFrameTests.Run();
+                var images = NeonFrameTests.Gallery(args[1]);
+                Console.WriteLine($"PASS: {assertions} frame assertions; {images} diagnostic images.");
+                host.Shutdown();
+                return 0;
+            }
             if (args.Contains("--desktop-language-smoke"))
             {
                 var assertions = ModernDesktopTests.Run();
@@ -77,6 +91,7 @@ internal static class Program
             _assertions += ConsolidationTests.Run();
             _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
+            _assertions += NeonFrameTests.Run();
             _assertions += BootTests.Run();
             _assertions += StorageTemperatureTests.Run();
             _assertions += ModuleTests.Run();
