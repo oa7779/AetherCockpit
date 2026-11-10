@@ -9,11 +9,21 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
-## Unveröffentlicht — System Intelligence
+## 0.7.0-beta.46
+
+- Windows-x64-Testinstaller für den abgenommenen Meilenstein 3 „Hardware
+  Intelligence“ sowie die anschließend abgenommene Prozesszentrale und
+  System Intelligence. Dateiversion `0.7.0.46`.
+- Eigene neue Paketausgabe; bestehende Releases bleiben unverändert.
+  Optionaler Bildschirmschoner und Clientdienst sind enthalten, kein neues
+  separates Server- oder Intune-Paket. Die Beta bleibt unsigniert.
+
+### System Intelligence
 
 - Der lokal implementierte Umfang ist mit den im Abschlussbericht dokumentierten
   technischen und prüfbezogenen Grenzen ausdrücklich abgenommen.
-  Nachweise und Grenzen bleiben unverändert; keine Veröffentlichung oder Paketierung.
+  Nachweise und Grenzen bleiben unverändert; die Abnahme erfolgte vor der
+  gesondert beauftragten Veröffentlichung und Paketierung.
 - Eigener Navigationsbereich mit gemeinsamer Timeline, Quelleninspektor,
   Baselines, Change Intelligence und A/B-Vergleich.
 - Software-, PnP-/Treiber-, Dienst-, Aufgaben-, Autostart- und Netzwerkdaten
@@ -30,9 +40,10 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 - Native Eigenprozess- und Quellenregression, kontrollierte Recorder-/Watch-
   Lebenszyklen sowie integrierte Theme-/DPI-/Virtualisierungsproofs.
   [Abschlussbericht und Grenzen](docs/SYSTEM-INTELLIGENCE-REPORT.md).
-- Öffentliche Version und bestehende Pakete bleiben unverändert.
+- Die Abnahme selbst änderte weder öffentliche Version noch bestehende
+  Pakete; die neue Paketierung erfolgt im gesonderten Beta-46-Releaseauftrag.
 
-## Unveröffentlicht — Process Command Center / System Correlation
+### Process Command Center / System Correlation
 
 - Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
   kontrolliert beendet werden. AETHER prüft PID und Startidentität,
@@ -54,9 +65,10 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 - Native Eigenprozess-, Race-/Privacy-/Skriptfixtures und integrierte
   Theme-/DPI-/Tastatur-/Abbruchproofs.
   [Abschlussbericht](docs/PROCESS-COMMAND-CENTER-REPORT.md).
-- Keine Versionserhöhung, neue Pakete oder Veröffentlichung.
+- Der ursprüngliche Prozessauftrag änderte weder Version noch Pakete;
+  die Veröffentlichung erfolgt mit dem gesonderten Beta-46-Auftrag.
 
-## Unveröffentlicht — Hardware Intelligence
+### Meilenstein 3 — Hardware Intelligence
 
 - Eigener Hardwarebereich mit 20 Klassen, kompakten Komponenten-/Wertetabellen,
   M1-Quellenmetadaten und Quelleninspektor.
@@ -96,7 +108,8 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
   ausdrücklich abgenommen.
   Physische Ereigniswechsel und Langzeitbetrieb sind nicht nachgewiesen.
   [Abschlussbericht](docs/MILESTONE-3-HARDWARE-REPORT.md).
-- Keine Versionserhöhung, neue Pakete oder Veröffentlichung.
+- Der ursprüngliche Hardwareauftrag änderte weder Version noch Pakete;
+  die Veröffentlichung erfolgt mit dem gesonderten Beta-46-Auftrag.
 
 ## 0.7.0-beta.45 — ruhige Neonrahmen und technische Konsolidierung
 

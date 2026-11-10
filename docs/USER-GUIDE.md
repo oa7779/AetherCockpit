@@ -38,13 +38,13 @@ durch den lokalen Besuchsverlauf. Er hält bis zu 100 Schritte im RAM.
 Der Treffer erklärt Wirkung und Schritte und öffnet den passenden Bereich.
 Die Suche selbst startet keinen Auftrag und aktiviert keinen Expertenmodus.
 
-Im unveröffentlichten Arbeitsstand findet `Strg+K` zusätzlich Prozesse aus
+Seit Beta 46 findet `Strg+K` zusätzlich Prozesse aus
 der vorhandenen Cockpitprobe. Ein Treffer wählt genau dessen PID und
 Startidentität aus; ein inzwischen verschwundener Treffer wählt keinen
 Ersatzprozess. **Favorit umschalten**, **Favoriten** und **Zuletzt verwendet**
 gelten für Werkzeuge, nicht für eine dauerhaft gespeicherte Prozesschronik.
 
-## System Intelligence (unveröffentlichter Arbeitsstand)
+## System Intelligence
 
 **Übersicht → System Intelligence** öffnet die gemeinsame Auswertung.
 Der Bereichswähler verbindet Timeline, Change / Compare, Reliability,
@@ -119,7 +119,7 @@ Grenzen und **Lokale Historie zurücksetzen** gelten gemeinsam für den
 Intelligence-Speicher. [Datenschutz](SECURITY-AND-PRIVACY.md#lokale-system-intelligence),
 [Architektur und Grenzen](SYSTEM-INTELLIGENCE.md).
 
-## Prozesszentrale (unveröffentlichter Arbeitsstand)
+## Prozesszentrale
 
 **Übersicht → Prozesse / Leistung** öffnet die Prozesszentrale.
 Suche, **Nur aktuell**, **CPU ≥ 10 %** und **Prozessbaum** kombinieren

@@ -12,7 +12,7 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
-**Unveröffentlichter Arbeitsstand:** Eine eigene Hardwarezentrale mit
+**Beta 46 — Meilenstein 3 und Intelligence-Ausbau:** Eine eigene Hardwarezentrale mit
 Komponentenansichten, Quelleninspektor und datenschutzbewusstem Bericht ist
 implementiert. Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails,
 zugeordnete SMART-/NVMe-Berichte und echte Sensorstatistik ergänzen die Ansicht.
@@ -20,7 +20,7 @@ Gerätegenaue Providerbeziehungen, Windows-Prozessortakte, WDDM-/Videodetails,
 TRIM-/Controllerangaben, EDID/HDR und Audioformatprüfungen sind ergänzt.
 M3 ist mit den dokumentierten technischen Grenzen ausdrücklich abgenommen;
 [Prüfbericht und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
-Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
+Der neue Beta-46-Installer enthält diesen abgenommenen Hardwarestand.
 
 Die **Prozesszentrale** ergänzt Prozessbaum, identitätsgebundene Details,
 Kurzzeithistorie, Windows-Systembeziehungen und lokale Snapshots.
@@ -28,8 +28,8 @@ Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
 kontrolliert beendet werden – mit Sicherheitsdialog und geprüftem Endzustand.
 Die bestehende Suche über `Strg+K` findet auch Prozesse und neue Arbeitsabläufe.
 [Abschlussbericht, Nachweise und Grenzen](docs/PROCESS-COMMAND-CENTER-REPORT.md).
-Das Prozesspaket ist mit seinen dokumentierten Grenzen ausdrücklich abgenommen,
-bleibt aber unveröffentlicht.
+Das Prozesspaket ist mit seinen dokumentierten Grenzen ausdrücklich abgenommen
+und im Beta-46-Installer enthalten.
 
 **System Intelligence** verbindet Timeline, Baselines, Zustandsvergleiche,
 Zuverlässigkeitsereignisse, Software, Treiber und Netzwerk mit Diagnoseaufnahmen,
@@ -37,10 +37,10 @@ Watch-Regeln und einer navigierbaren System Map. Die vorhandene Suche findet
 auch diese Entitäten. Quellenzeit, Identität und unvollständige Quellen bleiben
 sichtbar; zeitliche Nachbarschaft ist kein Ursachenbeweis.
 Die Erweiterung ist mit den im Abschlussbericht dokumentierten technischen
-und prüfbezogenen Grenzen ausdrücklich abgenommen, bleibt aber unveröffentlicht.
+und prüfbezogenen Grenzen ausdrücklich abgenommen und im Beta-46-Installer enthalten.
 [Abschlussbericht und Abnahmevermerk](docs/SYSTEM-INTELLIGENCE-REPORT.md).
 
-**Aktuelle Beta: 0.7.0-beta.45**
+**Aktuelle Beta: 0.7.0-beta.46**
 
 Ruhige Neonrahmen mit scharfer Kernkontur, getrenntem Glow und langsamer,
 abschaltbarer Atmung ersetzen die umlaufenden Panel-Laufspuren.
@@ -82,7 +82,7 @@ Synchronisierungen und Änderungen an bestehenden Bereitstellungen werden
 einzeln bestätigt.
 Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
 
-[Beta-45-Installer und SHA256-Prüfsumme](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)
+[Beta-46-Installer und SHA256-Prüfsumme](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.46)
 · [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
 · [Versionsgeschichte](CHANGELOG.md)
 

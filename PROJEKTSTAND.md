@@ -2,6 +2,18 @@
 
 ## Stand
 
+**Aktiver gesonderter Releaseauftrag: Beta `0.7.0-beta.46`.**
+Der Auftraggeber hat nach der ausdrücklichen System-Intelligence-Abnahme
+den aktuellen Build, einen M3-Installer und die GitHub-Veröffentlichung
+einschließlich Umfangs- und Repositorybeschreibung beauftragt.
+Diese Freigabe hebt die bisherigen Veröffentlichungssperren ausschließlich
+für diesen Releaseauftrag auf. Kein Merge nach `main`, keine Änderung alter Pakete.
+Ausgang: `aa9b691d7c06de7911321a649902e634375c1bf3`,
+Branch `rc/grosse-entfesselung`, sauberer Arbeitsbaum.
+Der neue Installer enthält M3 Hardware Intelligence, Prozesszentrale und
+System Intelligence; Dateiversion `0.7.0.46`.
+Abnahmen, technische Grenzen und historische Nachweise bleiben unverändert.
+
 Meilenstein 2 ist ausdrücklich abgenommen. Meilenstein 3 „Hardware
 Intelligence Center“ ist am 10. November 2026 **AUSDRÜCKLICH ABGENOMMEN**,
 mit sämtlichen im Abschlussbericht dokumentierten technischen Grenzen.

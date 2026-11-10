@@ -53,7 +53,7 @@ Ein Build startet keine produktive App und keine Sensoren.
 
 ## Process Command Center
 
-Die unveröffentlichte Erweiterung verwendet den bestehenden `DashboardMetrics`-
+Die in Beta 46 paketierte Erweiterung verwendet den bestehenden `DashboardMetrics`-
 Sampler. `MainWindow` verteilt dieselbe Probe an Cockpit und
 `ProcessCommandView`; nach einer Prozessaktion weckt ein Semaphore den
 vorhandenen Loop. Kein zweiter permanenter Prozesspoller.
@@ -75,8 +75,9 @@ Die bestehende `TaskCenterWindow`-Palette erhält Prozesssuche und lokale
 Werkzeugeinstellungen statt einer konkurrierenden Oberfläche.
 
 Keine neuen Pakete, Remote-Endpunkte oder Server-/Client-Wireformate.
-Auch dieser Auftrag bleibt ausdrücklich ohne Installer, Versionserhöhung
-oder Veröffentlichung. [Tests](TESTING.md#process-command-center),
+Der ursprüngliche Prozessauftrag wurde ohne Installer, Versionserhöhung
+oder Veröffentlichung abgeschlossen. Die Paketfreigabe folgt separat mit
+Beta 46. [Tests](TESTING.md#process-command-center),
 [Architektur, Rechte und Grenzen im Abschlussbericht](PROCESS-COMMAND-CENTER-REPORT.md).
 
 ## System Intelligence
@@ -135,17 +136,20 @@ Versions- oder Paketänderung umgesetzt; siehe
 [Konsolidierung](MILESTONE-1-CONSOLIDATION-REPORT.md) und
 [Neonrahmen](MILESTONE-2-NEON-FRAME-REPORT.md). Der separate
 [Messmodus](PERFORMANCE-BASELINE.md) benötigt nur einen Releasebuild.
-Auch der Hardwareauftrag für Meilenstein 3 bleibt ohne neue Paketierung,
-Versionswechsel oder Veröffentlichung. [Architektur und Abdeckung](HARDWARE-INTELLIGENCE-ARCHITECTURE.md),
+Die Hardware-, Prozess- und System-Intelligence-Aufträge wurden ohne
+Paketierung abgeschlossen und abgenommen. Der gesonderte Beta-46-Auftrag
+gibt die neue Revision, den Installer und die GitHub-Veröffentlichung frei;
+kein Merge nach `main`. [Architektur und Abdeckung](HARDWARE-INTELLIGENCE-ARCHITECTURE.md),
 [Prüfmodi](TESTING.md#hardware-intelligence).
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.45`, Dateiversion `0.7.0.45`,
+aktuell `0.7.0-beta.46`, Dateiversion `0.7.0.46`,
 Assembly-Version `0.7.0.0`.
 
-Beta 45 paketiert die technische Konsolidierung und die ruhigen Neonrahmen
-als GitHub-Vorabversion. Bestehende Datenträgerkarten, Branding,
+Beta 46 paketiert den abgenommenen Hardware-Intelligence-Stand aus M3,
+die Prozesszentrale und System Intelligence als GitHub-Vorabversion.
+Bestehende Neonrahmen, Datenträgerkarten, Branding,
 Cockpit-Anordnung, Wake-on-LAN und Wartungsfunktionen bleiben erhalten.
 Der separate Server wird durch diesen Cockpit-Installer nicht veröffentlicht.
 Die folgenden Beta-38-Pfade sind historische Paketierungsbeispiele; sie dürfen
@@ -166,6 +170,10 @@ Beta-genaue Geräteversionsanzeige.
 ```powershell
 powershell -NoProfile -File .\build\Publish-Beta.ps1
 ```
+
+Bei bereits vorhandenen passenden Runtime-Restore-Ergebnissen kann
+`-NoRestore` angehängt werden; fehlende Runtimeziele werden dann als Fehler
+gemeldet statt automatisch wiederhergestellt.
 
 Das Skript publiziert Cockpit und Schoner selbstenthalten für `win-x64`.
 Es prüft, dass beide dieselbe Cockpit-DLL verwenden, übernimmt die

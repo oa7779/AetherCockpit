@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.38**
+**Beta: 0.7.0-beta.46**
 
 Windows-CI prüft die Konsolenrunner und synthetische Desktopansichten.
 Installation, Hardwarebetrieb und Intune-Verteilung benötigen eigene
@@ -45,9 +45,21 @@ und Benachrichtigungen begrenzen.
 
 ## Aktueller Testschwerpunkt
 
-Setup, Portable-, Server- und Intune-Paket tragen denselben Beta-38-Stand.
-Installationsversion und Prüfsumme vor dem Test vergleichen; das Intune-Paket
-auf einem dafür vorgesehenen Gerät separat abnehmen.
+Der neue Cockpit-Installer enthält M3 Hardware Intelligence, die Prozesszentrale
+und System Intelligence mit den dokumentierten Abnahmegrenzen.
+Installationsversion und Prüfsumme vor dem Test vergleichen.
+Server und Intune erhalten in diesem Auftrag kein neues Paket.
+
+- Hardwarezentrale öffnen: Klassen, Quelleninspektor, echte Sensorwerte und
+  Kennzeichnung fehlender Angaben prüfen.
+- Prozesszentrale und Kontextmenü **Prozess beenden** ansehen. Eine tatsächliche
+  Beendigung nur an einem eigens dafür gestarteten entbehrlichen Testprozess
+  bestätigen; ungespeicherte Daten können verloren gehen.
+- **Übersicht → System Intelligence** öffnen: Timeline, Baselines/Compare,
+  Reliability, Software, Treiber, Startup, Netzwerk und System Map ansehen.
+- Recorder und Watch nur bewusst testen. Aufnahmen und automatische Watch-
+  Snapshots enthalten sensible Daten und werden unverschlüsselt lokal gespeichert.
+  Sitzungsverlauf und Inventarbeobachtung sind separat einschaltbar.
 
 - Verstärkten Glow in Hauptfenster, Dashboard und Schoner prüfen:
   Halos und Bewegung bei verschiedenen DPI-Einstellungen ansehen.

@@ -1,5 +1,19 @@
 # Tests
 
+## Paketprüfung Beta 46
+
+Der revisionierte Releasebuild (`Version=0.7.0-beta.46`,
+`AssemblyVersion=0.7.0.0`, `FileVersion=0.7.0.46`) besteht mit
+**0 Warnungen / 0 Fehlern**. Kombinierter Professional-/Interface-/Schoner-/
+Brandinglauf: **5.274 Assertions einschließlich Grundrunner**.
+Der zusätzliche Verwaltungsrunner besteht mit **384 Assertions**;
+keine Windows-Verwaltungsaktion ausgeführt.
+
+Die abgenommenen Hardware-, Prozess- und System-Intelligence-Nachweise
+bleiben unverändert. Eine neue Paketierung ist weder ein erneuter physischer
+Hardwaretest noch eine Installations-, Langzeit- oder RC-Freigabe.
+Das Setup bleibt unsigniert; keine Schutzrichtlinie wird für Tests geändert.
+
 ## System Intelligence
 
 Releasebuild: **0 Warnungen / 0 Fehler**. STA-Grundrunner: **4.892 Assertions**,

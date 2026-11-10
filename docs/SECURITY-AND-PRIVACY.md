@@ -94,7 +94,7 @@ aus; administrative Änderungen bleiben in den bestehenden bestätigten Abläufe
 
 ## Lokale Hardwareberichte
 
-Die unveröffentlichte Hardwarezentrale liest lokale Windows-/Hardwarequellen
+Die Hardwarezentrale liest lokale Windows-/Hardwarequellen
 auf Anforderung. Sie eröffnet keinen zusätzlichen Kernel-/Sensorprovider und
 enthält keinen externen Uploadpfad. Der vorhandene ausdrücklich aktivierte
 Cockpit-Sensorpfad kann seine Messwerte an die Ansicht weiterreichen.
@@ -138,7 +138,7 @@ kopieren. Die Anzeige selbst ist keine anonymisierte Ansicht.
 
 ## Prozessaktionen und Systemsnapshots
 
-Die unveröffentlichte Prozesszentrale validiert PID und UTC-Erstellungszeit
+Die Prozesszentrale validiert PID und UTC-Erstellungszeit
 vor der Bestätigung und erneut vor dem Eingriff. Native SafeHandles binden
 die geprüfte Instanz bis zum tatsächlichen Endnachweis.
 Lesen verwendet `PROCESS_QUERY_LIMITED_INFORMATION` und `SYNCHRONIZE`;

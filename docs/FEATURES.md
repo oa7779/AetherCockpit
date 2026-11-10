@@ -1,7 +1,8 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand einschließlich unveröffentlichter Hardware-, Prozess- und Intelligence-Arbeit;
+beschreibt den aktuellen Quellstand einschließlich der in Beta 46 paketierten
+Hardware-, Prozess- und System-Intelligence-Erweiterungen;
 der veröffentlichte Beta-Stand steht in der [Produktübersicht](../README.md).
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
@@ -10,9 +11,9 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 | Bereich | Umfang |
 |---|---|
 | Cockpit | Übersicht mit Windows-Prüfstatus, gemeldeten Auffälligkeiten, CPU-/RAM-/GPU-/Download-Kernwerten und Schnellzugriffen; ausklappbare Live-Details zu Kernen, Sensoren, Datenträgern, Prozessen, Ereignissen und Aufzeichnung |
-| Prozesse (Erweiterung unveröffentlicht) | Virtualisierte Liste und Prozessbaum, identitätsgebundene Details und Aktionen, Intervall-CPU, Working Set/private Bytes, Threads, Handles, Prozess-I/O, Kurzzeithistorie und Systembeziehungen |
-| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Quelleninspektor, exakte Sensorgerätebeziehungen, WLAN, Windows-Takte, WDDM/Direct3D/Video, SMART/NVMe/TRIM/Controller, EDID/HDR und Audioformatprüfungen; M3 mit dokumentierten Grenzen abgenommen |
-| System Intelligence (unveröffentlicht) | Timeline, Baselines, Zustandsvergleich, Reliability, Software-/Treiber-/Start-/Netzwerkansichten, Diagnose, Recorder, Watch und belegte System Map |
+| Prozesse | Virtualisierte Liste und Prozessbaum, identitätsgebundene Details und Aktionen, Intervall-CPU, Working Set/private Bytes, Threads, Handles, Prozess-I/O, Kurzzeithistorie und Systembeziehungen |
+| Hardware Intelligence | 20 Klassen, Quelleninspektor, exakte Sensorgerätebeziehungen, WLAN, Windows-Takte, WDDM/Direct3D/Video, SMART/NVMe/TRIM/Controller, EDID/HDR und Audioformatprüfungen; M3 mit dokumentierten Grenzen abgenommen |
+| System Intelligence | Timeline, Baselines, Zustandsvergleich, Reliability, Software-/Treiber-/Start-/Netzwerkansichten, Diagnose, Recorder, Watch und belegte System Map |
 | Sensor-Matrix | Alle gemeldeten Sensorkanäle, Filter, Verlaufskurven nach Hardware und Einheit, gekennzeichnete Grenzwerte |
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
@@ -57,7 +58,7 @@ JSON/CSV/Text redigieren sensible Daten standardmäßig; vollständige lokale
 Snapshotdateien bleiben nach eigener Bestätigung unverschlüsselt.
 `Strg+K` findet Werkzeuge und aktuelle Prozesse. Favoriten, letzte Werkzeuge
 und bis zu 16 benannte Prozessansichten sind lokal gespeichert.
-[Bedienung](USER-GUIDE.md#prozesszentrale-unveröffentlichter-arbeitsstand),
+[Bedienung](USER-GUIDE.md#prozesszentrale),
 [Schutz und Datenschutz](SECURITY-AND-PRIVACY.md#prozessaktionen-und-systemsnapshots),
 [Prüfbericht](PROCESS-COMMAND-CENTER-REPORT.md).
 
@@ -79,7 +80,7 @@ Der Recorder verwendet vorhandene Proben, begrenzt Umfang und Speicher und
 endet kontrolliert. Watch prüft Quellenfrische, Dauer und Cooldown und kann
 Hinweise, Timelineeinträge, lokale Snapshots oder Diagnosemarker erzeugen.
 Inventarbeobachtung und Sitzungsverlauf sind getrennt einschaltbar.
-[Bedienung](USER-GUIDE.md#system-intelligence-unveröffentlichter-arbeitsstand),
+[Bedienung](USER-GUIDE.md#system-intelligence),
 [Quellen und Budgets](SYSTEM-INTELLIGENCE.md),
 [Prüfbericht](SYSTEM-INTELLIGENCE-REPORT.md).
 
