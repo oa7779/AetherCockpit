@@ -95,6 +95,17 @@ internal static class HardwareAcceptanceTests
             await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
             await view.Pending;
             measurements.Add(new { Kind = "real-reopen", Components = view.Snapshot.Components.Count });
+            var actualPending = view.RefreshAsync();
+            await Task.Delay(100);
+            var navigation = Stopwatch.StartNew();
+            window.Content = null;
+            await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+            await actualPending;
+            Require(actualPending.IsCompletedSuccessfully, "Reale CIM-Erfassung wurde bei Navigation nicht entleert.");
+            measurements.Add(new { Kind = "real-cim-navigation-cancellation", Milliseconds = navigation.Elapsed.TotalMilliseconds });
+            window.Content = view;
+            await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+            await view.Pending;
             var canceled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             view.ReadInventory = async (_, token) =>
             {
@@ -111,7 +122,12 @@ internal static class HardwareAcceptanceTests
             window = null;
 
             var weak = new List<WeakReference>();
-            for (var i = 0; i < 30; i++) weak.Add(await CycleAsync(i, measurements));
+            for (var i = 0; i < 30; i++)
+            {
+                weak.Add(await CycleAsync(i, measurements));
+                if ((i + 1) % 10 == 0)
+                    measurements.Add(new { Kind = "synthetic-cycle-resources-no-gc", Cycles = i + 1, Resources = Resources(process) });
+            }
             await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
             process.Refresh();
             measurements.Add(new { Kind = "synthetic-after-30-cycles-no-gc", Resources = Resources(process) });
@@ -121,7 +137,21 @@ internal static class HardwareAcceptanceTests
             await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
             var alive = weak.Count(w => w.IsAlive);
             Require(alive <= 1, "Geschlossene Hardwareansichten bleiben referenziert: " + alive);
-            measurements.Add(new { Kind = "synthetic-reference-collection-only", Alive = alive, Total = weak.Count });
+            measurements.Add(new { Kind = "synthetic-reference-collection-only", Alive = alive, Total = weak.Count, Resources = Resources(process) });
+            for (var i = 0; i < 3; i++)
+            {
+                using var cancellation = new CancellationTokenSource(100);
+                var elapsed = Stopwatch.StartNew();
+                try
+                {
+                    await HardwareCpuFrequency.ReadAsync(cancellation.Token);
+                    throw new InvalidOperationException("PDH-Sampling nicht abgebrochen.");
+                }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                {
+                    measurements.Add(new { Kind = "real-pdh-cancellation", Round = i + 1, Milliseconds = elapsed.Elapsed.TotalMilliseconds });
+                }
+            }
             Require(gaps.Count >= 100, "Dispatcher-Beobachtungsdauer zu kurz.");
             var sorted = gaps.Order().ToArray();
             measurements.Add(new { Kind = "dispatcher-heartbeat", Samples = sorted.Length, TargetMs = 25,

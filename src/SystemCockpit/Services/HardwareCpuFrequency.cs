@@ -32,6 +32,7 @@ internal static class HardwareCpuFrequency
             if (counters.Count == 0) return result;
             status = PdhCollectQueryData(query);
             if (status != 0) return [.. result, Error("baseline", status, start)];
+            var sampleStart = DateTimeOffset.UtcNow;
             var elapsed = Stopwatch.StartNew();
             await Task.Delay(TimeSpan.FromMilliseconds(300), token).ConfigureAwait(false);
             status = PdhCollectQueryData(query);
@@ -55,7 +56,7 @@ internal static class HardwareCpuFrequency
                         ? new(counter.Key, counter.Caption,
                             SourceObservation<string>.Present(row.Value.ToString("R", CultureInfo.InvariantCulture), counter.Unit,
                                 HardwareIntelligenceReader.Metadata(Source, end)), HardwareCadence.Dynamic,
-                            Calculation: $"Windows-Counterformatierung; zwei Abfragen {start:O} bis {end:O}, " +
+                            Calculation: $"Windows-Counterformatierung; Baseline {sampleStart:O} bis {end:O}, " +
                                 $"Abstand {sampleSeconds:R} s. Instanzkennung unverändert; group,processor beziehungsweise Windows-Aggregat. " +
                                 "Keine Umrechnung von Prozent in MHz, kein APERF/MPERF- oder Schlafzeit-Nachweis.")
                         : HardwareFact.Missing(counter.Key, counter.Caption, Source, end,
