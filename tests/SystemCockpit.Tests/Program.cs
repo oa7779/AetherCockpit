@@ -117,6 +117,7 @@ internal static class Program
             _assertions += ConsolidationTests.Run();
             _assertions += HardwareIntelligenceTests.Run();
             _assertions += HardwareCompletionTests.Run();
+            _assertions += ProcessCommandTests.Run();
             _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
             _assertions += NeonFrameTests.Run();
