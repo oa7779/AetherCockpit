@@ -57,7 +57,11 @@ public sealed class HardwareIntelligenceReader
         if (category == HardwareClass.Audio) Supplement("Core Audio", HardwareRuntimeReader.Audio);
         if (category == HardwareClass.Display) Supplement("Display API", HardwareRuntimeReader.Displays);
         if (category == HardwareClass.Display) Supplement("DisplayConfig", HardwareDisplayConfig.Read);
-        if (category == HardwareClass.Storage) components = (await HardwareStorageHealth.ReadAsync(components, token).ConfigureAwait(false)).ToList();
+        if (category == HardwareClass.Storage)
+        {
+            components = HardwareStorageProperties.Read(components, token).ToList();
+            components = (await HardwareStorageHealth.ReadAsync(components, token).ConfigureAwait(false)).ToList();
+        }
         token.ThrowIfCancellationRequested();
         return components;
     }
@@ -134,8 +138,34 @@ public sealed class HardwareIntelligenceReader
                     parent = Unique(raw.Where(r => r.Query == "Partition" && AccessPathMatches(r.Row, row)));
                 if (query == "Disk")
                     parent = Unique(raw.Where(r => r.Query == "Physical" && Same(row, "UniqueId", r.Row, "UniqueId")));
+                if (query == "DiskDevice" && row.TryGetProperty("ControllerIds", out var controllers) &&
+                    controllers.ValueKind == JsonValueKind.Array)
+                {
+                    var ids = controllers.EnumerateArray().Where(c => c.ValueKind == JsonValueKind.String)
+                        .Select(c => c.GetString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    parent = Unique(raw.Where(r => r.Query is "ScsiController" or "IdeController" &&
+                        ids.Contains(Text(r.Row, "PNPDeviceID"))));
+                }
             }
             var facts = component.Facts.ToList();
+            if (category == HardwareClass.Storage && query == "Disk")
+            {
+                var matching = raw.Where(r => r.Query == "DiskDevice" && Same(row, "Number", r.Row, "Index")).ToArray();
+                if (matching.Length == 1 && raw.Count(r => r.Query == "Disk" && Same(row, "Number", r.Row, "Number")) == 1)
+                {
+                    var controller = Fact(matching[0].Row, new("ControllerIds", "CIM-Controllerzuordnung über Windows-Disknummer",
+                        Classification: DataClassification.Sensitive), "Win32_DiskDrive.Index / Win32_SCSIControllerDevice / Win32_IDEControllerDevice",
+                        matching[0].Component.Facts[0].Observation.Metadata.Timestamp);
+                    if (controller.Observation.HasValue)
+                        controller = controller with { Observation = SourceObservation<string>.Present(controller.Observation.Value!, "",
+                            Metadata(controller.Observation.Metadata.Source, controller.Observation.Metadata.Timestamp, SourceType.Derived,
+                                classification: DataClassification.Sensitive)),
+                            Calculation = "Exakter eindeutiger MSFT_Disk.Number = Win32_DiskDrive.Index; Controller nur aus CIM-Assoziation." };
+                    facts.Add(controller);
+                }
+                else facts.Add(HardwareFact.Missing("ControllerIds", "CIM-Controllerzuordnung", "Windows-Disknummer / CIM-Assoziation",
+                    DateTimeOffset.UtcNow, "Kein eindeutiger Windows-Diskknoten; keine Controllerzuordnung."));
+            }
             if (category == HardwareClass.Storage && query is "Partition" or "Volume" or "Disk")
                 facts.Add(parent is null
                     ? HardwareFact.Missing("mapping", "Storage-Zuordnung", "CIM Storage-Identitäten", DateTimeOffset.UtcNow,
@@ -343,6 +373,20 @@ public sealed class HardwareIntelligenceReader
                             $v=if($null -eq $property){$null}else{$property.Value}
                             if($v -is [DateTime]){$v=$v.ToUniversalTime().ToString('o')}
                             $item[$p]=$v
+                        }
+                        if($q.Key -eq 'DiskDevice'){
+                            try{
+                                $controllers=@()
+                                foreach($association in @('Win32_SCSIControllerDevice','Win32_IDEControllerDevice')){
+                                    $controllers+=@(Get-CimAssociatedInstance -InputObject $device -Association $association -OperationTimeoutSec 8 -ErrorAction Stop |
+                                        Where-Object { $_.CimClass.CimClassName -in @('Win32_SCSIController','Win32_IDEController') } |
+                                        ForEach-Object { $_.PNPDeviceID })
+                                }
+                                $item.ControllerIds=@($controllers | Where-Object { $_ } | Sort-Object -Unique)
+                            }catch{
+                                $item.ControllerIds=$null
+                                $item._PropertyStates.ControllerIds=FailState $_
+                            }
                         }
                         if($q.IncludePnp -and $device.PNPDeviceID){
                             $pairs=@(

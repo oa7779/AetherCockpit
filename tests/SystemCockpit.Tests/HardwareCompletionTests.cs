@@ -61,6 +61,44 @@ internal static class HardwareCompletionTests
         Check(!HardwareSpdBoundary.Valid(module with { License = "" }), "SPD source license required");
         Check(HardwareDirect3D.ShaderName(0x69) == "6.9" && HardwareDirect3D.ShaderName(0x51) == "5.1", "shader model hex encoding");
         Check(HardwareDirect3D.ShaderName(0x70).Contains("Code"), "future shader models remain raw");
+        var trim = new byte[12];
+        BitConverter.GetBytes(12u).CopyTo(trim, 4);
+        trim[8] = 1;
+        Check(HardwareStorageProperties.ParseTrim(trim, time)[0].Display == "True", "TRIM driver flag");
+        trim[8] = 0;
+        Check(HardwareStorageProperties.ParseTrim(trim, time)[0].Display == "False", "TRIM false is available");
+        trim[8] = 2;
+        try { HardwareStorageProperties.ParseTrim(trim, time); Check(false, "bad TRIM boolean accepted"); }
+        catch (InvalidOperationException) { Check(true, "bad TRIM boolean refused"); }
+        var storage = new byte[36];
+        BitConverter.GetBytes(36u).CopyTo(storage, 4);
+        BitConverter.GetBytes(17u).CopyTo(storage, 28);
+        storage[10] = 1;
+        var properties = HardwareStorageProperties.ParseDevice(storage, time);
+        Check(properties[0].Display == "True" && properties[1].Display == "17", "removable and bus code remain separate");
+        try { HardwareStorageProperties.ParseDevice(storage[..8], time); Check(false, "truncated descriptor accepted"); }
+        catch (InvalidOperationException) { Check(true, "truncated descriptor refused"); }
+        var storageRows = new Dictionary<string, object[]>
+        {
+            ["Disk"] = [new { _Identity = "disk", Number = 0 }],
+            ["DiskDevice"] = [new { _Identity = "pnpdisk", Index = 0, ControllerIds = new[] { @"PCI\CONTROLLER" } }],
+            ["ScsiController"] = [new { _Identity = "controller", PNPDeviceID = @"PCI\CONTROLLER" }]
+        };
+        IReadOnlyList<HardwareComponent> ParseStorage() => HardwareIntelligenceReader.Parse(HardwareClass.Storage,
+            HardwareCimCatalog.Queries.Where(q => q.Class == HardwareClass.Storage).Select(q =>
+                new HardwareCimResult(q.Key, time, DataAvailability.Available, null,
+                    storageRows.GetValueOrDefault(q.Key, []).Select(o => JsonSerializer.SerializeToElement(o)).ToArray())).ToArray());
+        var mapped = ParseStorage();
+        Check(mapped.Single(c => c.Id == HardwareIntelligenceReader.Identity("DiskDevice", "pnpdisk")).ParentId ==
+            HardwareIntelligenceReader.Identity("ScsiController", "controller"), "exact CIM controller association");
+        Check(mapped.Single(c => c.Id == HardwareIntelligenceReader.Identity("Disk", "disk")).Facts.Single(f => f.Key == "ControllerIds")
+            .Observation.Metadata is { SourceType: SourceType.Derived, Classification: DataClassification.Sensitive }, "chained disk controller provenance");
+        storageRows["ScsiController"] = [storageRows["ScsiController"][0], new { _Identity = "duplicate", PNPDeviceID = @"PCI\CONTROLLER" }];
+        Check(ParseStorage().Single(c => c.Id == HardwareIntelligenceReader.Identity("DiskDevice", "pnpdisk")).ParentId is null,
+            "ambiguous controller identity refused");
+        storageRows["Disk"] = [storageRows["Disk"][0], new { _Identity = "disk-other", Number = 0 }];
+        Check(!ParseStorage().Single(c => c.Id == HardwareIntelligenceReader.Identity("Disk", "disk"))
+            .Facts.Single(f => f.Key == "ControllerIds").Observation.HasValue, "duplicate disk numbers cannot borrow controller relation");
         return _assertions;
     }
 }
