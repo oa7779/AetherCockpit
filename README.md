@@ -29,7 +29,15 @@ kontrolliert beendet werden – mit Sicherheitsdialog und geprüftem Endzustand.
 Die bestehende Suche über `Strg+K` findet auch Prozesse und neue Arbeitsabläufe.
 [Abschlussbericht, Nachweise und Grenzen](docs/PROCESS-COMMAND-CENTER-REPORT.md).
 Das Prozesspaket ist mit seinen dokumentierten Grenzen ausdrücklich abgenommen,
-bleibt aber unveröffentlicht. Der nächste lokale Auftrag ist AETHER System Intelligence.
+bleibt aber unveröffentlicht.
+
+**System Intelligence** verbindet Timeline, Baselines, Zustandsvergleiche,
+Zuverlässigkeitsereignisse, Software, Treiber und Netzwerk mit Diagnoseaufnahmen,
+Watch-Regeln und einer navigierbaren System Map. Die vorhandene Suche findet
+auch diese Entitäten. Quellenzeit, Identität und unvollständige Quellen bleiben
+sichtbar; zeitliche Nachbarschaft ist kein Ursachenbeweis.
+Die Erweiterung ist lokal implementiert und geprüft, noch nicht abgenommen
+oder veröffentlicht. [Abschlussbericht](docs/SYSTEM-INTELLIGENCE-REPORT.md).
 
 **Aktuelle Beta: 0.7.0-beta.45**
 

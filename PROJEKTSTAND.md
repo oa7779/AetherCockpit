@@ -66,12 +66,36 @@ sind offen gekennzeichnet statt erfunden.
 Keine Veröffentlichung, Push, Merge, Tag, Release, Installer oder Versionswechsel.
 Die Abnahme erfolgt auf Grundlage des unveränderten Abschlussberichts
 einschließlich seiner Grenzen. Der damalige Abnahmestopp ist historisch.
-**Aktiver Auftrag: AETHER System Intelligence**, vollständiger Ausbau nach
-dem erteilten Masterauftrag. Ausgangscommit `c7b6d962dd215575c2ab9b82154eca961dfbf90f`,
-Branch `rc/grosse-entfesselung`, sauberer Arbeitsbaum vor Phase 0.
-Neue lokale Commits, keine Veröffentlichung oder Paketierung.
-Nach dem neuen Abschlussbericht erneut ausdrückliche Abnahme abwarten.
-Bestehende Pakete bleiben unverändert.
+**AETHER System Intelligence: lokal implementiert und geprüft; ausdrückliche
+Abnahme steht aus.** Ausgangscommit
+`c7b6d962dd215575c2ab9b82154eca961dfbf90f`, Branch `rc/grosse-entfesselung`,
+sauberer Arbeitsbaum vor Phase 0. Phase-0-Baseline `5480685`.
+Quell-/Testabschluss `cd2ce3345901975cae1002111ed7148b31299b79`.
+[Abschlussbericht mit Umfang, lokalen Commits, Nachweisen und Grenzen](docs/SYSTEM-INTELLIGENCE-REPORT.md).
+
+Gemeinsames Evidenzmodell und lokale Retention verbinden Timeline,
+Baselines/Compare, Reliability, Software-/Treiber-/Startup-/Netzwerkansichten,
+Slow-PC-Diagnose, Recorder, Watch, System Map und bestehende globale Suche.
+Keine geratenen Ursachen oder Programmzuordnungen und kein neuer permanenter
+Sampler. Inventarbeobachtung und Sitzungsverlauf sind getrennt opt-in;
+Snapshots und abgeschlossene Aufnahmen sind sensible unverschlüsselte Dateien.
+
+Releasebuild 0 Warnungen / 0 Fehler; STA 4.892, davon 122 Intelligence-
+Assertions; kombiniert Professional/Interface/Schoner/Branding 5.274.
+Modern 3.611, Prozess-UI und native Eigenprozessregression bestanden.
+50 Intelligence-Bilder, neun Theme-/Root-DPI-Fälle, alle zwölf Bereiche,
+5.000 Entitäten, 32 Regeln mit Recorder und 20 Lebenszyklen geprüft.
+Native Abschlussinventur: 5.412 Entitäten / 3.267 Kanten; kontrollierter
+Recorder-/Watch-/Abbruchlauf bestanden. Diagnostics-Performance AccessDenied
+und begrenzte Ereignisfenster bleiben sichtbar. Kein realer Crash, Boot-
+oder Hardwarewechsel zum Nachweis ausgelöst.
+
+Handles im UI-Host 702 → 724, nach leerer WPF-Gegenprobe 741;
+alle Ansichten danach sammelbar. Kein Langzeit-/Leakfreiheitsnachweis.
+M3- und Prozess-Abnahme sowie alte Nachweise bleiben unverändert.
+Keine Veröffentlichung, Paketierung, öffentliche Versionsänderung oder
+Remoteänderung. Bestehende Pakete bleiben unverändert.
+**Auf die ausdrückliche System-Intelligence-Abnahme warten.**
 
 Installer-/Uploadauftrag abgeschlossen:
 [Beta `0.7.0-beta.45`](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)

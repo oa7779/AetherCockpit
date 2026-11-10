@@ -79,6 +79,30 @@ Auch dieser Auftrag bleibt ausdrücklich ohne Installer, Versionserhöhung
 oder Veröffentlichung. [Tests](TESTING.md#process-command-center),
 [Architektur, Rechte und Grenzen im Abschlussbericht](PROCESS-COMMAND-CENTER-REPORT.md).
 
+## System Intelligence
+
+`IntelligenceSources` projiziert vorhandene Dashboard-/NativeMetrics- und
+Hardwareproben; manuelle oder ausdrücklich aktivierte Inventuren verwenden
+die gemeinsamen Registrierungs-, Korrelations-, PDH- und PowerShell-Helfer.
+Die optionale Beobachtung läuft seriell in der vorhandenen 60-s-Schleife.
+Sie ist standardmäßig ausgeschaltet.
+
+`IntelligenceModel` enthält Entitäten, Kanten, Quellenabdeckung, Vergleich,
+Migration und Berichte. `IntelligenceSessionEngine` hält begrenzte Timeline,
+Watch-Zustände, Startbeobachtungen und Aufzeichnungen.
+`IntelligenceStore` serialisiert versionierte, atomar ausgetauschte lokale
+Dateien mit gemeinsamer Retention. `SystemIntelligenceView` verwendet diese
+Projektion für alle Arbeitsbereiche, Suche, Quelleninspektion und System Map.
+Die vollständige Prozesshistorie kommt aus dem bestehenden Process Command
+Center, nicht aus einem neuen Poller.
+
+Neue Quellen/Identitäten benötigen explizite Verfügbarkeit, Quellenzeit,
+Datenschutzklasse und positiven Vollständigkeitsnachweis für Entfernungen.
+Rechner-/Benutzerkontexte werden nicht gleichgesetzt, wenn ihr Bezug fehlt.
+Keine neuen Pakete und keine Änderung am Server-/Clientprotokoll.
+[Verträge und Budgets](SYSTEM-INTELLIGENCE.md),
+[Testmodi](TESTING.md#system-intelligence).
+
 ## GitHub Actions
 
 Der Workflow [Windows build](../.github/workflows/windows-build.yml) baut

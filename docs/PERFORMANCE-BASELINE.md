@@ -1,5 +1,72 @@
 # AETHER — Performance-Baseline für die Konsolidierung
 
+## System Intelligence
+
+Unveröffentlichter Quell-/Testabschluss `cd2ce33`, Release-STA-Testhost.
+Rohdaten: `intelligence-proof-14\measurements.json`,
+native Gegenprobe `intelligence-native-10.json`, Prozessregression
+`process-native-si-02.json`. Ausgaben bleiben im lokalen Nachweisordner;
+[Pfad und Einordnung](SYSTEM-INTELLIGENCE-REPORT.md#31-visuelle-proofs).
+Keine installierte Version, kein Vorher/Nachher-Beschleunigungsnachweis.
+
+5.000 synthetische Entitäten, Reduced Motion, drei Themes und
+Root-DPI 100/150/200 Prozent. Vorab festgelegt: Darstellung, Filter und Map
+je unter 2.500 ms, weniger als 200 tatsächlich erzeugte Zeilencontainer.
+Alle neun Fälle bestanden. Zeiten enthalten Layout und Dispatcher-Nachlauf,
+nicht den Start des vollständigen Produkts.
+
+| Theme | Root-DPI % | Erste Darstellung ms | Filter ms | Map ms | Zeilencontainer |
+|---|---:|---:|---:|---:|---:|
+| Retro-Neon | 100 | 100,03 | 21,18 | 189,15 | 13 |
+| Retro-Neon | 150 | 96,14 | 19,50 | 240,73 | 13 |
+| Retro-Neon | 200 | 90,65 | 21,00 | 201,19 | 13 |
+| Modern hell | 100 | 155,50 | 25,73 | 289,50 | 26 |
+| Modern hell | 150 | 168,90 | 17,49 | 254,40 | 26 |
+| Modern hell | 200 | 174,28 | 17,86 | 240,44 | 26 |
+| Modern dunkel | 100 | 148,22 | 60,29 | 247,87 | 26 |
+| Modern dunkel | 150 | 181,31 | 33,11 | 226,06 | 26 |
+| Modern dunkel | 200 | 122,88 | 48,25 | 235,64 | 26 |
+
+Jeweils genau 200 sichtbare Mapknoten bei unbeschränktem Filter.
+5.000 gemeinsame Prozessbeobachtungen: 1,4803 ms.
+Vergleich 5,8453 ms, Pfadsuche 6,5376 ms, globale Suchprojektion 12,2574 ms.
+32 Regeln zusammen mit Recorder: 21,9605 ms.
+Damit bestehen auch die vorab festgelegten 2.500-ms- beziehungsweise
+100-ms-Gates. Keine Mittelwerte aus verschiedenartigen Testfällen.
+
+20 zusätzliche Ansichtszyklen im bereits aufgewärmten Host:
+
+| Ressource | Vorher | Nach 20 Ansichten | Nach 30 leeren Fenstern und 1 s Nachlauf |
+|---|---:|---:|---:|
+| Handles | 702 | 724 | 741 |
+| Private Bytes | 587.386.880 | 400.293.888 | 383.213.568 |
+| Working Set, Bytes | 315.944.960 | 305.864.704 | 295.002.112 |
+| Threads | 20 | 20 | 23 |
+| GC 0 / 1 / 2, kumulativ | 138 / 86 / 33 | 150 / 93 / 35 | 152 / 95 / 37 |
+| Kumulativ allokierte Bytes | 2.157.461.904 | 2.349.570.488 | 2.351.523.896 |
+
+Vor der Gegenprobe bleibt eine Ansicht vorübergehend erreichbar, danach keine
+der 20. Separat erzwungene GC dient der Referenzprüfung. Der Handleanstieg
+bleibt ausdrücklich nachzubeobachten; die leeren Fenster sind keine
+Ursachenerklärung für jedes Handle und keine Langzeitentwarnung.
+2.000,8298 ms beruhigter Dispatcher-Idle: 0 ms gemessene Prozess-CPU
+bei 24 logischen Prozessoren. Das begrenzte Zeitauflösungsfenster beweist
+weder Nullverbrauch noch vollständigen Produkt-Idle.
+
+Reale kalte Inventur: 5.412 Entitäten / 3.267 Kanten in 8.903,4997 ms;
+Handles 270 → 370, Private Bytes 15.273.984 → 56.401.920.
+Darin sind Windows-/PowerShell-/WPF-Erstinitialisierung und Quellenbibliotheken
+enthalten, kein isolierter dauerhafter Mehrbedarf der Erweiterung.
+Recorderstopp bei laufender Inventur: 7,2908 ms; eine kontrollierte Probe,
+eine echte Benachrichtigung und lokale Speicherung mit eigenem Temp-Cleanup.
+Prozessregression: 100 reine Handlezyklen 442 → 442; eigenes Fixture
+einschließlich Endprüfung in 86,9651 ms beendet.
+
+Nicht gemessen: mehrstündiger Produktbetrieb, produktiver GPU-/CPU-Mehrbedarf,
+physische Boot-/Resume-/Hotplug-/Monitorwechselmatrix.
+Strukturelle Grenzen für Daten, Jobs, Sampler und Dateizugriffe stehen in
+[Architektur und Budgets](SYSTEM-INTELLIGENCE.md#vorab-festgelegte-technische-budgets).
+
 ## Process Command Center
 
 Messung des unveröffentlichten Arbeitsstands vom 10. November 2026,

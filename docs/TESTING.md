@@ -1,8 +1,58 @@
 # Tests
 
+## System Intelligence
+
+Releasebuild: **0 Warnungen / 0 Fehler**. STA-Grundrunner: **4.892 Assertions**,
+davon 122 für System Intelligence. Mit Professional-/Interface-/Schoner-/
+Branding-Schaltern: **5.274 einschließlich Grundrunner**.
+Der separate Modern-Smoke besteht mit **3.611** Assertions.
+Die Zahlen verschiedener Modi nicht addieren.
+
+```powershell
+dotnet build .\SystemCockpit.slnx -c Release --no-restore
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --intelligence-proof C:\Temp\aether-intelligence-proof-01
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --intelligence-acceptance C:\Temp\aether-intelligence-native-01.json
+```
+
+Neue absolute Ausgabenamen verwenden. Der Grundlauf prüft Schema und
+verschachtelte Fehler, Integrität, Redaktion, Secret-Ausschluss, Legacy-Import,
+Kontextbezug, vollständige/leere/fehlende Quellen, Graphpfade, Ereignisschemata,
+Watch-Dauer/Frische/Cooldown/Neustart und Recorder-Grenzen/Uhrsprünge.
+Isolierte tatsächlich ausgeführte PowerShell-Quellenfixtures prüfen fehlende
+und doppelte PnP-IDs, numerische NDIS-Medien, sitzungsstartgebundene
+Logonidentitäten und erlaubte Crash-Subjekte ohne Übernahme beliebiger XML-Felder.
+Sie lesen keine echten CIM-Inventare. Mehrdeutige WLAN-Gerätezuordnungen,
+zielgebundene Crash-Regeln und fehlender Datenträgerfreiplatz sind eigene Fälle.
+
+Der Proof verwendet 5.000 synthetische Entitäten, drei Themes und
+Root-DPI 100/150/200 Prozent mit Reduced Motion.
+Erste Darstellung, Filter, Map, Vergleich, Pfadsuche und Suchprojektion
+haben vorab ein 2.500-ms-Gate; Liveverarbeitung sowie 32 Regeln mit Recorder
+ein 100-ms-Gate. Weniger als 200 Zeilencontainer und genau 200 sichtbare
+Mapknoten bei unbeschränktem Filter werden tatsächlich geprüft.
+Alle zwölf Arbeitsbereiche, Baseline-/Vergleichsaktionen, Regelbearbeitung,
+Benachrichtigung, Aufzeichnung/Verwerfen, Mapfokus/-pfad und exakte
+integrierte Prozessnavigation werden bedient.
+20 Ansichtszyklen, separate GC und 30 leere WPF-Fenster mit Dispatcher-
+Nachlauf trennen Sammelbarkeit von einer allgemeinen Leakfreiheitsbehauptung.
+
+Der Native-Modus liest Windows-Quellen ohne Änderungen. Ein zusätzliches
+Testfenster verwendet einen eigenen temporären Datenspeicher:
+eine echte gemeinsame Ressourcenprobe, eine absichtlich auf 0 % gesetzte
+Benachrichtigungsregel und eine manuell gestoppte Ressourcenaufnahme.
+Stoppen wird bei gleichzeitig laufender Inventur auf unmittelbare Wirkung
+geprüft. Danach werden nur die eigenen temporären Dateien entfernt.
+Kein Lastgenerator, fremdes Prozessende, ETW, Paketmitschnitt oder Eingriff
+in Start-, Treiber- oder Sicherheitskonfigurationen.
+
+Abschließende Nachweise und erhaltene Fehlversuche:
+[System-Intelligence-Bericht](SYSTEM-INTELLIGENCE-REPORT.md),
+[Messwerte und Geltungsbereich](PERFORMANCE-BASELINE.md#system-intelligence).
+
 ## Process Command Center
 
-Der aktuelle Release-Grundrunner besteht mit **4.770 Assertions**,
+Der abgenommene Prozessstand bestand mit **4.770 Grundassertions**,
 davon 72 zusätzliche Prozessassertions gegenüber dem abgenommenen
 M3-Grundstand. Kein `dotnet test`-Projekt.
 Kombiniert mit `--professional-ui --interface-ui --screensaver-ui --branding-ui`

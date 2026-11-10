@@ -54,6 +54,44 @@ Verantwortlichkeiten und Informationspflichten für den eigenen Einsatz
 gesondert prüfen. Der Projektanbieter erhält nicht allein durch den Einsatz
 eines selbst betriebenen Servers dessen Berichte.
 
+## Lokale System Intelligence
+
+System Intelligence verarbeitet lokale Prozess-, Software-, Geräte-, Dienst-,
+Start-, Netzwerk- und Ereignisdaten. Bestehende Quellen werden weiterverwendet.
+Zusätzliche Inventarbeobachtung und persistente Timeline/Watch sind getrennt
+einschaltbar und zunächst ausgeschaltet.
+
+Snapshots, Baselines und abgeschlossene Diagnoseaufnahmen werden lokal im
+Unterordner `Intelligence` des Einstellungsordners gespeichert.
+Eine Watch-Aktion **Snapshot** speichert ebenfalls automatisch, unabhängig
+vom Schalter für die Timeline. Diese Dateien sind **Sensitive und
+unverschlüsselt**. Der Recorder zeigt diesen Hinweis vor dem Start;
+Verwerfen speichert die laufende Aufnahme nicht.
+JSON-/CSV-/Textberichte bieten eigene Freigabe beziehungsweise Redaktion.
+Das vollständige `.aetherintelligence`-Format benötigt ausdrücklich sensible
+Freigabe und ist ein Snapshot, kein redigierter Bericht.
+
+Ein SHA-256-Wert aus Windows-MachineGuid und Benutzer-SID begrenzt Vergleiche
+auf denselben Installations-/Benutzerkontext. Die Rohwerte werden dafür nicht
+gespeichert. Auch der Hash ist sensibel; er ist kein Authentifizierungsnachweis.
+Die separate SHA-256-Prüfsumme der Dateihülle erkennt Beschädigung, nicht
+absichtliche Manipulation durch jemanden mit Schreibzugriff.
+
+Standardretention: 14 Tage, 128 Dateien, 64 MiB gemeinsam; konfigurierbar
+innerhalb der [technischen Grenzen](SYSTEM-INTELLIGENCE.md).
+Quarantäne und Tempdateien zählen mit. Ein einzelner Einstellungsbestand
+bleibt altersunabhängig, zählt aber zum Gesamtbudget und ist auf 64 KiB begrenzt.
+Einzellöschung und Zurücksetzen erfassen nur die eigenen exakt erkannten
+Dateinamen. Das Abschalten der Sitzungsspeicherung entfernt die gespeicherte
+Sitzung, nicht separat angelegte Snapshots oder Aufzeichnungen.
+
+Secret-klassifizierte Inhalte werden vom Modell abgewiesen. Ereignis-XML wird
+schemaabhängig auf erlaubte Felder begrenzt; Ereignisfreitexte bleiben sensibel.
+Vor Weitergabe unredigierter Daten den Inhalt prüfen.
+Es gibt keinen neuen Uploadpfad oder externen Reputationsdienst.
+Watch führt ausschließlich Hinweis, Timeline, Snapshot und Diagnosemarker
+aus; administrative Änderungen bleiben in den bestehenden bestätigten Abläufen.
+
 ## Lokale Hardwareberichte
 
 Die unveröffentlichte Hardwarezentrale liest lokale Windows-/Hardwarequellen

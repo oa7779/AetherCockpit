@@ -44,6 +44,81 @@ Startidentität aus; ein inzwischen verschwundener Treffer wählt keinen
 Ersatzprozess. **Favorit umschalten**, **Favoriten** und **Zuletzt verwendet**
 gelten für Werkzeuge, nicht für eine dauerhaft gespeicherte Prozesschronik.
 
+## System Intelligence (unveröffentlichter Arbeitsstand)
+
+**Übersicht → System Intelligence** öffnet die gemeinsame Auswertung.
+Der Bereichswähler verbindet Timeline, Change / Compare, Reliability,
+Software, Treiber, Startup, Netzwerk 2.0, Diagnose, Recorder, Watch und
+System Map. Suchfeld, Klassen-/Kategoriefilter und Zeitraum begrenzen die
+Treffer. Eine Auswahl zeigt Identität, Quellenzeit und belegte Beziehungen.
+**Enter** fokussiert den Inspektor.
+
+**Inventar lesen** ergänzt die vorhandenen Livewerte um Windows-Inventare.
+**Quellenabdeckung** zeigt fehlgeschlagene oder begrenzte Quellen.
+**Inventaränderungen beobachten** aktiviert dieselbe Inventur seriell in
+der vorhandenen 60-s-Schleife; ohne Aktivierung erfolgt sie nur auf Anforderung.
+**Abbrechen** verwirft eine noch nicht abgeschlossene Inventur.
+
+**Baseline merken** oder **Snapshot merken** hält einen lokalen Zustand nach
+Datenschutzbestätigung fest. Vorher und optional Nachher auswählen, dann
+**A / B vergleichen**; ohne Nachher wird mit jetzt verglichen.
+Fehlende Quellen bedeuten nicht, dass ihr gesamter Bestand entfernt wurde.
+Alte Prozesssnapshots sind importierbar, enthalten aber weder vollständige
+Abdeckung noch einen verifizierten Installations-/Benutzerbezug.
+Ein Import ändert den Rechner nicht.
+
+Reliability zeigt beobachtete Wiederholungen derselben Quellensignatur.
+Wo das Windows-Ereignisschema ein App-/Dienstsubjekt liefert, wird es
+berücksichtigt. Die Auswahl bietet einen gespeicherten Zustand vor dem ersten
+Auftreten als Vergleich an, falls vorhanden. Das ist keine Ursachendiagnose.
+Startup trennt Windows-Daten von ausdrücklich definierten AETHER-
+Beobachtungsintervallen. Gleiche Startbedingungen werden nicht vorausgesetzt.
+
+Softwareaktivität basiert auf expliziten Paket-/Executable-/Prozessimagekanten.
+Passende Namen oder Installationsordner reichen nicht.
+Die Treiberansicht gruppiert gemeldete PnP-Klassen. WLAN braucht zusätzlich
+ein gemeldetes WLAN-Medium und eine eindeutige PnP-Gerätezuordnung;
+Systemgeräte sind kein Nachweis eines bestimmten Chipsatzes.
+Details und Timeline zeigen beobachtete Änderungen. Netzwerk enthält numerisch sortierbare Ports
+und einen Listenerfilter für TCP Listen beziehungsweise gebundene UDP-Endpunkte.
+**Zur technischen Quelle / Prozesszentrale** öffnet nur eine belastbare Zuordnung.
+
+**Warum ist mein PC gerade langsam?** zeigt beobachtete Ressourcenbeiträge.
+Im **Recorder** Profil, Dauer und gegebenenfalls Umfang wählen, dann starten.
+**Stoppen** beendet die Aufnahme auch während einer Inventur;
+**Aufzeichnung verwerfen** legt keine Aufnahme ab.
+Abgeschlossene Aufnahmen enthalten Proben, Spitzen, Marker, Vorher-/Nachher-
+Zustände und Lücken. Sie werden sensibel und unverschlüsselt lokal gespeichert.
+Automatisches Ende wird mit der nächsten gemeinsamen Probe verarbeitet.
+
+In **Watch** Auslöser, exaktes Ziel, Schwelle, Dauer, Cooldown und Aktion wählen.
+Prozessziele verwenden `PID@Startticks`, Sensoren ihre im Inspektor gezeigte ID.
+CPU/RAM/GPU/Freiplatz verwenden Prozent, Prozessspeicher MiB.
+Diskrete Ereignisse brauchen Dauer 0 und mindestens Schwelle 1;
+der einzelne Crash-Auslöser verwendet genau Schwelle 1.
+Bei Crash bleibt das Ziel für alle Apps leer. Für eine bestimmte App das
+exakte strukturierte Windows-Subjekt aus dem Ereignisinspektor verwenden
+(`AppPath`, ersatzweise `ExeFileName` oder `AppName`); fehlende Subjekte
+erfüllen keine zielgebundene Regel. Das ist keine installierte Softwareidentität.
+Fehlende, alte oder nicht endliche Werte erfüllen keine Dauerschwelle.
+Inventarregeln benötigen vollständige Folgeinventare. GPU-Watch benötigt
+einen bereits aktiven GPU-Loadsensor; es startet keinen Sensorprovider.
+Die vier Aktionen sind Benachrichtigung, Timeline, Snapshot und Diagnosemarker.
+**Snapshot** speichert automatisch auch bei ausgeschalteter Sitzungsverlaufsspeicherung.
+
+Die **System Map** zeigt höchstens 200 Knoten. Suche und Filter begrenzen den
+Bestand, der Zoomregler und Ziehen auf der freien Fläche verändern den Ausschnitt.
+Knoten auswählen, **Fokus + direkte Nachbarn** oder **Gesamte Karte** verwenden.
+Für einen Beziehungspfad zuerst **Pfadanfang merken**, dann das Ziel auswählen
+und **Pfad zur Auswahl**. Das Ergebnis ist keine Kausalkette.
+
+`Strg+K` findet auch Entitäten, Timelineeinträge, Snapshots, Aufnahmen und Regeln.
+**Timeline und Watch lokal behalten** steuert die Sitzungsspeicherung.
+Snapshots und Aufnahmen bleiben unabhängig davon einzeln löschbar.
+Grenzen und **Lokale Historie zurücksetzen** gelten gemeinsam für den
+Intelligence-Speicher. [Datenschutz](SECURITY-AND-PRIVACY.md#lokale-system-intelligence),
+[Architektur und Grenzen](SYSTEM-INTELLIGENCE.md).
+
 ## Prozesszentrale (unveröffentlichter Arbeitsstand)
 
 **Übersicht → Prozesse / Leistung** öffnet die Prozesszentrale.

@@ -9,6 +9,26 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## Unveröffentlicht — System Intelligence
+
+- Eigener Navigationsbereich mit gemeinsamer Timeline, Quelleninspektor,
+  Baselines, Change Intelligence und A/B-Vergleich.
+- Software-, PnP-/Treiber-, Dienst-, Aufgaben-, Autostart- und Netzwerkdaten
+  mit belastbaren Identitäten; AppX-Executables, Prozessimages, GPU-LUIDs
+  und qualifizierte Ereignisse werden nur anhand belegter Schlüssel verbunden.
+- Reliability-Signaturen, getrennte Windows-/AETHER-Startbeobachtung,
+  lesende Slow-PC-Diagnose und kontrollierter Diagnostics Recorder.
+- Watch mit Quellenfrische, Dauer, Cooldown und vier sicheren Aktionen;
+  System Map mit Zoom, Verschieben, Nachbarn und tatsächlichen Beziehungspfaden.
+- Globale Suche mit exakter Navigation zu Entitäten, Ereignissen, Snapshots,
+  Aufzeichnungen und Regeln; bestehende Prozess- und Hardwarebereiche weiterverwendet.
+- Versionierte lokale Speicherung mit Integritätsprüfung, Quarantäne,
+  Alters-/Datei-/Bytegrenzen und redigierbaren JSON-/CSV-/Textberichten.
+- Native Eigenprozess- und Quellenregression, kontrollierte Recorder-/Watch-
+  Lebenszyklen sowie integrierte Theme-/DPI-/Virtualisierungsproofs.
+  [Abschlussbericht und Grenzen](docs/SYSTEM-INTELLIGENCE-REPORT.md).
+- Öffentliche Version und bestehende Pakete bleiben unverändert.
+
 ## Unveröffentlicht — Process Command Center / System Correlation
 
 - Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
