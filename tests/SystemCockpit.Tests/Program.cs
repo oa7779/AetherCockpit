@@ -30,6 +30,12 @@ internal static class Program
                 host.Shutdown();
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--hardware-acceptance")
+            {
+                HardwareAcceptanceTests.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--hardware-proof")
             {
                 HardwareIntelligenceTests.Proof(args[1]);

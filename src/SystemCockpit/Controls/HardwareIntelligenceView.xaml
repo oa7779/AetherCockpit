@@ -31,6 +31,8 @@
                              Style="{StaticResource NeonTextBox}"
                              AutomationProperties.Name="Komponenten filtern" ToolTip="Komponentenname filtern"/>
                     <ListBox x:Name="Components" SelectionChanged="ComponentChanged" DisplayMemberPath="Name"
+                             ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
                              Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}"
                              ScrollViewer.HorizontalScrollBarVisibility="Auto" AutomationProperties.Name="Hardwarekomponenten"/>
                 </DockPanel>
