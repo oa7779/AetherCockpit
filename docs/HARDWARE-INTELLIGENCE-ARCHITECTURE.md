@@ -26,6 +26,25 @@ zusammengelegt. CPU-Topologie und CPUID des ausführenden Prozessors sind
 ebenfalls getrennte Quellen; deren Features werden nicht allen Sockeln
 unterstellt.
 
+Die Fortsetzung ergänzt folgende lesende Pfade:
+
+- Native Wi-Fi verwendet eigene sicher freigegebene Client-/Antwortpuffer.
+  Kein aktiver Scan, keine Verbindungs-/Profiländerung oder Schlüsselabfrage. SSID und
+  BSSID werden nur intern zum eindeutigen Frequenzmatch verwendet.
+- Adapterraten entstehen aus monotonen Bytezählerdifferenzen je exakter
+  Adapteridentität. Erste Probe, Gegenlauf, fehlende Probe und Geräteentfernung
+  benötigen eine neue Baseline. Beschriftung als Intervallmittel, nicht als
+  momentane Rate.
+- Direct3D erstellt ein Gerät für genau den DXGI-Adapter und fragt
+  Featurelevel, Raytracing-Tier und Node-0-Speicherarchitektur ab.
+  Kein Render-/Computeauftrag. COM- und Abfragepuffer werden freigegeben.
+- Audio liest das Shared-Mode-Mixformat der Audioengine ohne Streamstart.
+  Es ist keine Liste aller Exclusive-Mode-/Geräteformate.
+- DisplayConfig liefert aktive Zielpfade, Windows-Verbindungsart,
+  bevorzugten Zielmodus, Advanced Color und Desktopskalierung.
+  Bevorzugter Modus und Advanced Color beweisen für sich weder physisch
+  native Panelauflösung noch einen separaten HDR-Modus.
+
 `HardwareFact` enthält `SourceObservation<string>` und unverändert die
 M1-`SourceMetadata`. Der String erhält die vom Provider gelieferte skalare
 Darstellung beziehungsweise eine explizit beschriftete Code-/Arraydarstellung.
@@ -65,7 +84,19 @@ Beim Verlassen der Ansicht werden Ereignisse, Fensterhook und Timer entfernt
 und laufende Abfragen abgebrochen. Da währenddessen keine Ereignisüberwachung
 besteht, werden gespeicherte Gruppen beim Wiederöffnen nicht unbesehen als
 aktuell ausgegeben. Der normale Programmabschluss wartet auf die laufende
-Hardwareabfrage. Keine neuen Sensorcomputer, Kernelzugriffe oder Treiber.
+Hardwareabfrage. Keine neuen Sensorcomputer oder eigenen Kerneltreiber.
+Die lesende SMART-Abfrage nutzt das vorhandene smartctl und den bestehenden
+Windows-Storage-Treiberweg auf ausdrücklichen Aufruf der Storageklasse.
+
+Die Sensorübersicht verwendet eine eigene Sitzung des vorhandenen
+`SessionStatistics`-Aggregators. Pro exaktem Kanal werden nur endliche
+Stichproben aggregiert; aktuelle Lücken bleiben Lücken. Minimum, Maximum,
+Stichprobenmittel und Anzahl sind Derived und behalten ersten/letzten
+tatsächlichen Messzeitpunkt. Keine Zeitgewichtung oder Interpolation.
+Grenzwerte werden nicht aggregiert. Entfernte oder in Typ/Einheit veränderte
+Kanäle werden entfernt, deaktivierter Zugriff setzt die Sitzung zurück.
+Maximal 2.048 aktive Reihen; Überschreitung und rückläufige/gleiche
+Zeitstempel erzeugen einen sichtbaren Fehler statt falscher Statistik.
 
 ## Identitäten und Beziehungen
 
@@ -80,6 +111,22 @@ bildet die OS-Sicht ab. UniqueId, DiskNumber und Volume.Path/AccessPaths werden
 nur exakt und eindeutig verknüpft. Nicht passende Geräte bleiben getrennt.
 Storage-Reliability-Zähler gehören zur tatsächlich abgefragten PhysicalDisk.
 USB-Eltern stammen aus DEVPKEY_Device_Parent; keine erfundene Porttopologie.
+
+SMART-/NVMe-Rohdaten werden an den Windows-Diskknoten angehängt:
+`MSFT_Disk.Number → smartctl /dev/pdN`, zusätzlich muss `device.name` exakt
+der Anfrage entsprechen. Nach der Abfrage werden Number, UniqueId und Path
+erneut über CIM geprüft; unklare, entfernte oder gewechselte Geräte
+erhalten keine Healthwerte. Die Prüfung ist keine atomare Hardwareaufnahme.
+PnP-Invalidierung während der Gesamtinventur entwertet weiterhin deren
+Versionsstand. Keine Gleichsetzung einer Windows-Storage-Kennung mit
+einer anders definierten NVMe-Controller-Seriennummer.
+
+Nur das vorhandene `-x -j -d auto` wird verwendet: keine Selbsttests,
+Einstellungen, Firmware-/TRIM-Änderungen oder erzwungenen USB-Transporte.
+Eine lesende Abfrage kann Geräte aktivieren und erzeugt Gerätezugriffe;
+sie läuft nicht als permanenter Hintergrundpoller. Fehlendes Werkzeug,
+Lesefehler und fehlende Attribute bleiben explizit. ATA-Rohwerte werden
+nicht herstellerübergreifend als gleichbedeutend ausgelegt.
 
 ## Berichte und Grenzen
 

@@ -9,21 +9,32 @@ ist als vollständiger Auftrag aber **NICHT ABNAHMEBEREIT**. Ausgangscommit
 Der neue Auftrag erlaubt kleine lokale Commits, aber keinen Push, Tag,
 Release, Merge oder RC-Versionswechsel. Bestehende Pakete bleiben erhalten.
 Hardwareinventar ausschließlich lesend; keine neuen Treiber oder Logos.
+Fortsetzung ausdrücklich beauftragt: zuerst offene M3-Hardwarearbeiten
+abarbeiten und prüfen, danach Process Command Center. Der Prozessauftrag
+hat bisher ausschließlich eine Bestandsanalyse und einen Implementierungsplan;
+keine neue Prozessfunktion oder Prozessbeendigung implementiert.
 
 Eigene Hardwareansicht, 20 Klassen, Quelleninspektor, CIM-/CPU-/DXGI-/
 Netzwerk-/Audio-/Displayprovider, Storage-/USB-Beziehungen und redigierbare
-JSON-/CSV-/Textberichte implementiert. Lokale Implementierungscommits
-`7e5eff9`, `ca60dd6`, `37bb74c`, `c72ebe0`, `5f3d22a`.
-Releasebuild 0 Warnungen / 0 Fehler; STA 4.558, kombiniert mit Interface/
-Schoner/Branding 4.911 (inklusive Grundrunner), Modern-Smoke 3.611 bestanden.
-Neun neue Hardware-Theme-/Root-DPI-Bilder und drei Fixture-Messrunden.
+JSON-/CSV-/Textberichte implementiert. Die Fortsetzung ergänzt echte
+Sensorstatistik (`db0ad45`) sowie Native Wi-Fi, Adapterraten,
+Windows-Microcode, Direct3D-Featurelevel/Raytracing, Audioengine-Mixformate,
+DisplayConfig und zugeordnete SMART-/NVMe-Berichte (`a36915b`).
+Releasebuild 0 Warnungen / 0 Fehler; kombiniert mit Interface/Schoner/
+Branding 4.994 Assertions einschließlich Grundrunner, Modern-Smoke 3.611
+bestanden. Erneut neun Hardware-Theme-/Root-DPI-Bilder und drei
+Fixture-Messrunden; Details im Bericht.
 
 Reale Hardwareabfrage ausdrücklich freigegeben und nur lesend ausgeführt:
-5.024 Feldzeilen, 789 Sensitive-Zeilen redigiert. Keine neuen Sensorzugriffe.
-Nicht integrierte GPU-/Wi-Fi-/SPD-/Roh-SMART-/NVMe-/Statistikpfade und die
-reale Langzeit-/Resume-/Hotplug-Abnahme bleiben offen.
+5.588 Feldzeilen, 792 Sensitive-Zeilen vollständig redigiert.
+Keine neuen Sensorzugriffe. Native WLAN-, Direct3D-, Audio-/Display- und
+drei zugeordnete NVMe-Healthpfade lieferten reale Werte. Zwei unbekannte
+USB-Brücken bleiben Lesefehler; keine erzwungene Transportauswahl.
+Weitere GPU-/SPD-/Controller-/Sensorzuordnungswege und die reale
+Langzeit-/Resume-/Hotplug-Abnahme bleiben offen.
 [M3-Bericht mit Nachweisen und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
-Nach Dokumentationsabschluss Stopp; keine neue Paketierung oder
+M3 nicht als abgeschlossen überspringen; vor dem Prozessumbau verbleibende
+Hardwarearbeit und Abnahme klären. Keine neue Paketierung oder
 Veröffentlichung und kein Meilenstein 4.
 
 Installer-/Uploadauftrag abgeschlossen:

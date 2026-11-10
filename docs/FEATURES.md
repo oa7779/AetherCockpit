@@ -1,7 +1,8 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand Beta 38; sie enthält keine Versionsgeschichte.
+beschreibt den aktuellen Quellstand einschließlich unveröffentlichter Hardwarearbeit;
+der veröffentlichte Beta-Stand steht in der [Produktübersicht](../README.md).
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
 ## Beobachtung und Darstellung
@@ -10,6 +11,7 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 |---|---|
 | Cockpit | Übersicht mit Windows-Prüfstatus, gemeldeten Auffälligkeiten, CPU-/RAM-/GPU-/Download-Kernwerten und Schnellzugriffen; ausklappbare Live-Details zu Kernen, Sensoren, Datenträgern, Prozessen, Ereignissen und Aufzeichnung |
 | Prozesse | Such- und sortierbare Tabelle, Intervall-CPU, Working Set, Threads, Handles, I/O und identitätsgesicherte Details |
+| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Komponenten-/Quelleninspektor, Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails, zugeordnete SMART-/NVMe-Healthwerte und Sensorstatistik; vollständige M3-Abnahme noch offen |
 | Sensor-Matrix | Alle gemeldeten Sensorkanäle, Filter, Verlaufskurven nach Hardware und Einheit, gekennzeichnete Grenzwerte |
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |

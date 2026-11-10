@@ -61,6 +61,21 @@ auf Anforderung. Sie eröffnet keinen zusätzlichen Kernel-/Sensorprovider und
 enthält keinen externen Uploadpfad. Der vorhandene ausdrücklich aktivierte
 Cockpit-Sensorpfad kann seine Messwerte an die Ansicht weiterreichen.
 
+Native Wi-Fi fragt Verbindungsdaten und die von Windows zwischengespeicherte
+BSS-Liste ab, ohne aktiven Scan, Profiländerung oder Schlüsselzugriff.
+SSID/BSSID bleiben interne Matchdaten; die Adapter-GUID ist Sensitive.
+Ein verweigerter WLAN-Zugriff wird angezeigt, nicht durch automatische
+Rechte- oder Datenschutzeinstellungsänderungen umgangen.
+
+Die Storageklasse kann das vorhandene smartctl für `-x -j` aufrufen.
+Dabei werden Diagnose-/Healthdaten gelesen, keine Selbsttests gestartet
+oder Laufwerkseinstellungen geändert. Gerätezugriffe können ein Laufwerk
+aktivieren. Disknummer, Gerätepfad und UniqueId werden nach der Abfrage
+erneut geprüft; unklare Zuordnung verwirft die Healthwerte.
+Unstrukturierte ATA-Herstellertexte werden als Sensitive exportiert.
+Es erfolgt keine automatische Installation und keine erzwungene
+Auswahl eines unbekannten USB-Bridgeprotokolls.
+
 Seriennummern, Gerätepfade, PnP-/EDID-Kennungen, MAC, IP, Gateway und DNS
 werden im Hardwarebericht standardmäßig redigiert. Der Export verlangt eine
 ausdrückliche Entscheidung, bevor Sensitive-Werte enthalten sein dürfen.

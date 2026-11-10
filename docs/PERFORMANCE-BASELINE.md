@@ -372,3 +372,51 @@ Klassen periodisch. Besonders USB/PCI/Bluetooth benötigen weitere
 Latenzarbeit. Reale Idle-/Langzeit-/Resume-/Hotplug- und UI-Latenzabnahme
 bleibt offen; Fixtures sind dafür kein Ersatz.
 [Vollständiger Prüfbericht](MILESTONE-3-HARDWARE-REPORT.md).
+
+### Fortsetzung: native Detailprovider und Sensorstatistik
+
+Funktionaler Stand `a36915b`, gleicher Fixturemodus, nun 58 Komponenten:
+einige zuvor dargestellte Quellenlücken sind durch integrierte Lesepfade
+entfallen. Deshalb kein direkter Geschwindigkeitsvergleich mit den
+66 Komponenten der Grundlage.
+
+| Runde | Fixtureaufbau ms | 100 Snapshots ms | JSON ms | CPU ms | Working Set B | Private B | Handles | Threads |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 40,6726 | 4,8572 | 8,5874 | 62,5 | 58.834.944 | 19.152.896 | 280 | 8 |
+| 2 | 0,6591 | 1,5420 | 1,0992 | 0 | 61.124.608 | 21.495.808 | 280 | 8 |
+| 3 | 0,6141 | 1,4068 | 1,0248 | 0 | 63.344.640 | 23.597.056 | 280 | 8 |
+
+Rohdatei `m3-continuation-proof-01\fixture-performance.json`, SHA256
+`C62CCA56DAD0F08B2538DBFB02EED360EE280D7C7D5D49DED561EB20B8DAA653`.
+Kaltstart-, Zeitauflösungs- und Langzeitgrenzen gelten unverändert.
+
+Der erneut freigegebene reale Leselauf enthält Native Wi-Fi, Direct3D,
+Audio-/Displaydetails und vorhandenes smartctl. Gerundete Klassenzeiten:
+
+| Klasse | Dauer ms |
+|---|---:|
+| System | 9.522 |
+| CPU | 1.410 |
+| GPU | 1.465 |
+| NPU | 997 |
+| Mainboard | 337 |
+| Firmware | 2.728 |
+| Chipsatz | 9.318 |
+| RAM | 342 |
+| Storage | 2.329 |
+| PCI | 12.164 |
+| Netzwerk | 4.822 |
+| WLAN | 340 |
+| Bluetooth | 10.153 |
+| Audio | 2.000 |
+| Display | 373 |
+| USB | 13.721 |
+| Sicherheit | 5.364 |
+| Power | 329 |
+| Peripherie | 3.214 |
+
+Rohdatei `m3-continuation-readonly-final.json.timings.json`, SHA256
+`088100CFF6BA60351A67FB844EE40E5783F3E87D337BC95FE778EDEC6E48CCFF`.
+Der Modern-Smoke lief parallel: keine isolierte Performanceprüfung und
+kein Nachweis einer Beschleunigung. Die offenen realen Idle-/Langzeit-/
+Resume-/Hotplug-/UI-Latenzprüfungen bleiben erforderlich.

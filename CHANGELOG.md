@@ -17,6 +17,17 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
   exakte Storage-/USB-Beziehungen statt Modellnamen-Matches.
 - Klassenweise Inventur, Invalidierung und Stale-Zustände; Sensorübernahme
   aus dem vorhandenen Cockpit ohne neuen Treiberzugriff.
+- Native Wi-Fi mit PHY, Signalqualität, Linkraten, Kanal und eindeutig
+  zugeordneter Mittenfrequenz; Adapterraten aus echten Bytezählerdifferenzen.
+- Rohe Windows-Microcodeangaben, adapterbezogene Direct3D-Featurelevel/
+  Raytracing-Tiers, Audioengine-Mixformate sowie Windows-Anzeigeziele,
+  bevorzugte Modi, Farbangaben und Desktopskalierung.
+- SMART-/NVMe-Health über das vorhandene smartctl ausschließlich lesend:
+  dokumentierte Windows-Disknummer und erneute UniqueId-/Pfadprüfung statt
+  Modellnamensvergleich oder Gleichsetzung verschiedener Serienkennungen.
+- Sensor-Minimum/-Maximum/-Stichprobenmittel seit Messbeginn aus dem
+  vorhandenen Statistikhelfer; Lücken, Einheitenwechsel und Grenzwerte
+  werden getrennt behandelt. Auch große endliche Gegenwerte bleiben endlich.
 - JSON-/CSV-/Textberichte mit ausdrücklicher Sensitive-Freigabe,
   Secret-Ausschluss und CSV-Formelschutz.
 - Eigene Fixtures, UI-/DPI-/Themeproofs und freigegebene lokale Read-only-

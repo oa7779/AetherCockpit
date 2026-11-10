@@ -2,11 +2,16 @@
 
 ## Hardware Intelligence
 
-Der Grundrunner enthält 173 zusätzliche Assertions für die Hardwaregrundlage.
+Der Grundrunner enthält 256 zusätzliche Assertions für Hardware Intelligence
+gegenüber dem M2-Grundstand: 173 für die Grundlage und 83 für die Fortsetzung.
 Er verwendet synthetische Daten, einschließlich CPU-Topologie und
 Storage-/USB-Beziehungen. Die generierten PowerShell-Skripte werden zusätzlich
 nur mit dem PowerShell-AST-Parser geprüft, nicht als Hardwareabfrage gestartet.
-Bei insgesamt 4.558 Grundassertions sind frühere Assertions bereits enthalten.
+Bei insgesamt 4.641 Grundassertions sind frühere Assertions bereits enthalten.
+Die Fortsetzung prüft Sensorstatistik einschließlich Extremwertmittel,
+WLAN-Binärlayouts und Bandzuordnung, Adapterraten/Protokollfehler,
+Audio-/Direct3D-/Microcodeparsing sowie SMART-/NVMe-Identität, Präzision
+und Datenschutz.
 
 ```powershell
 dotnet build .\SystemCockpit.slnx -c Release --no-restore
@@ -31,7 +36,12 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hard
 
 Der Berichtsname muss neu, absolut und unter einem existierenden Ordner
 liegen. Dieser Modus liest lokale CIM-/Windows-/CPU-/DXGI-/Netzwerk-/Audio-
-und Displaydaten, aber keine neuen Hardware-Sensortreiber. Er erzeugt einen
+und Displaydaten einschließlich Native Wi-Fi, Direct3D-Funktionsabfragen,
+Audioengine-Mixformat und DisplayConfig. Storage verwendet zusätzlich
+das vorhandene smartctl ausschließlich lesend und prüft anschließend
+Windows-Diskidentitäten erneut. Das kann Gerätezugriffe erzeugen und
+Laufwerke aktivieren, startet aber keine Selbsttests oder Lastprüfung.
+Keine neuen Hardware-Sensortreiber. Er erzeugt einen
 redigierten JSON-Bericht, `.timings.json` und eine lokale `.diagnostics.log`.
 Er protokolliert Providerfehler ausdrücklich und führt keine Windows-
 Verwaltungsaktion, Installation oder Lastprüfung aus. Ein abgeschlossener

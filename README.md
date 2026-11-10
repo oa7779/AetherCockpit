@@ -14,7 +14,9 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 **Unveröffentlichter Arbeitsstand:** Eine eigene Hardwarezentrale mit
 Komponentenansichten, Quelleninspektor und datenschutzbewusstem Bericht ist
-implementiert. Der vollständige Hardware-Meilenstein ist noch nicht
+implementiert. Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails,
+zugeordnete SMART-/NVMe-Berichte und echte Sensorstatistik ergänzen die Ansicht.
+Der vollständige Hardware-Meilenstein ist noch nicht
 abnahmebereit; [Abdeckung und offene Lesepfade](docs/MILESTONE-3-HARDWARE-REPORT.md).
 Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
 
