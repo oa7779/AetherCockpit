@@ -197,7 +197,7 @@ internal static class HardwareIntelligenceTests
         Check(!HardwareLogoRegistry.CanActivate(logo, logo.Sha256), "no unapproved logo");
         Check(HardwareLogoRegistry.CanActivate(logo with { Approved = true }, logo.Sha256), "full documented approval required");
         Check(!HardwareLogoRegistry.CanActivate(logo with { Approved = true }, new string('b', 64)), "asset hash gate");
-        foreach (var category in new[] { HardwareClass.System, HardwareClass.Storage })
+        foreach (var category in new[] { HardwareClass.System, HardwareClass.Storage, HardwareClass.Display })
         {
             var script = HardwareIntelligenceReader.Script(HardwareCimCatalog.Queries, category);
             var encoded = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(script));

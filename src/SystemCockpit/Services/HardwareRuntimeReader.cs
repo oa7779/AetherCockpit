@@ -93,6 +93,8 @@ internal static class HardwareRuntimeReader
                 if (format.ValidBits is { } valid) facts.Add(Fact("Audioengine / Gültige Samplebits", valid, source, time, "bit/Sample"));
                 if (format.ChannelMask is { } mask) facts.Add(Fact("Audioengine / Kanalmaske", $"0x{mask:X8}", source, time));
                 if (format.Subformat is { } subformat) facts.Add(Fact("Audioengine / Subformat-GUID", subformat, source, time));
+                if (result.SharedSupport is { } shared) facts.Add(AudioFormatSupport(shared, false, time));
+                if (result.ExclusiveSupport is { } exclusive) facts.Add(AudioFormatSupport(exclusive, true, time));
             }
             else facts.Add(HardwareFact.Missing("mix-format", "Audioengine-Mixformat", source, time,
                 result is null ? "Endpunkt nicht aktiv; kein Mixformat abgefragt." : $"Formatabfrage HRESULT 0x{result.HResult:X8}.",
@@ -100,6 +102,21 @@ internal static class HardwareRuntimeReader
                     result.HResult == unchecked((int)0x80070005) ? DataAvailability.AccessDenied : DataAvailability.ProviderError));
             return new HardwareComponent(HardwareIntelligenceReader.Identity("audio", a.Id), HardwareClass.Audio, a.Name, facts);
         }).ToArray();
+    }
+
+    internal static HardwareFact AudioFormatSupport(int hr, bool exclusive, DateTimeOffset time)
+    {
+        var mode = exclusive ? "Exclusive" : "Shared";
+        const string source = "IAudioClient.IsFormatSupported / ausschließlich zuvor gelesenes GetMixFormat; kein Initialize/Start";
+        var key = "mix-support:" + mode;
+        var name = mode + "-Mode-Unterstützung genau dieses Mixformats";
+        if (hr == 0 || hr == unchecked((int)0x88890008) || hr == 1 && !exclusive)
+            return Fact(name, hr == 0 ? "Exakt unterstützt" : hr == 1 ? "Nicht exakt; Windows bietet ein Näherungsformat" :
+                "Nicht unterstützt", source, time) with { Key = key };
+        System.Diagnostics.Trace.TraceError("Hardware Audio-Formatunterstützung {0}: HRESULT 0x{1:X8}", mode, hr);
+        return HardwareFact.Missing(key, name, source, time, $"Formatabfrage HRESULT 0x{hr:X8}.",
+            hr == unchecked((int)0x80070005) ? DataAvailability.AccessDenied :
+            hr == unchecked((int)0x88890004) ? DataAvailability.Unavailable : DataAvailability.ProviderError);
     }
 
     internal static IReadOnlyList<HardwareComponent> Displays()

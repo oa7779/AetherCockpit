@@ -130,6 +130,8 @@ public sealed class HardwareIntelligenceReader
             string? parent = null;
             if (category == HardwareClass.Usb && Text(row, "Parent") is { } pnpParent)
                 parent = Unique(raw.Where(r => pnpParent.Equals(Text(r.Row, "PNPDeviceID"), StringComparison.OrdinalIgnoreCase)));
+            if (category == HardwareClass.Display && query == "DisplayEdid")
+                parent = Unique(raw.Where(r => r.Query == "Display" && Same(row, "InstanceName", r.Row, "InstanceName")));
             if (category == HardwareClass.Storage)
             {
                 if (query == "Partition")
@@ -386,6 +388,31 @@ public sealed class HardwareIntelligenceReader
                             }catch{
                                 $item.ControllerIds=$null
                                 $item._PropertyStates.ControllerIds=FailState $_
+                            }
+                        }
+                        if($q.Key -eq 'DisplayEdid'){
+                            try{
+                                $blocks=[Collections.Generic.List[string]]::new()
+                                $extensions=0
+                                for($block=0;$block -le [Math]::Min(8,$extensions);$block++){
+                                    $raw=Invoke-CimMethod -InputObject $device -MethodName WmiGetMonitorRawEEdidV1Block -Arguments @{BlockId=[byte]$block} -OperationTimeoutSec 4 -ErrorAction Stop
+                                    $ok=($raw.ReturnValue -is [bool] -and $raw.ReturnValue) -or
+                                        (($raw.ReturnValue -is [uint32] -or $raw.ReturnValue -is [int]) -and $raw.ReturnValue -eq 0)
+                                    if(-not $ok -or $raw.BlockContent.Count -ne 128){throw [InvalidOperationException]::new('EDID-Block nicht lesbar')}
+                                    $sum=0
+                                    foreach($b in $raw.BlockContent){$sum+=[int]$b}
+                                    if(($sum -band 255) -ne 0){throw [InvalidOperationException]::new('EDID-Blockpruefsumme ungueltig')}
+                                    if($block -eq 0){
+                                        if([BitConverter]::ToString($raw.BlockContent[0..7]) -ne '00-FF-FF-FF-FF-FF-FF-00'){throw [InvalidOperationException]::new('EDID-Header ungueltig')}
+                                        $extensions=[int]$raw.BlockContent[126]
+                                    }
+                                    $blocks.Add([BitConverter]::ToString($raw.BlockContent).Replace('-',''))
+                                }
+                                $item.EdidBlocks=@($blocks.ToArray())
+                                $item.EdidDeclaredExtensions=$extensions
+                                $item.EdidReadBlocks=$blocks.Count
+                            }catch{
+                                foreach($p in @('EdidBlocks','EdidDeclaredExtensions','EdidReadBlocks')){$item._PropertyStates[$p]=FailState $_}
                             }
                         }
                         if($q.IncludePnp -and $device.PNPDeviceID){

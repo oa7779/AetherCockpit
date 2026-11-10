@@ -8,7 +8,11 @@ internal static class AudioTopology
 {
     internal sealed record MixFormat(ushort Tag, ushort Channels, uint SamplesPerSecond, uint BytesPerSecond,
         ushort BlockAlign, ushort BitsPerSample, ushort? ValidBits, uint? ChannelMask, Guid? Subformat);
-    internal sealed record FormatResult(MixFormat? Format, int HResult);
+    internal sealed record FormatResult(MixFormat? Format, int HResult)
+    {
+        internal int? SharedSupport { get; init; }
+        internal int? ExclusiveSupport { get; init; }
+    }
 
     internal static IReadOnlyList<BoardDevice> Read() => Read(null);
 
@@ -139,7 +143,20 @@ internal static class AudioTopology
                     if (extra > 4096) throw new InvalidOperationException("Ungültige Audioformatlänge.");
                     var bytes = new byte[18 + extra];
                     Marshal.Copy(pointer, bytes, 0, bytes.Length);
-                    return new(ParseMixFormat(bytes), 0);
+                    var format = ParseMixFormat(bytes);
+                    var closestAddress = Marshal.AllocHGlobal(IntPtr.Size);
+                    try
+                    {
+                        Marshal.WriteIntPtr(closestAddress, IntPtr.Zero);
+                        var shared = ((IAudioClient)client).IsFormatSupported(0, pointer, closestAddress);
+                        var exclusive = ((IAudioClient)client).IsFormatSupported(1, pointer, IntPtr.Zero);
+                        return new(format, 0) { SharedSupport = shared, ExclusiveSupport = exclusive };
+                    }
+                    finally
+                    {
+                        Marshal.FreeCoTaskMem(Marshal.ReadIntPtr(closestAddress));
+                        Marshal.FreeHGlobal(closestAddress);
+                    }
                 }
                 finally { Marshal.FreeCoTaskMem(pointer); }
             }
@@ -194,7 +211,8 @@ internal static class AudioTopology
     [ComImport, Guid("1CB9AD4C-DBFA-4C32-B178-C2F568A703B2"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     private interface IAudioClient
     {
-        void Initialize(); void GetBufferSize(); void GetStreamLatency(); void GetCurrentPadding(); void IsFormatSupported();
+        void Initialize(); void GetBufferSize(); void GetStreamLatency(); void GetCurrentPadding();
+        [PreserveSig] int IsFormatSupported(int shareMode, IntPtr format, IntPtr closestMatch);
         void GetMixFormat(out IntPtr format);
     }
     [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

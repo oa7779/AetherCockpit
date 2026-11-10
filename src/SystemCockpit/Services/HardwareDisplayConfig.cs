@@ -32,6 +32,8 @@ internal static class HardwareDisplayConfig
                     Fact("refresh-numerator", "Ziel-Refresh Zähler", path.Target.RefreshNumerator, time),
                     Fact("refresh-denominator", "Ziel-Refresh Nenner", path.Target.RefreshDenominator, time)
                 };
+                AddMode(facts, modes, modeCount, path.Source.Mode, 1, path.Source.Adapter, path.Source.Id, time);
+                AddMode(facts, modes, modeCount, path.Target.Mode, 2, path.Target.Adapter, path.Target.Id, time);
                 if (path.Target.RefreshDenominator != 0)
                     facts.Add(HardwareIntelligenceReader.Derived("refresh", "Windows-Ziel-Refresh",
                         ((double)path.Target.RefreshNumerator / path.Target.RefreshDenominator).ToString("R", CultureInfo.InvariantCulture),
@@ -60,6 +62,14 @@ internal static class HardwareDisplayConfig
                     facts.Add(Fact("bits-per-channel", "Windows-Zielbits pro Farbkanal (keine Panelspezifikation)", color.Value.BitsPerChannel, time, unit: "bit/Kanal"));
                 }
                 else facts.Add(Error("advanced-color", color.Code, time));
+                var hdr = Request(new AdvancedColor2 { Header = Header<AdvancedColor2>(15, path.Target.Adapter, path.Target.Id) });
+                if (hdr.Code == 0)
+                {
+                    facts.Add(Fact("hdr-supported", "Windows HDR unterstützt (Info2)", (hdr.Value.Flags & 16) != 0, time));
+                    facts.Add(Fact("hdr-user-enabled", "Windows HDR vom Benutzer aktiviert (nicht zwingend aktiv)", (hdr.Value.Flags & 32) != 0, time));
+                    facts.Add(Fact("active-color-mode", "Windows aktiver Farbmodus (Info2)", ColorMode(hdr.Value.Mode), time));
+                }
+                else facts.Add(Error("hdr-info2", hdr.Code, time));
                 var source = Request(new SourceName { Header = Header<SourceName>(1, path.Source.Adapter, path.Source.Id) });
                 if (source.Code == 0 && scales.TryGetValue(source.Value.DeviceName, out var scale))
                     facts.Add(scale.Code == 0
@@ -81,8 +91,31 @@ internal static class HardwareDisplayConfig
         if (Marshal.SizeOf<DisplayPath>() != 72 || Marshal.SizeOf<ModeInfo>() != 64 ||
             Marshal.SizeOf<DeviceHeader>() != 20 || Marshal.SizeOf<TargetName>() != 420 ||
             Marshal.SizeOf<SourceName>() != 84 || Marshal.SizeOf<PreferredMode>() != 80 ||
-            Marshal.SizeOf<AdvancedColor>() != 32 || Marshal.SizeOf<MonitorInfo>() != 104)
+            Marshal.SizeOf<AdvancedColor>() != 32 || Marshal.SizeOf<AdvancedColor2>() != 36 || Marshal.SizeOf<MonitorInfo>() != 104)
             throw new InvalidOperationException("Nicht unterstütztes Windows-DisplayConfig-ABI.");
+    }
+
+    internal static string ColorMode(uint mode) => mode switch { 0 => "SDR", 1 => "WCG", 2 => "HDR", _ => "Windows-Farbmodus " + mode };
+
+    private static void AddMode(List<HardwareFact> facts, ModeInfo[] modes, uint count, uint index,
+        uint type, Luid adapter, uint id, DateTimeOffset time)
+    {
+        var label = type == 1 ? "source" : "target";
+        if (index >= count || modes[index].Type != type || modes[index].Id != id ||
+            modes[index].Adapter.High != adapter.High || modes[index].Adapter.Low != adapter.Low)
+        {
+            facts.Add(HardwareFact.Missing(label + "-mode", "Aktueller " + label + "-Modus", Source, time,
+                "Keine gültige passende Modusreferenz im aktiven Windows-Pfad."));
+            return;
+        }
+        var mode = modes[index];
+        facts.Add(Fact(label + "-width", type == 1 ? "Aktuelle Windows-Quellbreite" : "Aktive Windows-Zielsignalbreite", mode.Width, time, unit: "px"));
+        facts.Add(Fact(label + "-height", type == 1 ? "Aktuelle Windows-Quellhöhe" : "Aktive Windows-Zielsignalhöhe", mode.Height, time, unit: "px"));
+        if (type == 1)
+        {
+            facts.Add(Fact("source-x", "Windows-Quellposition X", mode.X, time, unit: "px"));
+            facts.Add(Fact("source-y", "Windows-Quellposition Y", mode.Y, time, unit: "px"));
+        }
     }
 
     private static HardwareFact Fact(string key, string name, object value, DateTimeOffset time,
@@ -145,7 +178,20 @@ internal static class HardwareDisplayConfig
         public uint Status;
     }
     [StructLayout(LayoutKind.Sequential)] private struct DisplayPath { public SourceInfo Source; public TargetInfo Target; public uint Flags; }
-    [StructLayout(LayoutKind.Explicit, Size = 64)] private struct ModeInfo { [FieldOffset(0)] public uint Type; }
+    [StructLayout(LayoutKind.Explicit, Size = 64)] private struct ModeInfo
+    {
+        [FieldOffset(0)] public uint Type;
+        [FieldOffset(4)] public uint Id;
+        [FieldOffset(8)] public Luid Adapter;
+        [FieldOffset(16)] public uint SourceWidth;
+        [FieldOffset(20)] public uint SourceHeight;
+        [FieldOffset(28)] public int X;
+        [FieldOffset(32)] public int Y;
+        [FieldOffset(40)] public uint TargetWidth;
+        [FieldOffset(44)] public uint TargetHeight;
+        public readonly uint Width => Type == 1 ? SourceWidth : TargetWidth;
+        public readonly uint Height => Type == 1 ? SourceHeight : TargetHeight;
+    }
     [StructLayout(LayoutKind.Sequential)] private struct DeviceHeader { public uint Type, Size; public Luid Adapter; public uint Id; }
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)] private struct SourceName
     {
@@ -168,6 +214,7 @@ internal static class HardwareDisplayConfig
         [FieldOffset(24)] public uint Height;
     }
     [StructLayout(LayoutKind.Sequential)] private struct AdvancedColor { public DeviceHeader Header; public uint Flags, Encoding, BitsPerChannel; }
+    [StructLayout(LayoutKind.Sequential)] private struct AdvancedColor2 { public DeviceHeader Header; public uint Flags, Encoding, BitsPerChannel, Mode; }
     [StructLayout(LayoutKind.Sequential)] private struct Rect { public int Left, Top, Right, Bottom; }
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)] private struct MonitorInfo
     {

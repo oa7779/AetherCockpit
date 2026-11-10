@@ -130,6 +130,9 @@ internal static class HardwareCimCatalog
              P("ProductCodeID", "EDID Produktcode (Zeichencodes)"), P("UserFriendlyName", "EDID Modell (Zeichencodes)"),
              S("SerialNumberID", "EDID Seriennummer (Zeichencodes)"), P("WeekOfManufacture", "Produktionswoche"),
              P("YearOfManufacture", "Produktionsjahr"), D("Active", "Windows aktiv")]),
+        new("DisplayEdid", HardwareClass.Display, @"root\wmi", "WmiMonitorDescriptorMethods", "InstanceName", "InstanceName",
+            [S("InstanceName", "Exakte Monitorinstanz"), S("EdidBlocks", "Rohe EDID-Blöcke (Hex; bis neun Blöcke)"),
+             P("EdidDeclaredExtensions", "EDID gemeldete Erweiterungszahl"), P("EdidReadBlocks", "Tatsächlich gelesene EDID-Blöcke")]),
         new("DisplaySize", HardwareClass.Display, @"root\wmi", "WmiMonitorBasicDisplayParams", "InstanceName", "InstanceName",
             [S("InstanceName", "Monitorinstanz"), P("MaxHorizontalImageSize", "EDID Bildbreite", "cm"),
              P("MaxVerticalImageSize", "EDID Bildhöhe", "cm"), P("VideoInputType", "EDID Eingangstyp (Code)")]),
@@ -179,7 +182,7 @@ internal static class HardwareCimCatalog
             "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / vollständige Decode-Formatmatrix"],
         HardwareClass.Npu => ["NPU-Telemetrie", "TOPS"],
         HardwareClass.Mainboard => ["Chipsatz-Zuordnung"],
-        HardwareClass.Display => ["Physisch native Panelauflösung", "Separater HDR-Modus / Panel-Farbtiefe"],
+        HardwareClass.Display => ["Physisch native Panelauflösung / Panel-Farbtiefe"],
         HardwareClass.Audio => ["Vollständige Audioformatfähigkeiten / Exclusive-Mode-Formate"],
         HardwareClass.Usb => ["Elektrische USB-Topologie / physische Portnummer"],
         _ => []

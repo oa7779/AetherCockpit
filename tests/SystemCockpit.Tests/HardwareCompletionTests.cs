@@ -99,6 +99,50 @@ internal static class HardwareCompletionTests
         storageRows["Disk"] = [storageRows["Disk"][0], new { _Identity = "disk-other", Number = 0 }];
         Check(!ParseStorage().Single(c => c.Id == HardwareIntelligenceReader.Identity("Disk", "disk"))
             .Facts.Single(f => f.Key == "ControllerIds").Observation.HasValue, "duplicate disk numbers cannot borrow controller relation");
+        Check(HardwareRuntimeReader.AudioFormatSupport(0, false, time).Display == "Exakt unterstützt", "shared exact format");
+        Check(HardwareRuntimeReader.AudioFormatSupport(1, false, time).Display.Contains("Näherungsformat"), "shared closest format is not exact");
+        Check(HardwareRuntimeReader.AudioFormatSupport(unchecked((int)0x88890008), true, time).Display == "Nicht unterstützt", "exclusive unsupported format is an actual result");
+        Check(HardwareRuntimeReader.AudioFormatSupport(unchecked((int)0x88890004), true, time).State == "Unavailable", "invalidated endpoint is unavailable");
+        Check(HardwareRuntimeReader.AudioFormatSupport(unchecked((int)0x80070005), false, time).State == "AccessDenied", "audio denied preserved");
+        Check(HardwareRuntimeReader.AudioFormatSupport(1, true, time).State == "ProviderError", "unexpected exclusive result explicit");
+        Check(HardwareDisplayConfig.ColorMode(2) == "HDR" && HardwareDisplayConfig.ColorMode(1) == "WCG", "distinct Windows HDR and WCG modes");
+        Check(HardwareDisplayConfig.ColorMode(99).Contains("99"), "future color mode remains raw");
+        foreach (var mode in new[] { "uint-valid", "bool-valid", "checksum-invalid", "bool-failed" })
+        {
+            var valid = mode is "uint-valid" or "bool-valid";
+            var stub = """
+                function Get-CimInstance {
+                    [CmdletBinding()] param($Namespace,$ClassName,$OperationTimeoutSec,$Filter)
+                    if($ClassName -eq 'WmiMonitorDescriptorMethods'){
+                        $instance=[Microsoft.Management.Infrastructure.CimInstance]::new('WmiMonitorDescriptorMethods')
+                        $instance.CimInstanceProperties.Add([Microsoft.Management.Infrastructure.CimProperty]::Create(
+                            'InstanceName','fixture-monitor',[Microsoft.Management.Infrastructure.CimFlags]::None))
+                        $instance
+                    }
+                }
+                function Invoke-CimMethod {
+                    [CmdletBinding()] param($InputObject,$MethodName,$Arguments,$OperationTimeoutSec)
+                    [byte[]]$bytes=New-Object byte[] 128
+                    for($i=1;$i -le 6;$i++){$bytes[$i]=255}
+                    $bytes[127]=6
+                    @{ReturnValue=0;BlockContent=$bytes}
+                }
+                """;
+            if (mode == "checksum-invalid") stub = stub.Replace("$bytes[127]=6", "$bytes[127]=7", StringComparison.Ordinal);
+            if (mode.StartsWith("bool", StringComparison.Ordinal))
+                stub = stub.Replace("ReturnValue=0", mode == "bool-valid" ? "ReturnValue=$true" : "ReturnValue=$false", StringComparison.Ordinal);
+            var script = stub + "\n" + HardwareIntelligenceReader.Script(
+                HardwareCimCatalog.Queries.Where(q => q.Class == HardwareClass.Display).ToArray(), HardwareClass.Display);
+            var executed = AdminShell.RunAsync(script, TimeSpan.FromSeconds(15), CancellationToken.None).GetAwaiter().GetResult();
+            Check(executed.ExitCode == 0 && !executed.OutputTruncated, "isolated EDID fixture script executes: " + executed.Error);
+            var batches = JsonSerializer.Deserialize<HardwareCimResult[]>(executed.Output, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var edid = HardwareIntelligenceReader.Parse(HardwareClass.Display, batches)
+                .Single(c => c.Id.StartsWith("DisplayEdid:", StringComparison.Ordinal)).Facts;
+            Check(valid ? edid.Single(f => f.Key == "EdidReadBlocks").Display == "1" :
+                edid.Single(f => f.Key == "EdidBlocks").State == "ProviderError", "EDID valid block/checksum execution is not hidden in another provider branch");
+            Check(!HardwareReport.Export(new(time, HardwareIntelligenceReader.Parse(HardwareClass.Display, batches)), "json", false)
+                .Contains("00FFFFFFFFFFFF00", StringComparison.Ordinal), "raw EDID redacted in fixture export");
+        }
         return _assertions;
     }
 }
