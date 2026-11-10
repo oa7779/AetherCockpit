@@ -52,7 +52,7 @@ internal static class ProcessInspector
         {
             Fact("description", "Dateibeschreibung (unbestätigte Dateimetadaten)", () => { ProcessFileInfo.RequireLocal(path); return FileVersionInfo.GetVersionInfo(path).FileDescription ?? "Keine Dateibeschreibung"; }, DataClassification.Sensitive);
             Fact("publisher", "Firma (unbestätigte Dateimetadaten, keine Signatur)", () => { ProcessFileInfo.RequireLocal(path); return FileVersionInfo.GetVersionInfo(path).CompanyName ?? "Keine Firmenangabe"; }, DataClassification.Sensitive);
-            Fact("file", "Datei vorhanden", () => { File.GetAttributes(path); return "Zum Abfragezeitpunkt vorhanden"; }, DataClassification.Sensitive);
+            Fact("file", "Datei vorhanden", () => { ProcessFileInfo.RequireLocal(path); File.GetAttributes(path); return "Zum Abfragezeitpunkt vorhanden"; }, DataClassification.Sensitive);
             Fact("signature", "Offline-Signaturvertrauen", () => ProcessFileInfo.Trust(path));
         }
         var window = Window(identity.Pid);
@@ -67,6 +67,7 @@ internal static class ProcessInspector
         System.Windows.Media.Imaging.BitmapSource? icon = null;
         if (path is not null)
             Fact("icon", "Programmsymbol", () => { icon = ProcessFileInfo.Icon(path); return icon is null ? "Kein Dateisymbol" : "Lokales Dateisymbol"; });
+        if (ProcessNative.Exited(handle)) throw new InvalidOperationException("Prozess während der Detailabfrage beendet; Details nicht als aktuell übernommen.");
         return new(identity, path, window, facts, icon);
     }
 

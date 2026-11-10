@@ -9,7 +9,10 @@ namespace SystemCockpit.Services;
 internal enum ProcessActionState { Exited, AlreadyExited, CloseRequested, Reconfirm, Blocked, AccessDenied, Failed, Timeout, Cancelled, Partial }
 internal sealed record ProcessActionResult(ProcessIdentity Identity, ProcessActionState State, string Message, int? NativeCode = null);
 internal sealed record ProcessTarget(ProcessIdentity Identity, string Name, string Path, string User, int? Session, string Protection);
-internal sealed record ProcessActionPlan(ProcessTarget Root, IReadOnlyList<ProcessTarget> Targets, bool Tree, DateTimeOffset CreatedAt);
+internal sealed record ProcessActionPlan(ProcessTarget Root, IReadOnlyList<ProcessTarget> Targets, bool Tree, DateTimeOffset CreatedAt)
+{
+    public int? ObservedChildren { get; init; }
+}
 internal interface IProcessTargetHandle : IDisposable
 {
     ProcessTarget Target { get; }
@@ -29,7 +32,7 @@ internal sealed class NativeProcessActionSource : IProcessActionSource
     {
         var parents = ProcessNative.Parents();
         var rows = new List<ProcessMetric>();
-        foreach (var process in Process.GetProcesses())
+        foreach (var process in ProcessNative.EnumerateProcesses())
         {
             using (process)
             {
@@ -150,10 +153,13 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
             if (handle.Exited) throw new InvalidOperationException("Prozess wurde bereits beendet.");
             var target = handle.Target;
             if (protectedIds.Contains(target.Identity)) target = target with { Protection = "Eigene aktive AETHER-Komponente." };
-            if (!string.IsNullOrEmpty(target.Protection)) throw new InvalidOperationException(target.Protection);
+            if (!string.IsNullOrEmpty(target.Protection)) throw new InvalidOperationException($"{target.Name} / PID {target.Identity.Pid}: {target.Protection}");
             details.Add(target);
         }
-        return new(details.Single(t => t.Identity == identity), details, tree, DateTimeOffset.UtcNow);
+        int? children = null;
+        try { children = Tree(identity, rows).Count - 1; }
+        catch (InvalidOperationException ex) { Trace.TraceWarning("Prozess-Kinderzahl nicht eindeutig: {0}", ex); }
+        return new(details.Single(t => t.Identity == identity), details, tree, DateTimeOffset.UtcNow) { ObservedChildren = children };
     }
 
     internal async Task<IReadOnlyList<ProcessActionResult>> ExecuteAsync(ProcessActionPlan plan, CancellationToken token)
@@ -161,6 +167,7 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
         var results = new List<ProcessActionResult>();
         var handles = new List<IProcessTargetHandle>();
         var requested = false;
+        var active = plan.Root.Identity;
         try
         {
             token.ThrowIfCancellationRequested();
@@ -169,6 +176,7 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
                 return [new(plan.Root.Identity, ProcessActionState.Reconfirm, "Prozessbaum verändert. Erneute Bestätigung erforderlich.")];
             foreach (var target in plan.Targets)
             {
+                active = target.Identity;
                 var handle = source.Open(target.Identity, true);
                 handles.Add(handle);
                 if (handle.Exited) return [new(target.Identity, ProcessActionState.AlreadyExited, "Prozess bereits beendet; keine Aktion ausgeführt.")];
@@ -184,6 +192,7 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
             journal("process-terminate-intent", new { targets = plan.Targets.Select(t => t.Identity).ToArray(), plan.Tree });
             foreach (var handle in handles.AsEnumerable().Reverse())
             {
+                active = handle.Target.Identity;
                 token.ThrowIfCancellationRequested();
                 if (handle.Exited) { results.Add(new(handle.Target.Identity, ProcessActionState.AlreadyExited, "Bereits beendet.")); continue; }
                 handle.Terminate();
@@ -197,17 +206,19 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
-            results.Add(new(plan.Root.Identity, requested ? ProcessActionState.Partial : ProcessActionState.Cancelled,
+            results.Add(new(active, requested ? ProcessActionState.Partial : ProcessActionState.Cancelled,
                 requested ? "Abgebrochen; bereits angeforderte Beendigungen sind nicht rückgängig." : "Abgebrochen; kein Eingriff angefordert."));
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException or ArgumentException)
         {
             Trace.TraceError("Prozessaktion: {0}", ex);
             var code = (ex as Win32Exception)?.NativeErrorCode;
-            results.Add(new(plan.Root.Identity, requested ? ProcessActionState.Partial : code == 5 ? ProcessActionState.AccessDenied : ProcessActionState.Failed,
+            results.Add(new(active, requested ? ProcessActionState.Partial : code == 5 ? ProcessActionState.AccessDenied : ProcessActionState.Failed,
                 code == 5 ? "Zugriff verweigert. Windows-Schutz und Berechtigungen bleiben unverändert." : ex.Message, code));
         }
         finally { foreach (var handle in handles) handle.Dispose(); }
+        foreach (var target in plan.Targets.Where(t => results.All(r => r.Identity != t.Identity)))
+            results.Add(new(target.Identity, ProcessActionState.Cancelled, "Keine Beendigung angefordert; vorheriger Abbruch oder Fehler."));
         journal("process-terminate-result", new { results });
         return results;
     }

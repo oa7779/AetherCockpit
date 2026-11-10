@@ -11,7 +11,7 @@ internal sealed class ProcessActionDialog : Window
     internal Button CancelButton { get; } = new() { Content = "Abbrechen", IsCancel = true, IsDefault = true, Margin = new(8) };
     internal Button ConfirmButton { get; } = new() { Margin = new(8) };
     internal ProcessActionPlan Plan { get; }
-    internal ProcessActionDialog(ProcessActionPlan plan)
+    internal ProcessActionDialog(ProcessActionPlan plan, string? publisher = null)
     {
         Plan = plan;
         Title = plan.Tree ? "Prozessbaum beenden" : "Prozess beenden";
@@ -38,7 +38,8 @@ internal sealed class ProcessActionDialog : Window
             Text = $"Harte Beendigung – kein geordnetes Herunterfahren.\nNicht gespeicherte Daten können verloren gehen.\n\n" +
                 $"{plan.Root.Name} / PID {plan.Root.Identity.Pid}\nStartidentität: {plan.Root.Identity.StartTicks}\n" +
                 $"Pfad: {plan.Root.Path}\nBenutzer-SID: {plan.Root.User}\nSitzung: {plan.Root.Session}\n" +
-                "Herausgeber: in dieser Schutzprüfung nicht verifiziert.\n" +
+                $"Dateifirma (keine verifizierte Herausgeberidentität): {publisher ?? "nicht ermittelt"}\n" +
+                $"Beobachtete untergeordnete Prozesse: {plan.ObservedChildren?.ToString() ?? "nicht eindeutig verfügbar"}\n" +
                 $"Betroffene Prozesse: {plan.Targets.Count}\n" +
                 (plan.Tree ? "Eingefrorene Zielmenge; neue Kinder werden nicht still hinzugefügt.\n" : "Nur dieser Prozess. Kinder werden nicht automatisch beendet.\n") +
                 "\nWindows-Schutz und Eigenkomponenten werden vor der Aktion erneut geprüft.\n\n" +

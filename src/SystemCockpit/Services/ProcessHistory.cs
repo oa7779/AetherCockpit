@@ -14,6 +14,9 @@ internal sealed class ProcessRow(ProcessMetric current) : INotifyPropertyChanged
     public int Depth { get; internal set; }
     public bool Collapsed { get; internal set; }
     public System.Windows.Media.ImageSource? Icon { get; internal set; }
+    internal string? ExactPath { get; set; }
+    internal bool HadFile { get; set; }
+    internal string DetailHints { get; set; } = "";
     public bool Ended { get; private set; }
     public DateTimeOffset? EndedAt { get; private set; }
     public string Name => new string(' ', Math.Min(Depth, 32) * 2) + (Collapsed ? "▸ " : "") + Current.Name;
@@ -39,6 +42,7 @@ internal sealed class ProcessRow(ProcessMetric current) : INotifyPropertyChanged
             if (Current.Handles >= 10000) rules.Add("Mindestens 10.000 Handles in der aktuellen Probe.");
             if (Current.Threads >= 500) rules.Add("Mindestens 500 Threads in der aktuellen Probe.");
             if (Current.StartTicks == 0) rules.Add("Startidentität nicht lesbar; verändernde Aktionen gesperrt.");
+            if (DetailHints.Length > 0) rules.Add(DetailHints);
             return rules.Count == 0 ? "Keine dieser erklärbaren Ressourcenregeln ausgelöst; keine Sicherheitsbewertung." : string.Join("\n", rules);
         }
     }
@@ -73,6 +77,38 @@ internal sealed class ProcessHistory
     internal Dictionary<ProcessIdentity, ProcessRow> Rows { get; } = [];
     internal DateTimeOffset? LastSample { get; private set; }
     internal string Status { get; private set; } = "Noch keine Messung.";
+    private readonly Dictionary<string, List<(ProcessIdentity Identity, DateTimeOffset Start)>> _starts = new(StringComparer.OrdinalIgnoreCase);
+    internal void ObserveDetails(ProcessRow row, ProcessDetails details)
+    {
+        var hints = new List<string>();
+        if (details.Path is { } path)
+        {
+            row.ExactPath = path;
+            if (path.StartsWith(System.IO.Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
+                hints.Add("Ausführbarer Pfad liegt im aktuellen Windows-Tempverzeichnis; kein Sicherheitsurteil.");
+            if (!_starts.TryGetValue(path, out var starts))
+            {
+                if (_starts.Count >= 256) _starts.Remove(_starts.MinBy(p => p.Value.Count == 0 ? DateTimeOffset.MinValue : p.Value.Max(v => v.Start)).Key);
+                _starts[path] = starts = [];
+            }
+            if (!starts.Any(s => s.Identity == row.Identity)) starts.Add((row.Identity, new DateTimeOffset(new DateTime(row.Identity.StartTicks, DateTimeKind.Utc))));
+            starts.RemoveAll(s => DateTimeOffset.UtcNow - s.Start > TimeSpan.FromMinutes(5));
+            if (starts.Count > 64) starts.RemoveRange(0, starts.Count - 64);
+            var recent = starts.Count(s => DateTimeOffset.UtcNow - s.Start <= TimeSpan.FromSeconds(60));
+            if (recent >= 3) hints.Add($"{recent} separat beobachtete Startidentitäten derselben exakten Datei innerhalb 60 s; mehrere Instanzen sind möglich, kein Absturznachweis.");
+        }
+        else hints.Add("Programmpfad nicht verifizierbar; keine Datei-/Softwarezuordnung.");
+        if (details.Window == IntPtr.Zero && row.Current.CpuPercent >= 10)
+            hints.Add("CPU ≥ 10 % in der aktuellen Probe, kein sichtbares Top-Level-Fenster bei Detailabfrage; Hintergrundarbeit kann beabsichtigt sein.");
+        if (details.Facts.Any(f => f.Observation.Metadata.Availability == AetherOperations.DataAvailability.AccessDenied))
+            hints.Add("Windows verweigert mindestens ein Detail; kein Defektnachweis.");
+        var file = details.Facts.SingleOrDefault(f => f.Key == "file");
+        if (row.HadFile && file?.Observation.Metadata.Error is "FileNotFoundException" or "DirectoryNotFoundException")
+            hints.Add("Zuvor lesbare ausführbare Datei ist bei erneuter Detailabfrage nicht mehr vorhanden.");
+        row.HadFile |= file?.Observation.HasValue == true;
+        row.DetailHints = string.Join("\n", hints);
+        row.Notify();
+    }
     internal void Apply(IReadOnlyList<ProcessMetric> values, DateTimeOffset time)
     {
         if (values.Select(v => v.Identity).Distinct().Count() != values.Count)

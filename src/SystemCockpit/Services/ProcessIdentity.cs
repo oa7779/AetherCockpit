@@ -20,6 +20,12 @@ internal sealed class ProcessHandle : SafeHandleZeroOrMinusOneIsInvalid
 
 internal static class ProcessNative
 {
+    internal static IEnumerable<Process> EnumerateProcesses()
+    {
+        var processes = Process.GetProcesses();
+        try { foreach (var process in processes) yield return process; }
+        finally { foreach (var process in processes) process.Dispose(); }
+    }
     internal const uint Query = 0x1000, Synchronize = 0x100000, Terminate = 1;
     internal static ProcessHandle Open(ProcessIdentity identity, bool terminate = false)
     {

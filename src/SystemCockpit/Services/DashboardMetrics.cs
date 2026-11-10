@@ -32,7 +32,8 @@ public sealed class DashboardMetrics
     private Dictionary<int, (long Start, double Cpu, ulong Read, ulong Write)> _processes = [];
     private Dictionary<string, (long Read, long Write)> _adapters = [];
 
-    public DashboardSnapshot Read()
+    public DashboardSnapshot Read() => Read(CancellationToken.None);
+    public DashboardSnapshot Read(CancellationToken token)
     {
         var now = Stopwatch.GetTimestamp();
         var elapsed = _timestamp == 0 ? 0 : (double)(now - _timestamp) / Stopwatch.Frequency;
@@ -45,10 +46,11 @@ public sealed class DashboardMetrics
         IReadOnlyDictionary<int, int> parents;
         try { parents = ProcessNative.Parents(); }
         catch (Win32Exception ex) { Trace.TraceError("Prozesseltern: {0}", ex); issues.Add("Prozesseltern nicht lesbar: " + ex.NativeErrorCode); parents = new Dictionary<int, int>(); }
-        foreach (var process in Process.GetProcesses())
+        foreach (var process in ProcessNative.EnumerateProcesses())
         {
             using (process)
             {
+                token.ThrowIfCancellationRequested();
                 try
                 {
                     var id = process.Id;
@@ -84,7 +86,8 @@ public sealed class DashboardMetrics
                 catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NotSupportedException)
                 {
                     // Protected or exiting processes must remain visibly unknown, not appear idle.
-                    processes.Add(new($"PID {process.Id}", process.Id, null, null, null, null, null, null, ex.Message));
+                    processes.Add(new($"PID {process.Id}", process.Id, null, null, null, null, null, null, ex.Message)
+                        { ObservedAt = DateTimeOffset.UtcNow });
                 }
             }
         }
@@ -94,6 +97,7 @@ public sealed class DashboardMetrics
         foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces().Where(a =>
             a.OperationalStatus == OperationalStatus.Up && a.NetworkInterfaceType != NetworkInterfaceType.Loopback))
         {
+            token.ThrowIfCancellationRequested();
             try
             {
                 var stats = adapter.GetIPStatistics();
