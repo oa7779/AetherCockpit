@@ -12,7 +12,7 @@ internal static class IntelligenceWindowsEvents
     private static readonly HashSet<string> Fields = new(StringComparer.Ordinal)
     {
         "BootTime", "MainPathBootTime", "BootPostBootTime", "BootStartTime", "BootEndTime", "SystemBootInstance",
-        "BootIsDegradation", "ErrorCode", "DeviceInstanceId", "ServiceName", "UpdateGuid", "UpdateTitle"
+        "BootIsDegradation", "BootType", "ErrorCode", "DeviceInstanceId", "ServiceName", "UpdateGuid", "UpdateTitle"
     };
     internal static (IReadOnlyList<IntelligenceEntity> Entities, IReadOnlyList<SourceCoverage> Coverage) Read(CancellationToken token)
     {
@@ -38,6 +38,8 @@ internal static class IntelligenceWindowsEvents
                     fields["channel"] = channel; fields["recordId"] = recordId.ToString(CultureInfo.InvariantCulture);
                     fields["eventId"] = record.Id.ToString(CultureInfo.InvariantCulture); fields["provider"] = record.ProviderName ?? "Nicht verfügbar";
                     fields["level"] = (record.Level ?? 0).ToString(CultureInfo.InvariantCulture);
+                    fields["eventVersion"] = (record.Version ?? 0).ToString(CultureInfo.InvariantCulture);
+                    fields["osVersion"] = Environment.OSVersion.Version.ToString();
                     var time = new DateTimeOffset(created.ToUniversalTime());
                     var isBoot = record.Id == 100 && record.ProviderName == "Microsoft-Windows-Diagnostics-Performance";
                     entities.Add(IntelligenceSources.Entity($"event:{channel}:{recordId}:{time.UtcTicks}", isBoot ? IntelligenceKind.Boot : IntelligenceKind.Event,
@@ -62,14 +64,27 @@ internal static class IntelligenceWindowsEvents
         var document = XDocument.Load(reader);
         XNamespace ns = "http://schemas.microsoft.com/win/2004/08/events/event";
         var fields = new Dictionary<string, string>(StringComparer.Ordinal);
+        var provider = document.Root?.Element(ns + "System")?.Element(ns + "Provider")?.Attribute("Name")?.Value;
+        var eventId = document.Root?.Element(ns + "System")?.Element(ns + "EventID")?.Value;
+        var faultFields = provider == "Application Error" && eventId == "1000" || provider == "Application Hang" && eventId == "1002";
+        var serviceFields = provider == "Service Control Manager" && eventId is "7031" or "7034";
         foreach (var item in document.Descendants(ns + "EventData").Elements(ns + "Data"))
         {
             var name = item.Attribute("Name")?.Value;
-            if (name is not null && Fields.Contains(name) && item.Value.Length <= 2048) fields.TryAdd(name, item.Value);
+            if (name is not null && item.Value.Length <= 2048 &&
+                (Fields.Contains(name) || faultFields && name is "AppName" or "AppVersion" or "AppPath" or "ExeFileName" || serviceFields && name == "param1"))
+                fields.TryAdd(name, item.Value);
         }
+        var subject = serviceFields ? fields.GetValueOrDefault("param1") : faultFields ?
+            fields.GetValueOrDefault("AppPath") ?? fields.GetValueOrDefault("ExeFileName") ?? fields.GetValueOrDefault("AppName") : null;
+        if (!string.IsNullOrWhiteSpace(subject)) fields["eventSubject"] = subject + " / " + fields.GetValueOrDefault("AppVersion");
         return fields;
     }
     internal static string Category(string provider, int id, int level) =>
+        provider == "Microsoft-Windows-Diagnostics-Performance" && id == 100 ? "Boot" :
+        provider == "Microsoft-Windows-WindowsUpdateClient" ? "WindowsUpdate" :
+        provider == "Microsoft-Windows-Kernel-PnP" ? "DeviceEvent" :
+        provider is "Microsoft-Windows-NetworkProfile" or "Microsoft-Windows-WLAN-AutoConfig" ? "NetworkEvent" :
         provider == "Application Error" && id == 1000 ? "ApplicationCrash" :
         provider == "Application Hang" && id == 1002 ? "ApplicationHang" :
         provider == "Service Control Manager" && id is 7031 or 7034 ? "ServiceFailure" :
@@ -78,6 +93,9 @@ internal static class IntelligenceWindowsEvents
     internal static IReadOnlyList<IntelligenceEntity> ComparableBoots(IEnumerable<IntelligenceEntity> entities) =>
         entities.Where(e => e.Kind == IntelligenceKind.Boot && e.Fields.GetValueOrDefault("provider") == "Microsoft-Windows-Diagnostics-Performance" &&
             e.Fields.GetValueOrDefault("eventId") == "100" && IntelligenceModel.Number(e, "BootTime") is >= 0 &&
-            e.Metadata.Availability == DataAvailability.Available)
-            .OrderBy(e => IntelligenceModel.Number(e, "BootTime")).ToArray();
+            e.Metadata.Availability == DataAvailability.Available && e.Fields.ContainsKey("eventVersion") &&
+            e.Fields.ContainsKey("osVersion") && e.Fields.ContainsKey("BootType"))
+            .GroupBy(e => (e.Fields["eventVersion"], e.Fields["osVersion"], e.Fields["BootType"]))
+            .Where(g => g.Count() >= 2).OrderByDescending(g => g.Max(e => e.Metadata.Timestamp))
+            .Select(g => (IReadOnlyList<IntelligenceEntity>)g.OrderBy(e => IntelligenceModel.Number(e, "BootTime")).ToArray()).FirstOrDefault() ?? [];
 }

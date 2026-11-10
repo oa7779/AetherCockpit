@@ -18,6 +18,9 @@ internal sealed record ProcessRelation(string Kind, string Key, int? OwnerPid, s
     public string? RemoteAddress { get; init; }
     public int? RemotePort { get; init; }
     public string? EndpointState { get; init; }
+    public string? GpuEngine { get; init; }
+    public double? GpuPercent { get; init; }
+    public DateTimeOffset? GpuSampleStart { get; init; }
 }
 
 internal static class ProcessCorrelation
@@ -86,7 +89,8 @@ internal static class ProcessCorrelation
             if (matches.Length != 1) continue;
             result.Add(new("Netzwerkadapter", matches[0].Id, endpoint.OwnerPid, null,
                 matches[0].Name + " / lokale Adresse " + endpoint.LocalAddress,
-                "Exakte eindeutige Unicastadresse des Owner-PID-Endpoints; keine Routing-/Wildcardheuristik", time, DataAvailability.Available));
+                "Exakte eindeutige Unicastadresse des Owner-PID-Endpoints; keine Routing-/Wildcardheuristik", time, DataAvailability.Available)
+                { LocalAddress = endpoint.LocalAddress });
         }
         return result;
     }

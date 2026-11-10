@@ -17,6 +17,15 @@ public sealed record EventSnapshot(DateTimeOffset Timestamp, List<MonitorEvent> 
 
 public static class EventMonitor
 {
+    internal static async Task<string> ReadRecordAsync(string channel, long recordId, DateTimeOffset expected, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(channel) || channel.Length > 256 || recordId < 0 || expected == default)
+            throw new ArgumentException("Ungültige Ereignisidentität.");
+        return await CommandRunner.PowerShellAsync(
+            $"$e=Get-WinEvent -LogName {AdminManagement.Quote(channel)} -FilterXPath '*[System[EventRecordID={recordId}]]' -MaxEvents 1 -ErrorAction Stop; " +
+            $"if($e.TimeCreated.ToUniversalTime().Ticks -ne {expected.UtcTicks}){{throw 'Protokoll wurde ersetzt oder Ereignisidentität stimmt nicht mehr überein'}}; " +
+            "$e | Format-List TimeCreated,Id,RecordId,ProviderName,LevelDisplayName,Message; $e.ToXml()", token);
+    }
     public static async Task<EventSnapshot> ReadAsync(CancellationToken token)
     {
         var result = await CommandRunner.RunAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),

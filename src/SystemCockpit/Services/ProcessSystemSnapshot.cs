@@ -30,6 +30,8 @@ internal sealed record ProcessSystemSnapshot(string Schema, DateTimeOffset Times
                 r.Kind.Length > 256 || r.Key.Length > 32768 || r.Value.Length > 65536 || r.Source.Length > 32768 ||
                 r.OwnerPid < 0 || r.Timestamp == default || r.Executable?.Length > 32768 || r.LocalAddress?.Length > 256 ||
                 r.LocalPort is < 0 or > 65535 || r.RemotePort is < 0 or > 65535 || r.RemoteAddress?.Length > 256 || r.EndpointState?.Length > 128 ||
+                r.GpuEngine?.Length > 512 || r.GpuPercent is { } percent && (!double.IsFinite(percent) || percent < 0) ||
+                r.GpuSampleStart is { } sampleStart && sampleStart > r.Timestamp ||
                 !Enum.IsDefined(r.Availability) || !Enum.IsDefined(r.Classification)) ||
             snapshot.Hardware.Any(h => h is null || h.Key is null || h.Key.Length > 32768 || h.Availability is null || h.Timestamp == default ||
                 !Enum.TryParse<DataAvailability>(h.Availability, out var state) || !Enum.IsDefined(state)) ||

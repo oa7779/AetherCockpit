@@ -31,7 +31,8 @@ internal static partial class ProcessGpu
             if (parsed is not { } target || !HardwareCpuFrequency.ValidSample(row.Status, row.Value)) continue;
             rows.Add(new("GPU", target.Luid, target.Pid, null,
                 $"{target.Engine} / {row.Value.ToString("R", CultureInfo.InvariantCulture)} % / {sample.Start:O} → {sample.End:O}; Engines nicht addieren",
-                "Windows GPU Engine Instanz / PID + Adapter-LUID + Engine; PDH-NOCAP100", sample.End, DataAvailability.Available));
+                "Windows GPU Engine Instanz / PID + Adapter-LUID + Engine; PDH-NOCAP100", sample.End, DataAvailability.Available)
+                { GpuEngine = target.Engine, GpuPercent = row.Value, GpuSampleStart = sample.Start });
         }
         return rows;
     }
