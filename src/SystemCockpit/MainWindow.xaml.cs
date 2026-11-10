@@ -52,6 +52,7 @@ public partial class MainWindow : Window
     internal MainWindow(CockpitSettings? syntheticSettings)
     {
         InitializeComponent();
+        HardwareIntelligence.Synthetic = syntheticSettings is not null;
         InitializeNavigation();
         _displayPulse = new DisplayPulse(Dispatcher, _model, day => DisplayTime.Apply(this, day));
         _managerReporting = new ManagerReportingService(status =>
@@ -238,6 +239,8 @@ public partial class MainWindow : Window
         }
         finally { _sensorGate.Release(); }
         _model.Apply(sample, _sensorsEnabled);
+        HardwareIntelligence.UpdateSensors(sample.Sensors, sample.Timestamp, _sensorsEnabled, sample.SensorError);
+        HardwareIntelligence.UpdateSensors(sample.Sensors, sample.Timestamp, _sensorsEnabled, sample.SensorError);
         report(DesktopUiText.Get("Boot.PerformanceInit"), 65);
         try
         {
@@ -274,6 +277,7 @@ public partial class MainWindow : Window
     {
         _stop.Cancel();
         HardwareBoard.Shutdown();
+        await HardwareIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);

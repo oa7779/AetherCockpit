@@ -484,6 +484,9 @@
                     </Grid>
                     </Border>
                 </TabItem>
+                <TabItem Header="Hardware Intelligence" Tag="HardwareIntelligence" ToolTip="Technische Komponenten, Quellen und Hardwareberichte">
+                    <controls:HardwareIntelligenceView x:Name="HardwareIntelligence"/>
+                </TabItem>
                 <TabItem Header="{loc:DesktopLabel Module.Sensoren}" Tag="Sensoren" ToolTip="{loc:DesktopLabel Module.SensorsTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>

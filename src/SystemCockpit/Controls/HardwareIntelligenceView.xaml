@@ -1,0 +1,92 @@
+<UserControl x:Class="SystemCockpit.Controls.HardwareIntelligenceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SystemCockpit.Controls"
+             Foreground="{DynamicResource ModernTextPrimary}">
+    <UserControl.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource NeonButton}"/>
+        <Style TargetType="DataGrid" BasedOn="{StaticResource NeonDataGrid}"/>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource WindowBackdrop}">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <StackPanel Margin="0,0,0,10">
+            <TextBlock Text="HARDWARE INTELLIGENCE / TECHNISCHE ZENTRALE" FontSize="20" FontFamily="Consolas"
+                       Foreground="{DynamicResource ModernAccent}" TextWrapping="Wrap"/>
+            <WrapPanel Margin="0,8">
+                <ComboBox x:Name="Categories" Width="180" SelectionChanged="CategoryChanged"
+                          DisplayMemberPath="Value" SelectedValuePath="Key" AutomationProperties.Name="Hardwareklasse"/>
+                <Button x:Name="RefreshButton" Content="Klasse neu lesen" Click="RefreshClicked" Margin="8,0"/>
+                <Button x:Name="ExportButton" Content="Hardwarebericht exportieren" Click="ExportClicked" IsEnabled="False"/>
+            </WrapPanel>
+            <TextBlock x:Name="Status" Text="Lesendes Inventar auf Anforderung. Livewerte werden nur aus dem vorhandenen Cockpit-Sensorpfad übernommen."
+                       Foreground="{DynamicResource ModernTextSecondary}" TextWrapping="Wrap"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="220" MinWidth="140"/><ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*" MinWidth="240"/><ColumnDefinition Width="5"/><ColumnDefinition Width="290" MinWidth="180"/></Grid.ColumnDefinitions>
+            <Border BorderBrush="{DynamicResource ModernAccent}" BorderThickness="1" Padding="6"
+                    local:AetherNeonFrame.Enabled="True" local:AetherNeonFrame.BreathingEnabled="False">
+                <DockPanel>
+                    <TextBox x:Name="Filter" DockPanel.Dock="Top" TextChanged="FilterChanged" Margin="0,0,0,8"
+                             Style="{StaticResource NeonTextBox}"
+                             AutomationProperties.Name="Komponenten filtern" ToolTip="Komponentenname filtern"/>
+                    <ListBox x:Name="Components" SelectionChanged="ComponentChanged" DisplayMemberPath="Name"
+                             Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto" AutomationProperties.Name="Hardwarekomponenten"/>
+                </DockPanel>
+            </Border>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+            <Border Grid.Column="2" BorderBrush="{DynamicResource ModernBorder}" BorderThickness="1" Padding="6"
+                    local:AetherNeonFrame.Enabled="True" local:AetherNeonFrame.BreathingEnabled="False">
+                <DockPanel>
+                    <TextBlock x:Name="ComponentTitle" DockPanel.Dock="Top" FontFamily="Consolas" Margin="0,0,0,8"
+                               TextWrapping="Wrap" Foreground="{DynamicResource ModernAccent}"/>
+                    <DataGrid x:Name="Facts" IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False"
+                              SelectionChanged="FactChanged" EnableRowVirtualization="True" RowHeight="24" FontSize="11"
+                              AutomationProperties.Name="Hardwarewerte und Quellen">
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="5,2"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource ModernSelection}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Padding" Value="5,4"/>
+                                <Setter Property="Background" Value="{DynamicResource ModernInput}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ModernAccent}"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Eigenschaft" Binding="{Binding Name}" Width="210"/>
+                            <DataGridTextColumn Header="Wert / Einheit" Binding="{Binding Display}" Width="240"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding State}" Width="100"/>
+                            <DataGridTextColumn Header="Herkunft" Binding="{Binding Provenance}" Width="100"/>
+                            <DataGridTextColumn Header="Klassifikation" Binding="{Binding Privacy}" Width="100"/>
+                            <DataGridTextColumn Header="Erfasst" Binding="{Binding Time}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+            <Border Grid.Column="4" BorderBrush="{DynamicResource ModernAccent}" BorderThickness="1" Padding="8"
+                    local:AetherNeonFrame.Enabled="True" local:AetherNeonFrame.BreathingEnabled="False">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="QUELLEN / LIVE / AKTUALITÄT" FontFamily="Consolas"
+                               TextWrapping="Wrap" Foreground="{DynamicResource ModernAccent}" Margin="0,0,0,8"/>
+                    <TextBlock DockPanel.Dock="Bottom" Text="Neon Wiki: vorbereitet, noch keine Artikelanbindung."
+                               TextWrapping="Wrap" Foreground="{DynamicResource ModernTextSecondary}" Margin="0,8,0,0"/>
+                    <TextBox x:Name="Inspector" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}"
+                             BorderThickness="0" AutomationProperties.Name="Quelldetails"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

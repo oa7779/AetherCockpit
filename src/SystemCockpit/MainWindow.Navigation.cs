@@ -14,7 +14,8 @@ public partial class MainWindow
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
             ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
-            ("Navigation.Hardware", [("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
+            ("Navigation.Hardware", [("Hardware Intelligence", "HardwareIntelligence", false),
+                ("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
                 ("Navigation.Drives", "Laufwerke", false), ("Navigation.Smart", "SMART", true)]),
             ("Navigation.Diagnostics", [("Navigation.WindowsDiagnostics", "Diagnose", false), ("Navigation.Protection", "Sicherheit", false),
                 ("Navigation.Events", "Ereignisse", false), ("Navigation.NetworkTests", "Netzwerk", true),
