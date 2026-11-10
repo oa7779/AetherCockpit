@@ -59,6 +59,8 @@ internal static class HardwareCompletionTests
         Check(!HardwareSpdBoundary.Valid(module with { Bytes = new byte[32] }), "SPD invalid buffer refused");
         Check(!HardwareSpdBoundary.Valid(module with { Metadata = HardwareIntelligenceReader.Metadata("fixture", time) }), "SPD identifiers require privacy classification");
         Check(!HardwareSpdBoundary.Valid(module with { License = "" }), "SPD source license required");
+        Check(HardwareDirect3D.ShaderName(0x69) == "6.9" && HardwareDirect3D.ShaderName(0x51) == "5.1", "shader model hex encoding");
+        Check(HardwareDirect3D.ShaderName(0x70).Contains("Code"), "future shader models remain raw");
         return _assertions;
     }
 }

@@ -47,25 +47,28 @@ internal static class HardwareGpuReader
                             $"Direct3D-Provider nicht verfügbar (HRESULT 0x{ex.HResult:X8}).",
                             ex is COMException ? DataAvailability.ProviderError : DataAvailability.Unsupported));
                     }
+                    var nodeCount = uint.TryParse(facts.FirstOrDefault(f => f.Key == "nodes")?.Observation.Value,
+                        NumberStyles.None, CultureInfo.InvariantCulture, out var reportedNodes) && reportedNodes is > 0 and <= 64 ? reportedNodes : 1;
+                    for (uint node = 0; node < nodeCount; node++)
                     foreach (var segment in new[] { 0, 1 })
                     {
                         var name = segment == 0 ? "Lokal" : "Nichtlokal";
                         if (adapter is IAdapter3 extended)
                         {
-                            hr = extended.QueryVideoMemoryInfo(0, segment, out var memory);
+                            hr = extended.QueryVideoMemoryInfo(node, segment, out var memory);
                             if (hr >= 0)
                             {
                                 foreach (var (key, value) in new[] { ("Aktuelle Nutzung", memory.Usage), ("Budget", memory.Budget),
                                              ("Reserviert", memory.Reservation), ("Reservierbar", memory.Available) })
-                                    facts.Add(new(name + key, name + " / Prozess / Node 0 / " + key, SourceObservation<string>.Present(
+                                    facts.Add(new(name + node + key, name + " / Prozess / Node " + node + " / " + key, SourceObservation<string>.Present(
                                         value.ToString(CultureInfo.InvariantCulture), "B",
-                                        HardwareIntelligenceReader.Metadata("IDXGIAdapter3.QueryVideoMemoryInfo (aktueller Prozess / Node 0)", time)),
+                                        HardwareIntelligenceReader.Metadata("IDXGIAdapter3.QueryVideoMemoryInfo (aktueller Prozess / Node " + node + ")", time)),
                                         HardwareCadence.Dynamic));
                             }
-                            else facts.Add(HardwareFact.Missing(name, name + " Videospeicherinfo", "IDXGIAdapter3.QueryVideoMemoryInfo",
+                            else facts.Add(HardwareFact.Missing(name + node, name + " Videospeicherinfo / Node " + node, "IDXGIAdapter3.QueryVideoMemoryInfo",
                                 time, $"DXGI HRESULT 0x{hr:X8}.", DataAvailability.ProviderError));
                         }
-                        else facts.Add(HardwareFact.Missing(name, name + " Videospeicherinfo", "IDXGIAdapter3",
+                        else facts.Add(HardwareFact.Missing(name + node, name + " Videospeicherinfo / Node " + node, "IDXGIAdapter3",
                             time, "Adapter unterstützt IDXGIAdapter3 nicht.", DataAvailability.Unsupported));
                     }
                     result.Add(new($"dxgi:{desc.Luid.High:X8}:{desc.Luid.Low:X8}", HardwareClass.Gpu, "DXGI / " + desc.Description, facts));

@@ -167,7 +167,7 @@ internal static class HardwareCimCatalog
     {
         HardwareClass.Cpu => ["Referenztakt / Multiplikator", "CPU-Codename"],
         HardwareClass.Gpu => ["Geräteweiter VRAM-Verbrauch (DXGI hier pro Prozess)", "WDDM", "VBIOS", "iGPU/dGPU", "Architektur / Codename",
-            "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / Decode"],
+            "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / vollständige Decode-Formatmatrix"],
         HardwareClass.Npu => ["NPU-Telemetrie", "TOPS"],
         HardwareClass.Mainboard => ["Chipsatz-Zuordnung"],
         HardwareClass.Storage => ["TRIM-Status", "Controllerzuordnung"],
