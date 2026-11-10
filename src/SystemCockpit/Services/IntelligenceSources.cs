@@ -242,6 +242,28 @@ internal static class IntelligenceSources
         var events = await Task.Run(() => IntelligenceWindowsEvents.Read(token), token).ConfigureAwait(false);
         entities.AddRange(events.Entities); coverage.AddRange(events.Coverage);
         var availableIds = entities.Select(e => e.Id).ToHashSet(StringComparer.Ordinal);
+        foreach (var entry in events.Entities)
+        {
+            token.ThrowIfCancellationRequested();
+            if (entry.Fields.GetValueOrDefault("provider") == "Microsoft-Windows-Kernel-PnP" &&
+                entry.Fields.GetValueOrDefault("DeviceInstanceId") is { Length: > 0 } deviceId)
+            {
+                var target = "device:" + deviceId.ToUpperInvariant();
+                if (availableIds.Contains(target)) edges.Add(new(entry.Id, target,
+                    "Kernel-PnP-Ereignis berichtet dieselbe Geräteinstanz; kein Ursachenbeweis", entry.Metadata));
+            }
+            if (!IntelligenceWindowsEvents.ProcessTarget(entry, out var pid) || !verified.TryGetValue(pid, out var process) ||
+                !long.TryParse(process.Fields.GetValueOrDefault("start"), out var ticks) || entry.Metadata.Timestamp.UtcTicks < ticks ||
+                entry.Metadata.Timestamp > DateTimeOffset.UtcNow) continue;
+            try
+            {
+                using var handle = ProcessNative.Open(new(pid, ticks));
+                if (!ProcessNative.Exited(handle)) edges.Add(new(entry.Id, process.Id,
+                    "Application-Ereignis berichtet PID innerhalb erneut geprüfter Prozesslebenszeit", entry.Metadata));
+            }
+            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+            { Trace.TraceWarning("Ereignis-Prozessidentität nicht mehr belegbar: {0}", ex.Message); }
+        }
         foreach (var driver in entities.Where(e => e.Kind == IntelligenceKind.Driver))
         {
             if (driver.Fields.TryGetValue("deviceId", out var device))

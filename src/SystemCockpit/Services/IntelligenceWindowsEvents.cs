@@ -72,13 +72,22 @@ internal static class IntelligenceWindowsEvents
         {
             var name = item.Attribute("Name")?.Value;
             if (name is not null && item.Value.Length <= 2048 &&
-                (Fields.Contains(name) || faultFields && name is "AppName" or "AppVersion" or "AppPath" or "ExeFileName" || serviceFields && name == "param1"))
+                (Fields.Contains(name) || faultFields && name is "AppName" or "AppVersion" or "AppPath" or "ExeFileName" or "ProcessId" or "ProcessID" || serviceFields && name == "param1"))
                 fields.TryAdd(name, item.Value);
         }
         var subject = serviceFields ? fields.GetValueOrDefault("param1") : faultFields ?
             fields.GetValueOrDefault("AppPath") ?? fields.GetValueOrDefault("ExeFileName") ?? fields.GetValueOrDefault("AppName") : null;
         if (!string.IsNullOrWhiteSpace(subject)) fields["eventSubject"] = subject + " / " + fields.GetValueOrDefault("AppVersion");
         return fields;
+    }
+    internal static bool ProcessTarget(IntelligenceEntity entry, out int pid)
+    {
+        pid = 0;
+        var known = entry.Fields.GetValueOrDefault("provider") == "Application Error" && entry.Fields.GetValueOrDefault("eventId") == "1000" ||
+            entry.Fields.GetValueOrDefault("provider") == "Application Hang" && entry.Fields.GetValueOrDefault("eventId") == "1002";
+        var lower = entry.Fields.GetValueOrDefault("ProcessId"); var upper = entry.Fields.GetValueOrDefault("ProcessID");
+        return known && (lower is null || upper is null || lower == upper) && (lower ?? upper) is { } value &&
+            ProcessCorrelation.TryPid(value, out pid) && pid > 0;
     }
     internal static string Category(string provider, int id, int level) =>
         provider == "Microsoft-Windows-Diagnostics-Performance" && id == 100 ? "Boot" :

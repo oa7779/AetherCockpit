@@ -55,6 +55,7 @@ public partial class SystemIntelligenceView : UserControl
     private double _panX, _panY;
     internal bool Synthetic { get; set; }
     internal Func<HardwareInventory?>? HardwareSnapshot { get; set; }
+    internal Func<ProcessHistory>? ProcessHistory { get; set; }
     internal event Action<IntelligenceEntity>? NavigationRequested;
     internal event Action<string>? NotificationRequested;
     internal IntelligenceSessionEngine Engine => _engine;
@@ -371,6 +372,12 @@ public partial class SystemIntelligenceView : UserControl
                     string.Join("\n", _engine.Resources.Where(p => p.Process is not null && identities.Contains("process:" + p.Process))
                         .Select(p => $"{p.Timestamp:O} / {p.Process}: {p.ProcessCpu}% / {p.ProcessMemory} MiB")) +
                     "\nKlassische Installationspfade, Namen und Publisher begründen keine Programmzuordnung. GPU, Dienste und Netzwerk nur über vorhandene belegte Kanten der Instanz öffnen.";
+                if (ProcessHistory?.Invoke() is { } history)
+                    Inspector.Text += "\nGEMEINSAME PROZESSHISTORIE (MAX. 16 BELEGTE INSTANZEN, LETZTE 32 PROBEN JE INSTANZ)\n" +
+                        string.Join("\n", history.Rows.Where(p => identities.Contains("process:" + p.Key)).Take(16).SelectMany(p =>
+                            p.Value.Samples.TakeLast(32).Select(s => $"{s.Timestamp:O} / {p.Key}: CPU {s.Cpu?.ToString("R", CultureInfo.InvariantCulture) ?? "nicht verfügbar"}%; " +
+                                $"RAM {s.MemoryMb?.ToString("R", CultureInfo.InvariantCulture) ?? "nicht verfügbar"} MiB; Messlücke={s.Gap}"))) +
+                        "\nDieselbe Prozessprobe wie in der Prozesszentrale; kein zusätzlicher Poller und keine vollständige Ausführungschronik.";
             }
         }
         else if (value is ReliabilityPattern pattern)

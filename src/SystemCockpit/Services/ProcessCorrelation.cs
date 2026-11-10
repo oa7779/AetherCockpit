@@ -218,7 +218,7 @@ internal static class ProcessCorrelation
             n.Name.LocalName == "Data" && n.Attribute("Name")?.Value is "ProcessId" or "ProcessID" &&
             TryPid(n.Value, out var value) && value == pid);
     }
-    private static bool TryPid(string value, out int pid) => value.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+    internal static bool TryPid(string value, out int pid) => value.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
         ? int.TryParse(value.AsSpan(2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out pid)
         : int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out pid);
 }

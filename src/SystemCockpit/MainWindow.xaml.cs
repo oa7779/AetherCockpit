@@ -57,6 +57,7 @@ public partial class MainWindow : Window
         ProcessCenter.Synthetic = syntheticSettings is not null;
         SystemIntelligence.Synthetic = syntheticSettings is not null;
         SystemIntelligence.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
+        SystemIntelligence.ProcessHistory = () => ProcessCenter.History;
         SystemIntelligence.NotificationRequested += message => { _model.Footer = message; _desktop?.NotifyDiagnostics(message); };
         ProcessCenter.ActionObserved += result => SystemIntelligence.Engine.Mark(
             result.State == ProcessActionState.Exited ? "ProcessConfirmedEnd" : "ProcessAction",

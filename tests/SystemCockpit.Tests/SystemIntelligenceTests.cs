@@ -162,6 +162,11 @@ internal static class SystemIntelligenceTests
             <EventData><Data Name="AppName">fixture.exe</Data><Data Name="AppVersion">1</Data><Data Name="CommandLine">secret</Data></EventData></Event>
             """);
         Check(field["eventSubject"] == "fixture.exe / 1" && !field.ContainsKey("CommandLine"), "known crash schema exposes reported subject but never arbitrary commands");
+        var crashEntity = fixture.Entities[0] with { Fields = new Dictionary<string, string> {
+            ["provider"] = "Application Error", ["eventId"] = "1000", ["ProcessId"] = "0x1234" } };
+        Check(IntelligenceWindowsEvents.ProcessTarget(crashEntity, out var targetPid) && targetPid == 0x1234, "only schema-qualified EventData PID can be a process target");
+        Check(!IntelligenceWindowsEvents.ProcessTarget(crashEntity with { Fields = new Dictionary<string, string> {
+            ["provider"] = "Other", ["eventId"] = "1000", ["ProcessId"] = "0x1234" } }, out _), "logger or unrelated provider PID does not imply process relationship");
         var engine = new IntelligenceSessionEngine();
         var entry = new TimelineEntry("event:fixture", time, time, "ApplicationCrash", "Fixture", null, fixture.Entities[0].Metadata, "",
             new("Application", 1, "Application Error", 1000));
