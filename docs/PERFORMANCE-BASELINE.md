@@ -1,6 +1,56 @@
 # AETHER — Performance-Baseline für die Konsolidierung
 
-## Geltungsbereich
+## Process Command Center
+
+Messung des unveröffentlichten Arbeitsstands vom 10. November 2026,
+Quellstand `be29028`, Release-STA-Testhost. Keine installierte Produktversion
+und kein vollständiger Produktbenchmark. Lokale Rohdaten:
+`process-proof-07\measurements.json`; native Gegenprobe `process-native-04.json`.
+[Reproduktion und Nebenwirkungen](TESTING.md#process-command-center).
+
+5.000 synthetische Prozesszeilen, ReducedMotion, je drei Themes und
+Root-DPI-Stufen. Vorab festgelegt: erste Darstellung und Update je höchstens
+2.500 ms, weniger als 200 tatsächlich erzeugte Zeilencontainer.
+Alle neun Fälle bestanden. Zeiten enthalten Anwenden, Layout und
+Dispatcher-Idle; keine Kaltstart- oder Messlatenz des realen Samplers.
+
+| Theme | Root-DPI % | Erste Darstellung ms | Update ms | Erzeugte Zeilen |
+|---|---:|---:|---:|---:|
+| Retro-Neon | 100 | 227,63 | 109,74 | 14 |
+| Retro-Neon | 150 | 320,94 | 13,05 | 14 |
+| Retro-Neon | 200 | 283,25 | 8,57 | 14 |
+| Modern hell | 100 | 324,26 | 123,66 | 19 |
+| Modern hell | 150 | 312,61 | 38,40 | 19 |
+| Modern hell | 200 | 316,31 | 37,31 | 19 |
+| Modern dunkel | 100 | 279,33 | 35,26 | 19 |
+| Modern dunkel | 150 | 313,19 | 33,95 | 19 |
+| Modern dunkel | 200 | 297,13 | 31,62 | 19 |
+
+30 zusätzliche 500-Zeilen-Ansichten im selben, bereits aufgewärmten Host:
+Handles 719 → 729 → 739 → 751, Threads durchgehend 24.
+Private Bytes 361.439.232 → 368.422.912 → 365.117.440 → 364.707.840;
+Working Set 309.309.440 → 322.134.016 → 330.526.720 → 337.534.976 Bytes.
+Erzwungene GC separat: 329.957.376 Private Bytes, 302.886.912 Working Set,
+eine von 30 Ansichten zunächst noch referenziert.
+Nach 30 **leeren WPF-Fenstern** und getrennter GC sind alle 30 Ansichten
+sammelbar; Handles steigen auch dabei 751 → 781. Private Bytes danach
+322.945.024, Working Set 308.965.376.
+
+Das ist eine beobachtete Host-/Fensterfolge, kein Beweis für die Ursache
+jedes Handles und keine Entwarnung für Langzeitbetrieb.
+Es gibt keinen dauerhaften zusätzlichen UI-Timer oder Prozessvollpoller;
+laufende Detailaufträge werden beim Shutdown abgebrochen und abgewartet.
+Native reine Prozesshandlezyklen separat: 100 Öffnen/Prüfen/Schließen,
+Handleanzahl 442 → 442. Ein selbst gestartetes Fixture wurde einschließlich
+Endprüfung in 78,27 ms beendet; kein allgemeiner Beendigungsbenchmark.
+
+Nicht gemessen: dauerhafter produktiver CPU-/GPU-/Speichermehrbedarf,
+kalter Start, mehrstündige Beobachtung, physische DPI-/Monitor-/Resumewechsel
+und native Datenrichtigkeit auf einer Hardware-/Windows-Matrix.
+Frühere Proofs und fehlerhafte Versuche bleiben erhalten und sind im
+[Abschlussbericht](PROCESS-COMMAND-CENTER-REPORT.md) getrennt benannt.
+
+## Geltungsbereich der M1-Konsolidierung
 
 Neue Messung vom 9. November 2026, 22:10 Uhr Ortszeit, im Release-STA-Testhost.
 Kein produktiver Cockpitstart, keine Sensorinitialisierung, keine Installation,

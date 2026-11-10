@@ -51,6 +51,34 @@ Bei vorhandenen Restore-Ergebnissen kann `--no-restore` verwendet werden.
 Ein Build startet keine produktive App und keine Sensoren.
 [Tests und ihre Nebenwirkungen](TESTING.md) sind separat beschrieben.
 
+## Process Command Center
+
+Die unveröffentlichte Erweiterung verwendet den bestehenden `DashboardMetrics`-
+Sampler. `MainWindow` verteilt dieselbe Probe an Cockpit und
+`ProcessCommandView`; nach einer Prozessaktion weckt ein Semaphore den
+vorhandenen Loop. Kein zweiter permanenter Prozesspoller.
+
+`ProcessIdentity` verbindet PID und UTC-Erstellungszeit. `ProcessActions`
+bereitet eine eingefrorene Zielmenge vor, prüft Schutz und Identität erneut
+und wartet über dieselben minimal berechtigten SafeHandles auf das Ende.
+Auch `AdminWorkbench` verwendet diesen Kern. `ProcessInspector` lädt Details,
+`ProcessFileInfo` lokale Icons und Offline-Vertrauen auf Anforderung.
+`ProcessHistory` hält stabile UI-Zeilen, begrenzte Proben und erklärbare Regeln.
+
+`ProcessCorrelation` liest strukturierte Windows-Quellen; `ProcessGpu` nutzt
+die additive Named-Counter-Probe des vorhandenen PDH-Helfers.
+Der Hardwarebereich reicht seine bereits gelesene Momentaufnahme weiter
+und bietet exakte Rückwärtsbezüge. Seine Provider und das Berichtsschema
+bleiben unverändert. `ProcessSystemSnapshot` ist ein getrenntes lokales
+Format, verwendet aber dieselbe Datenschutzpolicy und CSV-Absicherung.
+Die bestehende `TaskCenterWindow`-Palette erhält Prozesssuche und lokale
+Werkzeugeinstellungen statt einer konkurrierenden Oberfläche.
+
+Keine neuen Pakete, Remote-Endpunkte oder Server-/Client-Wireformate.
+Auch dieser Auftrag bleibt ausdrücklich ohne Installer, Versionserhöhung
+oder Veröffentlichung. [Tests](TESTING.md#process-command-center),
+[Architektur, Rechte und Grenzen im Abschlussbericht](PROCESS-COMMAND-CENTER-REPORT.md).
+
 ## GitHub Actions
 
 Der Workflow [Windows build](../.github/workflows/windows-build.yml) baut

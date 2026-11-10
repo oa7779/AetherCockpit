@@ -98,6 +98,66 @@ Keine unredigierten Berichte oder lokalen Diagnoselogs in öffentliche Issues
 kopieren. Die Anzeige selbst ist keine anonymisierte Ansicht.
 [Quellenmodell und Exportgrenzen](HARDWARE-INTELLIGENCE-ARCHITECTURE.md).
 
+## Prozessaktionen und Systemsnapshots
+
+Die unveröffentlichte Prozesszentrale validiert PID und UTC-Erstellungszeit
+vor der Bestätigung und erneut vor dem Eingriff. Native SafeHandles binden
+die geprüfte Instanz bis zum tatsächlichen Endnachweis.
+Lesen verwendet `PROCESS_QUERY_LIMITED_INFORMATION` und `SYNCHRONIZE`;
+harte Beendigung ergänzt nur `PROCESS_TERMINATE`. Tokenabfragen benötigen
+`TOKEN_QUERY`. Kein pauschales `PROCESS_ALL_ACCESS`.
+
+**Prozess beenden** ist ungeordnet und kann Daten verlieren. Der eigene
+Sicherheitsdialog nennt Identität, verfügbare Datei-/Sitzungsdaten,
+bekannte Kinder und Zielmenge; **Abbrechen** ist Standard mit Fokus.
+Baumaktionen prüfen alle Ziele und den Baum unmittelbar vor dem ersten
+Eingriff. Neue Kinder werden nicht hinzugefügt. Windows stellt dafür
+keine atomare Baumtransaktion bereit; Teilwirkungen bleiben möglich.
+Pro Ziel gilt ein begrenztes Endwartefenster von fünf Sekunden.
+Cancellation nach Anforderung macht keine Beendigung rückgängig.
+
+Eigenschutz beruht auf aktueller Identität, eigenen Nachkommen,
+bekannten SCM-Diensten und tatsächlichen eigenen Programmdateien.
+Windows-Critical-/Protection-Level und Zugriffsrechte bleiben wirksam.
+Kann der Eigenschutz nicht vollständig geprüft werden, bleibt die Aktion
+gesperrt. Es gibt keine heuristische System-EXE-Sperrliste und keine
+automatische Rechteerhöhung. Absicht muss vor der Mutation lokal
+protokollierbar sein; Ergebnisse und native Fehler werden getrennt erfasst.
+Die bisherige Verwaltungsaktion hat keinen schwächeren Kill-Pfad mehr.
+
+**Fenster schließen** sendet ein getrenntes `WM_CLOSE` nur an ein aktuell
+sichtbares, dem geprüften Prozess gehörendes Fenster. Nach zwei Sekunden
+ohne Endnachweis lautet der Zustand nur „Schließen angefordert“.
+Es erfolgt keine automatische Eskalation zur harten Beendigung.
+
+Pfad, Benutzer-SID, Prozessnamen/-identitäten und Beziehungen werden
+konservativ als Sensitive behandelt. Die Detailanzeige ist nicht anonymisiert.
+Dateifirma und Beschreibung sind unbestätigte Dateimetadaten. Offline-
+`WinVerifyTrust` verwendet nur den vorhandenen Cache, keine aktuelle
+Online-Sperrlistenprüfung. Es beurteilt die jetzige Datei auf dem Datenträger,
+nicht beweiskräftig das ursprünglich geladene Prozessabbild.
+Dateimetadaten werden nicht von UNC- oder Netzlaufwerken nachgeladen.
+
+Systembeziehungen lesen Dienste, Owner-PID-Endpunkte, Run-/Aufgaben- und
+AppX-Ausführungsdateien sowie begrenzte strukturierte Ereignisse.
+Keine Übernahme kompletter CommandLines, Tokens, WLAN-Schlüssel oder
+Umgebungsblöcke. Netzwerkbesitz ist keine Datenrate; Sensorwerte werden
+keiner vermeintlichen Prozessursache zugeschrieben.
+
+Der normale JSON-/CSV-/Textexport redigiert Sensitive einschließlich
+Beziehungsschlüsseln und Quellenmetadaten, sofern nicht ausdrücklich
+zugestimmt wird. Secret bleibt ausgeschlossen, CSV verwendet den vorhandenen
+Formelschutz. Vollständige `.aethersnapshot`-Dateien sind dagegen ausdrücklich
+bestätigte, **unverschlüsselte lokale** Vergleichsdateien mit sensiblen Daten.
+Import ist größen-/schema-/zustandsgeprüft, verändert keine Live-Prozessliste
+und löst nichts aus. Es gibt keinen neuen Uploadpfad.
+
+Werkzeugfavoriten und letzte Werkzeuge liegen in `task-center.json`,
+benannte Ansichten mit eigenen Suchtexten in `process-view.json` neben den
+vorhandenen Benutzereinstellungen. Keine automatische persistente
+Prozesshistorie. Auch eigene Filtertexte können vertraulich sein.
+[Prüfgrenzen und Restrisiken](PROCESS-COMMAND-CENTER-REPORT.md#bekannte-grenzen-und-nicht-implementierte-punkte).
+
 ## Codesignierung
 
 Die kostenlose Codesignierung über die SignPath Foundation wurde am

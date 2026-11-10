@@ -37,15 +37,34 @@ SPD und echter effektiver CPU-Zyklustakt bleiben begründet begrenzt.
 Physische Hotplug-/Resume-/Monitor-/DPI-Wechsel und Langzeitbetrieb wurden
 nicht ausgelöst und sind nicht als bestanden behauptet.
 
-**Aktiver Auftrag: AETHER Process Command Center / System Correlation.**
+**Process Command Center / System Correlation: implementiert, Abnahme ausstehend.**
 Ausgang nach vollständigem M3-Dokumentationsabschluss:
 `5dc869299b57af93083f53e680d5afca3fc14536`.
-Phase 0 dokumentiert ausschließlich die erteilte Abnahme; Messungen,
-Proofs und die technischen Grenzen bleiben unverändert.
-Danach lokale Implementierung, Tests, Regressionen und Abschlussbericht.
-Community-Wunsch erhalten: Kontextmenü **„Prozess beenden“**.
+Sauberer Implementierungsbaseline nach Phase 0:
+`7cc28a120db3f6058503d6976bf90f37d55b21ca`.
+M3-Messungen, Proofs und technische Grenzen bleiben unverändert.
+Prozessidentität, bestätigte Aktionen/Prozessbäume, stabile virtualisierte
+Ansicht, Ressourcenhistorie, Windows-Korrelation, Hardware-Rückwärtsbezüge,
+Snapshots, datenschutzbewusste Berichte und erweiterte bestehende
+Befehlspalette sind lokal implementiert.
+Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
+kontrolliert beendet werden.
+
+Produkt-/Teststand `be29028`; logisch getrennte lokale Commits und genaue
+Dateien im [Prozess-Abschlussbericht](docs/PROCESS-COMMAND-CENTER-REPORT.md).
+Releasebuild 0 Warnungen / 0 Fehler. STA 4.770, kombiniert mit
+Professional-UI/Interface/Schoner/Branding 5.151 einschließlich
+Grundrunner; Modern-Smoke 3.611. Native eigene Testbeendigung mit
+Endnachweis, produktiver Eigenschutz und echte nur lesende Systemquellen
+geprüft. 21 Prozessproofs plus 22 Modern-Regressionsbilder.
+5.000-Zeilen-Gates und Abbruch-/Shutdownprüfung bestanden.
+30 Ansichtszyklen und 30 leere WPF-Fenster zeigen weiterhin einen
+nachzubeobachtenden Host-Handleanstieg, keine Langzeitfreigabe.
+Nicht belegbare Netzwerkbyte-/Sensor-/klassische Software-/WER-Zuordnungen
+sind offen gekennzeichnet statt erfunden.
+
 Keine Veröffentlichung, Push, Merge, Tag, Release, Installer oder Versionswechsel.
-Nach dem Prozess-Abschlussbericht ausdrückliche Abnahme abwarten.
+**STOPP: ausdrückliche Abnahme des Prozesspakets abwarten.**
 Bestehende Pakete bleiben unverändert.
 
 Installer-/Uploadauftrag abgeschlossen:

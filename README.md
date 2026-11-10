@@ -22,6 +22,14 @@ M3 ist mit den dokumentierten technischen Grenzen ausdrücklich abgenommen;
 [Prüfbericht und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
 Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
 
+Die **Prozesszentrale** ergänzt Prozessbaum, identitätsgebundene Details,
+Kurzzeithistorie, Windows-Systembeziehungen und lokale Snapshots.
+Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
+kontrolliert beendet werden – mit Sicherheitsdialog und geprüftem Endzustand.
+Die bestehende Suche über `Strg+K` findet auch Prozesse und neue Arbeitsabläufe.
+[Abschlussbericht, Nachweise und Grenzen](docs/PROCESS-COMMAND-CENTER-REPORT.md).
+Auch dieses Paket ist unveröffentlicht; seine Abnahme steht aus.
+
 **Aktuelle Beta: 0.7.0-beta.45**
 
 Ruhige Neonrahmen mit scharfer Kernkontur, getrenntem Glow und langsamer,

@@ -9,6 +9,30 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## Unveröffentlicht — Process Command Center / System Correlation
+
+- Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
+  kontrolliert beendet werden. AETHER prüft PID und Startidentität,
+  bestätigt das Ziel mit Datenverlustwarnung und verifiziert das Ende
+  an derselben Handleinstanz.
+- Getrennte Schließanforderung und harte Beendigung, bestätigte eingefrorene
+  Prozessbäume, Eigenschutz und gemeinsame Absichts-/Ergebnisprotokollierung.
+  Auch die bisherige Prozessverwaltung verwendet diesen sicheren Kern.
+- Virtualisierte Prozesszentrale auf der vorhandenen Taskmanagerseite:
+  Baum-/Listenansicht, Geschwistersortierung, Suche, Filter, lokale Ansichten,
+  Detailinspektor und begrenzte Ressourcenhistorie mit erklärbaren Hinweisen.
+- Zeitbezogene Dienst-, TCP-/UDP-, Run-/Aufgaben-/AppX-Beziehungen,
+  exakte Adapter- und GPU-LUID-Kanten sowie qualifizierte Application-Ereignisse.
+  Nicht belegbare Software-, Sensor- und WER-Beziehungen bleiben ausdrücklich offen.
+- Versionierte lokale Snapshots, Vergleich sowie redigierte JSON-/CSV-/Textberichte.
+  Vollständiges lokales Speichern benötigt eine eigene Datenschutzbestätigung.
+- Bestehende Befehlspalette um Prozesssuche, acht Arbeitsabläufe,
+  Werkzeugfavoriten und zuletzt verwendete Werkzeuge ergänzt.
+- Native Eigenprozess-, Race-/Privacy-/Skriptfixtures und integrierte
+  Theme-/DPI-/Tastatur-/Abbruchproofs.
+  [Abschlussbericht](docs/PROCESS-COMMAND-CENTER-REPORT.md).
+- Keine Versionserhöhung, neue Pakete oder Veröffentlichung.
+
 ## Unveröffentlicht — Hardware Intelligence
 
 - Eigener Hardwarebereich mit 20 Klassen, kompakten Komponenten-/Wertetabellen,
@@ -45,7 +69,8 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
   EDID-Blöcke und Shared-/Exclusive-Unterstützung genau des Engine-Mixformats.
 - Reale Ansichts-/Abbruchmatrix, 5.000-Komponenten-Fixture und Ressourcen-
   Gegenprobe mit leeren WPF-Fenstern. 4.698 Grundassertions bestanden.
-- M3 mit dokumentierten Grenzen zur Abnahme empfohlen, noch nicht abgenommen.
+- M3 am 10. November 2026 mit sämtlichen dokumentierten Grenzen
+  ausdrücklich abgenommen.
   Physische Ereigniswechsel und Langzeitbetrieb sind nicht nachgewiesen.
   [Abschlussbericht](docs/MILESTONE-3-HARDWARE-REPORT.md).
 - Keine Versionserhöhung, neue Pakete oder Veröffentlichung.

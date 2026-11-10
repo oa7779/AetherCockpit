@@ -1,7 +1,7 @@
 # Funktionsübersicht
 
 AETHER bündelt Beobachtung, Auswertung, Diagnose und Verwaltung. Diese Übersicht
-beschreibt den aktuellen Quellstand einschließlich unveröffentlichter Hardwarearbeit;
+beschreibt den aktuellen Quellstand einschließlich unveröffentlichter Hardware- und Prozessarbeit;
 der veröffentlichte Beta-Stand steht in der [Produktübersicht](../README.md).
 Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 
@@ -10,8 +10,8 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 | Bereich | Umfang |
 |---|---|
 | Cockpit | Übersicht mit Windows-Prüfstatus, gemeldeten Auffälligkeiten, CPU-/RAM-/GPU-/Download-Kernwerten und Schnellzugriffen; ausklappbare Live-Details zu Kernen, Sensoren, Datenträgern, Prozessen, Ereignissen und Aufzeichnung |
-| Prozesse | Such- und sortierbare Tabelle, Intervall-CPU, Working Set, Threads, Handles, I/O und identitätsgesicherte Details |
-| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Quelleninspektor, exakte Sensorgerätebeziehungen, WLAN, Windows-Takte, WDDM/Direct3D/Video, SMART/NVMe/TRIM/Controller, EDID/HDR und Audioformatprüfungen; mit dokumentierten Grenzen zur M3-Abnahme empfohlen |
+| Prozesse (Erweiterung unveröffentlicht) | Virtualisierte Liste und Prozessbaum, identitätsgebundene Details und Aktionen, Intervall-CPU, Working Set/private Bytes, Threads, Handles, Prozess-I/O, Kurzzeithistorie und Systembeziehungen |
+| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Quelleninspektor, exakte Sensorgerätebeziehungen, WLAN, Windows-Takte, WDDM/Direct3D/Video, SMART/NVMe/TRIM/Controller, EDID/HDR und Audioformatprüfungen; M3 mit dokumentierten Grenzen abgenommen |
 | Sensor-Matrix | Alle gemeldeten Sensorkanäle, Filter, Verlaufskurven nach Hardware und Einheit, gekennzeichnete Grenzwerte |
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |
@@ -27,6 +27,38 @@ Serveroberfläche und Installer erhalten in diesem Schritt kein neues Design.
 Sensoren werden nur angezeigt, wenn sie der Provider meldet. Das Mainboard ist
 keine elektrische Topologie; Gruppenmaxima und dynamische Skalen sind
 entsprechend gekennzeichnet. [Messwerte richtig lesen](HARDWARE-SENSORS.md).
+
+## Prozesszentrale und Systembeziehungen
+
+Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
+kontrolliert beendet werden. Der Dialog nennt das identitätsgeprüfte Ziel,
+bekannte Kinder und das Datenverlustrisiko; **Abbrechen** ist Standard.
+**Fenster schließen** sendet getrennt eine reguläre Schließanforderung.
+Prozessbäume benötigen eine bestätigte Zielmenge; geänderte Bäume werden
+nicht still erweitert. Die bisherigen Cockpitinstrumente bleiben erhalten.
+
+Ein gemeinsamer Erfassungspfad speist Cockpit und Prozesszentrale.
+Bis zu 120 Proben je Identität zeigen CPU, RAM und verfügbares Prozess-I/O
+mit MIN/MAX/AVG und Lücken. Nachvollziehbare Regeln nennen ihre Schwellen,
+stellen aber keine Sicherheitsdiagnose. Datei-, Symbol-, Token- und
+Offline-Vertrauensdetails werden gezielt nachgeladen.
+
+Auf Anforderung werden Windows-Dienste, TCP-/UDP-Endpunkte, ausführbare
+Run-/Aufgaben-/AppX-Pfade und qualifizierte Application-Ereignisse verbunden.
+Adapter benötigen eine eindeutige lokale Unicastadresse, GPU-Engines eine
+PID/LUID-Quelle. Der Hardwarebereich bietet dieselben belegbaren Beziehungen
+in umgekehrter Richtung. Socketbesitz ist keine Netzwerkdatenrate;
+Prozess-I/O ist kein Beweis physischer Datenträgeraktivität.
+
+Lokale Systemsnapshots vergleichen Identitäten, Dienstzustände und Starttypen,
+Autostarts, Verbindungen und bereits gelesene Hardwareverfügbarkeit.
+JSON/CSV/Text redigieren sensible Daten standardmäßig; vollständige lokale
+Snapshotdateien bleiben nach eigener Bestätigung unverschlüsselt.
+`Strg+K` findet Werkzeuge und aktuelle Prozesse. Favoriten, letzte Werkzeuge
+und bis zu 16 benannte Prozessansichten sind lokal gespeichert.
+[Bedienung](USER-GUIDE.md#prozesszentrale-unveröffentlichter-arbeitsstand),
+[Schutz und Datenschutz](SECURITY-AND-PRIVACY.md#prozessaktionen-und-systemsnapshots),
+[Prüfbericht](PROCESS-COMMAND-CENTER-REPORT.md).
 
 ## Auswertung und Diagnose
 

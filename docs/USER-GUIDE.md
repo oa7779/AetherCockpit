@@ -38,6 +38,63 @@ durch den lokalen Besuchsverlauf. Er hält bis zu 100 Schritte im RAM.
 Der Treffer erklärt Wirkung und Schritte und öffnet den passenden Bereich.
 Die Suche selbst startet keinen Auftrag und aktiviert keinen Expertenmodus.
 
+Im unveröffentlichten Arbeitsstand findet `Strg+K` zusätzlich Prozesse aus
+der vorhandenen Cockpitprobe. Ein Treffer wählt genau dessen PID und
+Startidentität aus; ein inzwischen verschwundener Treffer wählt keinen
+Ersatzprozess. **Favorit umschalten**, **Favoriten** und **Zuletzt verwendet**
+gelten für Werkzeuge, nicht für eine dauerhaft gespeicherte Prozesschronik.
+
+## Prozesszentrale (unveröffentlichter Arbeitsstand)
+
+**Übersicht → Prozesse / Leistung** öffnet die Prozesszentrale.
+Suche, **Nur aktuell**, **CPU ≥ 10 %** und **Prozessbaum** kombinieren
+Ansichtsfilter. Spaltenköpfe sortieren numerische Werte numerisch;
+im Baum bleibt die Eltern-Kind-Reihenfolge erhalten und nur Geschwister
+werden umgeordnet. Links/rechts klappt den ausgewählten Zweig ein/aus.
+**Enter** lädt Details. **Ansicht pausieren** friert nur die Anzeige ein,
+nicht die gemeinsame Messung. **Abbrechen** beendet eine laufende Detailabfrage.
+Die globale Prozesssuche oder eine Prozessauswahl aus dem Cockpit setzt
+die Anzeigepause zurück, damit das aktuelle Ziel ausgewählt werden kann.
+
+Der Inspektor zeigt Quellen, Zustände, Zeitpunkte und die vorhandene
+CPU-/RAM-/Prozess-I/O-Historie. Fehlende Proben werden nicht interpoliert.
+**Nicht mehr beobachtet** bedeutet nicht, dass Windows das Prozessende
+bestätigt hat. Kurzlebige Prozesse zwischen zwei Proben können fehlen.
+Benannte Filteransichten lassen sich mit **Ansicht merken/laden** erhalten.
+Eigene Suchtexte und Namen liegen dabei unverschlüsselt im lokalen Profil.
+
+Rechtsklick auf eine Zeile funktioniert hier und in der Cockpit-Prozesstabelle.
+Das Menü bietet Datei-/Kopieraktionen, Eltern/Kinder und Systembeziehungen.
+**Fenster schließen** wird nur bei beobachtetem sichtbarem Fenster angeboten;
+die Anwendung kann nachfragen oder weiterlaufen.
+
+**Prozess beenden** ist dagegen eine harte Beendigung und kann ungespeicherte
+Daten verlieren. Den Dialog mit PID, Startidentität und Pfad sorgfältig prüfen.
+**Abbrechen** ist Standard und erhält den Fokus; erst ein ausdrücklicher Klick
+auf **Prozess beenden** führt zur erneuten technischen Prüfung.
+**Prozessbaum beenden** bestätigt eine feste Zielmenge. Bei geänderten
+Kindern neu auswählen und bestätigen. Bereits erfolgte Eingriffe lassen
+sich durch Abbrechen nicht rückgängig machen.
+
+Die Meldung nach der Aktion unterscheidet bestätigtes Ende, Zeitüberschreitung,
+fehlenden Zugriff und Teilwirkung. Eine angenommene Anforderung ist noch kein
+Endnachweis. Windows-Schutz, AETHER und notwendige Eigenkomponenten werden
+nicht umgangen. Bei fehlenden Rechten gibt es keine automatische UAC-Schleife.
+
+**Systemkorrelation anzeigen** liest Dienste, Verbindungen, ausführbare
+Autostart-/Aufgaben-/Paketpfade, GPU-Engines und geeignete Ereignisse.
+Beziehungen sind zeitbezogen, nicht dauerhaft. **Prozessbezug** im
+Hardwarebereich zeigt belegbare GPU-/Netzwerkbeziehungen in umgekehrter Richtung.
+Eine gleichzeitige Sensoränderung belegt keine Prozessursache.
+
+**Snapshot** erfasst einen lokalen Sitzungszustand. Zwei Aufnahmen ermöglichen
+**Vergleichen**. Das Kontextmenü dieser Schaltfläche speichert vollständige
+`.aethersnapshot`-Dateien nach Datenschutzwarnung oder lädt sie zum Vergleich.
+Import verändert die Live-Liste nicht und führt keine Aktion aus.
+**Export** schreibt JSON, CSV oder Text mit einer eigenen Entscheidung über
+sensible Daten. Vollständige lokale Dateien vor Weitergabe prüfen:
+[Datenschutz](SECURITY-AND-PRIVACY.md#prozessaktionen-und-systemsnapshots).
+
 ## Cockpit und Mainboard
 
 Das Logo links oben erhält im Retro-Neon-Design einen sanften Neon-Puls und

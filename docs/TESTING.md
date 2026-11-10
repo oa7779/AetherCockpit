@@ -1,5 +1,67 @@
 # Tests
 
+## Process Command Center
+
+Der aktuelle Release-Grundrunner besteht mit **4.770 Assertions**,
+davon 72 zusätzliche Prozessassertions gegenüber dem abgenommenen
+M3-Grundstand. Kein `dotnet test`-Projekt.
+Kombiniert mit `--professional-ui --interface-ui --screensaver-ui --branding-ui`
+sind es **5.151** einschließlich Grundrunner.
+Der separate Modern-Smoke besteht mit **3.611** Assertions und 22 Bildern.
+Diese Gesamtzahlen nicht addieren: Mehrere Läufe enthalten dieselben Tests.
+
+Die Prozessfälle prüfen PID-Wiederverwendung, Exit während Bestätigung,
+AccessDenied, Schutz/Eigenkomponenten, geänderte Bäume vor dem ersten
+Eingriff, bestätigtes Ende, Timeout, Teilwirkung, Cancellation, Journalfehler
+und garantierte Handlefreigabe. Dazu kommen stabile Zeilen und Historien,
+exakte Pfad-/Event-/GPU-Zuordnung, Snapshotvergleich/-import, Redaktion,
+Secret-Ausschluss, CSV-Formelschutz sowie Favoriten ohne Prozesschronik.
+Ein isoliertes tatsächlich ausgeführtes PowerShell-Skript ersetzt sämtliche
+Systemquellen durch Fixtures: AccessDenied und gequotete/ungültige/relative
+Aufgabenpfade werden geprüft, ohne reale Systemzustände zu verändern.
+
+```powershell
+dotnet build .\SystemCockpit.slnx -c Release --no-restore
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --professional-ui --interface-ui --screensaver-ui --branding-ui
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --process-proof C:\Temp\aether-process-proof-01
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --process-acceptance C:\Temp\aether-process-native-01.json
+```
+
+Die optionalen Ausgaben benötigen neue absolute Namen unter einem vorhandenen
+Elternordner. `--process-proof` verwendet 5.000 synthetische Prozesse,
+ReducedMotion und Root-DPI 100/150/200 Prozent in Retro-Neon und Modern
+hell/dunkel. Er prüft vorab festgelegte Gates von jeweils 2.500 ms für
+erste Darstellung und Update sowie weniger als 200 erzeugten Zeilencontainern.
+21 Bilder zeigen Tabellen, geöffnete Menüs, Bestätigungen, das integrierte
+MainWindow und die globale Prozesssuche. Reale Zeilen-Rechtsklickhandler,
+exakter Identitätsfilter, Baumsortierung, Cancel-Default/Fokus und Abbruch/
+Shutdown unter echtem Dispatcher-Kontext werden ausgeführt.
+Eine echte Anzeigepause friert Zeilen und Historienprojektion ein, während
+die gemeinsame Erfassung nachweislich weiterläuft; Fortsetzen übernimmt
+die aktuelle Probe. Auch die maximale Zahl gespeicherter Identitäten wird geprüft.
+
+30 zusätzliche 500-Zeilen-Lebenszyklen erfassen Handles, Speicher und Threads.
+Getrennte erzwungene GC prüft ausschließlich Referenzen; 30 leere WPF-Fenster
+liefern eine Gegenprobe. Der Ressourcenanstieg wird nicht ausgeblendet und
+ist kein allgemeiner Leakfreiheits- oder Dauerbetriebsnachweis.
+Root-DPI ersetzt keine physischen Monitorwechsel.
+
+`--process-acceptance` startet und beendet ausschließlich ein eigenes
+kurzlebiges `SystemCockpit.Tests.exe`-Fixture. Das Fixture läuft spätestens
+nach 45 Sekunden selbst aus; Cleanup wartet auf sein Ende.
+Die injizierte Quelle begrenzt den Test auf genau dieses Kind, ohne den
+produktiven Nachkommenschutz abzuschalten.
+Der Modus liest native Details, prüft 100 Handlezyklen, echte Prozesstopologie,
+produktiven Eigenschutz und lokale Systemquellen einschließlich Dienste,
+Endpunkte, Run, geplante Aufgaben und AppX-Manifeste.
+Es gibt keine fremde Testbeendigung, Reparatur, Installation, Lastprüfung
+oder Netzwerkaufzeichnung. Die aggregierte Ergebnisdatei bleibt lokal.
+
+Endgültige Nachweise und Fehlversuche:
+[Prozess-Abschlussbericht](PROCESS-COMMAND-CENTER-REPORT.md),
+[gemessene Grenzen](PERFORMANCE-BASELINE.md#process-command-center).
+
 ## Hardware Intelligence
 
 Der Grundrunner enthält 313 zusätzliche Assertions für Hardware Intelligence
@@ -10,7 +72,8 @@ Storage-/USB-Beziehungen. Die generierten PowerShell-Skripte werden zusätzlich
 mit dem PowerShell-AST-Parser geprüft. Der EDID-Zweig wird zusätzlich mit
 isolierten CIM-/Methodenfixtures tatsächlich ausgeführt, ohne Hardwarezugriff:
 numerischer und boolescher Erfolgsvertrag, Fehlerstatus und kaputte Prüfsumme.
-Bei insgesamt 4.698 Grundassertions sind frühere Assertions bereits enthalten.
+Beim M3-Abschluss mit 4.698 Grundassertions waren frühere Assertions bereits enthalten;
+der aktuelle Grundstand einschließlich Prozesszentrale steht oben.
 Die Fortsetzung prüft Sensorstatistik einschließlich Extremwertmittel,
 WLAN-Binärlayouts und Bandzuordnung, Adapterraten/Protokollfehler,
 Audio-/Direct3D-/Microcodeparsing sowie SMART-/NVMe-Identität, Präzision
