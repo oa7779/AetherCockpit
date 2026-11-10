@@ -17,6 +17,32 @@ Korrekturproofs: `beta47-navigation-proof-navigation-collapsed.png` und
 Keine Änderungen an Navigation, Datenquellen oder abgenommenen Messnachweisen.
 Die neue Revision ersetzt keine historische Paketausgabe.
 
+Der tatsächliche Publish-Stand aus
+`dc4f028ecbe2e7c0d4ae97d537480064fdff44cf` ist zusätzlich geprüft:
+**5.297 kombinierte Assertions**, **22 Echtzeit-Rahmenassertions** und der
+integrierte Intelligence-Proof mit neun Theme-/Root-DPI-Fällen, zwölf
+Arbeitsbereichen und 20 Lebenszyklen bestanden. Dazu wurden ausschließlich
+die ausgelieferten Cockpit-/Schoner-/Shared-DLLs in eine separate
+Testhostkopie übernommen, keine Dateien im Paket ersetzt.
+Proofs liegen unter `beta47-published-navigation-*` und
+`beta47-published-intelligence-proof` im lokalen Nachweisordner.
+
+Cockpit, Schoner und optionaler Clientdienst tragen Dateiversion `0.7.0.47`
+und denselben Binärquellcommit. Alle **763 Dateien** des portablen ZIPs sind
+gegen den Publish-Ordner auf Länge und SHA256 geprüft. Alle vier Assets der
+[veröffentlichten Vorabversion](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.47)
+stimmen in Größe und SHA256 mit den lokalen Dateien überein.
+
+| Paket | SHA256 |
+|---|---|
+| Installer | `2856562159620aa2f19d809cf4be9466e1664e219d511df26caf92db279396b1` |
+| Portable-ZIP | `611143159e7b007782109eab591dee37d647dd521b84d3c92a08b53a9bc2d39d` |
+
+Der Installer ist erfolgreich gebaut, weiterhin unsigniert und nicht
+installiert. Die Prüfsummen von Beta-46-Installer und -ZIP sind unverändert;
+Beta 46 bleibt GitHub-Entwurf. Keine neue physische Hardware-, Installations-,
+Langzeit- oder allgemeine Leakfreiheitsfreigabe.
+
 ## Paketprüfung Beta 46
 
 Der revisionierte Releasebuild (`Version=0.7.0-beta.46`,

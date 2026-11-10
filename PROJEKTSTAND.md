@@ -2,15 +2,26 @@
 
 ## Stand
 
-**Aktiver gesonderter Releaseauftrag: Beta `0.7.0-beta.47`.**
+**Gesonderter Releaseauftrag abgeschlossen: Beta `0.7.0-beta.47`.**
 Der gemeldete Grafikfehler des Beta-46-Builds ist reproduziert und korrigiert:
 Neon-Adorner ausgeblendeter Bedienelemente folgen jetzt deren effektiver
 Sichtbarkeit statt nur die Animation anzuhalten. Pixelregression und alle
 sechs Navigationsgruppen geprüft; kombinierter Runner 5.297 Assertions.
 Neue Build-/Installerrevision `0.7.0-beta.47`, Dateiversion `0.7.0.47`.
-Beta 46 wurde lokal gebaut und als GitHub-Entwurf hochgeladen, aber noch
-nicht öffentlich freigeschaltet. Die korrigierte Beta 47 wird separat erstellt;
-die vorhandenen Beta-46-Dateien bleiben unverändert.
+Die korrigierte Beta 47 ist als separate
+[GitHub-Vorabversion](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.47)
+veröffentlicht: Installer, Portable-ZIP und zwei SHA256-Dateien.
+Binärquellstand und Tagziel: `dc4f028ecbe2e7c0d4ae97d537480064fdff44cf`.
+Alle vier GitHub-Assets sind gegen lokale Größe und SHA256 geprüft;
+alle 763 ZIP-Dateien zusätzlich gegen den Publish-Ordner.
+Installer-SHA256: `2856562159620aa2f19d809cf4be9466e1664e219d511df26caf92db279396b1`.
+Portable-SHA256: `611143159e7b007782109eab591dee37d647dd521b84d3c92a08b53a9bc2d39d`.
+Der tatsächliche Paketstand besteht den kombinierten Runner mit 5.297
+Assertions, 22 Echtzeit-Rahmenassertions und den integrierten Intelligence-Proof.
+Modern-Smoke: 3.611 Assertions und 22 Bilder. Releasebuild ohne Warnungen/Fehler.
+Setup unsigniert und nicht installiert. Keine neue Hardware- oder Langzeitabnahme.
+Beta 46 bleibt unveränderter GitHub-Entwurf; Installer- und ZIP-Prüfsummen
+sind unverändert. Kein Merge nach `main`; bisheriger Latest-Marker unverändert.
 
 Der vorangegangene Releaseauftrag:
 Der Auftraggeber hat nach der ausdrücklichen System-Intelligence-Abnahme
@@ -20,8 +31,8 @@ Diese Freigabe hebt die bisherigen Veröffentlichungssperren ausschließlich
 für diesen Releaseauftrag auf. Kein Merge nach `main`, keine Änderung alter Pakete.
 Ausgang: `aa9b691d7c06de7911321a649902e634375c1bf3`,
 Branch `rc/grosse-entfesselung`, sauberer Arbeitsbaum.
-Der neue Installer enthält M3 Hardware Intelligence, Prozesszentrale und
-System Intelligence; Dateiversion `0.7.0.46`.
+Der veröffentlichte Installer enthält M3 Hardware Intelligence, Prozesszentrale und
+System Intelligence; Dateiversion `0.7.0.47`.
 Abnahmen, technische Grenzen und historische Nachweise bleiben unverändert.
 
 Meilenstein 2 ist ausdrücklich abgenommen. Meilenstein 3 „Hardware
