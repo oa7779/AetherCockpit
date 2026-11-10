@@ -55,7 +55,7 @@ internal sealed class NativeProcessActionSource : IProcessActionSource
         var response = await AdminShell.RunAsync("""
             $ErrorActionPreference='Stop'
             $rows=@(Get-CimInstance Win32_Service -OperationTimeoutSec 5 | Where-Object {
-                $_.Name -in @('AetherClient','AetherManager','AETHER Managed Client','AETHER Management Server') -or
+                $_.Name -in @('AetherManagedClient','AetherManagerServer','AETHER Managed Client','AETHER Management Server') -or
                 $_.DisplayName -in @('AETHER Managed Client','AETHER Management Server')
             } | Select-Object ProcessId)
             ConvertTo-Json -InputObject $rows -Compress
@@ -93,7 +93,8 @@ internal sealed class NativeProcessActionSource : IProcessActionSource
                 var ownDirectory = Path.GetFullPath(AppContext.BaseDirectory).TrimEnd(Path.DirectorySeparatorChar);
                 if (identity.Pid == Environment.ProcessId) protection = "AETHER selbst ist geschützt.";
                 if (Path.GetDirectoryName(path)?.Equals(ownDirectory, StringComparison.OrdinalIgnoreCase) == true &&
-                    Path.GetFileNameWithoutExtension(path) is "AetherClient.Service" or "AetherManager.Server" or "AetherScreensaver" or "SystemCockpit")
+                    new[] { "AetherClient.Service", "AetherManager.Server", "AetherScreensaver", "SystemCockpit" }
+                        .Contains(Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase))
                     protection = "Notwendige eigene AETHER-Komponente ist geschützt.";
                 var user = ProcessNative.Token(_handle);
                 using var process = Process.GetProcessById(identity.Pid);
@@ -173,6 +174,12 @@ internal sealed class ProcessActions(IProcessActionSource source, Action<string,
                 if (handle.Exited) return [new(target.Identity, ProcessActionState.AlreadyExited, "Prozess bereits beendet; keine Aktion ausgeführt.")];
                 if (!string.IsNullOrEmpty(handle.Target.Protection))
                     return [new(target.Identity, ProcessActionState.Blocked, handle.Target.Protection)];
+            }
+            if (plan.Tree)
+            {
+                var latest = await source.ReadAsync(token).ConfigureAwait(false);
+                if (!Tree(plan.Root.Identity, latest).Select(r => r.Identity).ToHashSet().SetEquals(plan.Targets.Select(t => t.Identity)))
+                    return [new(plan.Root.Identity, ProcessActionState.Reconfirm, "Prozessbaum unmittelbar vor Eingriff verändert; neu bestätigen.")];
             }
             journal("process-terminate-intent", new { targets = plan.Targets.Select(t => t.Identity).ToArray(), plan.Tree });
             foreach (var handle in handles.AsEnumerable().Reverse())

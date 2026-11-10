@@ -107,6 +107,24 @@ public partial class AdminWorkbench : UserControl
             Status.Text = "Vorschau fehlt oder Auswahl wurde geaendert. Neue Vorschau erzeugen.";
             return;
         }
+        if (area.Id == "processes" && _previewAction == "Prozess beenden")
+        {
+            await RunAsync("Prozess beenden", async token =>
+            {
+                var identity = new ProcessIdentity(int.Parse(row.Id, System.Globalization.CultureInfo.InvariantCulture),
+                    long.Parse(row.Token, System.Globalization.CultureInfo.InvariantCulture));
+                var actions = ProcessActions.Create();
+                var target = await Task.Run(() => actions.PrepareAsync(identity, false, token), token);
+                var dialog = new ProcessActionDialog(target) { Owner = Window.GetWindow(this) };
+                if (dialog.ShowDialog() != true) { Write("[ABBRUCH] Kein Eingriff.\n"); return; }
+                var results = await Task.Run(() => actions.ExecuteAsync(target, token), token);
+                Write(string.Join("\n", results.Select(r => $"{r.State}: {r.Message}")) + "\n");
+                _rows = await ReadRows(area, token);
+                Entities.ItemsSource = _rows;
+                _preview = null;
+            });
+            return;
+        }
         if (MessageBox.Show(Window.GetWindow(this), plan.Warning + "\n\nJetzt ausfuehren?", plan.Label,
             MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
         await RunAsync(plan.Label, async token =>

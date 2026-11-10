@@ -25,7 +25,7 @@ public static class AdminManagement
     [
         new("processes", "Prozesse / Taskmanager", "Exakte PID + Startzeit schuetzen vor PID-Wiederverwendung. Beenden ist nicht rueckgaengig.",
             "Get-Process | ForEach-Object { $p=$_; try { Row $p.Id $p.ProcessName $p.PriorityClass ('RAM MB: '+[math]::Round($p.WorkingSet64/1MB,1)+' / Threads: '+$p.Threads.Count+' / CPU gesamt s: '+$p.CPU) $p.StartTime.ToUniversalTime().Ticks } catch { Row $p.Id ('PID '+$p.Id) 'Nicht lesbar' $_.Exception.Message } }",
-            ["Beenden", "Prioritaet Normal", "Prioritaet BelowNormal", "Prioritaet AboveNormal"]),
+            ["Prozess beenden", "Prioritaet Normal", "Prioritaet BelowNormal", "Prioritaet AboveNormal"]),
         new("services", "Dienste", "Start/Stop/Neustart und Starttyp. Kein pauschales Deaktivieren wichtiger Dienste. Wiederherstellung umfasst Starttyp, nicht vergangene Dienstaktionen.",
             """
             Get-CimInstance Win32_Service | ForEach-Object {
@@ -146,7 +146,8 @@ public static class AdminManagement
                 if (!int.TryParse(row.Id, out var pid) || pid <= 4 || !long.TryParse(row.Token, out var ticks))
                     throw new ArgumentException("Keine sichere PID/Startzeit vorhanden; geschuetzte Systemprozesse bleiben gesperrt.");
                 script = $"$p=Get-Process -Id {pid}; if($p.StartTime.ToUniversalTime().Ticks -ne {ticks} -or $p.Id -eq $PID){{throw 'Prozess hat sich geaendert oder ist diese Shell'}}; ";
-                if (action == "Beenden") script += "$p.Kill()";
+                if (action == "Prozess beenden")
+                    script = "# Native Prozessaktion: PID/Erstellungszeit, Windows-Schutz, Eigenkomponenten, Sicherheitsdialog und verifiziertes Prozessende. Kein PowerShell-Kill.";
                 else
                 {
                     var priority = action["Prioritaet ".Length..];
