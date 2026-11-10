@@ -2,7 +2,17 @@
 
 ## Stand
 
-**Aktiver gesonderter Releaseauftrag: Beta `0.7.0-beta.46`.**
+**Aktiver gesonderter Releaseauftrag: Beta `0.7.0-beta.47`.**
+Der gemeldete Grafikfehler des Beta-46-Builds ist reproduziert und korrigiert:
+Neon-Adorner ausgeblendeter Bedienelemente folgen jetzt deren effektiver
+Sichtbarkeit statt nur die Animation anzuhalten. Pixelregression und alle
+sechs Navigationsgruppen geprüft; kombinierter Runner 5.297 Assertions.
+Neue Build-/Installerrevision `0.7.0-beta.47`, Dateiversion `0.7.0.47`.
+Beta 46 wurde lokal gebaut und als GitHub-Entwurf hochgeladen, aber noch
+nicht öffentlich freigeschaltet. Die korrigierte Beta 47 wird separat erstellt;
+die vorhandenen Beta-46-Dateien bleiben unverändert.
+
+Der vorangegangene Releaseauftrag:
 Der Auftraggeber hat nach der ausdrücklichen System-Intelligence-Abnahme
 den aktuellen Build, einen M3-Installer und die GitHub-Veröffentlichung
 einschließlich Umfangs- und Repositorybeschreibung beauftragt.

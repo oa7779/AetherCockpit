@@ -144,10 +144,11 @@ kein Merge nach `main`. [Architektur und Abdeckung](HARDWARE-INTELLIGENCE-ARCHIT
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.46`, Dateiversion `0.7.0.46`,
+aktuell `0.7.0-beta.47`, Dateiversion `0.7.0.47`,
 Assembly-Version `0.7.0.0`.
 
-Beta 46 paketiert den abgenommenen Hardware-Intelligence-Stand aus M3,
+Beta 47 korrigiert die Sichtbarkeit der Neonrahmen beim Zuklappen von
+Navigationsgruppen und paketiert den abgenommenen Hardware-Intelligence-Stand aus M3,
 die Prozesszentrale und System Intelligence als GitHub-Vorabversion.
 Bestehende Neonrahmen, Datenträgerkarten, Branding,
 Cockpit-Anordnung, Wake-on-LAN und Wartungsfunktionen bleiben erhalten.

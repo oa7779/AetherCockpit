@@ -9,6 +9,18 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## 0.7.0-beta.47
+
+- Grafikfehler aus Beta 46 behoben: Neonrahmen ausgeblendeter Bedienelemente
+  folgen jetzt der tatsächlichen Sichtbarkeit, auch beim Zuklappen einer
+  übergeordneten Navigationsgruppe. Keine Geisterkonturen über anderen Einträgen.
+- Pixelregression für Auf-/Zuklappen und versteckte Vorfahren; zusätzlich
+  alle sechs echten Navigationsgruppen auf genau einen sichtbaren Rahmen
+  je sichtbarem Eintrag geprüft. Glow, Animation und Navigation bleiben erhalten.
+- Neuer Installer und portabler Build mit Dateiversion `0.7.0.47`.
+  Enthält weiterhin den abgenommenen Hardware-, Prozess- und System-Intelligence-
+  Umfang. Bestehende Beta-46-Pakete werden nicht überschrieben.
+
 ## 0.7.0-beta.46
 
 - Windows-x64-Testinstaller für den abgenommenen Meilenstein 3 „Hardware

@@ -1,5 +1,22 @@
 # Tests
 
+## Paketprüfung Beta 47
+
+Grafikregression aus Beta 46: Ein neuer Pixeltest reproduziert die sichtbaren
+Neon-Geisterrahmen bei zugeklapptem Expander mit dem alten Code und besteht
+mit der Sichtbarkeitskorrektur. Wiederholtes Auf-/Zuklappen, versteckte
+Vorfahren und Wiederherstellung sind elf zusätzliche Grundassertions.
+Die Interfaceprüfung ergänzt zwölf Assertions für alle sechs echten Gruppen.
+Kombinierter Professional-/Interface-/Schoner-/Brandinglauf: **5.297 Assertions
+einschließlich Grundrunner**; Build **0 Warnungen / 0 Fehler**.
+Der revisionierte Beta-47-Grundrunner besteht mit **4.903 Assertions**,
+Modern-Smoke mit **3.611 Assertions** und 22 Bildern.
+
+Korrekturproofs: `beta47-navigation-proof-navigation-collapsed.png` und
+`beta47-navigation-proof-navigation-overview.png` im lokalen Nachweisordner.
+Keine Änderungen an Navigation, Datenquellen oder abgenommenen Messnachweisen.
+Die neue Revision ersetzt keine historische Paketausgabe.
+
 ## Paketprüfung Beta 46
 
 Der revisionierte Releasebuild (`Version=0.7.0-beta.46`,

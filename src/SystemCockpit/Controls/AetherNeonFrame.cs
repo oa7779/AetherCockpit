@@ -176,7 +176,13 @@ public static class AetherNeonFrame
             }
         }
 
-        private void VisibilityChanged(object sender, DependencyPropertyChangedEventArgs e) => UpdateMotion();
+        private void VisibilityChanged(object sender, DependencyPropertyChangedEventArgs e) => UpdateVisibility();
+        private void UpdateVisibility()
+        {
+            // Adorners live outside collapsed content in the shared layer.
+            Visibility = _owner.IsVisible && GetIsVisible(_owner) ? Visibility.Visible : Visibility.Hidden;
+            UpdateMotion();
+        }
         private void WindowChanged(object? sender, EventArgs e) => UpdateMotion();
         private void DpiChanged(object sender, DpiChangedEventArgs e) => Refresh();
         private void ThemeChanged(object? sender, EventArgs e) => Refresh();
@@ -246,9 +252,8 @@ public static class AetherNeonFrame
             SetBlur(_inner, innerRadius);
             _glows.Visibility = Modern || highContrast ? Visibility.Collapsed : Visibility.Visible;
             _extent = Math.Max(outerRadius + 2, innerRadius + 2);
-            Visibility = GetIsVisible(_owner) ? Visibility.Visible : Visibility.Hidden;
             InvalidateMeasure();
-            UpdateMotion();
+            UpdateVisibility();
         }
 
         private static void SetBlur(Border border, double radius)

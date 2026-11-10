@@ -126,10 +126,69 @@ internal static class NeonFrameTests
         }
         finally { SkinCatalog.Apply(Application.Current, "retro-neon"); AetherNeonFrame.SetEnabled(border, false); window.Close(); }
         count += DpiGeometry();
+        count += CollapsedAncestor();
         return count;
 
         AetherNeonFrame.NeonAdorner Adorner() => root.AdornerLayer.GetAdorners(border)?.OfType<AetherNeonFrame.NeonAdorner>().Single()
             ?? throw new InvalidOperationException("Neon adorner missing.");
+    }
+
+    private static int CollapsedAncestor()
+    {
+        var count = 0;
+        var border = new Border { Width = 180, Height = 60, Margin = new Thickness(20),
+            BorderBrush = Brushes.Cyan, Background = Brushes.Black };
+        AetherNeonFrame.SetEnabled(border, true);
+        AetherNeonFrame.SetBreathingEnabled(border, false);
+        var expander = new Expander { Header = "Navigation", Content = border, IsExpanded = true,
+            Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Top };
+        var root = new AdornerDecorator { Child = expander };
+        var window = new Window { Content = root, Width = 320, Height = 260,
+            Background = Brushes.Black, ShowInTaskbar = false };
+        try
+        {
+            window.Show(); NeonFrameProof.Pump(TimeSpan.FromMilliseconds(50));
+            for (var cycle = 0; cycle < 3; cycle++)
+            {
+                expander.IsExpanded = true; window.UpdateLayout();
+                var adorner = root.AdornerLayer.GetAdorners(border)?.Single()
+                    ?? throw new InvalidOperationException("Expanded navigation frame missing.");
+                if (!border.IsVisible || adorner.Visibility != Visibility.Visible || CyanPixels() == 0)
+                    throw new InvalidOperationException("Expanded navigation must retain its visible neon frame.");
+                count++;
+                expander.IsExpanded = false; window.UpdateLayout();
+                if (border.IsVisible || adorner.Visibility == Visibility.Visible || CyanPixels() != 0)
+                    throw new InvalidOperationException("Collapsed navigation leaves a ghost neon frame in the shared adorner layer.");
+                count++;
+                if (root.AdornerLayer.GetAdorners(border)?.Length != 1)
+                    throw new InvalidOperationException("Expander toggles must not accumulate neon adorners.");
+                count++;
+            }
+            expander.IsExpanded = true; window.UpdateLayout();
+            expander.Visibility = Visibility.Hidden; window.UpdateLayout();
+            if (root.AdornerLayer.GetAdorners(border)?.Single().Visibility == Visibility.Visible || CyanPixels() != 0)
+                throw new InvalidOperationException("Hidden ancestor leaves a visible neon frame.");
+            count++;
+            expander.Visibility = Visibility.Visible; window.UpdateLayout();
+            if (CyanPixels() == 0) throw new InvalidOperationException("Restoring an ancestor must restore the neon frame.");
+            count++;
+        }
+        finally { AetherNeonFrame.SetEnabled(border, false); window.Close(); }
+        return count;
+
+        int CyanPixels()
+        {
+            var dpi = VisualTreeHelper.GetDpi(root);
+            var bitmap = new RenderTargetBitmap((int)Math.Ceiling(root.ActualWidth * dpi.DpiScaleX),
+                (int)Math.Ceiling(root.ActualHeight * dpi.DpiScaleY), dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32);
+            bitmap.Render(root);
+            var pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
+            bitmap.CopyPixels(pixels, bitmap.PixelWidth * 4, 0);
+            var lit = 0;
+            for (var i = 0; i < pixels.Length; i += 4)
+                if (pixels[i] > 100 && pixels[i + 1] > 100 && pixels[i + 2] < 80) lit++;
+            return lit;
+        }
     }
 
     private static int DpiGeometry()

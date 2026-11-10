@@ -124,6 +124,22 @@ internal static class InterfaceTests
                 ((StackPanel)g.Content).Children.OfType<Button>()).ToArray();
             Check(routes.Length == 25 && routes.Select(b => (string)b.Tag).Distinct().Count() == 25,
                 "Every main/secondary module is reachable exactly once in task navigation");
+            foreach (var group in groups.Children.OfType<Expander>())
+            {
+                group.IsExpanded = true; host.UpdateLayout(); Pump();
+                var frames = VisualFrames((StackPanel)group.Content).ToArray();
+                Check(frames.Length == ((StackPanel)group.Content).Children.Count &&
+                    frames.All(frame => System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame)?.GetAdorners(frame)?
+                        .Single().Visibility == Visibility.Visible),
+                    "Every expanded navigation entry has one visible frame: " + group.Header);
+                group.IsExpanded = false; host.UpdateLayout(); Pump();
+                Check(frames.All(frame => !frame.IsVisible &&
+                    System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame)?.GetAdorners(frame)?.Single().Visibility != Visibility.Visible),
+                    "Collapsed navigation hides all shared-layer contours: " + group.Header);
+            }
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-navigation-collapsed.png");
+            ((Expander)groups.Children[0]).IsExpanded = true; host.UpdateLayout(); Pump();
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-navigation-overview.png");
             var external = new HashSet<string> { "SMART", "Logs / Gaming", "Netzwerk", "Wartung", "Pakete",
                 "Autostart", "Auftraege", "Spuren", "Schluessel", "Einstellungen" };
             var center = new ControlCenterWindow(main.Model);
@@ -260,5 +276,12 @@ internal static class InterfaceTests
     }
 
     private static void Pump() => Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+
+    private static IEnumerable<FrameworkElement> VisualFrames(DependencyObject root)
+    {
+        if (root is FrameworkElement element && AetherNeonFrame.GetEnabled(element)) yield return element;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            foreach (var frame in VisualFrames(VisualTreeHelper.GetChild(root, index))) yield return frame;
+    }
 
 }

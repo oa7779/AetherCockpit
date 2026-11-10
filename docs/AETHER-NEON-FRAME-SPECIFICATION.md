@@ -199,6 +199,13 @@ Fenster-/Element-Sichtbarkeit, Minimierung, Themewechsel, Randbegrenzung,
 20 Unload/Reload-Zyklen, entfernte Adorner und deren GC-Erreichbarkeit.
 Die GC-Prüfung ist eine Referenzprüfung, kein geschönter Speicherbenchmark.
 
+Die Adorner-Sichtbarkeit folgt der effektiven `IsVisible`-Eigenschaft ihres
+Besitzers und dem eigenen Sichtbarkeitsschalter. Da die gemeinsame Adornerebene
+außerhalb eingeklappter Inhalte liegt, reicht das Stoppen der Animation nicht:
+Auch der statische Rahmen muss unsichtbar werden. Ein Pixeltest prüft
+wiederholtes Auf-/Zuklappen und versteckte Vorfahren; die Interfaceprüfung
+kontrolliert alle sechs tatsächlichen Navigationsgruppen.
+
 Synthetische Root-DPI 100/150/200 Prozent werden in zwei Größen tatsächlich
 gesetzt. Tests prüfen unveränderte Inhaltsgröße und transparente äußerste
 Bildpixel, also keine abgeschnittenen Konturen. Die zusätzliche Galerie

@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-**Beta: 0.7.0-beta.46**
+**Beta: 0.7.0-beta.47**
 
 Windows-CI prüft die Konsolenrunner und synthetische Desktopansichten.
 Installation, Hardwarebetrieb und Intune-Verteilung benötigen eigene
@@ -65,6 +65,8 @@ Server und Intune erhalten in diesem Auftrag kein neues Paket.
   Halos und Bewegung bei verschiedenen DPI-Einstellungen ansehen.
 - Aufgabengruppen öffnen, aktive Route und Zurück/Vor prüfen. Pfeilziele
   wechseln in die Systemkontrolle, ohne eine Aktion auszuführen.
+  Nach dem Zuklappen dürfen keine Neonrahmen der versteckten Einträge
+  über den nächsten Gruppen oder „Darstellung / Desktop“ stehen bleiben.
 - GPU-Lüfter auf der Kühlerseite sowie getrennte Mainframe-Gerätedetails prüfen.
 - Darstellung / Desktop: automatischer Wechsel um 07/19 Uhr lokaler Zeit,
   Immer Tag/Nacht und Übernahme im Schoner prüfen.
