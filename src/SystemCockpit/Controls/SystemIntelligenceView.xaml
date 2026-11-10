@@ -41,6 +41,8 @@
                 <Button Content="Auswahl löschen" Click="DeleteClicked" Style="{DynamicResource NeonButton}"/>
             </WrapPanel>
             <WrapPanel x:Name="RecordingTools" Visibility="Collapsed">
+                <TextBlock Text="Lokale Aufnahmen sind sensibel und unverschlüsselt; Verwerfen speichert sie nicht."
+                           TextWrapping="Wrap" VerticalAlignment="Center" Margin="4"/>
                 <ComboBox x:Name="Profile" MinWidth="150" SelectedIndex="1" AutomationProperties.Name="Recorder-Profil">
                     <ComboBoxItem Content="Ressourcen"/><ComboBoxItem Content="Ressourcen und Timeline"/>
                     <ComboBoxItem Content="Benutzerdefiniert"/>
@@ -58,11 +60,14 @@
             <WrapPanel x:Name="WatchTools" Visibility="Collapsed">
                 <TextBox x:Name="RuleName" Text="Meine Regel" Width="130" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Regelname"/>
                 <ComboBox x:Name="Trigger" MinWidth="110" AutomationProperties.Name="Watch-Auslöser"/>
-                <TextBox x:Name="Target" Width="130" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Exakte Prozessidentität oder Sensor-ID" ToolTip="Prozess: PID@Startticks, Sensor: exakte ID, Datenträger: Laufwerk; leer bei globaler Regel"/>
+                <TextBox x:Name="Target" Width="130" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Exaktes Watch-Ziel"
+                         ToolTip="Prozess: PID@Startticks; Sensor: exakte ID; Datenträger: Laufwerk; Crash: exaktes Windows-AppPath-/ExeFileName-/AppName-Subjekt aus dem Ereignisinspektor. Leer bei globaler Regel."/>
                 <TextBox x:Name="Threshold" Text="80" Width="55" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Schwelle"/>
                 <TextBox x:Name="Duration" Text="10" Width="45" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Dauer in Sekunden"/>
                 <TextBox x:Name="Cooldown" Text="60" Width="45" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Cooldown in Sekunden"/>
-                <ComboBox x:Name="RuleAction" MinWidth="105" AutomationProperties.Name="Sichere Watch-Aktion"/>
+                <ComboBox x:Name="RuleAction" MinWidth="105" AutomationProperties.Name="Sichere Watch-Aktion"
+                          ToolTip="Snapshot speichert den Zustand automatisch lokal, sensibel und unverschlüsselt; unabhängig von der Timeline-Speicherung."
+                          AutomationProperties.HelpText="Snapshot speichert sensible lokale Daten auch ohne persistente Timeline."/>
                 <Button Content="Regel speichern / ändern" Click="RuleClicked" Style="{DynamicResource NeonButton}"/>
                 <Button Content="Aktiv umschalten" Click="ToggleRuleClicked" Style="{DynamicResource NeonButton}"/>
             </WrapPanel>

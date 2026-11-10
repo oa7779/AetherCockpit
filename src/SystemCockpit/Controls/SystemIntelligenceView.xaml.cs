@@ -41,9 +41,7 @@ public partial class SystemIntelligenceView : UserControl
     private LiveSample? _live;
     private IntelligenceSnapshot? _inventory;
     private bool _shutdown, _loaded, _loading, _persist, _observe;
-    private DateTimeOffset _lastSaved;
-    private DateTimeOffset _lastFlushAttempt;
-    private DateTimeOffset _lastTrim;
+    private long _lastSaved, _lastFlushAttempt, _lastTrim;
     private IntelligenceSnapshot? _watchSnapshot;
     private int _savedRevision = -1;
     private Guid? _savedRecording;
@@ -120,13 +118,13 @@ public partial class SystemIntelligenceView : UserControl
         if (_shutdown) return;
         _dashboard = dashboard; _live = live;
         _engine.Apply(dashboard, live, Current);
-        if (dashboard.Timestamp - _lastTrim >= TimeSpan.FromSeconds(30))
-        { _engine.Trim(dashboard.Timestamp, _store.Retention.Days); _lastTrim = dashboard.Timestamp; }
+        if (_lastTrim == 0 || Stopwatch.GetElapsedTime(_lastTrim) >= TimeSpan.FromSeconds(30))
+        { _engine.Trim(DateTimeOffset.UtcNow, _store.Retention.Days); _lastTrim = Stopwatch.GetTimestamp(); }
         FreezeWatchSnapshot();
         if (IsVisible && CurrentArea is "Übersicht" or "Diagnose" or "Timeline" or "Recorder" or "Watch") Render();
-        if (_pending.IsCompleted && dashboard.Timestamp - _lastFlushAttempt >= TimeSpan.FromSeconds(30) &&
+        if (_pending.IsCompleted && (_lastFlushAttempt == 0 || Stopwatch.GetElapsedTime(_lastFlushAttempt) >= TimeSpan.FromSeconds(30)) &&
             (_watchSnapshot is not null || _engine.Completed is { } recording && _savedRecording != recording.Id ||
-            _persist && _engine.Revision != _savedRevision && dashboard.Timestamp - _lastSaved >= TimeSpan.FromSeconds(30)))
+            _persist && _engine.Revision != _savedRevision && (_lastSaved == 0 || Stopwatch.GetElapsedTime(_lastSaved) >= TimeSpan.FromSeconds(30))))
             Run(FlushAsync);
     }
     internal void ApplyEvents(EventSnapshot snapshot)
@@ -216,7 +214,7 @@ public partial class SystemIntelligenceView : UserControl
         IntelligenceModel.Validate(snapshot);
         if (!Synthetic) await _store.SaveAsync(type, snapshot.Id, snapshot, token);
         _snapshots.Add(snapshot); _snapshotTypes[snapshot.Id] = type;
-        if (_snapshots.Count > 128) _snapshots.RemoveAt(0);
+        if (_snapshots.Count > 128) { _snapshotTypes.Remove(_snapshots[0].Id); _snapshots.RemoveAt(0); }
         RefreshSnapshots();
         _engine.Mark("Snapshot", type == "baseline" ? "Baseline gespeichert" : "Snapshot gespeichert", snapshot.Name, snapshot.Timestamp, "snapshot:" + snapshot.Id);
         Status.Text = "Lokal gespeichert (sensibel, unverschlüsselt): " + snapshot.Name;
@@ -233,7 +231,7 @@ public partial class SystemIntelligenceView : UserControl
     }
     private async Task FlushAsync(CancellationToken token)
     {
-        _lastFlushAttempt = DateTimeOffset.UtcNow;
+        _lastFlushAttempt = Stopwatch.GetTimestamp();
         if (_watchSnapshot is { } watchSnapshot)
         { await SaveSnapshotAsync("snapshot", token, watchSnapshot); _watchSnapshot = null; }
         if (_engine.Completed is { } recording && _savedRecording != recording.Id)
@@ -246,7 +244,7 @@ public partial class SystemIntelligenceView : UserControl
         {
             var revision = _engine.Revision;
             await _store.SaveAsync("session", SessionId, _engine.Freeze(), token);
-            _lastSaved = DateTimeOffset.UtcNow; _savedRevision = revision;
+            _lastSaved = Stopwatch.GetTimestamp(); _savedRevision = revision;
         }
     }
     private void Render()

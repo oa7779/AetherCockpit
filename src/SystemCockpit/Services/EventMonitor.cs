@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace SystemCockpit.Services;
 
 public sealed record MonitorEvent(DateTimeOffset Timestamp, string Log, long RecordId, int Id,
-    int Level, string Provider, string Message)
+    int Level, string Provider, string Message, string? Subject = null)
 {
     public string Severity => Level switch { 1 => "Kritisch", 2 => "Fehler", 3 => "Warnung", 4 => "Information", _ => "Sonstige" };
     public string SearchText => $"{Log} {Id} {Severity} {Provider} {Message}";
@@ -45,7 +45,7 @@ public static class EventMonitor
             ?? throw new InvalidOperationException("Ereignismonitor lieferte keine Daten.");
         if (snapshot.Events is null || snapshot.Issues is null || snapshot.Events.Count > 400 ||
             snapshot.Events.Any(e => e.Log is not ("System" or "Application") || e.RecordId < 0 ||
-                e.Level is < 0 or > 5 || e.Provider is null || e.Message is null) ||
+                e.Level is < 0 or > 5 || e.Provider is null || e.Message is null || e.Subject?.Length > 8192) ||
             snapshot.DiskActivity?.Any(d => d.Name is null || !double.IsFinite(d.ReadMbps) || d.ReadMbps < 0 ||
                 !double.IsFinite(d.WriteMbps) || d.WriteMbps < 0 || !double.IsFinite(d.QueueLength) || d.QueueLength < 0 ||
                 d.BusyPercent is { } busy && (!double.IsFinite(busy) || busy is < 0 or > 100)) == true)
@@ -78,7 +78,7 @@ public static class EventMonitor
         return new(DateTimeOffset.Now, events, issues);
     }
 
-    private const string Script = """
+    internal const string Script = """
         $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'
         [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
         $events=@(); $issues=@()
@@ -88,8 +88,25 @@ public static class EventMonitor
                 foreach($e in $records) {
                     try { $message=[string]$e.Message } catch { $message='Nachricht nicht lesbar: '+$_.Exception.Message; $issues+=$message }
                     if($message.Length -gt 2000) { $message=$message.Substring(0,2000)+"`n[Nachricht auf 2000 Zeichen gekuerzt]" }
+                    $subject=$null
+                    if(($e.ProviderName -eq 'Application Error' -and $e.Id -eq 1000) -or ($e.ProviderName -eq 'Application Hang' -and $e.Id -eq 1002)) {
+                        $reader=$null
+                        try {
+                            $settings=[Xml.XmlReaderSettings]::new(); $settings.DtdProcessing=[Xml.DtdProcessing]::Prohibit
+                            $settings.XmlResolver=$null; $settings.MaxCharactersInDocument=262144
+                            $reader=[Xml.XmlReader]::Create([IO.StringReader]::new($e.ToXml()),$settings)
+                            $xml=[Xml.XmlDocument]::new(); $xml.XmlResolver=$null; $xml.Load($reader)
+                            foreach($name in @('AppPath','ExeFileName','AppName')) {
+                                $nodes=@($xml.Event.EventData.Data | Where-Object { $_.Name -ceq $name })
+                                if($nodes.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($nodes[0].InnerText) -and $nodes[0].InnerText.Length -le 2048) {
+                                    $subject=[string]$nodes[0].InnerText; break
+                                }
+                            }
+                        } catch { $issues+=('Ereignissubjekt nicht lesbar: '+$_.Exception.Message) }
+                        finally { if($null -ne $reader){$reader.Dispose()} }
+                    }
                     $events+=@{Timestamp=$e.TimeCreated.ToUniversalTime().ToString('o'); Log=$log; RecordId=[long]$e.RecordId;
-                        Id=[int]$e.Id; Level=[int]$e.Level; Provider=[string]$e.ProviderName; Message=$message}
+                        Id=[int]$e.Id; Level=[int]$e.Level; Provider=[string]$e.ProviderName; Message=$message; Subject=$subject}
                 }
             } catch {
                 if($_.FullyQualifiedErrorId -notlike 'NoMatchingEventsFound*') { $issues+=($log+': '+$_.Exception.Message) }

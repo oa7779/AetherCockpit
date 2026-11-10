@@ -30,7 +30,8 @@ internal static class IntelligenceModel
             state, classification: privacy);
     internal static string Domain(IntelligenceEntity entity) =>
         entity.Fields.TryGetValue("domain", out var domain) ? domain : entity.Kind.ToString();
-    internal static string DriverGroup(IntelligenceEntity driver) => driver.Fields.GetValueOrDefault("class")?.ToUpperInvariant() switch
+    internal static string DriverGroup(IntelligenceEntity driver) => driver.Fields.GetValueOrDefault("functionalGroup") == "WLAN" ? "WLAN" :
+        driver.Fields.GetValueOrDefault("class")?.ToUpperInvariant() switch
     {
         "DISPLAY" => "Grafik", "MEDIA" or "AUDIOENDPOINT" => "Audio", "NET" => "Netzwerk",
         "BLUETOOTH" => "Bluetooth", "SCSIADAPTER" or "HDC" or "DISKDRIVE" or "VOLUME" => "Storage",

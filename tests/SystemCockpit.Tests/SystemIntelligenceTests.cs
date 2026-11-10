@@ -208,6 +208,15 @@ internal static class SystemIntelligenceTests
         var restored = new IntelligenceSessionEngine(); restored.Restore(engine.Freeze()); restored.NotificationRequested += _ => notifications++;
         restored.ApplyEvents(new(time.AddSeconds(1), [new(time.AddSeconds(1), "Application", 3, 1000, 2, "Application Error", "Fixture")], []));
         Check(notifications == 1, "restart retains notification cooldown without reconstructing a pending duration");
+        var targetedCrash = new IntelligenceSessionEngine(); var targetedNotices = 0;
+        targetedCrash.UpdateRule(crash with { Id = Guid.NewGuid(), Target = @"C:\Fixture\App.exe" });
+        targetedCrash.NotificationRequested += _ => targetedNotices++;
+        targetedCrash.ApplyEvents(new(time, [
+            new(time, "Application", 10, 1000, 2, "Application Error", "Fixture"),
+            new(time, "Application", 11, 1000, 2, "Application Error", "Fixture", @"C:\Other\App.exe")], []));
+        Check(targetedNotices == 0, "targeted crash rule never matches unknown subject, filename similarity or unrelated program");
+        targetedCrash.ApplyEvents(new(time, [new(time, "Application", 12, 1000, 2, "Application Error", "Fixture", @"c:\fixture\app.exe")], []));
+        Check(targetedNotices == 1, "targeted crash rule uses exact case-insensitive structured Windows subject, not message text");
         var clock = new ManualClock(time);
         var numeric = new IntelligenceSessionEngine(clock);
         numeric.UpdateRule(crash with { Id = Guid.NewGuid(), Trigger = WatchTrigger.Cpu, Threshold = 0 });
@@ -215,6 +224,19 @@ internal static class SystemIntelligenceTests
         clock.Advance(TimeSpan.FromMilliseconds(10));
         numeric.Apply(ProcessAcceptanceTests.Snapshot(time, []), new(time.AddMilliseconds(1), 5, 50, 1, 2, 0, 0, [], []), () => fixture);
         Check(numericNotices == 1, "sequentially captured live source after dashboard time is not falsely classified as future");
+        var disk = new IntelligenceSessionEngine(clock); var diskNotices = 0;
+        disk.UpdateRule(crash with { Id = Guid.NewGuid(), Trigger = WatchTrigger.DiskFree, Target = @"C:\", Threshold = 10 });
+        disk.NotificationRequested += _ => diskNotices++;
+        disk.Apply(ProcessAcceptanceTests.Snapshot(clock.GetUtcNow(), []), new(clock.GetUtcNow(), 5, 50, 1, 2, 0, 0, [], []), () => fixture);
+        Check(diskNotices == 0, "absent disk remains null rather than zero percent free");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        disk.Apply(ProcessAcceptanceTests.Snapshot(clock.GetUtcNow(), []), new(clock.GetUtcNow(), 5, 50, 1, 2, 0, 0,
+            [new(@"C:\", "Unavailable", "unknown", "Fixture")], []), () => fixture);
+        Check(diskNotices == 0, "unavailable disk free space never fires threshold");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        disk.Apply(ProcessAcceptanceTests.Snapshot(clock.GetUtcNow(), []), new(clock.GetUtcNow(), 5, 50, 1, 2, 0, 0,
+            [new(@"C:\", "Low", "warning", "Fixture", 5)], []), () => fixture);
+        Check(diskNotices == 1, "actual low free space fires using a valid source sample");
         engine = new(clock); engine.Start(fixture, 2, "Benutzerdefiniert", RecordingScope.Sensors);
         clock.Advance(TimeSpan.FromSeconds(3));
         var rollback = engine.Stop(fixture, time.AddHours(-1));
@@ -245,6 +267,23 @@ internal static class SystemIntelligenceTests
         Check(IntelligenceModel.SoftwareProcesses(graph, software.Id).Single().Id == process.Id, "software activity requires two explicit image/file links");
         Check(IntelligenceModel.SoftwareProcesses(graph with { Edges = [] }, software.Id).Count == 0, "software names or installation paths alone never prove ownership");
         Check(IntelligenceModel.DriverGroup(fixture.Entities[8] with { Fields = new Dictionary<string, string> { ["class"] = "Net" } }) == "Netzwerk", "driver grouping follows reported PnP class");
+        Check(IntelligenceModel.DriverGroup(fixture.Entities[8] with { Fields = new Dictionary<string, string> { ["class"] = "Net", ["functionalGroup"] = "WLAN" } }) == "WLAN",
+            "driver WLAN group uses explicit physically reported network classification, never a device name");
+        var driver = fixture.Entities[8] with { Kind = IntelligenceKind.Driver, Fields = new Dictionary<string, string> { ["class"] = "Net", ["deviceId"] = "PCI\\FIXTURE" } };
+        var adapter = driver with { Id = "adapter:fixture", Kind = IntelligenceKind.Adapter, Fields = new Dictionary<string, string>
+            { ["pnpDeviceId"] = "pci\\fixture", ["physicalMediumCode"] = "9" } };
+        var drivers = new List<IntelligenceEntity> { driver };
+        IntelligenceSources.ClassifyDrivers(drivers, [adapter]);
+        Check(IntelligenceModel.DriverGroup(drivers[0]) == "WLAN" && drivers[0].Fields["functionalGroupSource"].Contains("=9", StringComparison.Ordinal),
+            "WLAN derives from uniquely joined exact case-insensitive PnP identity with explicit medium provenance");
+        drivers = [driver];
+        IntelligenceSources.ClassifyDrivers(drivers, [adapter, adapter with { Id = "adapter:other", Fields = new Dictionary<string, string>
+            { ["pnpDeviceId"] = "PCI\\FIXTURE", ["physicalMediumCode"] = "14" } }]);
+        Check(IntelligenceModel.DriverGroup(drivers[0]) == "Netzwerk", "ambiguous adapter identity cannot become unique by filtering for wireless first");
+        drivers = [driver];
+        IntelligenceSources.ClassifyDrivers(drivers, [adapter with { Fields = new Dictionary<string, string>
+            { ["pnpDeviceId"] = "PCI\\OTHER", ["physicalMediumCode"] = "9" } }]);
+        Check(IntelligenceModel.DriverGroup(drivers[0]) == "Netzwerk", "wireless medium without exact device identity never assigns a WLAN driver");
         foreach (var bad in new[] { "$null", "'PCI\\FIXTURE'" })
         {
             var stub = """
@@ -256,14 +295,36 @@ internal static class SystemIntelligenceTests
                     if($ClassName -eq 'Win32_OperatingSystem') {[pscustomobject]@{LastBootUpTime=[DateTime]::UtcNow.AddMinutes(-1);LocalDateTime=[DateTime]::UtcNow}}
                     if($ClassName -eq 'Win32_LogonSession') {[pscustomobject]@{LogonId='123';StartTime=[DateTime]::UtcNow;LogonType=2}}
                 }
-                function Get-NetAdapter {param([switch]$IncludeHidden,$ErrorAction)}
+                function Get-NetAdapter {
+                    param([switch]$IncludeHidden,$ErrorAction)
+                    [pscustomobject]@{InterfaceGuid='fixture-interface';Name='Fixture adapter';PnPDeviceID='PCI\FIXTURE';NdisPhysicalMedium=9}
+                }
                 """.Replace("BAD_ID", bad, StringComparison.Ordinal);
             var output = CommandRunner.PowerShellAsync(stub + "\n" + IntelligenceSources.InventoryScript, default).GetAwaiter().GetResult();
             var result = IntelligenceSources.ParseInventory(output);
             Check(result.Entities.Count(e => IntelligenceModel.Domain(e) == "PnP") == 1 && !result.Coverage.Single(c => c.Domain == "PnP").Complete,
                 "executed isolated native script rejects missing/duplicate PnP IDs without treating partial inventory as complete: " + bad);
             Check(result.Entities.Any(e => e.Id.StartsWith("logon:123:", StringComparison.Ordinal)), "executed logon identity includes actual session start, not reusable LogonId alone");
+            Check(result.Entities.Single(e => e.Kind == IntelligenceKind.Adapter).Fields["physicalMediumCode"] == "9",
+                "executed native adapter script preserves numeric NDIS medium rather than localized enum text");
         }
+        var eventStub = """
+            function Get-WinEvent {
+                param($FilterHashtable,$MaxEvents,$ErrorAction)
+                if($FilterHashtable.LogName -ne 'Application'){return}
+                $row=[pscustomobject]@{TimeCreated=[DateTime]::UtcNow;LogName='Application';RecordId=1;Id=1000;Level=2;
+                    ProviderName='Application Error';Message='Fixture'}
+                $row | Add-Member -MemberType ScriptMethod -Name ToXml -Value {
+                    '<Event><EventData><Data Name="AppName">App.exe</Data><Data Name="AppPath">C:\Fixture\App.exe</Data><Data Name="Password">do-not-store</Data></EventData></Event>'
+                }
+                $row
+            }
+            function Get-CimInstance {param($ClassName)}
+            """;
+        var eventOutput = CommandRunner.PowerShellAsync(eventStub + "\n" + EventMonitor.Script, default).GetAwaiter().GetResult();
+        var eventResult = EventMonitor.Parse(eventOutput);
+        Check(eventResult.Events.Single().Subject == @"C:\Fixture\App.exe", "executed shared event script reads allowlisted crash subject with AppPath precedence");
+        Check(!eventOutput.Contains("do-not-store", StringComparison.Ordinal), "shared event script never serializes arbitrary EventData or whole XML");
     }
     private sealed class ManualClock(DateTimeOffset now) : TimeProvider
     {
@@ -331,6 +392,7 @@ internal static class SystemIntelligenceTests
         {
             Scope = "Read-only Windows sources; controlled local recorder and notification rule; no foreign mutation, ETW or packet capture.", DurationMs = captureMs,
             Entities = snapshot.Entities.GroupBy(e => e.Kind.ToString()).ToDictionary(g => g.Key, g => g.Count()), Edges = snapshot.Edges.Count,
+            WirelessDrivers = snapshot.Entities.Count(e => e.Kind == IntelligenceKind.Driver && IntelligenceModel.DriverGroup(e) == "WLAN"),
             Coverage = snapshot.Coverage.Select(c => new { c.Domain, c.Complete, State = c.Metadata.Availability.ToString() }),
             BeforeHandles = beforeHandles, AfterHandles = captureHandles, BeforePrivate = beforePrivate, AfterPrivate = capturePrivate, UI = ui
         }, new JsonSerializerOptions { WriteIndented = true }));

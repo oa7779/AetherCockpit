@@ -239,6 +239,7 @@ internal static class IntelligenceSources
         var inventory = ParseInventory(response.Output);
         entities.AddRange(inventory.Entities);
         coverage.AddRange(inventory.Coverage);
+        ClassifyDrivers(entities, inventory.Entities);
         var events = await Task.Run(() => IntelligenceWindowsEvents.Read(token), token).ConfigureAwait(false);
         entities.AddRange(events.Entities); coverage.AddRange(events.Coverage);
         var availableIds = entities.Select(e => e.Id).ToHashSet(StringComparer.Ordinal);
@@ -310,6 +311,26 @@ internal static class IntelligenceSources
         IntelligenceModel.Validate(result);
         return result;
     }
+    internal static void ClassifyDrivers(List<IntelligenceEntity> entities, IReadOnlyList<IntelligenceEntity> inventory)
+    {
+        var wireless = inventory.Where(e => e.Kind == IntelligenceKind.Adapter &&
+                !string.IsNullOrWhiteSpace(e.Fields.GetValueOrDefault("pnpDeviceId")))
+            .GroupBy(e => e.Fields["pnpDeviceId"], StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() == 1 && g.Single().Fields.GetValueOrDefault("physicalMediumCode") is "1" or "9")
+            .ToDictionary(g => g.Key, g => g.Single(), StringComparer.OrdinalIgnoreCase);
+        for (var index = 0; index < entities.Count; index++)
+        {
+            var driver = entities[index];
+            if (driver.Kind != IntelligenceKind.Driver || driver.Fields.GetValueOrDefault("deviceId") is not { } deviceId ||
+                !wireless.TryGetValue(deviceId, out var adapter)) continue;
+            entities[index] = driver with { Fields = new Dictionary<string, string>(driver.Fields)
+            {
+                ["functionalGroup"] = "WLAN",
+                ["functionalGroupSource"] = "Get-NetAdapter.NdisPhysicalMedium=" + adapter.Fields["physicalMediumCode"] + " / exakte PnPDeviceID"
+            } };
+        }
+    }
+
     internal static string? DriverPath(string path)
     {
         var value = path.Trim();
@@ -420,7 +441,8 @@ internal static class IntelligenceSources
             Get-NetAdapter -IncludeHidden -ErrorAction Stop | ForEach-Object {
                 Row ('netadapter:'+$_.InterfaceGuid) 'Adapter' 'NetworkInventory' $_.Name 'Get-NetAdapter / InterfaceGuid' @{
                     interfaceId=[string]$_.InterfaceGuid;status=[string]$_.Status;linkSpeed=[string]$_.LinkSpeed;
-                    driverVersion=[string]$_.DriverVersion;description=[string]$_.InterfaceDescription
+                    driverVersion=[string]$_.DriverVersion;description=[string]$_.InterfaceDescription;pnpDeviceId=[string]$_.PnPDeviceID;
+                    physicalMediumCode=$(if($null -ne $_.NdisPhysicalMedium){[string][int]$_.NdisPhysicalMedium}else{''})
                 }
             }
             Source 'NetworkInventory' $true 'Get-NetAdapter -IncludeHidden'

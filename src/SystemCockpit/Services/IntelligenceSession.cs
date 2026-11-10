@@ -222,9 +222,10 @@ internal sealed class IntelligenceSessionEngine
             Add(new(key, row.Timestamp, snapshot.Timestamp,
                 category, $"{row.Provider} / {row.Id}", key,
                 IntelligenceModel.Metadata("Windows Event Log / " + row.Log + " / RecordId " + row.RecordId, row.Timestamp),
-                row.Message, new(row.Log, row.RecordId, row.Provider, row.Id)));
+                row.Message, new(row.Log, row.RecordId, row.Provider, row.Id, row.Subject)));
             if (freshCrash)
-                foreach (var rule in Rules.Where(r => r.Enabled && r.Trigger == WatchTrigger.Crash))
+                foreach (var rule in Rules.Where(r => r.Enabled && r.Trigger == WatchTrigger.Crash &&
+                    (r.Target.Length == 0 || string.Equals(r.Target, row.Subject, StringComparison.OrdinalIgnoreCase))))
                     if (_watch.Event(rule, snapshot.Timestamp, _lastTriggered.GetValueOrDefault(rule.Id))) Fire(rule, 1, snapshot.Timestamp);
         }
         foreach (var issue in snapshot.Issues) Mark("ProviderError", "Ereignisquelle unvollständig", issue, snapshot.Timestamp);
@@ -362,7 +363,7 @@ internal sealed class IntelligenceSessionEngine
             WatchTrigger.Crash => "Windows Application / bekannte Provider- und Event-ID-Signatur",
             _ => "Vollständiger quellenbezogener Inventarvergleich"
         };
-        Notice = $"Watch: {rule.Name}; {rule.Trigger} = {value}; Schwelle {rule.Threshold}, Dauer {rule.DurationSeconds}s; {now:O}. Quelle: {source}. Keine Ursachenbehauptung.";
+        Notice = $"Watch: {rule.Name}; {rule.Trigger} = {value}; Ziel {(rule.Target.Length == 0 ? "global" : rule.Target)}; Schwelle {rule.Threshold}, Dauer {rule.DurationSeconds}s; {now:O}. Quelle: {source}. Keine Ursachenbehauptung.";
         Mark("Watch", rule.Name, Notice + " Aktion: " + rule.Action, now, "watch:" + rule.Id);
         if (rule.Action == WatchAction.Notification) NotificationRequested?.Invoke(Notice);
         if (rule.Action == WatchAction.Snapshot) SnapshotRequested = true;
