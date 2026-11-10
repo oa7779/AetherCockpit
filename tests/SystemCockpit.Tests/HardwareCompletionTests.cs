@@ -61,6 +61,9 @@ internal static class HardwareCompletionTests
         Check(!HardwareSpdBoundary.Valid(module with { License = "" }), "SPD source license required");
         Check(HardwareDirect3D.ShaderName(0x69) == "6.9" && HardwareDirect3D.ShaderName(0x51) == "5.1", "shader model hex encoding");
         Check(HardwareDirect3D.ShaderName(0x70).Contains("Code"), "future shader models remain raw");
+        Check(HardwareGpuDriver.Wddm(1105) == "WDDM 1.1" && HardwareGpuDriver.Wddm(1102).Contains("Prerelease"), "nondecimal WDDM 1.1 codes");
+        Check(HardwareGpuDriver.Wddm(3200) == "WDDM 3.2" && HardwareGpuDriver.Wddm(2900) == "WDDM 2.9", "documented modern WDDM codes");
+        Check(HardwareGpuDriver.Wddm(3250).Contains("3250") && HardwareGpuDriver.Wddm(1400).Contains("1400"), "unknown driver code not rounded into a WDDM claim");
         var trim = new byte[12];
         BitConverter.GetBytes(12u).CopyTo(trim, 4);
         trim[8] = 1;

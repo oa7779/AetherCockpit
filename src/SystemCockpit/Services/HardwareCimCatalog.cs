@@ -178,7 +178,7 @@ internal static class HardwareCimCatalog
     internal static string[] Gaps(HardwareClass category) => category switch
     {
         HardwareClass.Cpu => ["Referenztakt / Multiplikator", "CPU-Codename"],
-        HardwareClass.Gpu => ["Geräteweiter VRAM-Verbrauch (DXGI hier pro Prozess)", "WDDM", "VBIOS", "iGPU/dGPU", "Architektur / Codename",
+        HardwareClass.Gpu => ["Geräteweiter VRAM-Verbrauch (DXGI hier pro Prozess)", "VBIOS", "Allgemeine iGPU/dGPU-Einstufung (Hybridflags separat)", "Architektur / Codename",
             "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / vollständige Decode-Formatmatrix"],
         HardwareClass.Npu => ["NPU-Telemetrie", "TOPS"],
         HardwareClass.Mainboard => ["Chipsatz-Zuordnung"],
