@@ -12,6 +12,7 @@ internal static class Program
     {
         try
         {
+            if (args.Length == 1 && args[0] == "--process-fixture") return ProcessAcceptanceTests.Fixture();
             if (args.Length == 2 && args[0] == "--command-fixture") return CommandLifecycleTests.Fixture(args[1]);
             DesktopText.Configure("de");
             if (args.Length == 2 && args[0] == "--feed-server") return ScreensaverTests.PipeServer(args[1]);
@@ -24,6 +25,14 @@ internal static class Program
                 {
                     Source = new Uri($"pack://application:,,,/SystemCockpit;component/{source}")
                 });
+            if (args.Length == 2 && args[0] == "--process-proof")
+            {
+                ProcessAcceptanceTests.Proof(args[1]); host.Shutdown(); return 0;
+            }
+            if (args.Length == 2 && args[0] == "--process-acceptance")
+            {
+                ProcessAcceptanceTests.Live(args[1]); host.Shutdown(); return 0;
+            }
             if (args.Length == 2 && args[0] == "--consolidation-baseline")
             {
                 ConsolidationMeasurements.Run(args[1]);
