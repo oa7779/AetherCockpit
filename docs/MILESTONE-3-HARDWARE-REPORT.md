@@ -2,6 +2,15 @@
 
 Stand: 10. November 2026.
 
+**ABNAHME: Am 10. November 2026 ausdrücklich durch den Auftraggeber erteilt.**
+Sämtliche nachstehend dokumentierten technischen Grenzen sind akzeptiert
+und keine offenen M3-Abnahmeblocker. Der ursprüngliche technische Bericht,
+seine Messwerte und Nachweise bleiben erhalten.
+Das Process Command Center ist als eigener Folgeauftrag freigegeben;
+Ausgang nach M3: `5dc869299b57af93083f53e680d5afca3fc14536`.
+Die folgenden Stopp-/Empfehlungsaussagen dokumentieren die Lage bei
+Berichtserstellung vor dieser ausdrücklichen Abnahme.
+
 **ABNAHMEEMPFEHLUNG: MIT DOKUMENTIERTEN GRENZEN ABNAHMEFÄHIG.**
 
 Das ist eine technische Empfehlung, keine bereits erteilte Abnahme des

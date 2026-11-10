@@ -3,8 +3,9 @@
 ## Stand
 
 Meilenstein 2 ist ausdrücklich abgenommen. Meilenstein 3 „Hardware
-Intelligence Center“ ist nach dem autonomen Abschlussauftrag **MIT
-DOKUMENTIERTEN GRENZEN ABNAHMEFÄHIG**, noch nicht vom Auftraggeber abgenommen.
+Intelligence Center“ ist am 10. November 2026 **AUSDRÜCKLICH ABGENOMMEN**,
+mit sämtlichen im Abschlussbericht dokumentierten technischen Grenzen.
+Diese Grenzen sind keine offenen M3-Abnahmeblocker.
 Ausgang dieses Abschlussauftrags:
 `28835d064a8f7854fbb48e65606874737ae83659`, Branch `rc/grosse-entfesselung`,
 sauberer Arbeitsbaum. Funktionaler Abschluss einschließlich erweitertem
@@ -36,10 +37,15 @@ SPD und echter effektiver CPU-Zyklustakt bleiben begründet begrenzt.
 Physische Hotplug-/Resume-/Monitor-/DPI-Wechsel und Langzeitbetrieb wurden
 nicht ausgelöst und sind nicht als bestanden behauptet.
 
-**Nach Bericht stoppen und ausdrückliche M3-Abnahme abwarten.**
-Process Command Center bleibt geplant, nicht implementiert.
+**Aktiver Auftrag: AETHER Process Command Center / System Correlation.**
+Ausgang nach vollständigem M3-Dokumentationsabschluss:
+`5dc869299b57af93083f53e680d5afca3fc14536`.
+Phase 0 dokumentiert ausschließlich die erteilte Abnahme; Messungen,
+Proofs und die technischen Grenzen bleiben unverändert.
+Danach lokale Implementierung, Tests, Regressionen und Abschlussbericht.
 Community-Wunsch erhalten: Kontextmenü **„Prozess beenden“**.
-Kein Meilenstein 4, Push, Merge, Tag, Release, Installer oder Versionswechsel.
+Keine Veröffentlichung, Push, Merge, Tag, Release, Installer oder Versionswechsel.
+Nach dem Prozess-Abschlussbericht ausdrückliche Abnahme abwarten.
 Bestehende Pakete bleiben unverändert.
 
 Installer-/Uploadauftrag abgeschlossen:

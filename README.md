@@ -18,8 +18,7 @@ implementiert. Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails,
 zugeordnete SMART-/NVMe-Berichte und echte Sensorstatistik ergänzen die Ansicht.
 Gerätegenaue Providerbeziehungen, Windows-Prozessortakte, WDDM-/Videodetails,
 TRIM-/Controllerangaben, EDID/HDR und Audioformatprüfungen sind ergänzt.
-M3 ist mit dokumentierten technischen Grenzen zur Abnahme empfohlen,
-noch nicht vom Auftraggeber abgenommen;
+M3 ist mit den dokumentierten technischen Grenzen ausdrücklich abgenommen;
 [Prüfbericht und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
 Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
 
