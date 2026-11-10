@@ -185,7 +185,10 @@ public partial class HardwareIntelligenceView : UserControl
                 error = ex.Message;
             }
         }
-        _store.Replace(HardwareClass.Sensors, HardwareSensorInventory.Read(readings, time, enabled, error, _sensorStatistics), _store.Version(HardwareClass.Sensors));
+        var components = HardwareSensorInventory.Read(readings, time, enabled, error, _sensorStatistics);
+        if (enabled && error is null)
+            components = HardwareSensorCorrelation.Apply(components, readings, Snapshot, time);
+        _store.Replace(HardwareClass.Sensors, components, _store.Version(HardwareClass.Sensors));
         if (IsLoaded && Category == HardwareClass.Sensors) Render();
     }
 

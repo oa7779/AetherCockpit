@@ -63,13 +63,15 @@ public sealed class SessionStatistics
         Started ??= time;
         Warning = warning;
         foreach (var sensor in channels.Values)
-            Add(sensor.Id, sensor.Hardware, sensor.Name, sensor.Unit, sensor.Value, time, sensor.Type);
+            Add(sensor.Id, sensor.Hardware, sensor.Name, sensor.Unit, sensor.Value, time, sensor.Type,
+                sensor.ProviderDeviceId, sensor.PnpDeviceId);
     }
 
-    private void Add(string id, string hardware, string name, string unit, double? value, DateTimeOffset time, string type = "")
+    private void Add(string id, string hardware, string name, string unit, double? value, DateTimeOffset time, string type = "",
+        string? providerDeviceId = null, string? pnpDeviceId = null)
     {
         if (value is not { } number || !double.IsFinite(number)) return;
-        var key = new SensorChannelKey(id, hardware, name, type, unit);
+        var key = new SensorChannelKey(id, hardware, name, type, unit, providerDeviceId, pnpDeviceId);
         if (!_values.TryGetValue(key, out var aggregate))
         {
             if (_values.Count >= 2048) throw new InvalidOperationException("Statistiklimit von 2048 Messreihen erreicht.");

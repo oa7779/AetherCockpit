@@ -1,11 +1,12 @@
 namespace SystemCockpit.Services;
 
-public readonly record struct SensorChannelKey(string Id, string Hardware, string Name, string Type, string Unit);
+public readonly record struct SensorChannelKey(string Id, string Hardware, string Name, string Type, string Unit,
+    string? ProviderDeviceId = null, string? PnpDeviceId = null);
 
 public static class SensorSemantics
 {
     public static SensorChannelKey ChannelKey(SensorReading sensor) =>
-        new(sensor.Id, sensor.Hardware, sensor.Name, sensor.Type, sensor.Unit);
+        new(sensor.Id, sensor.Hardware, sensor.Name, sensor.Type, sensor.Unit, sensor.ProviderDeviceId, sensor.PnpDeviceId);
 
     public static (Dictionary<SensorChannelKey, SensorReading> Channels, string Warning) MeasurementChannels(
         IEnumerable<SensorReading> readings)

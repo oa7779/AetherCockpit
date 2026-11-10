@@ -81,7 +81,12 @@ public sealed class HardwareSensors : IDisposable
             readings.Add(SensorSemantics.Classify(new(sensor.Identifier.ToString(), hardware.Name, sensor.Name,
                 sensor.SensorType.ToString(),
                 NormalizeValue(sensor.Value, hardware.HardwareType == HardwareType.Cpu,
-                    sensor.SensorType == SensorType.Power, cpuClockReadable), Unit(sensor.SensorType))));
+                    sensor.SensorType == SensorType.Power, cpuClockReadable), Unit(sensor.SensorType))
+                {
+                    ProviderDeviceId = hardware.Identifier.ToString(),
+                    ProviderParentId = hardware.Parent?.Identifier.ToString(),
+                    PnpDeviceId = hardware is LibreHardwareMonitor.Hardware.Gpu.GenericGpu gpu ? gpu.DeviceId : null
+                }));
         foreach (var child in hardware.SubHardware) ReadHardware(child, readings);
     }
 
