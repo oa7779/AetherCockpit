@@ -30,6 +30,17 @@ public partial class HardwareIntelligenceView : UserControl
     internal Func<HardwareClass, CancellationToken, Task<IReadOnlyList<HardwareComponent>>> ReadInventory { get; set; } =
         new HardwareIntelligenceReader().ReadAsync;
     internal HardwareInventory Snapshot => _store.Snapshot(DateTimeOffset.UtcNow);
+    internal event Action<HardwareComponent>? ProcessLinksRequested;
+    internal void RequestExport()
+    {
+        if (ExportButton.IsEnabled) ExportClicked(this, new RoutedEventArgs());
+        else Status.Text = "Zuerst eine Hardwareklasse lesen; danach vorhandene Daten exportieren.";
+    }
+    private void ProcessLinksClicked(object sender, RoutedEventArgs e)
+    {
+        if (Components.SelectedItem is HardwareComponent component) ProcessLinksRequested?.Invoke(component);
+        else Status.Text = "Zuerst eine Komponente auswählen.";
+    }
 
     private static readonly IReadOnlyDictionary<HardwareClass, string> Captions = new Dictionary<HardwareClass, string>
     {

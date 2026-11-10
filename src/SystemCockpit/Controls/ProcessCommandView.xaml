@@ -1,0 +1,66 @@
+<UserControl x:Class="SystemCockpit.Controls.ProcessCommandView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{DynamicResource ModernTextPrimary}">
+    <UserControl.Resources>
+        <Style TargetType="DataGrid" BasedOn="{StaticResource NeonDataGrid}"/>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource WindowBackdrop}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <WrapPanel>
+            <TextBlock Text="Suche " VerticalAlignment="Center"/>
+            <TextBox x:Name="Search" MinWidth="190" Style="{DynamicResource NeonTextBox}" TextChanged="FilterChanged"
+                     AutomationProperties.Name="Prozesse suchen" ToolTip="Name, PID oder Status suchen"/>
+            <CheckBox x:Name="TreeMode" Content="Prozessbaum" Checked="FilterChanged" Unchecked="FilterChanged" Margin="8"
+                      AutomationProperties.Name="Zwischen Liste und Prozessbaum wechseln"/>
+            <CheckBox x:Name="ActiveOnly" Content="Nur aktuell" Checked="FilterChanged" Unchecked="FilterChanged" Margin="8"/>
+            <CheckBox x:Name="BusyOnly" Content="CPU ≥ 10 %" Checked="FilterChanged" Unchecked="FilterChanged" Margin="8"/>
+            <CheckBox x:Name="Pause" Content="Ansicht pausieren" Margin="8" Checked="PauseChanged" Unchecked="PauseChanged"/>
+            <Button Content="Abbrechen" Click="CancelClicked" Style="{DynamicResource NeonButton}"/>
+            <ComboBox x:Name="ViewName" IsEditable="True" Text="Standard" MinWidth="100" MaxWidth="160"
+                      AutomationProperties.Name="Gespeicherte Prozessansicht" DropDownOpened="ViewNamesOpened"/>
+            <Button Content="Ansicht merken" Click="SaveViewClicked" Style="{DynamicResource NeonButton}"/>
+            <Button Content="Ansicht laden" Click="LoadViewClicked" Style="{DynamicResource NeonButton}"/>
+            <Button Content="Snapshot" Click="SnapshotClicked" Style="{DynamicResource NeonButton}" ToolTip="Sitzungssnapshot aufnehmen; Kontextmenü für lokale Dateien">
+                <Button.ContextMenu><ContextMenu>
+                    <MenuItem Header="Vollständigen Snapshot lokal speichern" Click="SaveSnapshotClicked"/>
+                    <MenuItem Header="Lokalen Snapshot laden" Click="LoadSnapshotClicked"/>
+                </ContextMenu></Button.ContextMenu>
+            </Button>
+            <Button Content="Vergleichen" Click="CompareClicked" Style="{DynamicResource NeonButton}"/>
+            <Button Content="Export" Click="ExportClicked" Style="{DynamicResource NeonButton}"/>
+        </WrapPanel>
+        <TextBlock x:Name="Status" Grid.Row="1" Text="Warte auf gemeinsame Cockpitmessung." TextWrapping="Wrap" Margin="0,6"
+                   AutomationProperties.LiveSetting="Polite"/>
+        <DataGrid x:Name="Processes" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+                  EnableRowVirtualization="True" EnableColumnVirtualization="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                  ScrollViewer.CanContentScroll="True" SelectionChanged="SelectionChanged" PreviewMouseRightButtonDown="RightClicked"
+                  ContextMenuOpening="MenuOpening" Sorting="SortChanged" PreviewKeyDown="GridKeyDown" AutomationProperties.Name="Prozesszentrale">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="32" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate><DataTemplate>
+                        <Image Source="{Binding Icon}" Width="24" Height="24" AutomationProperties.Name="Programmsymbol, nach Detailabfrage"/>
+                    </DataTemplate></DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="PROZESS / BAUM" Binding="{Binding Name}" SortMemberPath="Current.Name" Width="2*"/>
+                <DataGridTextColumn Header="PID" Binding="{Binding Current.Id}" SortMemberPath="Current.Id" Width="70"/>
+                <DataGridTextColumn Header="CPU %" Binding="{Binding Current.CpuDisplay}" SortMemberPath="Current.CpuPercent" Width="85"/>
+                <DataGridTextColumn Header="RAM MiB" Binding="{Binding Current.MemoryDisplay}" SortMemberPath="Current.MemoryMb" Width="90"/>
+                <DataGridTextColumn Header="PRIVAT MiB" Binding="{Binding Current.PrivateMb, StringFormat=F1}" SortMemberPath="Current.PrivateMb" Width="100"/>
+                <DataGridTextColumn Header="THREADS" Binding="{Binding Current.Threads}" SortMemberPath="Current.Threads" Width="80"/>
+                <DataGridTextColumn Header="HANDLES" Binding="{Binding Current.Handles}" SortMemberPath="Current.Handles" Width="80"/>
+                <DataGridTextColumn Header="I/O R MiB/s" Binding="{Binding Current.ReadDisplay}" SortMemberPath="Current.ReadMbps" Width="95"/>
+                <DataGridTextColumn Header="I/O W MiB/s" Binding="{Binding Current.WriteDisplay}" SortMemberPath="Current.WriteMbps" Width="95"/>
+                <DataGridTextColumn Header="STATUS" Binding="{Binding Lifecycle}" SortMemberPath="Lifecycle" Width="2*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <GridSplitter Grid.Row="3" Height="6" HorizontalAlignment="Stretch" AutomationProperties.Name="Höhe des Prozessinspektors"/>
+        <TextBox x:Name="Inspector" Grid.Row="4" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto" Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}"
+                 AutomationProperties.Name="Prozessdetails, Quellen und Ressourcenverlauf"
+                 Text="Prozess wählen. Details und Systembeziehungen werden nur auf Anforderung gelesen. I/O ist Prozess-I/O, keine physische Datenträgerrate."/>
+    </Grid>
+</UserControl>

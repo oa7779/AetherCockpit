@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly CancellationTokenSource _stop = new();
     private readonly DisplayPulse _displayPulse;
     private readonly SemaphoreSlim _sensorGate = new(1);
+    private readonly SemaphoreSlim _processRefresh = new(0, 1);
     private readonly LocalHistory _history = new(Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AetherCockpit", "History"));
     private Task _samplingTask = Task.CompletedTask;
@@ -53,6 +54,19 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         HardwareIntelligence.Synthetic = syntheticSettings is not null;
+        ProcessCenter.Synthetic = syntheticSettings is not null;
+        ProcessCenter.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
+        HardwareIntelligence.ProcessLinksRequested += component =>
+        {
+            SelectPage("Taskmanager");
+            ProcessCenter.Reverse(component);
+        };
+        ProcessCenter.AttachDashboard(DashboardProcesses);
+        ProcessCenter.RefreshRequested += () =>
+        {
+            if (_processRefresh.CurrentCount == 0) _processRefresh.Release();
+            _model.Footer = "Prozessaktion abgeschlossen; gemeinsame Erfassung zur Aktualisierung angefordert.";
+        };
         InitializeNavigation();
         _displayPulse = new DisplayPulse(Dispatcher, _model, day => DisplayTime.Apply(this, day));
         _managerReporting = new ManagerReportingService(status =>
@@ -244,7 +258,9 @@ public partial class MainWindow : Window
         report(DesktopUiText.Get("Boot.PerformanceInit"), 65);
         try
         {
-            _model.ApplyDashboard(await Task.Run(_dashboardMetrics.Read, token), sample);
+            var detail = await Task.Run(() => _dashboardMetrics.Read(token), token);
+            _model.ApplyDashboard(detail, sample);
+            ProcessCenter.Apply(detail);
             report(DesktopUiText.Get("Boot.PerformanceBaseline"), 72);
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
@@ -278,6 +294,7 @@ public partial class MainWindow : Window
         _stop.Cancel();
         HardwareBoard.Shutdown();
         await HardwareIntelligence.ShutdownAsync();
+        await ProcessCenter.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);
@@ -293,6 +310,7 @@ public partial class MainWindow : Window
         try { await Task.Run(_sensors.Dispose); }
         finally { _sensorGate.Release(); }
         _sensorGate.Dispose();
+        _processRefresh.Dispose();
         _stop.Dispose();
         _allowClose = true;
     }
@@ -332,12 +350,14 @@ public partial class MainWindow : Window
                     _model.Apply(sample, _sensorsEnabled);
                     try
                     {
-                        var detail = await Task.Run(_dashboardMetrics.Read, _stop.Token);
+                        var detail = await Task.Run(() => _dashboardMetrics.Read(_stop.Token), _stop.Token);
                         _model.ApplyDashboard(detail, sample);
+                        ProcessCenter.Apply(detail);
                     }
                     catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
                     {
                         _model.DashboardFailed(ex.Message);
+                        ProcessCenter.Failed(ex.Message);
                         ReportError("Dashboard-Messung", ex);
                     }
                     if (_recording && (sample.Timestamp - _lastRecorded).TotalSeconds >= _model.Settings.RecordIntervalSeconds)
@@ -363,7 +383,7 @@ public partial class MainWindow : Window
                     _model.DashboardFailed(ex.Message);
                     ReportError("Live-Messung", ex);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(2), _stop.Token);
+                await _processRefresh.WaitAsync(TimeSpan.FromSeconds(2), _stop.Token);
             }
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }
@@ -570,8 +590,16 @@ public partial class MainWindow : Window
 
     internal void OpenTaskCenter()
     {
-        var window = new TaskCenterWindow { Owner = this };
+        var window = new TaskCenterWindow(_model.Processes.ToArray()) { Owner = this };
         if (window.ShowDialog() != true || window.SelectedTask is not { } task) return;
+        if (task.QuickAction is { } quick)
+        {
+            SelectPage(task.Destination);
+            if (quick == "services") Workbench.SelectArea("services");
+            else if (quick == "hardware-report") HardwareIntelligence.RequestExport();
+            else ProcessCenter.QuickAction(quick);
+            return;
+        }
         if (task.Surface == "Systemkontrolle")
         {
             OpenControlCenterModule(task.Destination);
@@ -732,20 +760,9 @@ public partial class MainWindow : Window
         });
     }
 
-    private async void ProcessDetailsClicked(object sender, RoutedEventArgs e)
+    private void ProcessDetailsClicked(object sender, RoutedEventArgs e)
     {
-        if (_closing) return;
-        if (TaskmanagerProcesses.SelectedItem is not ProcessMetric process || process.StartTicks <= 0)
-        {
-            _model.Footer = DesktopUiText.Get("Main.ProcessSelect");
-            return;
-        }
-        OpenControlCenterClicked(sender, e);
-        if (_controlCenter is null) return;
-        await _controlCenter.DisplayReadOnlyAsync("Prozessdetails", token => CommandRunner.PowerShellAsync(
-            $"$p=Get-Process -Id {process.Id}; if($p.StartTime.ToUniversalTime().Ticks -ne {process.StartTicks}){{throw 'PID wurde wiederverwendet'}}; " +
-            "$p | Format-List Name,Id,StartTime,Path,PriorityClass,CPU,WorkingSet64,PrivateMemorySize64,VirtualMemorySize64,HandleCount; " +
-            "$p.Threads | Format-Table Id,ThreadState,StartTime,TotalProcessorTime", token));
+        if (!_closing) ProcessCenter.ShowSelectedDetails();
     }
 
     private async void ScanCleanupClicked(object sender, RoutedEventArgs e)
@@ -1090,6 +1107,8 @@ public partial class MainWindow : Window
         EmbeddedEvents.Shutdown();
         Operations.Shutdown();
         HardwareBoard.Shutdown();
+        await ProcessCenter.ShutdownAsync();
+        await HardwareIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask);
@@ -1101,6 +1120,7 @@ public partial class MainWindow : Window
         try { await Task.Run(_sensors.Dispose); }
         finally { _sensorGate.Release(); }
         _sensorGate.Dispose();
+        _processRefresh.Dispose();
         _stop.Dispose();
         _allowClose = true;
         await Dispatcher.InvokeAsync(Close);

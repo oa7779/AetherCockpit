@@ -217,13 +217,13 @@ internal static class ProfessionalWorkflowTests
             {
                 tasks.Width = size.Width; tasks.Height = size.Height; Pump(); tasks.UpdateLayout();
                 Check(tasks.Results.ActualWidth >= 260 && tasks.Results.ActualHeight > 160 &&
-                    Descendants(tasks).OfType<Button>().Single().IsEnabled, "Task list and action remain usable at supported window sizes");
+                    tasks.OpenButton.IsEnabled, "Task list and action remain usable at supported window sizes");
             }
             tasks.Width = 1040; tasks.Height = 720; Pump();
             if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(tasks, screenshotPrefix + "-arbeitsplatz.png");
             tasks.SearchBox.Text = "zznichtvorhanden";
             Pump();
-            Check(tasks.Results.Items.Count == 0 && !Descendants(tasks).OfType<Button>().Single().IsEnabled, "No-result state disables opening, not a fake default action");
+            Check(tasks.Results.Items.Count == 0 && !tasks.OpenButton.IsEnabled, "No-result state disables opening, not a fake default action");
         }
         finally { tasks.Close(); }
         DesktopText.Configure("en");
@@ -236,7 +236,7 @@ internal static class ProfessionalWorkflowTests
                 Check(englishTasks.Title == "AETHER | Workspace and feature search" &&
                     System.Windows.Automation.AutomationProperties.GetName(englishTasks.SearchBox) == "Feature search" &&
                     englishTasks.CategoryBox.SelectedValue as string == "" &&
-                    Equals(Descendants(englishTasks).OfType<Button>().Single().Content, "Open area / do not run anything"),
+                    Equals(englishTasks.OpenButton.Content, "Open area / do not run anything"),
                     "English workspace chrome and accessibility labels use authored translations");
                 englishTasks.Width = 780; englishTasks.Height = 560; Pump(); englishTasks.UpdateLayout();
                 var resultContainer = (ListBoxItem)englishTasks.Results.ItemContainerGenerator.ContainerFromIndex(0);
@@ -245,6 +245,7 @@ internal static class ProfessionalWorkflowTests
                         text.Text == ((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay &&
                         text.TextWrapping == TextWrapping.Wrap && text.ActualWidth > 0),
                     "Workspace result titles wrap at narrow supported window sizes");
+                englishTasks.SearchBox.Text = "troubleshoot windows"; Pump();
                 Check(((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay == "Troubleshoot Windows problems" &&
                     Descendants(englishTasks).OfType<TextBlock>().Any(text =>
                         text.Text.Contains("Only then approve an appropriate repair individually", StringComparison.Ordinal)),
@@ -268,7 +269,7 @@ internal static class ProfessionalWorkflowTests
                 Pump();
                 Check(englishTasks.Results.Items.Count == 0 &&
                     Descendants(englishTasks).OfType<TextBlock>().Any(text => text.Text == "No matching feature") &&
-                    !Descendants(englishTasks).OfType<Button>().Single().IsEnabled,
+                    !englishTasks.OpenButton.IsEnabled,
                     "English empty search remains safe and disables opening");
             }
             finally { englishTasks.Close(); Pump(); }
@@ -368,9 +369,9 @@ internal static class ProfessionalWorkflowTests
             {
                 var advanced = (TabControl)modules.FindName("Modules");
                 Check(TaskCatalog.All.Where(t => t.Surface == "Hauptfenster").All(t =>
-                    pages.Items.Cast<TabItem>().Any(p => Equals(p.Header, t.Destination))) &&
+                    pages.Items.Cast<TabItem>().Any(p => Equals(p.Tag, t.Destination))) &&
                     TaskCatalog.All.Where(t => t.Surface == "Systemkontrolle").All(t =>
-                    advanced.Items.Cast<TabItem>().Any(p => Equals(p.Header, t.Destination))),
+                    advanced.Items.Cast<TabItem>().Any(p => Equals(p.Tag, t.Destination))),
                     "Every task route names a real compiled destination");
             }
             finally { modules.Close(); Pump(); }
@@ -390,12 +391,17 @@ internal static class ProfessionalWorkflowTests
                 foreach (var expander in navigation.Children.OfType<Expander>()) expander.IsExpanded = true;
                 Pump();
                 var navigationButtons = Descendants(navigation).OfType<Button>().Where(b => b.Tag is string).ToArray();
-                Check(navigationButtons.All(button => button.Content is string text &&
-                    new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-                        new Typeface(button.FontFamily, button.FontStyle, button.FontWeight, button.FontStretch),
-                        button.FontSize, Brushes.White, VisualTreeHelper.GetDpi(button).PixelsPerDip).WidthIncludingTrailingWhitespace <=
-                    button.ActualWidth - button.Padding.Left - button.Padding.Right - button.BorderThickness.Left - button.BorderThickness.Right + 1),
-                    "Every primary/quick navigation caption fits its actual sidebar content width without clipping");
+                Check(navigationButtons.All(button =>
+                {
+                    if (button.Content is not string text) return false;
+                    var label = Descendants(button).OfType<TextBlock>().SingleOrDefault(t => t.Text == text);
+                    if (label is null || label.ActualWidth <= 0 || label.TextWrapping != TextWrapping.Wrap) return false;
+                    var measured = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+                        new Typeface(label.FontFamily, label.FontStyle, label.FontWeight, label.FontStretch),
+                        label.FontSize, Brushes.White, VisualTreeHelper.GetDpi(label).PixelsPerDip) { MaxTextWidth = label.ActualWidth };
+                    return label.ActualWidth <= button.ActualWidth - button.Padding.Left - button.Padding.Right + 1 &&
+                        label.ActualHeight + 1 >= measured.Height;
+                }), "Every complete navigation caption wraps within actual sidebar width and receives sufficient text height");
                 var visible = Descendants(host).OfType<Button>().Single(b => Equals(b.Content, "Sichtbare ankreuzen"));
                 visible.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Pump();
                 var status = (TextBlock)main.FindName("CleanupSelectionStatus");

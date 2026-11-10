@@ -17,6 +17,8 @@
                           DisplayMemberPath="Value" SelectedValuePath="Key" AutomationProperties.Name="Hardwareklasse"/>
                 <Button x:Name="RefreshButton" Content="Klasse neu lesen" Click="RefreshClicked" Margin="8,0"/>
                 <Button x:Name="ExportButton" Content="Hardwarebericht exportieren" Click="ExportClicked" IsEnabled="False"/>
+                <Button Content="Prozessbezug" Click="ProcessLinksClicked" Margin="8,0"
+                        ToolTip="Belegte Prozess-/GPU- oder Netzwerkadapterbeziehungen, sonst explizite Grenze"/>
             </WrapPanel>
             <TextBlock x:Name="Status" Text="Lesendes Inventar auf Anforderung. Livewerte werden nur aus dem vorhandenen Cockpit-Sensorpfad übernommen."
                        Foreground="{DynamicResource ModernTextSecondary}" TextWrapping="Wrap"/>

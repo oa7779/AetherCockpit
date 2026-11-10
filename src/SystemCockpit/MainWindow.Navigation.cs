@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using SystemCockpit.Services;
 
@@ -11,6 +12,10 @@ public partial class MainWindow
 
     private void InitializeNavigation()
     {
+        var captionText = new FrameworkElementFactory(typeof(TextBlock));
+        captionText.SetBinding(TextBlock.TextProperty, new Binding());
+        captionText.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
+        var captionTemplate = new DataTemplate { VisualTree = captionText };
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
             ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
@@ -40,7 +45,8 @@ public partial class MainWindow
                     : caption.StartsWith("Navigation.", StringComparison.Ordinal) ? DesktopUiText.Get(caption) : caption;
                 var button = new Button { Content = displayedCaption, Tag = route, HorizontalContentAlignment = HorizontalAlignment.Left,
                     Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(7, 7, 7, 7), FontSize = 11,
-                    ToolTip = DesktopUiText.Get(external ? "Navigation.ExternalTooltip" : "Navigation.InternalTooltip") };
+                    ToolTip = DesktopUiText.Get(external ? "Navigation.ExternalTooltip" : "Navigation.InternalTooltip"),
+                    ContentTemplate = captionTemplate };
                 if (external) button.Click += ControlCenterNavigate; else button.Click += Navigate;
                 panel.Children.Add(button);
                 _navigation.Add((groupCaption, route, external, button, expander));
