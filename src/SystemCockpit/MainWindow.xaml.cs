@@ -55,6 +55,31 @@ public partial class MainWindow : Window
         InitializeComponent();
         HardwareIntelligence.Synthetic = syntheticSettings is not null;
         ProcessCenter.Synthetic = syntheticSettings is not null;
+        SystemIntelligence.Synthetic = syntheticSettings is not null;
+        SystemIntelligence.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
+        SystemIntelligence.NotificationRequested += message => { _model.Footer = message; _desktop?.NotifyDiagnostics(message); };
+        ProcessCenter.ActionObserved += result => SystemIntelligence.Engine.Mark(
+            result.State == ProcessActionState.Exited ? "ProcessConfirmedEnd" : "ProcessAction",
+            result.Identity + " / " + result.State, result.Message, DateTimeOffset.UtcNow, "process:" + result.Identity);
+        SystemIntelligence.NavigationRequested += entity =>
+        {
+            if (entity.Kind == IntelligenceKind.Process && entity.Id.StartsWith("process:", StringComparison.Ordinal))
+            {
+                SelectPage("Taskmanager");
+                ProcessCenter.QuickAction("process-id:" + entity.Id[8..]);
+            }
+            else if (entity.Kind == IntelligenceKind.Event && entity.Fields.TryGetValue("channel", out var channel) &&
+                long.TryParse(entity.Fields.GetValueOrDefault("recordId"), out var recordId))
+            {
+                SelectPage("Ereignisse");
+                _ = EmbeddedEvents.NavigateToAsync(channel, recordId, entity.Metadata.Timestamp);
+            }
+            else if (entity.Kind == IntelligenceKind.Hardware && entity.Id.StartsWith("hardware:", StringComparison.Ordinal) &&
+                HardwareIntelligence.SelectExisting(entity.Id[9..])) SelectPage("HardwareIntelligence");
+            else if (entity.Kind == IntelligenceKind.Service)
+            { SelectPage("Superadmin"); Workbench.SelectArea("services"); }
+            else _model.Footer = "Quelle und genaue Identität stehen im Intelligence-Inspektor; keine heuristische Navigation.";
+        };
         ProcessCenter.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
         HardwareIntelligence.ProcessLinksRequested += component =>
         {
@@ -158,6 +183,7 @@ public partial class MainWindow : Window
     {
         if (_monitoringStarted) return;
         _monitoringStarted = true;
+        SystemIntelligence.EnsureInitialized();
         _samplingTask = SampleLoopAsync();
         _probeTask = ProbeLoopAsync();
         _eventTask = EventLoopAsync();
@@ -261,6 +287,7 @@ public partial class MainWindow : Window
             var detail = await Task.Run(() => _dashboardMetrics.Read(token), token);
             _model.ApplyDashboard(detail, sample);
             ProcessCenter.Apply(detail);
+            SystemIntelligence.Apply(detail, sample);
             report(DesktopUiText.Get("Boot.PerformanceBaseline"), 72);
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
@@ -295,6 +322,7 @@ public partial class MainWindow : Window
         HardwareBoard.Shutdown();
         await HardwareIntelligence.ShutdownAsync();
         await ProcessCenter.ShutdownAsync();
+        await SystemIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);
@@ -353,6 +381,7 @@ public partial class MainWindow : Window
                         var detail = await Task.Run(() => _dashboardMetrics.Read(_stop.Token), _stop.Token);
                         _model.ApplyDashboard(detail, sample);
                         ProcessCenter.Apply(detail);
+                        SystemIntelligence.Apply(detail, sample);
                     }
                     catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
                     {
@@ -396,6 +425,7 @@ public partial class MainWindow : Window
             while (!_stop.IsCancellationRequested)
             {
                 await RefreshProbeAsync();
+                await SystemIntelligence.ObserveAsync();
                 await Task.Delay(TimeSpan.FromSeconds(60), _stop.Token);
             }
         }
@@ -408,7 +438,12 @@ public partial class MainWindow : Window
         {
             while (!_stop.IsCancellationRequested)
             {
-                try { _model.ApplyEvents(await EventMonitor.ReadAsync(_stop.Token)); }
+                try
+                {
+                    var events = await EventMonitor.ReadAsync(_stop.Token);
+                    _model.ApplyEvents(events);
+                    SystemIntelligence.ApplyEvents(events);
+                }
                 catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or TimeoutException or System.Text.Json.JsonException or System.Xml.XmlException or IOException)
                 {
                     _model.EventsFailed(ex.Message);
@@ -590,12 +625,13 @@ public partial class MainWindow : Window
 
     internal void OpenTaskCenter()
     {
-        var window = new TaskCenterWindow(_model.Processes.ToArray()) { Owner = this };
+        var window = new TaskCenterWindow(_model.Processes.ToArray(), SystemIntelligence.SearchTasks()) { Owner = this };
         if (window.ShowDialog() != true || window.SelectedTask is not { } task) return;
         if (task.QuickAction is { } quick)
         {
             SelectPage(task.Destination);
             if (quick == "services") Workbench.SelectArea("services");
+            else if (task.Destination == "SystemIntelligence") SystemIntelligence.QuickAction(quick);
             else if (quick == "hardware-report") HardwareIntelligence.RequestExport();
             else ProcessCenter.QuickAction(quick);
             return;
@@ -1108,6 +1144,7 @@ public partial class MainWindow : Window
         Operations.Shutdown();
         HardwareBoard.Shutdown();
         await ProcessCenter.ShutdownAsync();
+        await SystemIntelligence.ShutdownAsync();
         await HardwareIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,

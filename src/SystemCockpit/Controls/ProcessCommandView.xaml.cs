@@ -35,6 +35,7 @@ public partial class ProcessCommandView : UserControl
     internal ProcessHistory History => _history;
     internal DataGrid ProcessGrid => Processes;
     internal event Action? RefreshRequested;
+    internal event Action<ProcessActionResult>? ActionObserved;
     internal Func<HardwareInventory>? HardwareSnapshot { get; set; }
     public ProcessCommandView()
     {
@@ -234,7 +235,9 @@ public partial class ProcessCommandView : UserControl
         Item("Fenster schließen", () => Run(async token =>
         {
             var detail = await ReadSelected(row, token);
-            Status.Text = (await Task.Run(() => ProcessInspector.CloseAsync(row.Identity, detail.Window, token), token)).Message;
+            var result = await Task.Run(() => ProcessInspector.CloseAsync(row.Identity, detail.Window, token), token);
+            Status.Text = result.Message;
+            ActionObserved?.Invoke(result);
             RefreshRequested?.Invoke();
         }), known && ProcessInspector.Window(row.Current.Id) != IntPtr.Zero);
         Item("Prozess beenden", () => Terminate(row, false), known);
@@ -334,6 +337,7 @@ public partial class ProcessCommandView : UserControl
         var dialog = new ProcessActionDialog(plan, publisher) { Owner = Window.GetWindow(this) };
         if (dialog.ShowDialog() != true) { Status.Text = "Abgebrochen; kein Eingriff."; return; }
         var result = await Task.Run(() => actions.ExecuteAsync(plan, token), token);
+        foreach (var item in result) ActionObserved?.Invoke(item);
         Status.Text = string.Join("\n", result.Select(r => $"{r.Identity.Pid}: {r.State} / {r.Message}"));
         _inspectorPinned = true; Inspector.Text = Status.Text;
         RefreshRequested?.Invoke();

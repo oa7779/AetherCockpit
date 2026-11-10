@@ -24,12 +24,12 @@ public sealed class TaskCenterWindow : Window
     private TaskCenterPreferences _preferences = TaskCenterPreferences.Empty;
     private readonly IReadOnlyList<CockpitTask> _processTasks;
 
-    public TaskCenterWindow(IReadOnlyList<ProcessMetric>? processes = null)
+    public TaskCenterWindow(IReadOnlyList<ProcessMetric>? processes = null, IReadOnlyList<CockpitTask>? intelligence = null)
     {
         _processTasks = (processes ?? []).Where(p => p.Identity.IsKnown).Take(ProcessHistory.Capacity).Select(p =>
             new CockpitTask("Prozesse", $"{p.Name} / PID {p.Id}", "Taskmanager", "Hauptfenster", "LESEND / vorhandene Prozessprobe",
                 "Prozess in der Zentrale auswählen. Vor jeder Aktion wird die Identität erneut geprüft.",
-                $"{p.Name} {p.Id}", QuickAction: "process-id:" + p.Identity)).ToArray();
+                $"{p.Name} {p.Id}", QuickAction: "process-id:" + p.Identity)).Concat(intelligence ?? []).ToArray();
         Title = DesktopUiText.Get("TaskCenter.Title");
         Width = 1040; Height = 720; MinWidth = 760; MinHeight = 540;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;

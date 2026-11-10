@@ -31,6 +31,15 @@ public partial class HardwareIntelligenceView : UserControl
         new HardwareIntelligenceReader().ReadAsync;
     internal HardwareInventory Snapshot => _store.Snapshot(DateTimeOffset.UtcNow);
     internal event Action<HardwareComponent>? ProcessLinksRequested;
+    internal bool SelectExisting(string id)
+    {
+        var component = Snapshot.Components.FirstOrDefault(c => c.Id == id);
+        if (component is null) return false;
+        Categories.SelectedValue = component.Class;
+        Render();
+        Components.SelectedItem = Components.Items.Cast<HardwareComponent>().FirstOrDefault(c => c.Id == id);
+        return true;
+    }
     internal void RequestExport()
     {
         if (ExportButton.IsEnabled) ExportClicked(this, new RoutedEventArgs());

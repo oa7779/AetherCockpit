@@ -1,0 +1,130 @@
+<UserControl x:Class="SystemCockpit.Controls.SystemIntelligenceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{DynamicResource ModernTextPrimary}">
+    <UserControl.Resources><Style TargetType="DataGrid" BasedOn="{StaticResource NeonDataGrid}"/></UserControl.Resources>
+    <Grid Background="{DynamicResource WindowBackdrop}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Text="SYSTEM INTELLIGENCE · SEHEN / VERSTEHEN / VERGLEICHEN / HANDELN" FontSize="17" TextWrapping="Wrap"/>
+            <WrapPanel Margin="0,6">
+                <ComboBox x:Name="Area" MinWidth="155" SelectedIndex="0" SelectionChanged="FilterChanged" AutomationProperties.Name="Intelligence-Arbeitsbereich">
+                    <ComboBoxItem Content="Übersicht"/><ComboBoxItem Content="Timeline"/><ComboBoxItem Content="Change / Compare"/>
+                    <ComboBoxItem Content="Reliability"/><ComboBoxItem Content="Software"/><ComboBoxItem Content="Treiber"/>
+                    <ComboBoxItem Content="Startup"/><ComboBoxItem Content="Netzwerk 2.0"/><ComboBoxItem Content="Diagnose"/>
+                    <ComboBoxItem Content="Recorder"/><ComboBoxItem Content="Watch"/><ComboBoxItem Content="System Map"/>
+                </ComboBox>
+                <TextBox x:Name="Search" MinWidth="180" Style="{DynamicResource NeonTextBox}" TextChanged="FilterChanged"
+                         AutomationProperties.Name="Entitäten, Ereignisse und Quellen suchen" ToolTip="Gruppierte Suche; Quellen und Identitäten werden mit durchsucht"/>
+                <ComboBox x:Name="KindFilter" MinWidth="105" SelectionChanged="FilterChanged" AutomationProperties.Name="Entitätsklasse oder Ereigniskategorie"/>
+                <ComboBox x:Name="Period" MinWidth="90" SelectedIndex="0" SelectionChanged="FilterChanged" AutomationProperties.Name="Zeitraum oder Timeline-Zoom">
+                    <ComboBoxItem Content="Alle Zeiten"/><ComboBoxItem Content="5 Minuten"/><ComboBoxItem Content="1 Stunde"/>
+                    <ComboBoxItem Content="24 Stunden"/><ComboBoxItem Content="7 Tage"/>
+                </ComboBox>
+                <Button Content="Inventar lesen" Click="CaptureClicked" Style="{DynamicResource NeonButton}" ToolTip="Nur lesend; Dienste, Software, Treiber, Endpunkte und Startdaten. Kein permanenter Inventarpoller."/>
+                <Button Content="Warum ist mein PC gerade langsam?" Click="DiagnoseClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Abbrechen" Click="CancelClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Quellenabdeckung" Click="CoverageClicked" Style="{DynamicResource NeonButton}"/>
+            </WrapPanel>
+            <WrapPanel>
+                <TextBox x:Name="SnapshotName" Text="Mein Vergleich" MinWidth="130" MaxWidth="220" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Snapshot- oder Baselinename"/>
+                <Button Content="Snapshot merken" Click="SnapshotClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Baseline merken" Click="BaselineClicked" Style="{DynamicResource NeonButton}"/>
+                <ComboBox x:Name="Before" MinWidth="120" MaxWidth="200" DisplayMemberPath="Name" AutomationProperties.Name="Vergleich vorher"/>
+                <ComboBox x:Name="After" MinWidth="120" MaxWidth="200" DisplayMemberPath="Name" AutomationProperties.Name="Vergleich nachher; leer bedeutet jetzt"/>
+                <Button Content="A / B vergleichen" Click="CompareClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Import" Click="ImportClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Export" Click="ExportClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Auswahl löschen" Click="DeleteClicked" Style="{DynamicResource NeonButton}"/>
+            </WrapPanel>
+            <WrapPanel x:Name="RecordingTools" Visibility="Collapsed">
+                <ComboBox x:Name="Profile" MinWidth="150" SelectedIndex="1" AutomationProperties.Name="Recorder-Profil">
+                    <ComboBoxItem Content="Ressourcen"/><ComboBoxItem Content="Ressourcen und Timeline"/>
+                    <ComboBoxItem Content="Benutzerdefiniert"/>
+                </ComboBox>
+                <CheckBox x:Name="RecordProcesses" Content="Prozesse" IsChecked="True" Margin="4"/>
+                <CheckBox x:Name="RecordNetwork" Content="Adapterraten" IsChecked="True" Margin="4"/>
+                <CheckBox x:Name="RecordSensors" Content="Sensoren" Margin="4"/>
+                <CheckBox x:Name="RecordContext" Content="Systemkontext" Margin="4"/>
+                <CheckBox x:Name="RecordEvents" Content="Timeline" IsChecked="True" Margin="4"/>
+                <TextBox x:Name="Seconds" Text="60" Width="65" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Aufzeichnungsdauer in Sekunden"/>
+                <Button Content="Aufzeichnung starten" Click="StartClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Stoppen" Click="StopClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Aufzeichnung verwerfen" Click="DiscardClicked" Style="{DynamicResource NeonButton}"/>
+            </WrapPanel>
+            <WrapPanel x:Name="WatchTools" Visibility="Collapsed">
+                <TextBox x:Name="RuleName" Text="Meine Regel" Width="130" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Regelname"/>
+                <ComboBox x:Name="Trigger" MinWidth="110" AutomationProperties.Name="Watch-Auslöser"/>
+                <TextBox x:Name="Target" Width="130" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Exakte Prozessidentität oder Sensor-ID" ToolTip="Prozess: PID@Startticks, Sensor: exakte ID, Datenträger: Laufwerk; leer bei globaler Regel"/>
+                <TextBox x:Name="Threshold" Text="80" Width="55" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Schwelle"/>
+                <TextBox x:Name="Duration" Text="10" Width="45" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Dauer in Sekunden"/>
+                <TextBox x:Name="Cooldown" Text="60" Width="45" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Watch-Cooldown in Sekunden"/>
+                <ComboBox x:Name="RuleAction" MinWidth="105" AutomationProperties.Name="Sichere Watch-Aktion"/>
+                <Button Content="Regel speichern / ändern" Click="RuleClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Aktiv umschalten" Click="ToggleRuleClicked" Style="{DynamicResource NeonButton}"/>
+            </WrapPanel>
+            <WrapPanel x:Name="MapTools" Visibility="Collapsed">
+                <Button Content="Fokus + direkte Nachbarn" Click="FocusMapClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Gesamte Karte" Click="ResetMapClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Pfadanfang merken" Click="PathStartClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Pfad zur Auswahl" Click="PathClicked" Style="{DynamicResource NeonButton}"/>
+                <TextBlock Text="Zoom" VerticalAlignment="Center"/><Slider x:Name="Zoom" Minimum="0.5" Maximum="2" Value="1" Width="110" ValueChanged="ZoomChanged" AutomationProperties.Name="System-Map-Zoom"/>
+                <TextBlock Text="Ziehen zum Verschieben; Knoten anklicken zum Prüfen." TextWrapping="Wrap"/>
+            </WrapPanel>
+            <WrapPanel x:Name="NetworkTools" Visibility="Collapsed">
+                <CheckBox x:Name="OnlyListeners" Content="Nur Listener: TCP Listen / gebundene UDP-Endpunkte"
+                          Checked="FilterChanged" Unchecked="FilterChanged" Margin="4"
+                          AutomationProperties.Name="Listenerfilter"/>
+            </WrapPanel>
+            <WrapPanel>
+                <CheckBox x:Name="Persist" Content="Timeline und Watch lokal behalten (sensibel)" Margin="3,5" Checked="PersistenceChanged" Unchecked="PersistenceChanged"/>
+                <CheckBox x:Name="ObserveInventories" Content="Inventaränderungen beobachten (60-s-Schleife)" Margin="3,5"
+                          Checked="ObservationChanged" Unchecked="ObservationChanged" ToolTip="Zusätzliche lesende Inventur im vorhandenen Scheduler, ohne eigenen Timer. Bei ausgeschalteter Beobachtung nur manuelle Inventur."/>
+                <TextBlock Text="Tage / Dateien / MiB" VerticalAlignment="Center"/>
+                <TextBox x:Name="RetentionDays" Text="14" Width="40" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Historienaufbewahrung in Tagen"/>
+                <TextBox x:Name="RetentionFiles" Text="128" Width="45" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Maximale Historiendateien"/>
+                <TextBox x:Name="RetentionMb" Text="64" Width="40" Style="{DynamicResource NeonTextBox}" AutomationProperties.Name="Maximale Historiengröße in MiB"/>
+                <Button Content="Grenzen speichern" Click="RetentionClicked" Style="{DynamicResource NeonButton}"/>
+                <Button Content="Lokale Historie zurücksetzen" Click="ResetClicked" Style="{DynamicResource NeonButton}"/>
+            </WrapPanel>
+        </StackPanel>
+        <TextBlock x:Name="Status" Grid.Row="1" Margin="0,6" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"
+                   Text="Gemeinsame Quellen, keine Kausalitätsbehauptung. Inventare werden nur auf Anforderung gelesen."/>
+        <Grid Grid.Row="2">
+            <DataGrid x:Name="Rows" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+                      EnableRowVirtualization="True" EnableColumnVirtualization="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                      ScrollViewer.CanContentScroll="True" SelectionChanged="Selected" PreviewKeyDown="KeyPressed"
+                      AutomationProperties.Name="System Intelligence Ergebnisse">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="KLASSE / ZUSTAND" Binding="{Binding Group}" Width="150"/>
+                    <DataGridTextColumn Header="NAME / EREIGNIS" Binding="{Binding Name}" Width="2*"/>
+                    <DataGridTextColumn Header="QUELLENZEIT" Binding="{Binding Time, StringFormat=yyyy-MM-dd HH:mm:ss}" Width="160"/>
+                    <DataGridTextColumn Header="DETAIL" Binding="{Binding Detail}" Width="3*"/>
+                    <DataGridTextColumn Header="PROTOKOLL" Binding="{Binding Protocol}" Width="80" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="LOKAL" Binding="{Binding LocalAddress}" Width="140" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="PORT" Binding="{Binding LocalPort}" SortMemberPath="LocalPort" Width="70" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="REMOTE" Binding="{Binding RemoteAddress}" Width="140" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="PORT" Binding="{Binding RemotePort}" SortMemberPath="RemotePort" Width="70" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="ZUSTAND" Binding="{Binding State}" Width="100" Visibility="Collapsed"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <ScrollViewer x:Name="MapScroll" Visibility="Collapsed" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          PreviewMouseLeftButtonDown="PanStart" PreviewMouseMove="PanMove" PreviewMouseLeftButtonUp="PanEnd"
+                          AutomationProperties.Name="System Map, belegte Beziehungen">
+                <Canvas x:Name="Map" Width="1800" Height="1400" Background="{DynamicResource WindowBackdrop}">
+                    <Canvas.LayoutTransform><ScaleTransform x:Name="MapScale"/></Canvas.LayoutTransform>
+                </Canvas>
+            </ScrollViewer>
+        </Grid>
+        <GridSplitter Grid.Row="3" Height="6" HorizontalAlignment="Stretch" AutomationProperties.Name="Intelligence-Inspektorhöhe"/>
+        <DockPanel Grid.Row="4">
+            <Button DockPanel.Dock="Top" Content="Lokale Datei: Metadaten / Offline-Signatur" Click="FileDetailsClicked" Style="{DynamicResource NeonButton}"/>
+            <Button DockPanel.Dock="Top" Content="Zur technischen Quelle / Prozesszentrale" Click="NavigateClicked" Style="{DynamicResource NeonButton}"/>
+            <TextBox x:Name="Inspector" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                     Background="{DynamicResource ModernInput}" Foreground="{DynamicResource ModernTextPrimary}" AutomationProperties.Name="Intelligence-Inspektor und Quellen"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

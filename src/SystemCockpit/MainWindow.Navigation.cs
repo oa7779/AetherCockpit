@@ -18,7 +18,8 @@ public partial class MainWindow
         var captionTemplate = new DataTemplate { VisualTree = captionText };
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
-            ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
+            ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false),
+                ("System Intelligence", "SystemIntelligence", false)]),
             ("Navigation.Hardware", [("Hardware Intelligence", "HardwareIntelligence", false),
                 ("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
                 ("Navigation.Drives", "Laufwerke", false), ("Navigation.Smart", "SMART", true)]),

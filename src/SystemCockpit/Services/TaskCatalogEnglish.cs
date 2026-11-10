@@ -7,6 +7,10 @@ internal static class TaskCatalogEnglish
     private static readonly IReadOnlyDictionary<string, TaskTranslation> Workflows =
         new Dictionary<string, TaskTranslation>(StringComparer.Ordinal)
         {
+            ["Systemveränderungen verstehen"] = new("Understand system changes", "READ ONLY / time-bound evidence", "Review timeline, inventories, baselines and proven relationships together. Temporal proximity is not causality.", "timeline software driver boot startup reliability compare map"),
+            ["Warum ist mein PC gerade langsam?"] = new("Why is my PC slow right now?", "READ ONLY / shared sample", "Review the largest observed resource contributions and their source times. No automatic causal claim.", "slow cpu ram io diagnosis"),
+            ["Diagnose aufzeichnen"] = new("Record a diagnosis", "LOCAL / explicit start and stop", "Select profile and duration. Reuse existing samples; no ETW or packet capture.", "recorder recording"),
+            ["System Watch einrichten"] = new("Configure System Watch", "LOCAL / safe observation rules", "Set trigger, threshold, duration and cooldown. Only notification, timeline, snapshot or diagnosis marker.", "watch rule"),
             ["Prozesse anzeigen"] = new("Show processes", "READ ONLY / shared Windows sample", "Open the list or tree. PID and creation time form the identity. Context actions revalidate the target.", "process tree"),
             ["Prozess suchen"] = new("Find a process", "READ ONLY / focus search", "Filter by name, PID or state. Search never performs a process action.", "search filter pid"),
             ["Hardwarebericht erstellen"] = new("Create hardware report", "FILE / export existing observations", "Read the required classes first, then use the privacy-aware export. No automatic full inventory.", "hardware report export"),
@@ -72,6 +76,7 @@ internal static class TaskCatalogEnglish
 
     internal static string Label(string value) => value switch
     {
+        "System Intelligence" or "SystemIntelligence" => "System Intelligence",
         "Prozesse" => "Processes", "Taskmanager" => "Process center", "HardwareIntelligence" => "Hardware Intelligence",
         "Diagnose" => "Diagnostics", "Netzwerk" => "Network", "Monitoring" => "Monitoring",
         "Bereinigung" => "Cleanup", "Hilfe" => "Help", "Software" => "Software",

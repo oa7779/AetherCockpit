@@ -17,6 +17,11 @@ public partial class EventBrowser : UserControl
     public Task Pending => _pending;
     public void Cancel() => _stop?.Cancel();
     public void Shutdown() { _shutdown = true; _timer.Stop(); Cancel(); }
+    internal Task NavigateToAsync(string channel, long recordId, DateTimeOffset time) => RunAsync(async token =>
+    {
+        Details.Text = await EventMonitor.ReadRecordAsync(channel, recordId, time, token);
+        Status.Text = channel + " / RecordId " + recordId + " / geprüfte Quellenzeit " + time.ToString("O");
+    });
     public EventBrowser()
     {
         InitializeComponent();

@@ -7,7 +7,9 @@ public sealed record CockpitTask(string Category, string Title, string Destinati
     private TaskTranslation? Translation => English && Command is null
         ? QuickAction?.StartsWith("process-id:", StringComparison.Ordinal) == true
             ? new(Title, "READ ONLY / existing process sample", "Select the process. Actions revalidate its identity.", "process pid")
-            : TaskCatalogEnglish.Get(Title)
+            : QuickAction?.StartsWith("intelligence", StringComparison.Ordinal) == true
+                ? new(Title, "READ ONLY / existing evidence", "Inspect the entity, source and observation time.", "system intelligence")
+                : TaskCatalogEnglish.Get(Title)
         : null;
     public string CategoryDisplay => English ? TaskCatalogEnglish.Label(Category) : Category;
     public string DestinationDisplay => English ? TaskCatalogEnglish.Label(Destination) : Destination;
@@ -23,6 +25,14 @@ public static class TaskCatalog
 {
     private static IReadOnlyList<CockpitTask> Workflows { get; } =
     [
+        new("System Intelligence", "Systemveränderungen verstehen", "SystemIntelligence", "Hauptfenster", "LESEND / zeitbezogene Evidenz",
+            "Timeline, Inventare, Baselines und belegte Beziehungen gemeinsam prüfen. Zeitnachbarn sind keine Ursachen.", "timeline software treiber driver boot startup reliability compare map"),
+        new("System Intelligence", "Warum ist mein PC gerade langsam?", "SystemIntelligence", "Hauptfenster", "LESEND / gemeinsame Ressourcenprobe",
+            "Größte beobachtete Beiträge mit Quellenzeit lesen. Keine automatische Ursachenbehauptung.", "langsam slow cpu ram io diagnose", QuickAction: "Diagnose"),
+        new("System Intelligence", "Diagnose aufzeichnen", "SystemIntelligence", "Hauptfenster", "LOKAL / explizit starten und stoppen",
+            "Profil und Dauer wählen; bestehende Proben verwenden. Keine ETW-Sitzung und kein Paketmitschnitt.", "recorder recording aufzeichnung", QuickAction: "Recorder"),
+        new("System Intelligence", "System Watch einrichten", "SystemIntelligence", "Hauptfenster", "LOKAL / sichere Beobachtungsregeln",
+            "Auslöser, Schwelle, Dauer und Cooldown festlegen. Nur Hinweis, Timeline, Snapshot oder Diagnosemarker.", "watch regel überwachen", QuickAction: "Watch"),
         new("Prozesse", "Prozesse anzeigen", "Taskmanager", "Hauptfenster", "LESEND / gemeinsame Windows-Prozessprobe",
             "Prozessliste oder Baum öffnen. PID und Startzeit bilden die Identität. Kontextmenüaktionen prüfen das Ziel erneut.", "prozess prozessbaum process"),
         new("Prozesse", "Prozess suchen", "Taskmanager", "Hauptfenster", "LESEND / Suchfeld fokussieren",

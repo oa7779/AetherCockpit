@@ -474,6 +474,9 @@
                 <TabItem Header="Hardware Intelligence" Tag="HardwareIntelligence" ToolTip="Technische Komponenten, Quellen und Hardwareberichte">
                     <controls:HardwareIntelligenceView x:Name="HardwareIntelligence"/>
                 </TabItem>
+                <TabItem Header="System Intelligence" Tag="SystemIntelligence" ToolTip="Timeline, Vergleich, Diagnose, Watch und belegte Systembeziehungen">
+                    <controls:SystemIntelligenceView x:Name="SystemIntelligence"/>
+                </TabItem>
                 <TabItem Header="{loc:DesktopLabel Module.Sensoren}" Tag="Sensoren" ToolTip="{loc:DesktopLabel Module.SensorsTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
