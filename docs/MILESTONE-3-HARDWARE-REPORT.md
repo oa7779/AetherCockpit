@@ -2,344 +2,432 @@
 
 Stand: 10. November 2026.
 
-**MEILENSTEIN 3 NICHT ABNAHMEBEREIT**
+**ABNAHMEEMPFEHLUNG: MIT DOKUMENTIERTEN GRENZEN ABNAHMEFÄHIG.**
 
-Die zentrale Hardwarezentrale und der nachvollziehbare Inventar-/Exportpfad
-sind implementiert und geprüft. Das ist noch nicht die vollständige
-beauftragte Hardwaretiefe. Die unten aufgeführten fehlenden Lesepfade und
-Abnahmeprüfungen bleiben offen; „Unsupported“ ersetzt keine Implementierung.
-Die ausdrücklich beauftragte Reihenfolge ist jetzt: offene M3-Arbeiten,
-danach Process Command Center. Der Prozessauftrag ist analysiert und geplant,
-aber noch nicht implementiert; dieser Bericht erteilt keine M3-Abnahme.
-Kein Meilenstein 4, kein neuer Installer,
-Push, Tag, Release, Merge oder Versionswechsel.
+Das ist eine technische Empfehlung, keine bereits erteilte Abnahme des
+Auftraggebers. Alle neun Prioritätsgruppen des autonomen Abschlussauftrags
+sind bearbeitet. Sichere Lesepfade wurden ergänzt, nicht sicher belegbare
+Informationen ausdrücklich begrenzt. Es gibt keine bekannte schwere
+funktionale Regression in den ausgeführten Prüfungen.
 
-## 1. Ausgangscommit
+**Nach diesem Bericht stoppen.** Process Command Center erst nach
+ausdrücklicher M3-Abnahme. Kein Push, Merge, Tag, Release, Installer oder
+Versionswechsel. Bestehende Beta-45-Pakete bleiben unverändert.
 
-`21b2a0b466c34b526961e83ab234e08430b6750e`,
-Branch `rc/grosse-entfesselung`. Sauberer Ausgangsstand. M2 wurde ausdrücklich
-abgenommen. Bestehende Beta-45-Pakete und Veröffentlichungen unverändert.
+## 1. Ausgang und Abschluss
 
-## 2. Lokale M3-Commits
+- Branch: `rc/grosse-entfesselung`.
+- Ausgang des autonomen Abschlussauftrags:
+  `28835d064a8f7854fbb48e65606874737ae83659`, sauberer Arbeitsbaum.
+- Ursprünglicher M3-Ausgang:
+  `21b2a0b466c34b526961e83ab234e08430b6750e`.
+- Funktionaler Abschluss:
+  `428f1d703d8dbf96575c5495b3094dd1b7fd5512`.
+- Abschließende Ressourcen-Gegenprobe:
+  `69243483c1fdc42409aa3ebfd9f82ca8a7eb7eec`.
+- Danach ausschließlich Dokumentationsabschluss dieses Berichts;
+  dessen Commit ist mit
+  `git log -1 --format=%H -- docs\MILESTONE-3-HARDWARE-REPORT.md`
+  eindeutig auflösbar. Ein Dokument kann seinen eigenen Git-Objekthash
+  nicht vor seiner Commit-Erstellung enthalten.
+
+### Lokale M3-Commits
 
 | Commit | Inhalt |
 |---|---|
-| `7e5eff9` | Normalisierte Hardwarebeobachtungen, M1-Metadaten, JSON/CSV/Text, Datenschutz, Datenbank-/Logo-Freigabemodelle |
-| `ca60dd6` | CIM-Katalog und lesende Windows-/CPU-/DXGI-/Peripherieprovider |
-| `37bb74c` | Eigene Navigation, dreispaltige Hardwarezentrale, Inspektor, gezielte Invalidierung, Sensorübernahme |
-| `c72ebe0` | Quellen-/Topologie-/Mehrfachgeräte-/Storage-/Exporttests, UI-Proof und expliziter Read-only-Modus |
-| `5f3d22a` | Doppelte Sensoridentitäten absichern, PCI-Adresse ableiten und vollständige Routenregression prüfen |
-| `7159742` | Dokumentierte Grundlage und offene Abnahme |
-| `db0ad45` | Endliche Sensorstatistik je Kanal mit Messintervall und Stichprobenherkunft |
-| `a36915b` | Native Wi-Fi, Adapterraten, Microcode, Direct3D, Audio/Display und zugeordnete SMART-/NVMe-Healthwerte samt Regressionstests |
+| `7e5eff9` | Normalisierte Beobachtungen, Quellen-/Datenschutzmodell, Berichte, Datenbank-/Logo-Verträge |
+| `ca60dd6` | CIM-, CPU-, DXGI- und Peripheriegrundlage |
+| `37bb74c` | Hardwareansicht, Inspektor, Invalidierung, Sensorübernahme |
+| `c72ebe0` | Quellen-/Topologie-/Exporttests, UI-Proof, Read-only-Modus |
+| `5f3d22a` | Doppelte Sensoridentitäten, PCI-Adressen und Routenregression |
+| `7159742` | Bericht der geprüften Grundlage und damaliger Restumfang |
+| `db0ad45` | Echte Sensorstatistik mit Stichprobenintervall |
+| `a36915b` | Native Wi-Fi, Adapterraten, Microcode, Direct3D, Audio/Display, SMART/NVMe |
+| `28835d0` | Dokumentierte Fortsetzung, Ausgang dieses Abschlussauftrags |
+| `4d0c483` | Reale Ansichts-/Lifecyclematrix, Großinventar und Virtualisierung |
+| `6da8d37` | Exakte lokale Sensorgeräteprovenienz und PnP-Beziehungen |
+| `be2a4ae` | Zurückhaltende NPU-Identität, PDH-Proben, inaktiver SPD-Vertrag |
+| `f1c3857` | Direct3D-Nodes, Shader-/Wave-/Mesh- und Videofunktionen |
+| `15bd55b` | Lesende TRIM-/Bus-/Wechselmedium- und Controllerintegration |
+| `1fc59a3` | Aktive Displaymodi, HDR, EDID und Audioformatunterstützung |
+| `cee4969` | Adaptergenaues WDDM und Windows-Hybridflags |
+| `f415533` | Reale CIM-/PDH-Cancellation und gestufte Ressourcenmessung |
+| `6924348` | Compositor-Nachlauf und Gegenprobe mit leeren WPF-Fenstern |
+| `428f1d7` | Abschließende Windows-Diskidentität auch für native TRIM-/Transportwerte prüfen |
+| Dokumentationsabschluss | `docs(hardware): finalize autonomous M3 acceptance evidence` |
 
-Die finalen Tests betreffen den funktionalen Stand von `a36915b`.
-Reine Dokumentationsänderungen danach verändern weder Binärlogik noch Tests.
+## 2. Architektur und geänderte Dateien
 
-## 3. Architektur
+20 technische Klassen, eigene Komponentenauswahl, kompakte Wertetabelle und
+Quelleninspektor. Alte Cockpitanzeigen, Mainboard, Messauswertung und
+Softwareinventar bleiben erhalten. Keine Änderung der Verwaltung,
+Zustimmungslogik, Versionsquelle oder Feed-Wireformate.
 
-[Architektur und Lebensdauer](HARDWARE-INTELLIGENCE-ARCHITECTURE.md).
-20 technische Klassen, eigene Komponentenauswahl, kompakte Tabellen und
-Quelleninspektor. Alte Cockpitanzeigen und die Softwareinventarliste bleiben
-bestehen. Kein Umbau von Wireformaten oder bestehenden Verwaltungsaktionen.
+[Architektur](HARDWARE-INTELLIGENCE-ARCHITECTURE.md) und
+[Quellenmatrix](HARDWARE-DATA-SOURCES.md) sind die Fachreferenzen.
 
-## 4. Quellen
+Änderungen seit `28835d0`, relativ zum Repository:
 
-[Vollständige aktuelle Quellenmatrix](HARDWARE-DATA-SOURCES.md).
-CIM, CPUID/Windows-Topologie, rohe Windows-Microcodebytes, DXGI/Direct3D,
-NetworkInterface, Native Wi-Fi, Core Audio, DisplayConfig und das vorhandene
-smartctl. Tatsächlicher SourceType, Timestamp, Confidence,
-Availability und Datenschutz pro Feld. Keine bestätigte Herkunft durch
-einen Modellnamen ersetzen. Direct ist direkt übernommen, nicht unabhängig
-als physikalisch korrekt bestätigt.
+| Bereich | Dateien |
+|---|---|
+| Ansicht/Modelle | `src\SystemCockpit\Controls\HardwareIntelligenceView.xaml`, `HardwareIntelligenceView.xaml.cs`; `src\SystemCockpit\Models.cs` |
+| Sensoren | `src\SystemCockpit\Services\HardwareSensors.cs`, `SensorSemantics.cs`, `SessionStatistics.cs`, `HardwareSensorCorrelation.cs` |
+| Inventar/CPU/SPD | `src\SystemCockpit\Services\HardwareCimReader.cs`, `HardwareCimCatalog.cs`, `HardwareCpuFrequency.cs`, `HardwareSpdBoundary.cs` |
+| Grafik | `src\SystemCockpit\Services\HardwareDirect3D.cs`, `HardwareGpuReader.cs`, `HardwareGpuDriver.cs` |
+| Storage | `src\SystemCockpit\Services\HardwareStorageProperties.cs`, `HardwareStorageHealth.cs` |
+| Display/Audio | `src\SystemCockpit\Services\HardwareDisplayConfig.cs`, `HardwareRuntimeReader.cs`, `AudioTopology.cs` |
+| Tests | `tests\SystemCockpit.Tests\HardwareAcceptanceTests.cs`, `HardwareCompletionTests.cs`, `HardwareIntelligenceTests.cs`, `Program.cs` |
+| Dokumentation | `README.md`, `CHANGELOG.md`, `PROJEKTSTAND.md`; `docs\FEATURES.md`, `HARDWARE-DATA-SOURCES.md`, `HARDWARE-INTELLIGENCE-ARCHITECTURE.md`, dieser Bericht, `PERFORMANCE-BASELINE.md`, `SECURITY-AND-PRIVACY.md`, `TESTING.md` |
 
-## 5. Komponentenklassen
+## 3. Bearbeitung der neun Prioritäten
 
-System, CPU, GPU, NPU, Mainboard, BIOS/UEFI, Chipsatz, RAM, Storage, PCI/PCIe,
-Netzwerk, WLAN, Bluetooth, Audio, Display, USB, Sicherheitshardware,
-Batterie/Power, Sensoren und Peripherie sind als Klassen erreichbar.
-Eine Klasse mit einem Fehler- oder Lückeneintrag beweist kein vorhandenes
-physisches Gerät. Windows-Grafik- und DXGI-Adapter bleiben getrennte Sichten.
+### 1 — Stabilität und reale Ansicht
 
-## 6. Noch nicht implementierte Felder
+Neuer expliziter Modus `--hardware-acceptance` öffnet die tatsächliche
+Hardwareansicht mit realen lesenden Providern. Er misst die erste
+Dispatcherantwort getrennt von fertigen Daten, Klassenwechsel,
+Wiederöffnen, instrumentierten Idle und reale CIM-Cancellation.
+Danach prüft er 30 synthetische Navigations-/Shutdownzyklen mit
+AccessDenied, ProviderError und langsamem abbrechbarem Provider.
+5.000 Komponenten werden vollständig gehalten, nur 32 Listenelemente
+erzeugt. Recycling-Virtualisierung ist ausdrücklich gesetzt.
 
-Die Lückentabelle in [Datenquellen](HARDWARE-DATA-SOURCES.md#noch-nicht-integrierte-detailpfade)
-ist maßgeblich. Besonders offen: GPU-API-/Video-/Speicherspezifikationen,
-NPU-Telemetrie/-Bestätigung, effektiver CPU-Takt, SPD,
-TRIM/Controller-Mapping, physische Paneldaten/separates HDR,
-vollständige Audioformatcapabilities und gerätegenaue Sensorverknüpfungen.
-Dafür fehlen integrierte belastbare Lesepfade,
-nicht zwingend die Information auf der Hardware.
+Ressourcen werden vor/nach Idle und nach je zehn Zyklen erfasst.
+Eine getrennte GC prüft Referenzen, nicht Produktperformance.
+Compositor-Nachlauf und 30 leere WPF-Hostfenster dienen als Gegenprobe.
+Die beobachteten Anstiege werden nicht als „kein Leak“ weginterpretiert.
+Reale Langzeit-/Geräte-/Standby-/Monitorwechsel wurden nicht ausgelöst.
 
-## 7. CPU
+### 2 — Gerätegenaue Sensorverknüpfung
 
-Windows-Identität und Kerne/Threads, CPUID-Signatur und nachvollziehbare
-Bit-/Family-/Model-Auswertung. Processor Groups, Sockel, Kerne,
-Affinitymasken, NUMA, EfficiencyClass und Caches werden technisch angezeigt.
-Keine geratene P-/E-Core-Bezeichnung; CPUID bezieht sich auf den ausführenden
-logischen Prozessor, nicht pauschal alle Sockel. Update Revision wird pro
-Windows-Prozessoreintrag als rohe Bytefolge gelesen, ohne undokumentierte
-Herstellerinterpretation oder Sockelzuordnung. Im realen Lauf 24 verfügbare
-Revisionseinträge. Effektive Takte und eindeutig auf einzelne CPU-Geräte
-gemappte Sensoren bleiben offen.
+Der bestehende aktivierte Sensorpfad liefert zusätzlich lokale
+`IHardware.Identifier`, tatsächliches Parent und, bei GenericGpu,
+`DeviceId`. Kein zweiter Computer/Provider wird geöffnet.
+Sensoren gehören zu konkreten Providergeräten. Windows-Geräte werden nur
+über exakt gleiche, eindeutige vollständige PnP-Kennungen verknüpft;
+kein Hersteller-/Modell-/Slot-/Listenindexvergleich.
 
-## 8. GPU
+Providerkennungen sind Direct/ProviderReported und Sensitive.
+Der nachvollziehbare PnP-Join ist Derived/ProviderReported mit Zeitpunkt
+und Begründung. Unklare Beziehungen bleiben Unavailable und ohne Kante.
+Lokale Zusatzkennungen sind mit JsonIgnore vom Feed ausgeschlossen.
+Gerätekennungen sind Teil des Statistikschlüssels: Ein neues Gerät
+übernimmt nicht den Verlauf eines gleich benannten Vorgängers.
+MIN/MAX/Stichprobenmittel, endliche Anzahl, Messintervall und Lücken bleiben
+erhalten. Temperaturgrenzen sind weiterhin keine Messungen.
 
-Mehrere Windows-/DXGI-Instanzen bleiben identifizierbar. DXGI liefert
-dedizierte/shared Speichergrößen und Prozessbudgets/-nutzung für Node 0.
-Das ist kein geräteweiter VRAM-Verbrauch. Legacy AdapterRAM ist ausdrücklich
-begrenzt beschriftet. Direct3D 12 wird für genau den DXGI-Adapter geöffnet:
-höchstes getestetes Featurelevel, Raytracing-Tier und UMA/CacheCoherentUMA
-für Node 0. Kein Render-/Computeauftrag. Weitere API-/Herstellerpfade fehlen;
-keine CUDA-Zusage oder iGPU/dGPU-Einstufung aus dem Herstellernamen.
+Neue Zuordnungen wurden mit Fixtures geprüft; kein neuer realer
+Sensorzugriff wurde für diese Abnahme gestartet. Nicht jeder LHM-Gerätetyp
+liefert eine vollständige Windows-PnP-ID; solche Geräte bleiben in ihrer
+belegten Providersicht. CPU-Sockel- und Storagezuordnungen werden nicht geraten.
 
-## 9. RAM
+### 3 — NPU
 
-Modulweise CIM-/SMBIOS-Daten einschließlich geschützter Seriennummer,
-Breiten, gemeldeter Geschwindigkeiten und Spannungen. Rohe Attribute bleiben
-als solche bezeichnet. Kein SPD-, JEDEC-, XMP- oder EXPO-Dump behauptet.
+Windows-Klasse, ClassGuid, PnP-/Hardware-/kompatible Kennungen,
+Treiberservice, PnP-Fehlercode und Status sind sichtbar.
+ComputeAccelerator wird gegen die dokumentierte Klassen-GUID geprüft.
+Das bestätigt eine Windows-Geräteklasse, keine unabhängige NPU-Funktion.
+Der Bestätigungsstand bleibt ausdrücklich Unconfirmed; Navigation:
+„NPU / KLASSENHINWEISE“. Keine TOPS, Telemetrie oder AI-Funktion aus Namen,
+DirectML-Verfügbarkeit oder Hersteller abgeleitet.
+Der reale Rechner lieferte einen solchen unbestätigten Klasseneintrag.
 
-## 10. Storage
+### 4 — CPU-Takt
 
-PhysicalDisk → Windows-Disk → Partition → Volume/Dateisystem wird nur über
-eindeutige UniqueId-/DiskNumber-/Pfadbeziehungen verknüpft. Mehrdeutige
-Matches bleiben ohne Kante. Modellnamen werden nicht zum Join verwendet.
-Reliability-Werte gehören zur tatsächlich abgefragten PhysicalDisk.
-Im realen Standardrechte-Lauf waren vier Reliability-Abfragen AccessDenied.
-Es wurden keine Rechte angehoben oder Selbsttests gestartet.
-Das vorhandene smartctl liest SMART-/NVMe-Healthdaten über `-x -j -d auto`.
-Zuordnung über dokumentiertes `/dev/pdN`, exakten zurückgelieferten
-Gerätenamen und erneute MSFT_Disk-Prüfung von Number, UniqueId und Path.
-Keine Gleichsetzung unterschiedlich definierter Windows-/NVMe-Serienkennungen.
-Unklare oder geänderte Identität verwirft die Healthwerte; kein atomarer
-Hardware-Snapshot behauptet.
+Frische Windows-PDH-Query mit englischen Counterpfaden:
+`Processor Information(*)\Processor Frequency` und
+`% Processor Performance`. Baseline, abbrechbare 300-ms-Wartephase und
+zweite Probe; tatsächlicher Zeitabstand und Endzeit sind dokumentiert.
+Gruppen-/Prozessorinstanzen und Windows-Aggregate bleiben unverändert.
+Gruppen-/Prozessoranzahlen werden vor/nach Sampling geprüft;
+Topologieänderungen verwerfen die Probe. Ungültige/fehlende Proben
+werden nicht als Null ausgegeben, echte Null bleibt gültig.
+Queryhandles werden auch bei Abbruch geschlossen.
 
-Im finalen realen Lauf zusätzliche 48 verfügbare Healthfelder auf drei
-NVMe-Geräten. Zwei unbekannte USB-Brücken bleiben ProviderError mit
-Exit-Bitmaske 1. Keine erzwungene Transportauswahl. NVMe-Zähler bleiben
-präzise Skalare; Data Units sind als 512.000-Byte-Einheiten gekennzeichnet.
-Percentage Used ist verbrauchte Ausdauer, keine Restlebensdauerprognose.
-ATA-Normalized/Worst/Threshold/Raw bleiben Herstellerattribute ohne
-pauschale Gesundheitsdeutung.
+**Kein eigener effektiver Hardware-Zyklustakt:** Windows-Frequenz und
+Leistungsprozent sind separate Providerangaben. APERF/MPERF und
+Residenzzeiten werden ohne eigenen Kernelzugriff nicht gemessen.
+Eine Multiplikation mit vermutetem Basis-/Maximaltakt wäre nicht belastbar
+und wurde verworfen. Keine pauschale P-/E-Core- oder Sockelzuordnung.
+Drei reale PDH-Abbrüche sind im Abschlussnachweis enthalten.
 
-## 11. PCIe
+### 5 — SPD/JEDEC/XMP/EXPO
 
-Explizite PnP-IDs, Bus/Address, validierte Device/Function-Auswertung,
-Treiber und gemeldete Linkcodes/-breiten. Keine vermutete physische Slotnummer.
-Eine fachliche Übersetzung aller Linkcodes und eine Slot-/Controllerdatenbank
-sind noch nicht vorhanden.
+Vorhandene LibreHardwareMonitor-Schnittstellen und Windows-CIM wurden
+untersucht: SMBIOS-/PhysicalMemory-Angaben sind kein roher SPD-Dump.
+Kein belegter allgemeiner sicherer Benutzerkontextpfad für beliebige DIMMs
+integriert. SMBus-/Kernelzugriff oder zusätzliche Treiber werden nicht
+aktiviert. Das ist eine begründete Zugriffsgrenze, kein erfundenes Profil.
 
-## 12. Netzwerk
+Ein inaktiver optionaler `IHardwareSpdProvider`-Vertrag ist vorbereitet:
+genaue Gerätekennung, begrenzter Rohdatenpuffer, Direct-/Sensitive-Metadaten,
+Zeitstempel, Lizenz- und HTTPS-Dokumentationsangabe. Keine automatische
+Providererkennung, kein Loader, keine Bibliotheks-/Treiberinstallation.
+Vertrag ist getestet, aber kein produktiver SPD-Lesepfad behauptet.
 
-Windows- und .NET-Sichten mit aktiven/inaktiven sowie virtuellen Adaptern.
-MAC, Adressen, Gateways und DNS sind Sensitive. Kumulierte Byte-/Fehlerzähler
-sind keine momentane Rx-/Tx-Rate. Ein Legacy-WLAN-Provider meldete einen
-Providerfehler; daraus wird kein fehlendes WLAN-Gerät abgeleitet.
-Native Wi-Fi liefert PHY/Standard, Signalqualität in Prozent, Linkraten
-und Kanal. Mittenfrequenz/Band nur bei eindeutigem SSID/BSSID/BSS-Match
-der Windows-Cacheliste; kein aktiver Scan, keine SSID/BSSID im Export.
-Abgeleitete Rx/Tx-Raten verwenden die tatsächlich verstrichene Zeit
-zwischen angeforderten Adapterabfragen, nicht einen neuen Poller.
-Fehlende/rückläufige Zähler starten eine neue Baseline; eine echte
-Nulldifferenz ist ein gültiger Nullwert. Nicht unterstützte
-Protokolleigenschaften verlieren nicht die übrigen Adapterwerte.
+### 6 — GPU
 
-## 13. Display
+Exakter DXGI-Adapter/LUID statt Name. D3DKMT liefert WDDM und rohe
+AdapterType-/Hybridflags. Die speziellen Hybridflags werden nicht in
+eine allgemeine iGPU/dGPU-Klassifizierung umgedeutet.
 
-Windows-EDID-Zeichenfolgen mit expliziter ASCII-Ableitung, Identitäten,
-Größen und aktive Desktopflächen. Aktueller Modus, Refreshcode, Orientierung
-und Desktopfarbtiefe aus EnumDisplaySettingsEx. Keine native Panelauflösung,
-HDR-Freigabe oder monitorbezogene Skalierung daraus ableiten.
-DisplayConfig ergänzt aktive Zielverbindung, bevorzugten Windows-Modus,
-Refresh und Advanced Color/Bits pro Kanal. Die zugeordnete Desktopfläche
-liefert ihren Skalierungsfaktor. Das ist keine physische Panelzertifizierung;
-Advanced Color allein ist kein separat bestätigter HDR-Modus.
+Direct3D liefert getestete Featurelevel und Shader Models, Raytracing,
+Wave/Int64, Mesh/Sampler-Tiers, Nodezahl und je Node UMA/CacheCoherentUMA/
+isolierte MMU. DXGI liefert Prozessbudgets und lokale/nichtlokale Nutzung
+je belegtem Node; ohne Nodequelle bleibt die explizite Node-0-Sicht.
+Kein geräteweiter VRAM-Nutzungsnachweis.
 
-## 14. Audio
+ID3D12VideoDevice fragt Decode-Profil-GUIDs und maximale Video-Process-
+Inputstreams ab. Grenzen: maximal 64 Nodes und 256 Profil-GUIDs je Node,
+ungültige Antwortgrößen werden nicht übernommen.
+Keine Command Queue, Render-/Compute-/Decode-/Encodeausführung.
+COM, Puffer, Pins und Windows-Adapterhandles werden freigegeben.
 
-Geräte, Endpoints, Status und vorhandene Standardrollen/Sitzungsangaben
-aus der bestehenden lesenden Core-Audio-Topologie. Keine Aufnahme,
-Wiedergabe oder Lautstärkeänderung. GetMixFormat ergänzt aktive Endpoints
-um ihr Shared-Mode-Audioengineformat einschließlich Kanälen, Sample Rate,
-Container-/gültigen Bits, Byte/s, Kanalmaske und Subtyp.
-Keine Aussage über alle oder Exclusive-Mode-Geräteformate.
+Scheduler-Engines sind keine Direct3D-Nodes. Eine Engine-/Vendorintegration,
+vollständige Videoformat-/Auflösungs-/Frameratematrix, VBIOS,
+Speicherspezifikation und Vulkan/OpenCL/CUDA bleiben außerhalb der
+implementierten sicheren Abdeckung. Resizable BAR wird nicht aus UMA,
+VRAM-Größe oder Hybridflags abgeleitet. Unbekannte Codes bleiben roh.
 
-## 15. USB
+### 7 — Storage
 
-Hostcontroller, Windows-USB-Geräte und deren tatsächliche Elternidentität.
-VID/PID werden nur aus expliziten IDs extrahiert. Eltern außerhalb der
-gelesenen Gruppe werden nicht durch vermutete Hubs oder Portnummern ersetzt.
-Elektrische Topologie nicht implementiert.
+Vorhandene eindeutige PhysicalDisk → Disk → Partition → Volume-Beziehungen
+und SMART-/NVMe-Identitätsprüfung bleiben erhalten.
+Win32_DiskDrive.Index wird eindeutig mit MSFT_Disk.Number verknüpft.
+Controller stammen aus expliziten SCSI-/IDE-CIM-Assoziationen;
+mehrdeutige oder fehlende Beziehungen werden nicht erzwungen.
 
-## 16. Sensoren
+Der genaue MSFT_Disk.Path wird ohne Lese-/Schreibzugriffsrechte geöffnet.
+IOCTL_STORAGE_GET_DEVICE_NUMBER prüft die Disknummer am geöffneten Handle.
+Reine Query-IOCTLs lesen TrimEnabled, Wechselmedium und BusType getrennt.
+Eine nicht unterstützte TRIM-Abfrage verliert nicht die übrigen Angaben.
+TrimEnabled beweist weder ausgeführte Deallokation noch eine globale
+Dateisystemrichtlinie.
 
-Nur der vorhandene aktivierte Cockpit-Sensorpfad speist die Zentrale.
-Alle gelieferten Sensortypen bleiben bezeichnet, einschließlich nicht
-klassischer Typen. Keine neue Instanz von HardwareSensors/Computer geöffnet.
-Endliche Nullwerte bleiben gültig, fehlende/ungültige Werte fehlen.
-Temperaturgrenzen sind ausdrücklich keine Temperaturmessungen.
-Doppelte IDs liefern ProviderError, keine willkürliche Zusammenlegung.
-Der vorhandene SessionStatistics-Helfer aggregiert echte endliche Stichproben
-je exaktem Kanal zu Minimum/Maximum/Mittel und Anzahl. Intervall vom ersten
-bis zum letzten Messwert bleibt sichtbar; Lücken werden nicht interpoliert.
-Keine Zeitgewichtung oder Grenzwertstatistik. Entfernte/geänderte Kanäle
-und deaktivierter Zugriff setzen die jeweilige Messbasis zurück.
-Maximal 2.048 aktive Reihen; Statistikfehler werden protokolliert und angezeigt.
+smartctl bleibt bei `-x -j -d auto`, dokumentiertem `/dev/pdN`, exaktem
+zurückgeliefertem Gerätenamen und anschließender Windows-Number/UniqueId/
+Path-Prüfung. Keine Modellnamen-/Seriennummernheuristik, Selbsttests oder
+erzwungenen unbekannten USB-Transporte. Geänderte/entfernte/mehrdeutige
+Identität verwirft neue Health-/TRIM-/Wechselmedium-/Buswerte.
+Die Nachprüfung gilt auch ohne verwertbare smartctl-Werte für verfügbare
+native Gerätedetails. Die Inventur ist nicht atomar.
+Zählerpräzision und herstellerspezifische ATA-Deutung bleiben unverändert.
 
-## 17. Hardwaredatenbank
+Real: drei verfügbare TrimEnabled-Felder; zwei USB-Geräte unterstützen
+diese Query nicht. Drei NVMe-Healthpfade liefern Daten; zwei unbekannte
+USB-Brücken bleiben explizite smartctl-Fehler.
 
-[Datenbankrichtlinie](HARDWARE-DATABASE-POLICY.md).
-Versionierbarer Eintragsvertrag und exaktes Match-/Lizenz-/Prüfdatumgate
-vorbereitet und getestet. Kein Datenbestand, Importer oder produktiver
-Database-Match aktiviert. Keine proprietären Tabellen kopiert.
+### 8 — Display
 
-## 18. Branding
+Aktive Quell-/Zielmodi werden nur bei passendem Modustyp, Adapter und ID
+übernommen. Desktopfläche/Position, Zielsignal, bevorzugter Windows-Modus,
+Refresh, Verbindung, Orientierung, Advanced Color, Zielbits pro Kanal und
+Skalierung bleiben getrennt beschriftet.
+Info2 liefert separat HDR-Unterstützung, Benutzerfreigabe und aktiven
+SDR/WCG/HDR-Modus; alte Windows-/Treiberstände können Unsupported liefern.
 
-[Logo-Richtlinie](HARDWARE-BRANDING-AND-LOGO-POLICY.md).
-Keine neuen Herstellerlogos. Vollständiges Freigabe-/Hashmodell vorbereitet,
-aber kein Herstellerasset aktiviert oder juristisch freigegeben.
+WmiGetMonitorRawEEdidV1Block liest bis neun 128-Byte-Blöcke mit gültigem
+Basiskopf und Blockprüfsumme. Deklarierte Erweiterungen und gelesene
+Anzahl sind sichtbar, Rohdaten Sensitive. Reale Windows-CIM-Metadaten
+melden hier Boolean statt des dokumentierten UInt32-Rückgabetyps.
+Beide typgeprüften Erfolgsverträge werden getestet und behandelt;
+False, Fehlercodes oder kaputte Daten sind kein Erfolg.
+Exakte Monitorinstanz statt Modellname verbindet EDID-Sichten.
+Physische Panelauflösung/-farbtiefe wird daraus nicht zertifiziert.
 
-## 19. Datenschutz
+### 9 — Audio
 
-Seriennummern, Gerätepfade, PnP-/EDID-Kennungen, MAC/IP/Gateway/DNS und
-interne Instanzkennungen werden nicht als normale öffentliche Identitäten
-exportiert. Interne Schlüssel und Anzeigenamen werden durch Berichtsaliase
-ersetzt. Secret wird vollständig ausgelassen.
-Im finalen realen Bericht: 792 Sensitive-Feldzeilen, alle redigiert;
-kein Sensitive-Value ausgegeben, keine Secret-Zeile enthalten.
-Dies ist zusätzlich zu den synthetischen Datenschutzfixtures geprüft.
+GetMixFormat bleibt aktuelle Shared-Mode-Enginesicht. Für genau dieses
+Format fragt IsFormatSupported Shared und Exclusive ab. Exakte
+Unterstützung, Näherungsformat und echte Nichtunterstützung sind Werte;
+AccessDenied, invalidiertes Endpoint und unerwartete HRESULTs sind
+gesonderte Fehlerzustände. Näherungsformatpuffer werden freigegeben.
+Kein Initialize/Start, Aufnahme, Wiedergabe oder Lautstärkeänderung.
 
-## 20. Export
+Real: fünf aktive Endpoints mit exakter Shared-Unterstützung, dieselben
+fünf lehnen dieses konkrete Format in Exclusive ab. Das ist keine
+erschöpfende Geräteliste unterstützter Formate oder Qualitätsbewertung.
 
-JSON `aether.hardware/1`, tabellarisches CSV und Text. Expliziter
-Yes/No/Cancel-Dialog vor Sensitive-Export, Nein als Standard.
-Nur bereits gelesene Klassen. Wertanwesenheit, Stale, Unavailable,
-AccessDenied, Unsupported und ProviderError bleiben unterscheidbar.
-CSV-Formelinjektion geprüft. Keine externen Uploads.
-Der Dialog wurde nicht durch automatisierte Dateidialog-/Benutzerklicktests
-freigegeben; der Serializer und seine Zustimmungsparameter sind getestet.
+## 4. Quellen, Fehler und Datenschutz
 
-## 21. Performance
+Jedes Feld behält SourceType, Confidence, Timestamp, Einheit,
+Availability, Fehler, Datenschutz und gegebenenfalls Berechnung.
+Direct/ProviderReported ist keine unabhängige physische Bestätigung.
+Derived kennzeichnet nachvollziehbare Berechnung/Verknüpfung.
+NPU-Funktion bleibt Unconfirmed; kein produktiver Database-Match aktiviert.
 
-[Tatsächliche neue Messungen](PERFORMANCE-BASELINE.md#meilenstein-3-hardwarezentrale).
-Drei synthetische Runden der Fortsetzung, jeweils 58 Fixturekomponenten.
-Median Fixtureaufbau 0,6591 ms, 100 Snapshotprojektionen 1,5420 ms,
-JSON-Export 1,0992 ms; erster JIT-/Kaltlauf separat sichtbar.
-Geänderter Fixtureumfang: kein belastbarer Geschwindigkeitsvergleich
-mit der Grundlage mit 66 Komponenten.
-Kein allgemeiner Produktbenchmark oder Langzeit-Leaknachweis.
+Available, Stale, Unavailable, Unsupported, AccessDenied und ProviderError
+bleiben unterscheidbar. Alte Werte werden bei Invalidierung/Fehler nicht
+als frisch ausgegeben. Kein automatischer UAC-/Treiber-/Transportfallback.
+Cancellation erfolgt bei Wartephasen/Kindprozessen und zwischen nativen
+Aufrufen; synchrone Treibercalls werden nicht unsicher vorzeitig beendet.
 
-Ein realer kompletter Prüfmodus las 19 Klassen nacheinander. Einzelzeiten
-0,329 bis 13,721 s; USB/PCI/Bluetooth sind insbesondere noch langsam.
-Der Modern-Smoke lief parallel; dies ist keine isolierte Performanceprüfung.
-Die produktive Ansicht liest dagegen eine ausgewählte Klasse asynchron.
-Keine permanente Komplettinventur. Ressourcenfreigabe und Abbruch sind
-synthetisch geprüft; eine belastbare reale Idle-/Langzeit-/Resume-Matrix
-fehlt noch. Deshalb keine vollständige Performanceabnahme.
+JSON `aether.hardware/1`, CSV und Text enthalten nur gelesene Klassen.
+Seriennummern, PnP-/Gerätepfade, EDID-Rohdaten, Controller-/Providerkennungen
+und Netzwerkidentitäten sind Sensitive. Berichtsaliase ersetzen interne
+Komponenten-/Elternschlüssel. Secret entfällt vollständig; CSV-Formelschutz
+und ausdrücklicher Sensitive-Dialog mit Nein als Standard bleiben bestehen.
+Keine Rohberichte oder Hardwaredaten hochgeladen.
 
-## 22. Tests
+Finaler realer Bericht: **5.952 Feldzeilen**, davon **835 Sensitive**,
+alle redigiert, keine unredigierten Sensitive-Werte und keine Secrets.
 
-- Release-Solutionbuild: 0 Warnungen / 0 Fehler.
-- STA-Grundrunner: **4.641 Assertions**, davon 256 zusätzliche Assertions
-  gegenüber dem M2-Grundstand; bestehende Tests nicht doppelt addieren.
-- Kombinierte synthetische Interface-/Schoner-/Brandingprüfung:
-  **4.994 Assertions einschließlich Grundrunner**.
-- Bestehender deutscher Modern-/Neon-Smoke: **3.611 Assertions** und
-  22 Bilder.
-- Hardwareproof: neun Bilder in Retro-Neon und Modern hell/dunkel mit
-  synthetischer Root-DPI 100/150/200 Prozent und ReducedMotion.
-- Fixtures: Null/Missing, alle SourceType-/Fehlerzustände, Ablauf/
-  Invalidierung, in-flight Änderungen, Geräteentfernung, identische
-  Modelle, CPU-Topologie, Storage-/USB-Kanten, EDID, Sensorfehler,
-  Lizenz-/Logo-Gates, JSON/CSV/Text-Redaktion, Abbruch/Shutdown und
-  PowerShell-AST-Syntax ohne Abfrageausführung.
-- Fortsetzung: 83 zusätzliche Assertions für echte Sensorstatistik,
-  Extremwertmittel, WLAN-Layouts, Frequenz-/Bandzuordnung, Adapterraten,
-  Protokollfehler, Microcode/Audio/Direct3D sowie SMART-/NVMe-Identität,
-  Zählerpräzision und redigierte Herstellertexte.
-
-Reale Gerätewechsel, Resume und physische Monitor-/DPI-Wechsel sind nicht
-durch diese Fixtures nachgewiesen. Die unveränderten Verwaltungsrunner
-wurden für M3 nicht erneut ausgeführt; deren früherer Timeout bleibt
-unabhängig dokumentiert.
-
-## 23. Reale Hardwareprüfungen
-
-Der Auftraggeber hat die rein lesende Prüfung dieses Rechners ausdrücklich
-freigegeben. Keine BIOS-/Treiber-/Firmware-/Netzwerkänderung, kein Lasttest,
-SMART-Selbsttest oder neuer Kernel-/Sensorprovider.
-
-Finaler Nachweis `m3-continuation-readonly-final.json` enthält **5.588 Feldzeilen**,
-jeweils Quelle, Zeit, Ergebniszustand und redigierten/normalen Wert.
-Er liegt nur in den lokalen Sitzungsnachweisen, nicht im Repository oder
-auf GitHub. Quellen-Antworten sind keine unabhängige Richtigkeitsprüfung.
-
-| Status beim Berichtexport | Feldzeilen |
+| Status beim Export | Feldzeilen |
 |---|---:|
-| Available | 3.991 |
-| Stale | 214 |
-| Unavailable | 514 |
+| Available | 4.229 |
+| Stale | 267 |
+| Unavailable | 548 |
 | AccessDenied | 8 |
-| Unsupported | 858 |
+| Unsupported | 897 |
 | ProviderError | 3 |
 
-Die im langen Gesamtlauf abgelaufenen dynamischen Werte werden korrekt als
-Stale exportiert. Zwei Providerfehler betreffen unbekannte USB-Brücken,
-einer den Legacy-NDIS-WLAN-Pfad; Native Wi-Fi liefert separat Werte.
-Nicht unterstützte IPv4-Eigenschaften (native Fehler 50/10043/10047)
-werden isoliert als Unsupported statt als pauschaler Adapterfehler angezeigt.
-Der gestiegene Unsupported-Anteil ist daher kein Nachweis eines
-Hardwareverlusts. Keine neue Sensorprüfung durchgeführt;
-Sensoren wurden ausschließlich mit Fixtures geprüft.
+267 dynamische Werte sind im langen sequenziellen Gesamtlauf abgelaufen
+und deshalb Stale. Drei Providerfehler: zwei unbekannte USB-smartctl-Brücken,
+ein Legacy-NDIS-WLAN-Pfad. Native Wi-Fi liefert separat reale Werte.
+Fehlende Berechtigungen wurden nicht verändert.
 
-SHA256-Nachweise:
+## 5. Prüfungen und visuelle Nachweise
 
-| Lokaler Nachweis | SHA256 |
+| Prüfung | Ergebnis |
 |---|---|
-| `m3-continuation-readonly-final.json` | `1C41E36B6D9F15D2D0126EEDBA9B0141199BCB9652053A040D45C8306CE95B92` |
-| `m3-continuation-readonly-final.json.timings.json` | `088100CFF6BA60351A67FB844EE40E5783F3E87D337BC95FE778EDEC6E48CCFF` |
-| `m3-continuation-proof-01\fixture-performance.json` | `C62CCA56DAD0F08B2538DBFB02EED360EE280D7C7D5D49DED561EB20B8DAA653` |
+| Release-Solutionbuild, ohne Restore | 0 Warnungen / 0 Fehler |
+| STA-Grundrunner | 4.698 Assertions |
+| Interface/Schoner/Branding | 5.051 Assertions einschließlich Grundrunner |
+| Deutscher Modern-/Neon-Smoke | 3.611 Assertions, 22 Bilder |
+| Hardwareproof | neun Theme-/Root-DPI-Bilder, drei Fixture-Messrunden |
+| Reale Ansicht und Lifecyclematrix | bestanden; Messungen unten |
+| Reale lesende Inventur | alle 19 Nicht-Sensorklassen durchlaufen; Feldfehler separat sichtbar |
+| Neue Abschlussassertions | 57 gegenüber 4.641; insgesamt 313 gegenüber M2 |
 
-Frühere Diagnoseausgaben einschließlich der Zwischenläufe der Fortsetzung
-sind keine aktuellen Abschlussnachweise. Reale Berichte bleiben lokal.
+Build, Grundrunner, kombinierter UI-Lauf und vollständige reale Inventur
+wurden mit Quellstand `428f1d7` erneut erfolgreich ausgeführt.
+Ansichts-/Ressourcenmatrix (`6924348`) und unveränderte Themeproofs stammen
+aus den Läufen vor dem letzten Storagefix; dieser betrifft allein die
+zusätzliche Identitätsprüfung der Storagewerte.
 
-## 24. Regressionen und Korrekturen
+Dokumentationsabschluss: `git diff --check` ohne Befund, keine neuen
+fehlenden relativen Linkziele. Zehn bereits fehlende historische Paketziele
+bleiben unverändert; historische Pakete wurden nicht angefasst.
 
-Während der Implementierung wurden erkannt und vor den finalen Läufen
-korrigiert: Skriptklammer/Syntax, fehlender CIM-Schlüsselpfad, zwischen
-System/Firmware kollidierende Zusatzschlüssel, reine Header- statt
-Routenvergleiche in alten Navigationstests sowie der Test-Dispatcher für
-asynchronen Abbruch. Eine helle Proofdarstellung benötigte einen tatsächlich
-gezeichneten Hintergrund. Regressionstests zeigen weiter das alte Cockpit,
-Mainboard und Schoner; keine Datenquelle oder Bestätigung abgeschaltet.
+Fixtures prüfen insbesondere genaue/mehrdeutige Gerätebeziehungen,
+Statistikwechsel, NPU-Confidence, SPD-Vertrag, PDH-Probenzustände,
+Shader-/WDDM-Codes, TRIM-Deskriptoren, Controller-Doppelbelegung,
+HDR-/Audioantworten sowie tatsächlich ausgeführte isolierte EDID-Zweige.
+Vorhandene Assertions wurden weder entfernt noch abgeschwächt.
+JSON-/CSV-/Text-Datenschutz- und Exporttests laufen im Grundrunner.
+Der native Dateidialog ist nicht durch automatisierte Benutzerklicks abgenommen.
 
-In der Fortsetzung zusätzlich korrigiert: zwei Variablennamenskonflikte,
-isolierte IPv4-Protokollfehler, vom Tool nicht akzeptierte
-PhysicalDrive-Schreibweise und die unzulässige Gleichsetzung von
-Windows-Storage- und NVMe-Controller-Serienkennungen. Statt schwächerem
-Modellvergleich wird die Windows-Geräteidentität nachgeprüft.
-Ein Regressionstest deckt Mittelwertüberlauf bei endlichen Gegenwerten ab.
+Hardwareproof: Retro-Neon und Modern hell/dunkel, synthetische Root-DPI
+100/150/200 Prozent mit ReducedMotion. Keine physischen Monitorwechsel.
+Stichproben wurden als Bilder visuell geprüft; das ersetzt keinen
+manuellen Gesamtdurchlauf auf allen Geräten.
+Unveränderte Verwaltungsrunner wurden nicht als M3-Routineprüfung gestartet.
 
-## 25. Offene Abnahmegrenzen
+### Nachweismatrix
 
-- Vollständige Deep-Dive-Abdeckung gemäß Quellenlücken fehlt.
-- NPU-Klassenzuordnung nicht unabhängig bestätigt.
-- Gerätegenaue Live-Sensorverknüpfungen fehlen.
-- Weitere GPU-Funktions-/Video-APIs, SPD, TRIM-/Controller-Mapping,
-  physische Paneldaten und vollständige Audioformatcapabilities fehlen.
-- Zwei unbekannte USB-Brücken liefern keine SMART-Healthdaten;
-  zusätzlicher Transportzugriff wird nicht ungeprüft erzwungen.
-- Echte Hotplug-/Resume-/Langzeit-/Monitorwechselmatrix nicht verifiziert.
-- Reale UI-Latenz-/Idle- und Ressourcenabnahme für große Inventare offen.
-- Die Oberfläche ist als neue Ansicht geprüft, nicht als neue installierte
-  Version abgenommen.
+| Gegenstand | Nachweisart und Grenze |
+|---|---|
+| Hardwareansicht öffnen, Klassen wechseln, Wiederöffnen | real mit lesenden Providern in isoliertem WPF-Host; nicht vollständiger produktiver MainWindow-Start |
+| Navigation während CIM-Erfassung, PDH-Abbruch | real auf diesem Rechner |
+| ProviderError/AccessDenied/langsamer Provider, Shutdown, 5.000 Komponenten | synthetisch, reproduzierbar |
+| Entfernte/mehrdeutige Geräte, Invalidierung/in-flight Änderung | synthetische Inventar-/Identitätsfixtures |
+| Themes/ReducedMotion/Root-DPI | synthetisch gerendert, ausgewählte Bilder visuell beobachtet |
+| Tatsächliches Standby/Resume, physischer Hotplug, Docking, Monitor-/DPI-Wechsel | nicht getestet; kein sicherer reproduzierbarer physischer Ablauf ohne Eingriff ausgelöst |
+| Langzeit-/Dauerbetrieb | nicht getestet; begrenzte Ressourcenmatrix ist kein Ersatz |
+| Neue Sensorgerätezuordnung | Fixtures; bestehende Sensorinstanz nicht für diese Prüfung neu aktiviert |
 
-## 26. Meilenstein 4 und Neon Wiki
+## 6. Performance und Ressourcen
 
-Stabile Feldschlüssel, Quelleninspektor, Datenschutz und unveränderliche
-Beobachtungen können spätere Artikel und belegte Datenbankzuordnungen tragen.
-Es gibt noch keine fertige Wiki-Anbindung. Weder Meilenstein 4 noch
-Lokalisierungs-/Releasearbeiten wurden begonnen.
+[Messmethode und vollständige Tabellen](PERFORMANCE-BASELINE.md#autonomer-m3-abschluss).
+Aktueller Nachweis `m3-final-acceptance-05.json`:
 
-**MEILENSTEIN 3 NICHT ABNAHMEBEREIT.**
-Keine Freigabe des unvollständigen Umfangs und kein vorgezogener Prozessumbau.
+- Erste Dispatcherantwort beim Öffnen: 455,8 ms; Systemdaten fertig
+  nach 9.768,5 ms. Die Providerlaufzeit bleibt sichtbar, UI arbeitet asynchron.
+- Klassenwechsel: Dispatcher 12,0–28,9 ms; fertige Daten 498,4–4.724,2 ms.
+- Reale CIM-Cancellation bei Navigation: 52,2 ms.
+- Langsamer Fixtureprovider beim Schließen: 45,0 ms.
+- Drei reale PDH-Abbrüche: 108,8–124,3 ms.
+- 5.000 Komponenten: 91,7 ms bis Dispatcher-/Layoutbereitschaft,
+  32 erzeugte Container.
+- Dispatcher-Herzschlag mit Soll 25 ms: 1.753 Proben,
+  P95 76,5 ms, Maximum 426,5 ms über den gesamten gemischten Ablauf.
+- 15.034,4 ms instrumentierter Idle: 343,75 ms Prozess-CPU;
+  Handles 796 → 796, Private Bytes 212.303.872 → 213.053.440.
+  Herzschlag/Testpump sind enthalten; kein uninstrumentierter Produktidle.
+
+Nach 30 Fixturefenstern: 837 Handles, Private Bytes 319.610.880.
+Nach getrennter GC und Compositor-Nachlauf: 837 Handles,
+Private Bytes 245.149.696. 29 von 30 Ansichten waren sammelbar;
+eine Referenz blieb im WPF-Testkontext erhalten.
+Die Gegenprobe mit 30 leeren WPF-Hostfenstern erhöhte Handles ebenfalls
+von 837 auf 858; Private Bytes sanken dabei auf 239.734.784.
+Der Handleanstieg ist also nicht allein der Hardwareansicht zuzuordnen,
+seine vollständige Ursache ist nicht bewiesen. Keine allgemeine
+Leakfreiheits- oder Langzeitfreigabe aus diesen Daten ableiten.
+
+Separater Fixtureproof: 58 Komponenten, Median Aufbau 0,6545 ms,
+100 Snapshots 1,4808 ms, JSON 1,1080 ms. Kalter erster Lauf separat erfasst.
+Reale Klassenlaufzeiten 0,293–13,180 s; insbesondere System/USB/PCI/
+Bluetooth bleiben langsam. Kein permanenter Komplettpoller,
+kein behaupteter Geschwindigkeitsgewinn gegenüber anderem Umfang.
+Abschlussprüfungen liefen nacheinander, nicht parallel.
+
+## 7. Nachweisdateien
+
+Alle folgenden Dateien liegen ausschließlich im lokalen Sitzungsordner
+`files`, nicht im Repository oder auf GitHub.
+Reale Diagnosen werden nicht als öffentliche Artefakte beworben.
+
+| Datei | SHA256 |
+|---|---|
+| `m3-final-readonly-03.json` | `0FCA138F42CD07CDEDF47C31E4EE3969D4ACA2DD42581E622FBD120B14831692` |
+| `m3-final-readonly-03.json.timings.json` | `D08C782316A5C33CA15D72D842BEC22F4FB04E5A2028A1EABAA20528BA252E16` |
+| `m3-final-acceptance-05.json` | `08BF89C18AF8F3AAFE562236FFF9843DB6B1EB9BE6D2EF14C9B045A8F465DFAF` |
+| `m3-final-proof-02\fixture-performance.json` | `4B8DC653CC98B63E53641BABCCEF1665352E4C9BA113A709F794631A962EA20E` |
+
+Visuell: `m3-final-proof-02\hardware-{theme}-{100,150,200}.png`,
+neun Dateien; zusätzlich `m3-final-modern-02`, 22 Bilder.
+Zwischenläufe sind Diagnose, nicht die hier genannten Abschlussnachweise.
+
+## 8. Korrekturen und bewusst verworfene Wege
+
+- Der erste Abnahmetest wartete mit einem zu hoch priorisierten
+  Dispatcher-Testpump auf ApplicationIdle. Pump korrigiert;
+  eigener hängender Testhost gezielt beendet, keine Produktlogik umgangen.
+  Ein dadurch gesperrter Build wurde nach Bereinigung erfolgreich wiederholt.
+- Der EDID-Zweig war zunächst irrtümlich unter dem Storagezweig verschachtelt.
+  Tatsächlicher Leselauf zeigte fehlende Werte; Zweig korrigiert und
+  ausführbare isolierte Regression hinzugefügt.
+- EDID-Dokumentation und reales CIM-Rückgabetypmodell unterscheiden sich.
+  Reale Klassenmetadaten geprüft, Boolean/UInt32-Erfolg typgeprüft behandelt,
+  False und kaputte Prüfsummen explizit getestet.
+- Unbekannte Shader-/WDDM-Codes werden nicht auf bekannte Fähigkeiten
+  gerundet. Nicht unterstütztes Exclusive-Mixformat ist kein Audioausfall.
+- Abschließende Windows-Diskidentitätsprüfung auf native Gerätedetails
+  erweitert: Ein fehlgeschlagener Abgleich verwirft auch neu gelesene
+  TRIM-/Wechselmedium-/Buswerte, nicht nur SMART-/NVMe-Werte.
+- Verworfene riskante/spekulative Wege: zweiter Sensorcomputer,
+  Kernel-/SMBus-/Treiberinstallation für SPD oder Effektivtakt,
+  Prozent-/Nominaltakt-Schätzung, Hersteller-/Modellnamenjoins,
+  pauschale NPU-/GPU-Fähigkeitsannahmen, unbekannte USB-Transporte,
+  vollständige Capability-Zusage aus einzelnen Video-/Audio-Proben.
+
+## 9. Endgültige Empfehlung und Übergabe
+
+Die zentrale Hardwarezentrale, nachvollziehbare Quellen, genaue verfügbare
+Gerätebeziehungen, sichere lesende Details, Fehlerzustände, Datenschutz,
+Bedienbarkeit und Regressionen sind im beschriebenen Umfang nachgewiesen.
+Alle Prioritäten sind implementiert oder mit untersuchter sicherer
+Zugriffs-/Beweisgrenze abgeschlossen; nicht bloß auf Unsupported gesetzt.
+
+**M3 ist mit diesen Grenzen abnahmefähig.** Eine echte Effektivtaktmessung,
+rohes SPD, unabhängige NPU-Bestätigung, allumfassende GPU-/Audio-/Panel-
+Spezifikationen und physische Langzeit-/Ereignisabnahme werden nicht behauptet.
+Ressourcen-Nachbeobachtung und breite Hardwarekompatibilität bleiben
+sinnvolle Folgeprüfungen, nicht vorgetäuschte bestandene Tests.
+
+Process Command Center und Community-Feedback bleiben in der Planung:
+„Es wäre praktisch, wenn man über's Kontextmenü eines Prozesses die
+Möglichkeit hätte, ihn zu killen.“ Spätere UI-Bezeichnung:
+**„Prozess beenden“**. Noch keine Umsetzung, keine Prozessbeendigung,
+kein Meilenstein 4 oder Releaseauftrag. **Jetzt ausdrückliche Abnahme abwarten.**

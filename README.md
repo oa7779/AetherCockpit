@@ -16,8 +16,11 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 Komponentenansichten, Quelleninspektor und datenschutzbewusstem Bericht ist
 implementiert. Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails,
 zugeordnete SMART-/NVMe-Berichte und echte Sensorstatistik ergänzen die Ansicht.
-Der vollständige Hardware-Meilenstein ist noch nicht
-abnahmebereit; [Abdeckung und offene Lesepfade](docs/MILESTONE-3-HARDWARE-REPORT.md).
+Gerätegenaue Providerbeziehungen, Windows-Prozessortakte, WDDM-/Videodetails,
+TRIM-/Controllerangaben, EDID/HDR und Audioformatprüfungen sind ergänzt.
+M3 ist mit dokumentierten technischen Grenzen zur Abnahme empfohlen,
+noch nicht vom Auftraggeber abgenommen;
+[Prüfbericht und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
 Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
 
 **Aktuelle Beta: 0.7.0-beta.45**

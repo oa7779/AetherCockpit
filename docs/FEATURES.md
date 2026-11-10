@@ -11,7 +11,7 @@ Bedienabläufe stehen im [Benutzerhandbuch](USER-GUIDE.md).
 |---|---|
 | Cockpit | Übersicht mit Windows-Prüfstatus, gemeldeten Auffälligkeiten, CPU-/RAM-/GPU-/Download-Kernwerten und Schnellzugriffen; ausklappbare Live-Details zu Kernen, Sensoren, Datenträgern, Prozessen, Ereignissen und Aufzeichnung |
 | Prozesse | Such- und sortierbare Tabelle, Intervall-CPU, Working Set, Threads, Handles, I/O und identitätsgesicherte Details |
-| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Komponenten-/Quelleninspektor, Native Wi-Fi, Direct3D-Funktionen, Audio-/Displaydetails, zugeordnete SMART-/NVMe-Healthwerte und Sensorstatistik; vollständige M3-Abnahme noch offen |
+| Hardware Intelligence (unveröffentlicht) | 20 Klassen, Quelleninspektor, exakte Sensorgerätebeziehungen, WLAN, Windows-Takte, WDDM/Direct3D/Video, SMART/NVMe/TRIM/Controller, EDID/HDR und Audioformatprüfungen; mit dokumentierten Grenzen zur M3-Abnahme empfohlen |
 | Sensor-Matrix | Alle gemeldeten Sensorkanäle, Filter, Verlaufskurven nach Hardware und Einheit, gekennzeichnete Grenzwerte |
 | Laufwerke | Belegung, Windows-Storage-Status, ATA-/NVMe-SMART-Diagnose und Rohdaten |
 | Virtuelles Mainboard | Anklickbare PnP-Gruppen und Laufwerke, Monitor-/Audiozuordnung, Windows-Status und schematische Neon-Zeichnung |

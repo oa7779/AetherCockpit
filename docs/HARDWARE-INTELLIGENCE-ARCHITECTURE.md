@@ -36,14 +36,36 @@ Die Fortsetzung ergänzt folgende lesende Pfade:
   benötigen eine neue Baseline. Beschriftung als Intervallmittel, nicht als
   momentane Rate.
 - Direct3D erstellt ein Gerät für genau den DXGI-Adapter und fragt
-  Featurelevel, Raytracing-Tier und Node-0-Speicherarchitektur ab.
-  Kein Render-/Computeauftrag. COM- und Abfragepuffer werden freigegeben.
-- Audio liest das Shared-Mode-Mixformat der Audioengine ohne Streamstart.
-  Es ist keine Liste aller Exclusive-Mode-/Geräteformate.
+  Featurelevel, Shader-/Wave-/Mesh-/Raytracing-Funktionen und je Node
+  Speicherarchitektur ab. DXGI-Prozessbudgets werden je so belegtem Node
+  abgefragt. Ohne Nodequelle bleibt die explizite Node-0-Sicht.
+  ID3D12VideoDevice liefert begrenzt Profil-GUIDs und Inputstreamgrenzen.
+  D3DKMT öffnet genau dieselbe LUID für WDDM-/Adapterflags und schließt
+  den Windows-Adapterhandle wieder. Scheduler-Engine-Ordinalzahlen sind
+  keine Direct3D-Nodes. Kein Render-/Compute-/Decodeauftrag.
+  COM- und Abfragepuffer werden freigegeben.
+- Audio liest das Shared-Mode-Mixformat und fragt dessen exakte Unterstützung
+  mit IsFormatSupported in Shared/Exclusive ab. Näherungsformatpuffer werden
+  freigegeben. Kein Initialize/Start und keine erschöpfende Formatmatrix.
 - DisplayConfig liefert aktive Zielpfade, Windows-Verbindungsart,
   bevorzugten Zielmodus, Advanced Color und Desktopskalierung.
   Bevorzugter Modus und Advanced Color beweisen für sich weder physisch
-  native Panelauflösung noch einen separaten HDR-Modus.
+  native Panelauflösung noch einen separaten HDR-Modus. Separat abgefragte
+  AdvancedColorInfo2 liefert HDR-Unterstützung, Benutzerfreigabe und aktiven
+  SDR/WCG/HDR-Modus. Aktive Modusreferenzen müssen zu Typ/Adapter/ID passen.
+- EDID wird nur mit WmiGetMonitorRawEEdidV1Block gelesen: bis neun Blöcke,
+  gültiger Basiskopf und Blockprüfsumme. Tatsächlicher boolescher
+  Windows-CIM-Erfolg und dokumentierter numerischer Erfolg werden typgeprüft;
+  falscher Rückgabestatus oder defekte Daten bleiben Fehler. Rohe Blöcke
+  sind Sensitive. Deklarierte Erweiterungen und erfasste Anzahl sind sichtbar.
+- Windows PDH nutzt englische Counterpfade unabhängig von der UI-Sprache.
+  Jede Anfrage öffnet eine frische Query, sammelt Baseline, wartet abbrechbar
+  300 ms und sammelt erneut. Prozessorgruppeninstanzen bleiben unverändert;
+  geänderte Gruppen-/Prozessoranzahlen verwerfen das Ergebnis. Frequency
+  und Leistungsprozent bleiben getrennt; kein eigener Effektivtakt.
+- Ein inaktiver `IHardwareSpdProvider`-Vertrag verlangt genaue Gerätekennung,
+  begrenzte Rohdaten, Direct-/Sensitive-Herkunft sowie Lizenz/Dokumentation.
+  Er wird nicht automatisch gesucht oder gestartet. SMBIOS bleibt SMBIOS.
 
 `HardwareFact` enthält `SourceObservation<string>` und unverändert die
 M1-`SourceMetadata`. Der String erhält die vom Provider gelieferte skalare
@@ -95,6 +117,8 @@ Stichprobenmittel und Anzahl sind Derived und behalten ersten/letzten
 tatsächlichen Messzeitpunkt. Keine Zeitgewichtung oder Interpolation.
 Grenzwerte werden nicht aggregiert. Entfernte oder in Typ/Einheit veränderte
 Kanäle werden entfernt, deaktivierter Zugriff setzt die Sitzung zurück.
+Providergeräte- und PnP-Kennung sind Teil der Kanalidentität; ein anderes
+Gerät übernimmt nicht die Statistik eines gleich benannten Vorgängers.
 Maximal 2.048 aktive Reihen; Überschreitung und rückläufige/gleiche
 Zeitstempel erzeugen einen sichtbaren Fehler statt falscher Statistik.
 
@@ -112,11 +136,31 @@ nur exakt und eindeutig verknüpft. Nicht passende Geräte bleiben getrennt.
 Storage-Reliability-Zähler gehören zur tatsächlich abgefragten PhysicalDisk.
 USB-Eltern stammen aus DEVPKEY_Device_Parent; keine erfundene Porttopologie.
 
+Sensoren tragen lokale, vom bereits offenen IHardware-Objekt gelesene
+Identifier-/Parent-Kennungen. Diese werden nicht in Feed-/Snapshot-JSON
+ergänzt. Jeder Sensor kann sein konkretes Providergerät als Elternknoten
+besitzen. Ein Windows-Gerätejoin benötigt eine exakt gleiche, eindeutige,
+verfügbare vollständige GenericGpu.DeviceId/PNPDeviceID; widersprüchliche,
+fehlende oder doppelte Beziehungen bleiben unzugeordnet. Kennungen sind
+Sensitive, die Joinbegründung ist Derived/ProviderReported. Es gibt keine
+Sockel-/Slot-/Index-/Modellnamensheuristik.
+
+Win32_DiskDrive.Index wird nur eindeutig mit MSFT_Disk.Number verknüpft.
+Controller stammen aus Win32_SCSIControllerDevice/Win32_IDEControllerDevice,
+nicht aus einem ähnlich benannten PnP-Elternknoten. Controllerkennungen
+bleiben Sensitive. Der native Storagepfad öffnet den exakten verfügbaren
+MSFT_Disk.Path ohne Lese-/Schreibzugriffsrechte, verifiziert dessen
+Windows-Disknummer und verwendet ausschließlich Query-IOCTLs.
+TrimEnabled, RemovableMedia und BusType werden getrennt behandelt;
+fehlende TRIM-Unterstützung verliert nicht die anderen Felder.
+
 SMART-/NVMe-Rohdaten werden an den Windows-Diskknoten angehängt:
 `MSFT_Disk.Number → smartctl /dev/pdN`, zusätzlich muss `device.name` exakt
 der Anfrage entsprechen. Nach der Abfrage werden Number, UniqueId und Path
 erneut über CIM geprüft; unklare, entfernte oder gewechselte Geräte
-erhalten keine Healthwerte. Die Prüfung ist keine atomare Hardwareaufnahme.
+erhalten weder neue Healthwerte noch TRIM-/Wechselmedium-/Busangaben.
+Das gilt auch bei fehlendem smartctl oder fehlenden Healthwerten, wenn native
+Storagewerte vorliegen. Die Prüfung ist keine atomare Hardwareaufnahme.
 PnP-Invalidierung während der Gesamtinventur entwertet weiterhin deren
 Versionsstand. Keine Gleichsetzung einer Windows-Storage-Kennung mit
 einer anders definierten NVMe-Controller-Seriennummer.
@@ -128,6 +172,14 @@ sie läuft nicht als permanenter Hintergrundpoller. Fehlendes Werkzeug,
 Lesefehler und fehlende Attribute bleiben explizit. ATA-Rohwerte werden
 nicht herstellerübergreifend als gleichbedeutend ausgelegt.
 
+Cancellation wird zwischen nativen Aufrufen und während PDH-Wartephase/
+Kindprozessen berücksichtigt. Synchrone Windows-/Treiber-API-Aufrufe werden
+nicht durch freigegebene Hintergrundthreads oder vorzeitig freigegebene
+Puffer „abgebrochen“; ihre Laufzeit hängt vom Windows-Treiber ab.
+Die Abnahmematrix prüft die tatsächliche CIM-/PDH-Freigabe und separat
+langsame injizierte Provider. Physische Geräteentfernung ist kein
+dadurch nachgewiesener Test.
+
 ## Berichte und Grenzen
 
 JSON, CSV und Text enthalten nur bereits gelesene Klassen. Der Dialog weist
@@ -138,7 +190,9 @@ CSV-Zellen sind gequotet und gegen Formelauswertung abgesichert.
 Es gibt keinen Uploadpfad.
 
 Nicht integrierte Felder bleiben mit technischer Erklärung sichtbar.
-Database/Unconfirmed sind darstellbar und getestet, aber es ist keine
+Unconfirmed wird für nicht unabhängig bestätigte NPU-Klassifizierung
+verwendet; PnP-Klasse/GUID beweisen keine Telemetrie oder AI-Funktion.
+Database ist darstellbar und getestet, aber es ist keine
 Hardwaredatenbank aktiviert. Neon Wiki hat einen sichtbaren Platzhalter;
 Artikel, Navigation und Datenbankzuordnungen sind nicht vorgetäuscht.
 

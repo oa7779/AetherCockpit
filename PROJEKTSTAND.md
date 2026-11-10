@@ -3,39 +3,44 @@
 ## Stand
 
 Meilenstein 2 ist ausdrücklich abgenommen. Meilenstein 3 „Hardware
-Intelligence Center“ hat eine implementierte und geprüfte Grundlage,
-ist als vollständiger Auftrag aber **NICHT ABNAHMEBEREIT**. Ausgangscommit
-`21b2a0b466c34b526961e83ab234e08430b6750e`.
-Der neue Auftrag erlaubt kleine lokale Commits, aber keinen Push, Tag,
-Release, Merge oder RC-Versionswechsel. Bestehende Pakete bleiben erhalten.
-Hardwareinventar ausschließlich lesend; keine neuen Treiber oder Logos.
-Fortsetzung ausdrücklich beauftragt: zuerst offene M3-Hardwarearbeiten
-abarbeiten und prüfen, danach Process Command Center. Der Prozessauftrag
-hat bisher ausschließlich eine Bestandsanalyse und einen Implementierungsplan;
-keine neue Prozessfunktion oder Prozessbeendigung implementiert.
+Intelligence Center“ ist nach dem autonomen Abschlussauftrag **MIT
+DOKUMENTIERTEN GRENZEN ABNAHMEFÄHIG**, noch nicht vom Auftraggeber abgenommen.
+Ausgang dieses Abschlussauftrags:
+`28835d064a8f7854fbb48e65606874737ae83659`, Branch `rc/grosse-entfesselung`,
+sauberer Arbeitsbaum. Funktionaler Abschluss einschließlich erweitertem
+Storage-Identitätsschutz `428f1d7`, Ressourcen-Gegenprobe `6924348`.
+Alle lokalen Commits stehen im
+[M3-Abnahmebericht](docs/MILESTONE-3-HARDWARE-REPORT.md).
 
-Eigene Hardwareansicht, 20 Klassen, Quelleninspektor, CIM-/CPU-/DXGI-/
-Netzwerk-/Audio-/Displayprovider, Storage-/USB-Beziehungen und redigierbare
-JSON-/CSV-/Textberichte implementiert. Die Fortsetzung ergänzt echte
-Sensorstatistik (`db0ad45`) sowie Native Wi-Fi, Adapterraten,
-Windows-Microcode, Direct3D-Featurelevel/Raytracing, Audioengine-Mixformate,
-DisplayConfig und zugeordnete SMART-/NVMe-Berichte (`a36915b`).
-Releasebuild 0 Warnungen / 0 Fehler; kombiniert mit Interface/Schoner/
-Branding 4.994 Assertions einschließlich Grundrunner, Modern-Smoke 3.611
-bestanden. Erneut neun Hardware-Theme-/Root-DPI-Bilder und drei
-Fixture-Messrunden; Details im Bericht.
+20 Hardwareklassen mit Quelleninspektor, redigierbaren JSON-/CSV-/Textberichten,
+echter Sensorstatistik und exakten Provider-/PnP-Gerätebeziehungen.
+Ergänzt: gruppenbezogene Windows-Taktproben, zurückhaltende NPU-Identität,
+inaktiver SPD-Vertrag, WDDM-/Direct3D-/Videodetails, TRIM-/Controllerangaben,
+aktive Displaymodi, EDID, separater Windows-HDR-Status und lesende
+Shared-/Exclusive-Formatprüfungen. Kein neuer Sensorprovider, Treiber,
+Datenbankbestand oder Herstellerlogo aktiviert.
 
-Reale Hardwareabfrage ausdrücklich freigegeben und nur lesend ausgeführt:
-5.588 Feldzeilen, 792 Sensitive-Zeilen vollständig redigiert.
-Keine neuen Sensorzugriffe. Native WLAN-, Direct3D-, Audio-/Display- und
-drei zugeordnete NVMe-Healthpfade lieferten reale Werte. Zwei unbekannte
-USB-Brücken bleiben Lesefehler; keine erzwungene Transportauswahl.
-Weitere GPU-/SPD-/Controller-/Sensorzuordnungswege und die reale
-Langzeit-/Resume-/Hotplug-Abnahme bleiben offen.
-[M3-Bericht mit Nachweisen und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
-M3 nicht als abgeschlossen überspringen; vor dem Prozessumbau verbleibende
-Hardwarearbeit und Abnahme klären. Keine neue Paketierung oder
-Veröffentlichung und kein Meilenstein 4.
+Releasebuild 0 Warnungen / 0 Fehler, STA-Grundrunner 4.698,
+Interface/Schoner/Branding 5.051 einschließlich Grundrunner,
+Modern-Smoke 3.611 Assertions und 22 Bilder. Neun Hardware-Theme-/Root-DPI-
+Proofs. Reale Hardwareansicht mit Klassenwechseln, Navigation und Abbruch,
+30 synthetische Lebenszyklen, 5.000 Komponenten mit 32 erzeugten
+Listenelementen. Ressourcenanstieg einschließlich WPF-Host-Gegenprobe
+dokumentiert, kein Langzeit-Leakfreiheitsnachweis.
+
+Realer nur lesender Abschlusslauf: 5.952 Feldzeilen,
+835 Sensitive-Zeilen vollständig redigiert, keine Secrets.
+Drei verbleibende Providerfehler: zwei unbekannte USB-Brücken und
+Legacy-NDIS-WLAN; Native Wi-Fi liefert separat Werte.
+SPD und echter effektiver CPU-Zyklustakt bleiben begründet begrenzt.
+Physische Hotplug-/Resume-/Monitor-/DPI-Wechsel und Langzeitbetrieb wurden
+nicht ausgelöst und sind nicht als bestanden behauptet.
+
+**Nach Bericht stoppen und ausdrückliche M3-Abnahme abwarten.**
+Process Command Center bleibt geplant, nicht implementiert.
+Community-Wunsch erhalten: Kontextmenü **„Prozess beenden“**.
+Kein Meilenstein 4, Push, Merge, Tag, Release, Installer oder Versionswechsel.
+Bestehende Pakete bleiben unverändert.
 
 Installer-/Uploadauftrag abgeschlossen:
 [Beta `0.7.0-beta.45`](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)

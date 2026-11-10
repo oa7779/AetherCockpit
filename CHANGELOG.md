@@ -32,8 +32,21 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
   Secret-Ausschluss und CSV-Formelschutz.
 - Eigene Fixtures, UI-/DPI-/Themeproofs und freigegebene lokale Read-only-
   Prüfung; keine fremden Datenbanken oder Herstellerlogos übernommen.
-- Vollständige M3-Abnahme bleibt wegen fehlender Detailprovider und
-  offener realer Langzeit-/Ereignisprüfungen ausstehend.
+- Exakte lokale Sensor-/Providergerätebeziehungen und eindeutige PnP-Joins;
+  Statistik wird bei Geräteidentitätswechsel getrennt, Feedformat unverändert.
+- NPU-Klassenhinweise ausdrücklich unbestätigt; frische gruppenbezogene
+  Windows-PDH-Takt-/Leistungsproben ohne falsche Effektivtaktumrechnung.
+  SPD-Providervertrag vorbereitet, ohne Kernel-/SMBus-Zugriff zu aktivieren.
+- WDDM und Hybridflags per Adapter-LUID, Direct3D-Nodes, Shader-/Wave-/Mesh-
+  Fähigkeiten, Decode-Profil-GUIDs und Video-Process-Inputstreamgrenzen.
+- Lesende Windows-TRIM-/Wechselmedium-/Busabfragen sowie explizite
+  CIM-Controllerbeziehungen mit eindeutiger Disknummernzuordnung.
+- Aktive Quell-/Zielmodi, separater Windows-HDR-Status, geprüfte rohe
+  EDID-Blöcke und Shared-/Exclusive-Unterstützung genau des Engine-Mixformats.
+- Reale Ansichts-/Abbruchmatrix, 5.000-Komponenten-Fixture und Ressourcen-
+  Gegenprobe mit leeren WPF-Fenstern. 4.698 Grundassertions bestanden.
+- M3 mit dokumentierten Grenzen zur Abnahme empfohlen, noch nicht abgenommen.
+  Physische Ereigniswechsel und Langzeitbetrieb sind nicht nachgewiesen.
   [Abschlussbericht](docs/MILESTONE-3-HARDWARE-REPORT.md).
 - Keine Versionserhöhung, neue Pakete oder Veröffentlichung.
 

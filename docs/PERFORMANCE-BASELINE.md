@@ -420,3 +420,110 @@ Rohdatei `m3-continuation-readonly-final.json.timings.json`, SHA256
 Der Modern-Smoke lief parallel: keine isolierte Performanceprüfung und
 kein Nachweis einer Beschleunigung. Die offenen realen Idle-/Langzeit-/
 Resume-/Hotplug-/UI-Latenzprüfungen bleiben erforderlich.
+
+### Autonomer M3-Abschluss
+
+Ansichts-/Fixturemessungen aus Stand `6924348`, vollständiger Leselauf
+nach erweitertem Storage-Identitätsschutz `428f1d7`.
+Alle Abschlussläufe nacheinander, kein absichtlich paralleler Testlauf.
+Das gemeinsam benutzte Windows-System ist keine isolierte Messumgebung.
+
+#### Fixtureprojektion
+
+58 synthetische Komponenten, 100 Snapshotprojektionen je Runde und ein
+redigierter JSON-Export, keine Hardwareabfrage oder erzwungene GC:
+
+| Runde | Fixtureaufbau ms | 100 Snapshots ms | JSON ms | CPU ms | Working Set B | Private B | Handles | Threads |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 36,7867 | 5,0463 | 8,4717 | 62,5 | 59.211.776 | 19.558.400 | 280 | 8 |
+| 2 | 0,6545 | 1,4808 | 1,0946 | 0 | 61.464.576 | 21.917.696 | 280 | 8 |
+| 3 | 0,5317 | 1,3513 | 1,1080 | 0 | 63.762.432 | 24.195.072 | 280 | 8 |
+
+Rohdatei `m3-final-proof-02\fixture-performance.json`, SHA256
+`4B8DC653CC98B63E53641BABCCEF1665352E4C9BA113A709F794631A962EA20E`.
+Die erste Runde enthält kalte Initialisierung/JIT; CPU-Nullwerte sind durch
+Messauflösung begrenzt. Kein Langzeit- oder allgemeiner Geschwindigkeitsnachweis.
+
+#### Tatsächliche Hardwareansicht
+
+Isolierter WPF-Host mit produktiver Hardwareansicht und realen lesenden
+Providern, kein vollständiger MainWindow-Start:
+
+| Messung | Dispatcher-/UI-Bereitschaft ms | Daten vollständig ms |
+|---|---:|---:|
+| Erstes Öffnen / System | 455,8077 | 9.768,4524 |
+| CPU-Klassenwechsel | 18,5976 | 2.131,6584 |
+| GPU-Klassenwechsel | 28,8971 | 1.150,0927 |
+| Display-Klassenwechsel | 11,9801 | 498,4087 |
+| Audio-Klassenwechsel | 17,1171 | 2.060,2550 |
+| Netzwerk-Klassenwechsel | 16,5800 | 4.724,2138 |
+
+Die UI-Zeit endet bei ApplicationIdle nach der Auswahl, nicht beim Ende
+des Providers. Die Ansicht zeigt die laufende Erfassung an.
+Reale Navigation/CIM-Cancellation: 52,1615 ms; Schließen mit langsamem
+injiziertem Provider: 45,0155 ms. Drei reale PDH-Abbrüche:
+118,2258 / 124,2727 / 108,7501 ms.
+
+5.000 synthetische Komponenten: 91,7352 ms bis Dispatcher-/Layoutbereitschaft,
+32 erzeugte Container; keine abgeschnittenen Datensätze.
+Herzschlag über den gemischten Ablauf einschließlich Fenster-Gegenprobe:
+1.753 Proben, Soll 25 ms, P95 76,4854 ms, Maximum 426,4882 ms.
+Kein zugesichertes hartes Echtzeitlimit.
+
+15.034,3726 ms instrumentierter Idle: 343,75 ms Prozess-CPU.
+Die Messung enthält Testpump und Herzschlag und ist kein uninstrumentierter
+Produktidle oder Vergleich mit einem anderen AETHER-Stand.
+
+| Zeitpunkt | Working Set B | Private B | Handles | Threads |
+|---|---:|---:|---:|---:|
+| Vor Idle | 228.425.728 | 212.303.872 | 796 | 28 |
+| Nach Idle | 230.715.392 | 213.053.440 | 796 | 25 |
+| Nach 10 Fixturefenstern, ohne erzwungene GC | 278.044.672 | 305.119.232 | 816 | 27 |
+| Nach 20 | 298.409.984 | 321.888.256 | 827 | 27 |
+| Nach 30 | 303.230.976 | 319.610.880 | 837 | 27 |
+| Nach gesonderter Referenz-GC | 270.381.056 | 287.191.040 | 837 | 27 |
+| Nach weiterem Compositor-Nachlauf | 258.715.648 | 245.149.696 | 837 | 27 |
+| Nach 30 zusätzlichen leeren WPF-Hostfenstern | 267.878.400 | 239.734.784 | 858 | 22 |
+
+29 von 30 Hardwareansichten waren nach GC sammelbar, eine Referenz blieb
+im Testkontext erhalten. Die leeren Hostfenster erhöhen den Handlebestand
+ebenfalls. Das grenzt die Zuordnung ein, erklärt aber weder jeden Handle
+noch beweist es allgemeine Leakfreiheit. Speicher nach Cleanup deutlich
+niedriger; die Dauer ist kein Langzeitnachweis.
+
+Rohdatei `m3-final-acceptance-05.json`, SHA256
+`08BF89C18AF8F3AAFE562236FFF9843DB6B1EB9BE6D2EF14C9B045A8F465DFAF`.
+Die getrennte GC ist eine Referenzprüfung, keine Performanceoptimierung.
+
+#### Vollständiger realer Leselauf
+
+| Klasse | Dauer ms |
+|---|---:|
+| System | 9.312 |
+| CPU | 1.936 |
+| GPU | 943 |
+| NPU | 943 |
+| Mainboard | 333 |
+| Firmware | 2.611 |
+| Chipsatz | 8.742 |
+| RAM | 315 |
+| Storage | 5.429 |
+| PCI | 11.627 |
+| Netzwerk | 4.474 |
+| WLAN | 334 |
+| Bluetooth | 9.689 |
+| Audio | 1.930 |
+| Display | 395 |
+| USB | 13.180 |
+| Sicherheit | 5.344 |
+| Power | 293 |
+| Peripherie | 2.883 |
+
+Gerundete Konsolenwerte, genaue Werte in
+`m3-final-readonly-03.json.timings.json`, SHA256
+`D08C782316A5C33CA15D72D842BEC22F4FB04E5A2028A1EABAA20528BA252E16`.
+Abdeckung und Fehlerzustände im
+[Abnahmebericht](MILESTONE-3-HARDWARE-REPORT.md).
+System/USB/PCI/Bluetooth bleiben relativ langsam, werden aber auf
+Anforderung asynchron gelesen. Kein Dauerpoller aller Klassen.
+Physische Ereignis-/Monitorwechsel und Langzeitverhalten sind nicht geprüft.

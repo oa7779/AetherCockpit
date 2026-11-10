@@ -76,6 +76,15 @@ Unstrukturierte ATA-Herstellertexte werden als Sensitive exportiert.
 Es erfolgt keine automatische Installation und keine erzwungene
 Auswahl eines unbekannten USB-Bridgeprotokolls.
 
+Die Windows-Storageeigenschaften werden ohne Lese-/Schreibzugriffsrechte
+über reine Query-IOCTLs gelesen; TrimEnabled startet kein TRIM.
+Rohe EDID-Blöcke, Sensorgeräte-/PnP-Kennungen und Controllerbeziehungen
+gelten als Sensitive. Neue Sensorprovenienz bleibt lokal und erweitert
+keine Feednachrichten. Das optionale SPD-Modell ist nicht aktiviert.
+Audioformatprüfungen verwenden nur GetMixFormat/IsFormatSupported ohne
+Streamstart. GPU-/Videofunktions- und WDDM-Abfragen erzeugen keine
+Render-/Compute-/Videolast und installieren keine Treiber.
+
 Seriennummern, Gerätepfade, PnP-/EDID-Kennungen, MAC, IP, Gateway und DNS
 werden im Hardwarebericht standardmäßig redigiert. Der Export verlangt eine
 ausdrückliche Entscheidung, bevor Sensitive-Werte enthalten sein dürfen.

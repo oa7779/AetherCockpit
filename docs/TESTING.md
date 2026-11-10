@@ -2,16 +2,23 @@
 
 ## Hardware Intelligence
 
-Der Grundrunner enthält 256 zusätzliche Assertions für Hardware Intelligence
-gegenüber dem M2-Grundstand: 173 für die Grundlage und 83 für die Fortsetzung.
+Der Grundrunner enthält 313 zusätzliche Assertions für Hardware Intelligence
+gegenüber dem M2-Grundstand: 173 für die Grundlage, 83 für die Fortsetzung
+und 57 für den autonomen Abschluss.
 Er verwendet synthetische Daten, einschließlich CPU-Topologie und
 Storage-/USB-Beziehungen. Die generierten PowerShell-Skripte werden zusätzlich
-nur mit dem PowerShell-AST-Parser geprüft, nicht als Hardwareabfrage gestartet.
-Bei insgesamt 4.641 Grundassertions sind frühere Assertions bereits enthalten.
+mit dem PowerShell-AST-Parser geprüft. Der EDID-Zweig wird zusätzlich mit
+isolierten CIM-/Methodenfixtures tatsächlich ausgeführt, ohne Hardwarezugriff:
+numerischer und boolescher Erfolgsvertrag, Fehlerstatus und kaputte Prüfsumme.
+Bei insgesamt 4.698 Grundassertions sind frühere Assertions bereits enthalten.
 Die Fortsetzung prüft Sensorstatistik einschließlich Extremwertmittel,
 WLAN-Binärlayouts und Bandzuordnung, Adapterraten/Protokollfehler,
 Audio-/Direct3D-/Microcodeparsing sowie SMART-/NVMe-Identität, Präzision
 und Datenschutz.
+Abschlusstests ergänzen genaue Sensoridentität, NPU-Confidence, SPD-Vertrag,
+PDH-Probenzustände, Shader-/WDDM-Codes, TRIM-Deskriptoren und das
+Verwerfen nativer Storagewerte bei fehlgeschlagener abschließender Identitätsprüfung,
+Controllermehrdeutigkeit sowie HDR-/Audioformatzustände.
 
 ```powershell
 dotnet build .\SystemCockpit.slnx -c Release --no-restore
@@ -30,6 +37,7 @@ Nur nach ausdrücklicher Freigabe des jeweiligen Entwicklungsrechners:
 
 ```powershell
 dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-readonly C:\Temp\aether-hardware-readonly-01.json
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-acceptance C:\Temp\aether-hardware-acceptance-01.json
 # Optional nur eine Klasse:
 dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-readonly C:\Temp\aether-hardware-pci-01.json Pci
 ```
@@ -37,9 +45,11 @@ dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hard
 Der Berichtsname muss neu, absolut und unter einem existierenden Ordner
 liegen. Dieser Modus liest lokale CIM-/Windows-/CPU-/DXGI-/Netzwerk-/Audio-
 und Displaydaten einschließlich Native Wi-Fi, Direct3D-Funktionsabfragen,
-Audioengine-Mixformat und DisplayConfig. Storage verwendet zusätzlich
+WDDM-/Videofunktions- und PDH-Proben, Audioformatunterstützung,
+DisplayConfig-HDR-Info2 und lesenden EDID-Methoden. Storage verwendet zusätzlich
 das vorhandene smartctl ausschließlich lesend und prüft anschließend
-Windows-Diskidentitäten erneut. Das kann Gerätezugriffe erzeugen und
+Windows-Diskidentitäten erneut sowie lesende TRIM-/Bus-/Wechselmedium-IOCTLs.
+Das kann Gerätezugriffe erzeugen und
 Laufwerke aktivieren, startet aber keine Selbsttests oder Lastprüfung.
 Keine neuen Hardware-Sensortreiber. Er erzeugt einen
 redigierten JSON-Bericht, `.timings.json` und eine lokale `.diagnostics.log`.
@@ -48,6 +58,20 @@ Verwaltungsaktion, Installation oder Lastprüfung aus. Ein abgeschlossener
 Lauf bedeutet nicht, dass alle Providerwerte vorhanden oder unabhängig
 als richtig bestätigt sind. Reale Prüfung und Fixturetests sind im
 [M3-Bericht](MILESTONE-3-HARDWARE-REPORT.md) getrennt aufgeführt.
+
+`--hardware-acceptance` öffnet die tatsächliche Hardwareansicht mit echten
+lesenden System-/CPU-/GPU-/Display-/Audio-/Netzwerkprovidern, nicht das
+komplette produktive MainWindow. Er misst die erste Dispatcherantwort,
+Klassenbereitschaft, 15 Sekunden instrumentierten Idle, reales Wiederöffnen
+und CIM-/PDH-Abbruch. Danach folgen 30 Fixture-Navigations-/Shutdownzyklen,
+ein Inventar mit 5.000 Komponenten samt Virtualisierung, injizierte
+AccessDenied-/ProviderError-Zustände und Abbruch eines langsamen Providers.
+Ressourcen werden nach je zehn Zyklen erfasst. Eine getrennte erzwungene
+GC prüft ausschließlich Referenzen; anschließend werden Compositor-Cleanup
+und 30 leere WPF-Fenster als Gegenprobe erfasst. Ressourcenanstiege bleiben
+im Bericht sichtbar, nicht als allgemeine Leakfreiheit umgedeutet.
+Das achtminütige Testlimit ist kein Zeitlimit einzelner nativer Treibercalls.
+Keine echten Geräte-/Standby-/Monitor-/DPI-Änderungen und kein Langzeittest.
 
 ## Paketprüfung Beta 45
 
