@@ -30,6 +30,20 @@ internal static class Program
                 host.Shutdown();
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--hardware-proof")
+            {
+                HardwareIntelligenceTests.Proof(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length is 2 or 3 && args[0] == "--hardware-readonly")
+            {
+                HardwareClass? category = args.Length == 3 && Enum.TryParse<HardwareClass>(args[2], out var selected) && Enum.IsDefined(selected)
+                    ? selected : args.Length == 2 ? null : throw new ArgumentException("Ungültige Hardwareklasse.");
+                HardwareIntelligenceTests.ReadOnlyAsync(args[1], category).GetAwaiter().GetResult();
+                host.Shutdown();
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--neon-frame-profile")
             {
                 NeonFrameProof.Run(args[1]);
@@ -95,6 +109,7 @@ internal static class Program
             TestCleaner();
             _assertions += ExtendedTests.Run();
             _assertions += ConsolidationTests.Run();
+            _assertions += HardwareIntelligenceTests.Run();
             _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
             _assertions += NeonFrameTests.Run();
@@ -425,7 +440,8 @@ internal static class Program
         Assert(value.Height >= 32 && value.Width >= 100, "Template metric values use large segmented LED display");
         Assert(instrument.Children.OfType<SystemCockpit.Controls.NeonGauge>().Count() == 1, "Metric uses segmented neon instrument");
         var pages = (System.Windows.Controls.TabControl)window.FindName("Pages");
-        Assert(pages.Items.Count == 13, "Original modules plus hardware board, Taskmanager, events, Superadmin, Operations and help center");
+        Assert(pages.Items.Count == 14 && pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "HardwareIntelligence")),
+            "Existing modules remain and dedicated hardware intelligence navigation is added");
         var pageHeaders = pages.Items.Cast<System.Windows.Controls.TabItem>().Select(t => (string)t.Header).ToList();
         Assert(pageHeaders[^1] == "Hilfe" && pageHeaders.IndexOf("Sensoren") < pageHeaders.IndexOf("Messauswertung") &&
             pageHeaders.IndexOf("Diagnose") < pageHeaders.IndexOf("Cleaner") && pageHeaders.IndexOf("Cleaner") < pageHeaders.IndexOf("Superadmin"),
