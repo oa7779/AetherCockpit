@@ -131,6 +131,7 @@ internal static class HardwareAcceptanceTests
             await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
             process.Refresh();
             measurements.Add(new { Kind = "synthetic-after-30-cycles-no-gc", Resources = Resources(process) });
+            await Task.Delay(TimeSpan.FromSeconds(2));
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
@@ -138,6 +139,19 @@ internal static class HardwareAcceptanceTests
             var alive = weak.Count(w => w.IsAlive);
             Require(alive <= 1, "Geschlossene Hardwareansichten bleiben referenziert: " + alive);
             measurements.Add(new { Kind = "synthetic-reference-collection-only", Alive = alive, Total = weak.Count, Resources = Resources(process) });
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            measurements.Add(new { Kind = "synthetic-after-compositor-settle", Resources = Resources(process) });
+            var controlBefore = Resources(process);
+            for (var i = 0; i < 30; i++)
+            {
+                var control = new Window { Content = new TextBlock { Text = "WPF host control" },
+                    Width = 400, Height = 200, ShowInTaskbar = false };
+                control.Show();
+                await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+                control.Close();
+            }
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            measurements.Add(new { Kind = "framework-control-30-empty-hosts", Before = controlBefore, After = Resources(process) });
             for (var i = 0; i < 3; i++)
             {
                 using var cancellation = new CancellationTokenSource(100);
