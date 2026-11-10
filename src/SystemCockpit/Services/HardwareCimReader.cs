@@ -234,10 +234,11 @@ public sealed class HardwareIntelligenceReader
         bool estimated = false, DataClassification classification = DataClassification.Normal) =>
         new(source, type, time, type == SourceType.Unconfirmed ? DataConfidence.Unconfirmed : DataConfidence.ProviderReported,
             DataAvailability.Available, isEstimated: estimated, classification: classification,
-            documentationLink: new Uri("https://learn.microsoft.com/windows/win32/cimwin32prov/computer-system-hardware-classes"));
+            documentationLink: source.StartsWith("CIM ", StringComparison.Ordinal)
+                ? new Uri("https://learn.microsoft.com/windows/win32/cimwin32prov/computer-system-hardware-classes") : null);
 
-    internal static HardwareFact Derived(string key, string name, string value, string source, DateTimeOffset time, string calculation) =>
-        new(key, name, SourceObservation<string>.Present(value, "", Metadata(source, time, SourceType.Derived)),
+    internal static HardwareFact Derived(string key, string name, string value, string source, DateTimeOffset time, string calculation, string unit = "") =>
+        new(key, name, SourceObservation<string>.Present(value, unit, Metadata(source, time, SourceType.Derived)),
             Calculation: calculation);
 
     private static void AddDeviceFacts(JsonElement row, List<HardwareFact> facts, DateTimeOffset time)

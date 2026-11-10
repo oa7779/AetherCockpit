@@ -17,6 +17,7 @@ namespace SystemCockpit.Controls;
 public partial class HardwareIntelligenceView : UserControl
 {
     private readonly HardwareInventoryStore _store = new();
+    private readonly SessionStatistics _sensorStatistics = new();
     private CancellationTokenSource? _lifetime;
     private Task _pending = Task.CompletedTask;
     private Window? _window;
@@ -174,7 +175,17 @@ public partial class HardwareIntelligenceView : UserControl
     internal void UpdateSensors(IReadOnlyList<SensorReading> readings, DateTimeOffset time, bool enabled, string? error)
     {
         if (_shutdown) return;
-        _store.Replace(HardwareClass.Sensors, HardwareSensorInventory.Read(readings, time, enabled, error), _store.Version(HardwareClass.Sensors));
+        if (!enabled) _sensorStatistics.Reset();
+        if (enabled && error is null && readings.Select(s => s.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() == readings.Count)
+        {
+            try { _sensorStatistics.AddSensors(time, readings, retainAbsent: false); }
+            catch (InvalidOperationException ex)
+            {
+                Trace.TraceError("Hardware-Sensorstatistik: {0}", ex);
+                error = ex.Message;
+            }
+        }
+        _store.Replace(HardwareClass.Sensors, HardwareSensorInventory.Read(readings, time, enabled, error, _sensorStatistics), _store.Version(HardwareClass.Sensors));
         if (IsLoaded && Category == HardwareClass.Sensors) Render();
     }
 

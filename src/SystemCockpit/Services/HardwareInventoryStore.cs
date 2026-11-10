@@ -51,7 +51,7 @@ public sealed class HardwareInventoryStore
 public static class HardwareSensorInventory
 {
     public static IReadOnlyList<HardwareComponent> Read(IReadOnlyList<SensorReading> readings,
-        DateTimeOffset timestamp, bool enabled, string? error)
+        DateTimeOffset timestamp, bool enabled, string? error, SessionStatistics? statistics = null)
     {
         if (!enabled || error is not null || readings.Count == 0)
             return [new("sensors:status", HardwareClass.Sensors, "Sensorprovider",
@@ -78,11 +78,28 @@ public static class HardwareSensorInventory
                     with { Cadence = HardwareCadence.Live };
             HardwareFact Static(string key, string name, string text) => new(key, name,
                 SourceObservation<string>.Present(text, "", HardwareIntelligenceReader.Metadata("LibreHardwareMonitor", timestamp)));
+            var facts = new List<HardwareFact>
+                { Static("hardware", "Hardware", s.Hardware), Static("name", "Sensor", s.Name), Static("type", "SensorType", s.Type), current };
+            if (!SensorSemantics.IsTemperatureLimit(s) && statistics?.ForSensor(s) is { } history)
+            {
+                foreach (var (key, name, statistic) in new[] { ("min", "Minimum", history.Value.Minimum),
+                             ("max", "Maximum", history.Value.Maximum), ("avg", "Average (Stichprobenmittel)", history.Value.Average) })
+                    facts.Add(HardwareIntelligenceReader.Derived(key, name,
+                        statistic.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                        "AETHER SessionStatistics / bestehender Cockpit-Sensorpfad", history.Last,
+                        $"Seit Start der Messung {history.First:O}; bis {history.Last:O}; {history.Value.Count} endliche Stichproben, " +
+                        "Lücken nicht interpoliert; Average ist kein zeitgewichtetes Mittel.", s.Unit) with { Cadence = HardwareCadence.Live });
+                facts.Add(HardwareIntelligenceReader.Derived("count", "Endliche Stichproben",
+                    history.Value.Count.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    "AETHER SessionStatistics", history.Last, "Anzahl endlicher Stichproben seit " + history.First.ToString("O"))
+                    with { Cadence = HardwareCadence.Live });
+            }
+            else facts.Add(HardwareFact.Missing("history", "Minimum / Maximum / Average", "AETHER Hardwarezentrale", timestamp,
+                SensorSemantics.IsTemperatureLimit(s) ? "Temperaturgrenze ist kein Messkanal; keine Statistik." :
+                    "Seit Start der Messung noch keine endliche Stichprobe erfasst."));
             return new HardwareComponent(HardwareIntelligenceReader.Identity("sensor", s.Id), HardwareClass.Sensors,
                 $"{s.Type} / {s.Hardware} / {s.Name}",
-                [Static("hardware", "Hardware", s.Hardware), Static("name", "Sensor", s.Name), Static("type", "SensorType", s.Type), current,
-                 HardwareFact.Missing("history", "Minimum / Maximum / Average", "AETHER Hardwarezentrale", timestamp,
-                     "Keine eigene Messhistorie erfasst. Vorhandene Cockpit-Messauswertung bleibt separat; keine erfundenen Statistikwerte.")]);
+                facts);
         }).ToArray();
     }
 }
