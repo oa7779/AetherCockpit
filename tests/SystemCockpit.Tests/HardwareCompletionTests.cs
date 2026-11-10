@@ -79,6 +79,11 @@ internal static class HardwareCompletionTests
         storage[10] = 1;
         var properties = HardwareStorageProperties.ParseDevice(storage, time);
         Check(properties[0].Display == "True" && properties[1].Display == "17", "removable and bus code remain separate");
+        var withProperties = target with { Facts = [.. target.Facts, .. properties,
+            .. HardwareStorageProperties.ParseTrim(new byte[] { 12, 0, 0, 0, 12, 0, 0, 0, 1, 0, 0, 0 }, time)] };
+        var discarded = HardwareStorageHealth.WithoutDeviceProperties(withProperties);
+        Check(discarded.Count == target.Facts.Count, "failed post-read identity rejects native TRIM/transport data too");
+        Check(discarded[0] == target.Facts[0], "identity failure preserves original inventory facts");
         try { HardwareStorageProperties.ParseDevice(storage[..8], time); Check(false, "truncated descriptor accepted"); }
         catch (InvalidOperationException) { Check(true, "truncated descriptor refused"); }
         var storageRows = new Dictionary<string, object[]>

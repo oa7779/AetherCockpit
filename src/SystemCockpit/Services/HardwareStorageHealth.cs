@@ -13,7 +13,8 @@ internal static class HardwareStorageHealth
         var disks = components.Where(c => c.Id.StartsWith("Disk:", StringComparison.Ordinal)).ToArray();
         var result = components.ToList();
         var numbers = disks.Select(c => Field(c, "Number")).GroupBy(n => n).ToDictionary(g => g.Key ?? "", g => g.Count());
-        var observed = new List<HardwareComponent>();
+        var observed = disks.Where(d => d.Facts.Any(f => f.Key is "trim" or "removable" or "transport" && f.Observation.HasValue))
+            .ToDictionary(d => d.Id, StringComparer.Ordinal);
         foreach (var disk in disks)
         {
             token.ThrowIfCancellationRequested();
@@ -37,7 +38,7 @@ internal static class HardwareStorageHealth
                         Device(index), token).ConfigureAwait(false);
                     time = DateTimeOffset.UtcNow;
                     facts = Parse(report.Json, Device(index).Name, report.ExitCode, time);
-                    if (facts.Any(f => f.Observation.HasValue)) observed.Add(disk);
+                    if (facts.Any(f => f.Observation.HasValue)) observed.TryAdd(disk.Id, disk);
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException or JsonException or
                     TimeoutException or System.ComponentModel.Win32Exception)
@@ -74,21 +75,24 @@ internal static class HardwareStorageHealth
                 System.Diagnostics.Trace.TraceError("Hardware Storage-Identitätsprüfung: {0}", ex);
                 error = $"Windows-Diskidentitäten nicht erneut prüfbar ({ex.GetType().Name}, HRESULT 0x{ex.HResult:X8}).";
             }
-            foreach (var disk in observed)
+            foreach (var disk in observed.Values)
             {
                 if (error is null && SameWindowsIdentity(disk, identities)) continue;
                 var position = result.FindIndex(c => c.Id == disk.Id);
                 result[position] = disk with
                 {
-                    Facts = disk.Facts.Append(HardwareFact.Missing("smart-identity", "SMART-Gerätezuordnung",
-                        "MSFT_Disk Number / UniqueId / Path vor und nach smartctl", DateTimeOffset.UtcNow,
-                        error ?? "Windows-Geräteidentität änderte sich während der Abfrage; Healthwerte verworfen.",
+                    Facts = WithoutDeviceProperties(disk).Append(HardwareFact.Missing("smart-identity", "Storage-Gerätezuordnung",
+                        "MSFT_Disk Number / UniqueId / Path vor und nach lesenden Gerätedetails", DateTimeOffset.UtcNow,
+                        error ?? "Windows-Geräteidentität änderte sich während der Abfrage; neue Health-/TRIM-/Transportwerte verworfen.",
                         DataAvailability.ProviderError)).ToArray()
                 };
             }
         }
         return result;
     }
+
+    internal static IReadOnlyList<HardwareFact> WithoutDeviceProperties(HardwareComponent disk) =>
+        disk.Facts.Where(f => f.Key is not ("trim" or "removable" or "transport")).ToArray();
 
     internal static SmartDevice Device(uint diskNumber) =>
         new("/dev/pd" + diskNumber.ToString(CultureInfo.InvariantCulture), "auto", "");
