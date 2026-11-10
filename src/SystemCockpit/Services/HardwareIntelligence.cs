@@ -122,7 +122,7 @@ public static class HardwareReport
         return text.ToString();
     }
 
-    private static string Csv(object? value)
+    internal static string Csv(object? value)
     {
         var text = Convert.ToString(value, CultureInfo.InvariantCulture) ?? "";
         if (text.TrimStart().StartsWith('=') || text.TrimStart().StartsWith('+') ||
