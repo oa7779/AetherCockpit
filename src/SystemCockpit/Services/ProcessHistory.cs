@@ -64,6 +64,13 @@ internal sealed class ProcessRow(ProcessMetric current) : INotifyPropertyChanged
         Notify();
     }
     internal void Notify([CallerMemberName] string? unused = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+    internal ProcessRow Freeze()
+    {
+        var copy = new ProcessRow(Current) { Parent = Parent, Depth = Depth, Collapsed = Collapsed,
+            Icon = Icon, ExactPath = ExactPath, HadFile = HadFile, DetailHints = DetailHints, Ended = Ended, EndedAt = EndedAt };
+        foreach (var sample in Samples) copy.Samples.Enqueue(sample);
+        return copy;
+    }
     private static string Summary(string name, string unit, IEnumerable<double?> input)
     {
         var values = input.Where(v => v.HasValue).Select(v => v!.Value).ToArray();

@@ -49,9 +49,9 @@
                 <DataGridTextColumn Header="PID" Binding="{Binding Current.Id}" SortMemberPath="Current.Id" Width="70"/>
                 <DataGridTextColumn Header="CPU %" Binding="{Binding Current.CpuDisplay}" SortMemberPath="Current.CpuPercent" Width="85"/>
                 <DataGridTextColumn Header="RAM MiB" Binding="{Binding Current.MemoryDisplay}" SortMemberPath="Current.MemoryMb" Width="90"/>
-                <DataGridTextColumn Header="PRIVAT MiB" Binding="{Binding Current.PrivateMb, StringFormat=F1}" SortMemberPath="Current.PrivateMb" Width="100"/>
-                <DataGridTextColumn Header="THREADS" Binding="{Binding Current.Threads}" SortMemberPath="Current.Threads" Width="80"/>
-                <DataGridTextColumn Header="HANDLES" Binding="{Binding Current.Handles}" SortMemberPath="Current.Handles" Width="80"/>
+                <DataGridTextColumn Header="PRIVAT MiB" Binding="{Binding Current.PrivateMb, StringFormat=F1, TargetNullValue=--}" SortMemberPath="Current.PrivateMb" Width="100"/>
+                <DataGridTextColumn Header="THREADS" Binding="{Binding Current.Threads, TargetNullValue=--}" SortMemberPath="Current.Threads" Width="80"/>
+                <DataGridTextColumn Header="HANDLES" Binding="{Binding Current.Handles, TargetNullValue=--}" SortMemberPath="Current.Handles" Width="80"/>
                 <DataGridTextColumn Header="I/O R MiB/s" Binding="{Binding Current.ReadDisplay}" SortMemberPath="Current.ReadMbps" Width="95"/>
                 <DataGridTextColumn Header="I/O W MiB/s" Binding="{Binding Current.WriteDisplay}" SortMemberPath="Current.WriteMbps" Width="95"/>
                 <DataGridTextColumn Header="STATUS" Binding="{Binding Lifecycle}" SortMemberPath="Lifecycle" Width="2*"/>

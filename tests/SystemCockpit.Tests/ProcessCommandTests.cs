@@ -94,6 +94,14 @@ internal static class ProcessCommandTests
         history.Apply([root with { StartTicks = 500 }], time.AddSeconds(400));
         Check(history.Rows[new(root.Id, 500)].Samples.Last().Gap, "sampling gap never interpolated");
         Check(history.Rows[new(root.Id, 500)].History.Contains("AVG"), "real sample MIN MAX AVG exposed");
+        var frozen = history.Rows[new(root.Id, 500)].Freeze();
+        var oldFrozen = frozen.Current;
+        history.Apply([root with { StartTicks = 500, CpuPercent = 99 }], time.AddSeconds(402));
+        Check(ReferenceEquals(frozen.Current, oldFrozen) && frozen.Current.CpuPercent == 10 &&
+            frozen.Samples.Last().Timestamp < history.Rows[new(root.Id, 500)].Samples.Last().Timestamp, "paused row separates immutable sample projection from continuing history");
+        var capped = new ProcessHistory();
+        capped.Apply(Enumerable.Range(1, ProcessHistory.Capacity + 1).Select(i => Row(20000 + i, 1000 + i)).ToArray(), time);
+        Check(capped.Rows.Count == ProcessHistory.Capacity, "actual identity count never exceeds declared history capacity");
         var xml = XDocument.Parse("<Event><System><Execution ProcessID='1001'/></System><EventData><Data Name='Other'>1001</Data></EventData></Event>");
         Check(!ProcessCorrelation.EventTargets(xml, root.Id), "provider execution PID is not target correlation");
         Check(ProcessCorrelation.EventTargets(XDocument.Parse("<Event><System><Provider Name='Application Error'/><EventID>1000</EventID></System><EventData><Data Name='ProcessId'>0x3e9</Data></EventData></Event>"), root.Id),

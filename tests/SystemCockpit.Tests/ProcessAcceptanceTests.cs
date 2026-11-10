@@ -169,6 +169,16 @@ internal static class ProcessAcceptanceTests
                     .Invoke(view.ProcessGrid, [new DataGridSortingEventArgs(cpuColumn)]);
                 if (((ProcessRow)view.ProcessGrid.Items[0]).Identity != fixtures[0].Identity)
                     throw new InvalidOperationException("Baumsortierung trennt Eltern und Kinder.");
+                var pause = (CheckBox)view.FindName("Pause");
+                pause.IsChecked = true;
+                var frozenCpu = ((ProcessRow)view.ProcessGrid.Items[0]).Current.CpuPercent;
+                view.Apply(Snapshot(time.AddSeconds(4), fixtures.Select(r => r with { CpuPercent = 77 }).ToArray()));
+                if (((ProcessRow)view.ProcessGrid.Items[0]).Current.CpuPercent != frozenCpu ||
+                    view.History.Rows[fixtures[0].Identity].Current.CpuPercent != 77)
+                    throw new InvalidOperationException("Pause friert nicht nur die Anzeige ein.");
+                pause.IsChecked = false;
+                if (((ProcessRow)view.ProcessGrid.Items[0]).Current.CpuPercent != 77)
+                    throw new InvalidOperationException("Fortsetzen zeigt nicht die aktuelle gemeinsame Probe.");
                 view.Run(token => Task.Delay(TimeSpan.FromMinutes(1), token));
                 var shutdown = view.ShutdownAsync();
                 var dispatcher = Dispatcher.CurrentDispatcher;

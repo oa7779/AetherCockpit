@@ -27,6 +27,9 @@ public partial class ProcessCommandView : UserControl
     private ProcessIdentity? _focusedIdentity;
     private string _sortMember = "Current.Id";
     private bool _descending;
+    private IReadOnlyDictionary<ProcessIdentity, ProcessRow>? _pausedRows;
+    private string _pausedStatus = "";
+    private IReadOnlyDictionary<ProcessIdentity, ProcessRow> DisplayRows => _pausedRows ?? _history.Rows;
     internal bool Synthetic { get; set; }
     internal Task Pending => _pending;
     internal ProcessHistory History => _history;
@@ -56,9 +59,9 @@ public partial class ProcessCommandView : UserControl
     private void Render()
     {
         var selected = (Processes.SelectedItem as ProcessRow)?.Identity;
-        var desired = _history.Rows.Values.Where(Matches).ToList();
+        var desired = DisplayRows.Values.Where(Matches).ToList();
         var tree = TreeMode.IsChecked == true;
-        var byIdentity = _history.Rows;
+        var byIdentity = DisplayRows;
         if (tree)
         {
             desired = desired.Where(row =>
@@ -123,6 +126,7 @@ public partial class ProcessCommandView : UserControl
         }
         if (selected is { } identity) Processes.SelectedItem = _rows.FirstOrDefault(r => r.Identity == identity);
         Status.Text = _rows.Count == 0 ? "Keine Prozesse für diesen Filter. " + _history.Status : _history.Status;
+        if (_pausedRows is not null) Status.Text = _pausedStatus;
         if (!_inspectorPinned) ShowHistory();
     }
     private bool Matches(ProcessRow row) =>
@@ -143,7 +147,13 @@ public partial class ProcessCommandView : UserControl
     private void PauseChanged(object sender, RoutedEventArgs e)
     {
         if (Processes is null) return;
-        if (Pause.IsChecked != true) Render(); else Status.Text = "Ansicht pausiert; gemeinsame Erfassung läuft weiter. Anzeige kann veralten.";
+        if (Pause.IsChecked == true)
+        {
+            _pausedRows = _history.Rows.ToDictionary(p => p.Key, p => p.Value.Freeze());
+            _pausedStatus = $"Ansicht pausiert bei {_history.LastSample:O}; gemeinsame Erfassung läuft weiter. Anzeige kann veralten.";
+        }
+        else _pausedRows = null;
+        Render();
     }
     private void SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -158,6 +168,7 @@ public partial class ProcessCommandView : UserControl
                 $"Quelle: gemeinsame Windows-Prozessprobe / {row.Current.ObservedAt:O}\n" +
                 $"Elternidentität: {row.Parent?.ToString() ?? "Nicht eindeutig verfügbar"}\n" +
                 "Kontextmenü oder Enter für Details. Prozess-I/O ist nicht automatisch physische Datenträgeraktivität.";
+        else Inspector.Text = "Kein Prozess ausgewählt. Prozess wählen und Enter oder das Kontextmenü für Details verwenden.";
     }
     private void RightClicked(object sender, MouseButtonEventArgs e)
     {
@@ -194,6 +205,7 @@ public partial class ProcessCommandView : UserControl
             if (dashboard.SelectedItem is not ProcessMetric metric) { e.Handled = true; return; }
             if (!_history.Rows.TryGetValue(metric.Identity, out var row))
                 row = new ProcessRow(metric);
+            Pause.IsChecked = false;
             Select(row.Identity);
             BuildMenu(dashboard.ContextMenu, row);
         };
@@ -237,7 +249,7 @@ public partial class ProcessCommandView : UserControl
         Item("Untergeordnete Prozesse anzeigen", () =>
         {
             TreeMode.IsChecked = true; row.Collapsed = false; Search.Clear(); Render();
-            Inspector.Text = string.Join("\n", _history.Rows.Values.Where(r => r.Parent == row.Identity).Select(r => $"{r.Current.Name} / {r.Identity}"));
+            Inspector.Text = string.Join("\n", DisplayRows.Values.Where(r => r.Parent == row.Identity).Select(r => $"{r.Current.Name} / {r.Identity}"));
         });
         Item("Zugehörige Dienste anzeigen", () => Correlate(row, "Dienst"));
         Item("Zugehörige Netzwerkverbindungen anzeigen", () => Correlate(row, "Netzwerk"));
@@ -255,7 +267,7 @@ public partial class ProcessCommandView : UserControl
     {
         _focusedIdentity = null;
         Search.Clear(); ActiveOnly.IsChecked = false; BusyOnly.IsChecked = false;
-        foreach (var row in _history.Rows.Values) row.Collapsed = false;
+        foreach (var row in DisplayRows.Values) row.Collapsed = false;
         Render();
         Processes.SelectedItem = _rows.FirstOrDefault(r => r.Identity == identity);
         if (Processes.SelectedItem is { } selected) Processes.ScrollIntoView(selected);
@@ -283,6 +295,7 @@ public partial class ProcessCommandView : UserControl
             var parts = action["process-id:".Length..].Split('@');
             if (parts.Length != 2 || !int.TryParse(parts[0], out var pid) || !long.TryParse(parts[1], out var start))
                 throw new ArgumentException("Ungültige Prozessidentität aus Befehlspalette.");
+            Pause.IsChecked = false;
             Select(new ProcessIdentity(pid, start));
             if (Processes.SelectedItem is null) Status.Text = "Prozess nicht mehr in der aktuellen Ansicht; kein Ersatzprozess ausgewählt.";
             return;
