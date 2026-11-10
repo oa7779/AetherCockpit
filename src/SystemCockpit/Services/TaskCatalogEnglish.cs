@@ -7,6 +7,14 @@ internal static class TaskCatalogEnglish
     private static readonly IReadOnlyDictionary<string, TaskTranslation> Workflows =
         new Dictionary<string, TaskTranslation>(StringComparer.Ordinal)
         {
+            ["Prozesse anzeigen"] = new("Show processes", "READ ONLY / shared Windows sample", "Open the list or tree. PID and creation time form the identity. Context actions revalidate the target.", "process tree"),
+            ["Prozess suchen"] = new("Find a process", "READ ONLY / focus search", "Filter by name, PID or state. Search never performs a process action.", "search filter pid"),
+            ["Hardwarebericht erstellen"] = new("Create hardware report", "FILE / export existing observations", "Read the required classes first, then use the privacy-aware export. No automatic full inventory.", "hardware report export"),
+            ["Netzwerkverbindungen anzeigen"] = new("Show network connections", "READ ONLY / owner-PID endpoints", "Read TCP and UDP endpoints on request. Owner PID is time-bound, not a byte rate or permanent identity.", "socket tcp udp listener"),
+            ["Dienste anzeigen"] = new("Show services", "READ ONLY / open service area", "Load service status deliberately. Changes still need preview and confirmation.", "service startup"),
+            ["Systemsnapshot aufnehmen"] = new("Capture system snapshot", "READ ONLY / local session snapshot", "Capture processes, services, startup entries and endpoints with separate source times. Not atomic. Export separately.", "snapshot capture"),
+            ["Snapshots vergleichen"] = new("Compare snapshots", "READ ONLY / compare two local states", "Capture or load two snapshots. Compare identities without deriving a security diagnosis.", "snapshot compare"),
+            ["Dateispeicherort öffnen"] = new("Open file location", "LOCAL / selected process file", "Select a process first. Revalidate its identity and path before selecting the file in Explorer.", "file explorer path"),
             ["Windows-Probleme eingrenzen"] = new("Troubleshoot Windows problems", "READ ONLY / review the current status",
                 "1. Note the time and symptoms.\n2. Review diagnostics and events.\n3. Export a redacted report.\n4. Only then approve an appropriate repair individually.", "error support report system status"),
             ["Abstuerze und Hardwarefehler"] = new("Crashes and hardware errors", "READ ONLY / Windows events",
@@ -64,6 +72,7 @@ internal static class TaskCatalogEnglish
 
     internal static string Label(string value) => value switch
     {
+        "Prozesse" => "Processes", "Taskmanager" => "Process center", "HardwareIntelligence" => "Hardware Intelligence",
         "Diagnose" => "Diagnostics", "Netzwerk" => "Network", "Monitoring" => "Monitoring",
         "Bereinigung" => "Cleanup", "Hilfe" => "Help", "Software" => "Software",
         "Befehlskatalog" => "Command catalog", "Hauptfenster" => "Main window",

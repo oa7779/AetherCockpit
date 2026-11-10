@@ -1,10 +1,14 @@
 namespace SystemCockpit.Services;
 
 public sealed record CockpitTask(string Category, string Title, string Destination, string Surface,
-    string Effect, string Steps, string Keywords, string? Command = null)
+    string Effect, string Steps, string Keywords, string? Command = null, string? QuickAction = null)
 {
     private bool English => System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en";
-    private TaskTranslation? Translation => English && Command is null ? TaskCatalogEnglish.Get(Title) : null;
+    private TaskTranslation? Translation => English && Command is null
+        ? QuickAction?.StartsWith("process-id:", StringComparison.Ordinal) == true
+            ? new(Title, "READ ONLY / existing process sample", "Select the process. Actions revalidate its identity.", "process pid")
+            : TaskCatalogEnglish.Get(Title)
+        : null;
     public string CategoryDisplay => English ? TaskCatalogEnglish.Label(Category) : Category;
     public string DestinationDisplay => English ? TaskCatalogEnglish.Label(Destination) : Destination;
     public string SurfaceDisplay => English ? TaskCatalogEnglish.Label(Surface) : Surface;
@@ -19,6 +23,22 @@ public static class TaskCatalog
 {
     private static IReadOnlyList<CockpitTask> Workflows { get; } =
     [
+        new("Prozesse", "Prozesse anzeigen", "Taskmanager", "Hauptfenster", "LESEND / gemeinsame Windows-Prozessprobe",
+            "Prozessliste oder Baum öffnen. PID und Startzeit bilden die Identität. Kontextmenüaktionen prüfen das Ziel erneut.", "prozess prozessbaum process"),
+        new("Prozesse", "Prozess suchen", "Taskmanager", "Hauptfenster", "LESEND / Suchfeld fokussieren",
+            "Name, PID oder Zustand eingeben. Keine Prozessaktion wird durch die Suche ausgeführt.", "suchen filter pid", QuickAction: "process-search"),
+        new("Prozesse", "Hardwarebericht erstellen", "HardwareIntelligence", "Hauptfenster", "DATEI / vorhandene Hardwareklassen exportieren",
+            "Zuerst gewünschte Klassen lesen. Export mit Datenschutzdialog aufrufen; keine automatische vollständige Hardwareerfassung.", "hardware export quelle bericht", QuickAction: "hardware-report"),
+        new("Prozesse", "Netzwerkverbindungen anzeigen", "Taskmanager", "Hauptfenster", "LESEND / Owner-PID-Endpunkte",
+            "TCP- und UDP-Endpunkte auf Anforderung lesen. Owner-PID ist zeitbezogen, keine Datenrate und keine dauerhafte Prozessidentität.", "socket tcp udp listener ports", QuickAction: "connections"),
+        new("Prozesse", "Dienste anzeigen", "Superadmin", "Hauptfenster", "LESEND / Dienstbereich öffnen",
+            "Dienstbereich öffnen und Status bewusst laden. Änderungen benötigen weiterhin Vorschau und Bestätigung.", "service dienst starttyp", QuickAction: "services"),
+        new("Prozesse", "Systemsnapshot aufnehmen", "Taskmanager", "Hauptfenster", "LESEND / lokaler Sitzungssnapshot",
+            "Gemeinsame Prozessprobe, Dienste, Autostarts und Verbindungen mit eigenen Quellenzeiten aufnehmen. Nicht atomar; Export separat.", "snapshot zustand vergleich", QuickAction: "snapshot"),
+        new("Prozesse", "Snapshots vergleichen", "Taskmanager", "Hauptfenster", "LESEND / zwei lokale Zustände",
+            "Zwei Snapshots aufnehmen oder lokal laden. Veränderungen nach Identität vergleichen; keine Sicherheitsdiagnose daraus ableiten.", "compare differenz starttyp", QuickAction: "compare"),
+        new("Prozesse", "Dateispeicherort öffnen", "Taskmanager", "Hauptfenster", "LOKAL / ausgewählte Prozessdatei",
+            "Zuerst einen Prozess auswählen. Identität und Pfad werden erneut gelesen; Explorer markiert die Datei.", "datei explorer pfad", QuickAction: "file-location"),
         new("Diagnose", "Windows-Probleme eingrenzen", "Diagnose", "Hauptfenster", "LESEND / vorhandenen Status ansehen",
             "1. Zeitpunkt und Symptom notieren.\n2. Diagnose und Ereignisse pruefen.\n3. Bericht mit Schwaerzung exportieren.\n4. Erst danach passende Reparatur einzeln freigeben.", "fehler support bericht systemstatus"),
         new("Diagnose", "Abstuerze und Hardwarefehler", "Ereignisse", "Hauptfenster", "LESEND / Windows-Ereignisse",

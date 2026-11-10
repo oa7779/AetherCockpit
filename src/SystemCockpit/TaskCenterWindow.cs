@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.IO;
+using System.Text.Json;
 using SystemCockpit.Services;
 
 namespace SystemCockpit;
@@ -14,11 +16,20 @@ public sealed class TaskCenterWindow : Window
     internal TextBox SearchBox { get; } = new() { Margin = new Thickness(0, 8, 0, 8) };
     internal ComboBox CategoryBox { get; } = new() { Margin = new Thickness(0, 0, 0, 8) };
     internal ListBox Results { get; } = new();
+    internal Button OpenButton => _open;
     private readonly TextBlock _count = new(), _title = new(), _effect = new(), _steps = new();
     private readonly Button _open = new() { Content = DesktopUiText.Get("TaskCenter.Open"), Margin = new Thickness(0, 16, 0, 0) };
+    private readonly CheckBox _favorites = new() { Content = "Favoriten", Margin = new(0, 0, 12, 0) };
+    private readonly CheckBox _recent = new() { Content = "Zuletzt verwendet" };
+    private TaskCenterPreferences _preferences = TaskCenterPreferences.Empty;
+    private readonly IReadOnlyList<CockpitTask> _processTasks;
 
-    public TaskCenterWindow()
+    public TaskCenterWindow(IReadOnlyList<ProcessMetric>? processes = null)
     {
+        _processTasks = (processes ?? []).Where(p => p.Identity.IsKnown).Take(ProcessHistory.Capacity).Select(p =>
+            new CockpitTask("Prozesse", $"{p.Name} / PID {p.Id}", "Taskmanager", "Hauptfenster", "LESEND / vorhandene Prozessprobe",
+                "Prozess in der Zentrale auswählen. Vor jeder Aktion wird die Identität erneut geprüft.",
+                $"{p.Name} {p.Id}", QuickAction: "process-id:" + p.Identity)).ToArray();
         Title = DesktopUiText.Get("TaskCenter.Title");
         Width = 1040; Height = 720; MinWidth = 760; MinHeight = 540;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -43,6 +54,27 @@ public sealed class TaskCenterWindow : Window
         CategoryBox.SelectedIndex = 0;
         System.Windows.Automation.AutomationProperties.SetName(CategoryBox, DesktopUiText.Get("TaskCenter.Category"));
         header.Children.Add(CategoryBox); header.Children.Add(_count);
+        var tools = new WrapPanel();
+        tools.Children.Add(_favorites); tools.Children.Add(_recent);
+        var favorite = new Button { Content = "Favorit umschalten", Margin = new(12, 0, 0, 0) };
+        favorite.SetResourceReference(StyleProperty, "NeonButton"); tools.Children.Add(favorite);
+        header.Children.Add(tools);
+        try { _preferences = TaskCenterPreferences.Load(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            System.Diagnostics.Trace.TraceError("Befehlspaletten-Einstellungen: {0}", ex);
+            header.Children.Add(new TextBlock { Text = "Gespeicherte Werkzeuge nicht lesbar: " + ex.Message, TextWrapping = TextWrapping.Wrap });
+        }
+        _favorites.Checked += (_, _) => Refresh(); _favorites.Unchecked += (_, _) => Refresh();
+        _recent.Checked += (_, _) => Refresh(); _recent.Unchecked += (_, _) => Refresh();
+        favorite.Click += (_, _) => SavePreference(() =>
+        {
+            if (Results.SelectedItem is CockpitTask task)
+            {
+                if (!TaskCatalog.All.Contains(task)) throw new InvalidOperationException("Prozessidentitäten werden nicht als Werkzeugfavoriten gespeichert.");
+                _preferences = _preferences.Toggle(task.Title);
+            }
+        });
         grid.Children.Add(header);
         var body = new Grid { Margin = new Thickness(0, 12, 0, 0) };
         body.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
@@ -92,10 +124,15 @@ public sealed class TaskCenterWindow : Window
 
     private void Refresh()
     {
-        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedValue as string : null);
+        var terms = SearchBox.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var dynamicProcesses = terms.Length > 0 && (CategoryBox.SelectedIndex <= 0 || Equals(CategoryBox.SelectedValue, "Prozesse"))
+            ? _processTasks.Where(t => terms.All(term => t.SearchText.Contains(term, StringComparison.OrdinalIgnoreCase))) : [];
+        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedValue as string : null).Concat(dynamicProcesses)
+            .Where(task => (_favorites.IsChecked != true || _preferences.Favorites.Contains(task.Title)) &&
+                (_recent.IsChecked != true || _preferences.Recent.Contains(task.Title))).ToArray();
         Results.ItemsSource = tasks;
-        Results.SelectedIndex = tasks.Count > 0 ? 0 : -1;
-        _count.Text = DesktopUiText.Format("TaskCenter.Count", tasks.Count);
+        Results.SelectedIndex = tasks.Length > 0 ? 0 : -1;
+        _count.Text = DesktopUiText.Format("TaskCenter.Count", tasks.Length);
         ShowSelection();
     }
 
@@ -112,6 +149,16 @@ public sealed class TaskCenterWindow : Window
     {
         if (Results.SelectedItem is not CockpitTask task) return;
         SelectedTask = task;
+        if (TaskCatalog.All.Contains(task)) SavePreference(() => _preferences = _preferences.Use(task.Title), false);
         DialogResult = true;
+    }
+    private void SavePreference(Action update, bool refresh = true)
+    {
+        try { update(); _preferences.Save(); if (refresh) Refresh(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            System.Diagnostics.Trace.TraceError("Befehlspalette speichern: {0}", ex);
+            MessageBox.Show(this, ex.Message, "Werkzeuge nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 }
