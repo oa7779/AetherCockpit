@@ -33,7 +33,7 @@ public partial class HardwareIntelligenceView : UserControl
 
     private static readonly IReadOnlyDictionary<HardwareClass, string> Captions = new Dictionary<HardwareClass, string>
     {
-        [HardwareClass.System] = "SYSTEM", [HardwareClass.Cpu] = "CPU", [HardwareClass.Gpu] = "GPU", [HardwareClass.Npu] = "NPU",
+        [HardwareClass.System] = "SYSTEM", [HardwareClass.Cpu] = "CPU", [HardwareClass.Gpu] = "GPU", [HardwareClass.Npu] = "NPU / KLASSENHINWEISE",
         [HardwareClass.Mainboard] = "MAINBOARD", [HardwareClass.Firmware] = "BIOS / UEFI", [HardwareClass.Chipset] = "CHIPSATZ",
         [HardwareClass.Memory] = "RAM", [HardwareClass.Storage] = "STORAGE", [HardwareClass.Pci] = "PCI / PCIe",
         [HardwareClass.Network] = "NETZWERK", [HardwareClass.Wlan] = "WLAN", [HardwareClass.Bluetooth] = "BLUETOOTH",

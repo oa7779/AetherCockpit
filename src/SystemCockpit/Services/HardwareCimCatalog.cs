@@ -64,7 +64,9 @@ internal static class HardwareCimCatalog
              P("InfFilename", "Treiber-INF"), D("Status", "Status")]),
         new("Npu", HardwareClass.Npu, Cim, "Win32_PnPEntity", "PNPDeviceID", "Name",
             [P("Name", "Windows-Gerätename"), P("Manufacturer", "Hersteller"), S("PNPDeviceID", "PnP-Identität"),
-             P("PNPClass", "Beschleunigerklasse"), P("ClassGuid", "Klassen-GUID"), D("Status", "Windows-Status")],
+             P("PNPClass", "Beschleunigerklasse"), P("ClassGuid", "Klassen-GUID"),
+             S("HardwareID", "Hardwarekennungen"), S("CompatibleID", "Kompatible Kennungen"),
+             P("Service", "Treiber-Service"), D("ConfigManagerErrorCode", "PnP-Fehlercode"), D("Status", "Windows-Status")],
              "PNPClass = 'ComputeAccelerator' OR PNPClass = 'NeuralProcessor'"),
         new("Board", HardwareClass.Mainboard, Cim, "Win32_BaseBoard", "Tag", "Product",
             [P("Manufacturer", "Hersteller"), P("Product", "Modell"), P("Version", "Version / Revision"),
@@ -163,12 +165,11 @@ internal static class HardwareCimCatalog
 
     internal static string[] Gaps(HardwareClass category) => category switch
     {
-        HardwareClass.Cpu => ["Referenztakt / Multiplikator", "Effektiver Takt", "CPU-Codename"],
+        HardwareClass.Cpu => ["Referenztakt / Multiplikator", "CPU-Codename"],
         HardwareClass.Gpu => ["Geräteweiter VRAM-Verbrauch (DXGI hier pro Prozess)", "WDDM", "VBIOS", "iGPU/dGPU", "Architektur / Codename",
             "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / Decode"],
         HardwareClass.Npu => ["NPU-Telemetrie", "TOPS"],
         HardwareClass.Mainboard => ["Chipsatz-Zuordnung"],
-        HardwareClass.Memory => ["SPD-Rohdaten / JEDEC / XMP / EXPO"],
         HardwareClass.Storage => ["TRIM-Status", "Controllerzuordnung"],
         HardwareClass.Display => ["Physisch native Panelauflösung", "Separater HDR-Modus / Panel-Farbtiefe"],
         HardwareClass.Audio => ["Vollständige Audioformatfähigkeiten / Exclusive-Mode-Formate"],

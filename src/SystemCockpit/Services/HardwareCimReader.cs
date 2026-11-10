@@ -50,6 +50,7 @@ public sealed class HardwareIntelligenceReader
             }
         }
         if (category == HardwareClass.Cpu) Supplement("CPU API", HardwareCpuReader.Read);
+        if (category == HardwareClass.Cpu) components.AddRange(await HardwareCpuFrequency.ReadAsync(token).ConfigureAwait(false));
         if (category == HardwareClass.Gpu) Supplement("DXGI", HardwareGpuReader.Read);
         if (category == HardwareClass.Network) Supplement("NetworkInterface", () => _networkRates.Apply(HardwareRuntimeReader.Network()));
         if (category == HardwareClass.Wlan) Supplement("Native Wi-Fi", () => HardwareWifiReader.Read(token));
@@ -93,6 +94,8 @@ public sealed class HardwareIntelligenceReader
                 var id = Identity(query.Key, identity);
                 var label = Text(row, query.Label);
                 var facts = query.Properties.Select(p => Fact(row, p, source, batch.Timestamp)).ToList();
+                if (category == HardwareClass.Npu)
+                    facts.Add(NpuClassification(row, batch.Timestamp));
                 if (query.CimClass == "WmiMonitorID")
                 {
                     foreach (var property in query.Properties.Where(p => p.Property.EndsWith("Name", StringComparison.Ordinal) ||
@@ -163,12 +166,30 @@ public sealed class HardwareIntelligenceReader
                 else components.Add(new(Identity(category + ":extra", extra.Key + ":" + key), category, name, [fact]));
             }
         }
+        if (category == HardwareClass.Memory) components.Add(HardwareSpdBoundary.Describe(DateTimeOffset.UtcNow));
+        if (category == HardwareClass.Cpu) components.Add(new("cpu:effective-boundary", category, "Effektiver CPU-Takt / Messgrenze",
+            [HardwareFact.Missing("effective-clock", "Effektiver CPU-Zyklustakt", "Windows PDH / CPUID / vorhandener Sensorpfad", DateTimeOffset.UtcNow,
+                "Windows-Frequenz und Leistungsprozent sind separate Providerangaben. Kein eigener APERF/MPERF-/Residenzzeit-Zugriff ohne Kernelprovider. " +
+                "Daher keine als effektiver Takt ausgegebene Multiplikation oder Nominaltakt-Schätzung.", DataAvailability.Unsupported)]));
         foreach (var gap in HardwareCimCatalog.Gaps(category))
             components.Add(new("gap:" + category + ":" + gap, category, "○ " + gap,
                 [HardwareFact.Missing(gap, gap, "AETHER / Quellenabdeckung", DateTimeOffset.UtcNow,
                     "Kein belastbarer integrierter Lesepfad. Kein Ersatz durch Modellannahmen oder Marketingwerte.",
                     DataAvailability.Unsupported)]));
         return components;
+    }
+
+    internal static HardwareFact NpuClassification(JsonElement row, DateTimeOffset time)
+    {
+        var declared = Text(row, "PNPClass");
+        var guid = Text(row, "ClassGuid");
+        var compute = declared?.Equals("ComputeAccelerator", StringComparison.OrdinalIgnoreCase) == true &&
+            Guid.TryParse(guid, out var parsed) && parsed == new Guid("f01a9d53-3ff6-48d2-9f97-c8a7004be10c");
+        var text = compute ? "Windows-ComputeAccelerator-Klasse bestätigt; NPU-Funktion nicht unabhängig bestätigt." :
+            "Windows-Beschleunigerklassifizierung; NPU-Funktion nicht unabhängig bestätigt.";
+        return new("npu-classification", "NPU-Identität / Bestätigungsstand",
+            SourceObservation<string>.Present(text, "", Metadata("Windows PNPClass / ClassGuid; keine Hersteller- oder Telemetrie-API",
+                time, SourceType.Unconfirmed)), Calculation: "Klasse und GUID sind Geräteidentitätshinweise, kein Beweis für NPU-, TOPS- oder AI-Fähigkeiten.");
     }
 
     private static string? Unique(IEnumerable<(HardwareComponent Component, JsonElement Row, string Query)> matches)

@@ -43,6 +43,22 @@ internal static class HardwareCompletionTests
         var changed = reading with { ProviderDeviceId = "provider/device1", Value = 50 };
         stats.AddSensors(time.AddSeconds(1), [changed], false);
         Check(stats.ForSensor(reading) is null && stats.ForSensor(changed)?.Value.Count == 1, "device change resets statistics identity");
+        var npu = HardwareIntelligenceReader.NpuClassification(JsonSerializer.SerializeToElement(new
+            { PNPClass = "ComputeAccelerator", ClassGuid = "{f01a9d53-3ff6-48d2-9f97-c8a7004be10c}", Name = "NPU AI" }), time);
+        Check(npu.Provenance == "Unconfirmed" && npu.Observation.Metadata.Confidence == DataConfidence.Unconfirmed, "class is not independent NPU evidence");
+        Check(npu.Display.Contains("ComputeAccelerator-Klasse bestätigt"), "documented class GUID is checked");
+        Check(!HardwareIntelligenceReader.NpuClassification(JsonSerializer.SerializeToElement(new { PNPClass = "GPU", Name = "NPU" }), time)
+            .Display.Contains("Klasse bestätigt"), "name cannot establish NPU class");
+        Check(HardwareCpuFrequency.ValidSample(0, 0) && HardwareCpuFrequency.ValidSample(1, 200), "PDH valid/new samples");
+        Check(!HardwareCpuFrequency.ValidSample(2, 3000) && !HardwareCpuFrequency.ValidSample(0, double.NaN) &&
+            !HardwareCpuFrequency.ValidSample(0, -1), "PDH invalid samples never become frequencies");
+        var module = new SpdModule("fixture/module", new byte[512],
+            HardwareIntelligenceReader.Metadata("fixture", time, classification: DataClassification.Sensitive), "fixture-license", new("https://example.org/spd"));
+        Check(HardwareSpdBoundary.Valid(module), "bounded explicit SPD provider contract");
+        Check(!HardwareSpdBoundary.Valid(module with { StableDeviceKey = "" }), "SPD requires exact device identity");
+        Check(!HardwareSpdBoundary.Valid(module with { Bytes = new byte[32] }), "SPD invalid buffer refused");
+        Check(!HardwareSpdBoundary.Valid(module with { Metadata = HardwareIntelligenceReader.Metadata("fixture", time) }), "SPD identifiers require privacy classification");
+        Check(!HardwareSpdBoundary.Valid(module with { License = "" }), "SPD source license required");
         return _assertions;
     }
 }
