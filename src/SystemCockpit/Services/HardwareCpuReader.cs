@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using AetherOperations;
+using Microsoft.Win32;
 
 namespace SystemCockpit.Services;
 
@@ -74,7 +75,56 @@ internal static class HardwareCpuReader
         facts.Add(HardwareFact.Missing("coretype", "P-/E-Core-Bezeichnung", "Windows EfficiencyClass", time,
             "Relative EfficiencyClass wird roh angezeigt; keine unbelegte P-/E-Core-Zuordnung."));
         return [new("cpu:native", HardwareClass.Cpu, "CPU / CPUID und Windows-Topologie", facts),
-            .. Topology(time)];
+            .. Topology(time), .. Microcode(time)];
+    }
+
+    private static IReadOnlyList<HardwareComponent> Microcode(DateTimeOffset time)
+    {
+        const string source = @"Registry HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor";
+        var result = new List<HardwareComponent>();
+        try
+        {
+            using var root = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor", writable: false);
+            if (root is null) return [new("cpu:microcode", HardwareClass.Cpu, "Windows-Microcodeangaben",
+                [HardwareFact.Missing("microcode", "Update Revision", source, time, "Windows stellt den Registryzweig nicht bereit.")])];
+            foreach (var name in root.GetSubKeyNames())
+            {
+                var facts = new List<HardwareFact>();
+                try
+                {
+                    using var key = root.OpenSubKey(name, writable: false);
+                    facts.Add(RegistryMicrocode(key?.GetValue("Update Revision"), time));
+                }
+                catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or System.IO.IOException)
+                {
+                    System.Diagnostics.Trace.TraceError("Hardware CPU Registry: {0}", ex);
+                    facts.Add(HardwareFact.Missing("microcode", "Update Revision", source, time,
+                        $"Registryabfrage fehlgeschlagen (HRESULT 0x{ex.HResult:X8}).",
+                        ex is System.IO.IOException ? DataAvailability.ProviderError : DataAvailability.AccessDenied));
+                }
+                result.Add(new("cpu:registry:" + name, HardwareClass.Cpu, "Windows-Prozessoreintrag / " + name, facts));
+            }
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or System.IO.IOException)
+        {
+            System.Diagnostics.Trace.TraceError("Hardware CPU Registry: {0}", ex);
+            result.Add(new("cpu:microcode-error", HardwareClass.Cpu, "Windows-Microcodeangaben",
+                [HardwareFact.Missing("microcode", "Update Revision", source, time,
+                    $"Registryabfrage fehlgeschlagen (HRESULT 0x{ex.HResult:X8}).",
+                    ex is System.IO.IOException ? DataAvailability.ProviderError : DataAvailability.AccessDenied)]));
+        }
+        return result;
+    }
+
+    internal static HardwareFact RegistryMicrocode(object? data, DateTimeOffset time)
+    {
+        const string source = @"Registry HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor\*\Update Revision";
+        return data is byte[] { Length: > 0 and <= 32 } bytes
+            ? new("microcode", "Update Revision (Windows-Registry; rohe Bytefolge)", SourceObservation<string>.Present(
+                Convert.ToHexString(bytes), "", HardwareIntelligenceReader.Metadata(source, time)))
+            : HardwareFact.Missing("microcode", "Update Revision", source, time,
+                data is null ? "Windows meldet keine Update Revision." : "Registrywert ist keine unterstützte binäre Revision.",
+                data is null ? DataAvailability.Unavailable : DataAvailability.ProviderError);
     }
 
     private static void Feature(string name, int register, int bit, string leaf, DateTimeOffset time, List<HardwareFact> facts) =>

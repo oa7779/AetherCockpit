@@ -39,6 +39,14 @@ internal static class HardwareGpuReader
                     // A LUID names this adapter instance; it is not guessed from a model name or CIM AdapterRAM.
                     facts.Add(new("luid", "Adapter LUID", SourceObservation<string>.Present($"{desc.Luid.High:X8}:{desc.Luid.Low:X8}", "",
                         HardwareIntelligenceReader.Metadata("DXGI.GetDesc1.AdapterLuid", time, classification: DataClassification.Sensitive))));
+                    try { facts.AddRange(HardwareDirect3D.Read(adapter, time)); }
+                    catch (Exception ex) when (ex is COMException or DllNotFoundException or EntryPointNotFoundException)
+                    {
+                        System.Diagnostics.Trace.TraceError("Hardware Direct3D: {0}", ex);
+                        facts.Add(HardwareFact.Missing("d3d12", "Direct3D 12", "D3D12CreateDevice", time,
+                            $"Direct3D-Provider nicht verfügbar (HRESULT 0x{ex.HResult:X8}).",
+                            ex is COMException ? DataAvailability.ProviderError : DataAvailability.Unsupported));
+                    }
                     foreach (var segment in new[] { 0, 1 })
                     {
                         var name = segment == 0 ? "Lokal" : "Nichtlokal";

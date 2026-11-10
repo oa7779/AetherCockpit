@@ -163,19 +163,15 @@ internal static class HardwareCimCatalog
 
     internal static string[] Gaps(HardwareClass category) => category switch
     {
-        HardwareClass.Cpu => ["Microcode", "Referenztakt / Multiplikator", "Effektiver Takt", "CPU-Codename"],
+        HardwareClass.Cpu => ["Referenztakt / Multiplikator", "Effektiver Takt", "CPU-Codename"],
         HardwareClass.Gpu => ["Geräteweiter VRAM-Verbrauch (DXGI hier pro Prozess)", "WDDM", "VBIOS", "iGPU/dGPU", "Architektur / Codename",
-            "Speichertyp / Speicherbus", "Speicherbandbreite", "DirectX Feature Level", "Vulkan / OpenCL / CUDA",
-            "Raytracing / Video Encode / Decode"],
+            "Speichertyp / Speicherbus", "Speicherbandbreite", "Vulkan / OpenCL / CUDA", "Video Encode / Decode"],
         HardwareClass.Npu => ["NPU-Telemetrie", "TOPS"],
         HardwareClass.Mainboard => ["Chipsatz-Zuordnung"],
         HardwareClass.Memory => ["SPD-Rohdaten / JEDEC / XMP / EXPO"],
-        HardwareClass.Storage => ["NVMe Critical Warning / Spare / Wear", "NVMe Unsafe Shutdowns / Media Errors / Error Log Entries",
-            "SMART-Rohattribute", "TRIM-Status", "Controllerzuordnung"],
-        HardwareClass.Network => ["Aktuelle Rx-/Tx-Rate (hier nur kumulierte Zähler)"],
-        HardwareClass.Wlan => ["WLAN-Standard / Band / Kanal / Linkrate (Native Wi-Fi)"],
-        HardwareClass.Display => ["Native Auflösung", "HDR / Panel-Farbtiefe / Skalierung", "Display-Verbindung"],
-        HardwareClass.Audio => ["Unterstützte / aktuelle Audioformate"],
+        HardwareClass.Storage => ["TRIM-Status", "Controllerzuordnung"],
+        HardwareClass.Display => ["Physisch native Panelauflösung", "Separater HDR-Modus / Panel-Farbtiefe"],
+        HardwareClass.Audio => ["Vollständige Audioformatfähigkeiten / Exclusive-Mode-Formate"],
         HardwareClass.Usb => ["Elektrische USB-Topologie / physische Portnummer"],
         _ => []
     };

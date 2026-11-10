@@ -9,6 +9,11 @@ public sealed record SmartDevice(string Name, string Type, string Info)
     public override string ToString() => $"{Name} [{Type}] {Info}";
 }
 public sealed record SmartReport(string Summary, string Json, int ExitCode);
+public sealed class SmartReadException(int exitCode) : IOException(
+    $"smartctl Befehls-/Zugriffsfehler (Bitmaske {exitCode}). Administratorrechte, Transport und Geraeteunterstuetzung pruefen.")
+{
+    public int ExitCode { get; } = exitCode;
+}
 
 public sealed class SmartService(string executable)
 {
@@ -95,7 +100,7 @@ public sealed class SmartService(string executable)
     private static void CheckExit(int exit)
     {
         // smartctl uses a bitmask: bits 0..2 are command/open/read failures, bits 3..7 are health/log findings.
-        if ((exit & 7) != 0) throw new IOException($"smartctl Befehls-/Zugriffsfehler (Bitmaske {exit}). Administratorrechte, Transport und Geraeteunterstuetzung pruefen.");
+        if ((exit & 7) != 0) throw new SmartReadException(exit);
     }
     public static string Summarize(string text, int exitCode)
     {

@@ -1,11 +1,18 @@
 using System.Runtime.InteropServices;
+using System.Buffers.Binary;
 
 namespace SystemCockpit.Services;
 
 // Read session state only; no audio capture, playback, volume changes or process names.
 internal static class AudioTopology
 {
-    internal static IReadOnlyList<BoardDevice> Read()
+    internal sealed record MixFormat(ushort Tag, ushort Channels, uint SamplesPerSecond, uint BytesPerSecond,
+        ushort BlockAlign, ushort BitsPerSample, ushort? ValidBits, uint? ChannelMask, Guid? Subformat);
+    internal sealed record FormatResult(MixFormat? Format, int HResult);
+
+    internal static IReadOnlyList<BoardDevice> Read() => Read(null);
+
+    internal static IReadOnlyList<BoardDevice> Read(Action<string, FormatResult>? formats)
     {
         var enumerator = (IDeviceEnumerator)new DeviceEnumerator();
         try
@@ -55,6 +62,7 @@ internal static class AudioTopology
                         finally { Marshal.ReleaseComObject(properties); }
                         defaults.TryGetValue(id, out var roles);
                         var connected = (state & 1) != 0;
+                        if (formats is not null && connected) formats(id, ReadMixFormat(device));
                         bool? inUse = false;
                         var sessionInfo = "";
                         if (connected)
@@ -94,7 +102,7 @@ internal static class AudioTopology
         device.Activate(ref iid, 23, IntPtr.Zero, out var manager);
         try
         {
-            manager.GetSessionEnumerator(out var sessions);
+            ((IAudioSessionManager)manager).GetSessionEnumerator(out var sessions);
             try
             {
                 sessions.GetCount(out var count);
@@ -115,6 +123,52 @@ internal static class AudioTopology
         finally { Marshal.ReleaseComObject(manager); }
     }
 
+    private static FormatResult ReadMixFormat(IDevice device)
+    {
+        var iid = typeof(IAudioClient).GUID;
+        try
+        {
+            device.Activate(ref iid, 23, IntPtr.Zero, out var client);
+            try
+            {
+                ((IAudioClient)client).GetMixFormat(out var pointer);
+                try
+                {
+                    if (pointer == IntPtr.Zero) throw new InvalidOperationException("Audio-Mixformat fehlt.");
+                    var extra = unchecked((ushort)Marshal.ReadInt16(pointer, 16));
+                    if (extra > 4096) throw new InvalidOperationException("Ungültige Audioformatlänge.");
+                    var bytes = new byte[18 + extra];
+                    Marshal.Copy(pointer, bytes, 0, bytes.Length);
+                    return new(ParseMixFormat(bytes), 0);
+                }
+                finally { Marshal.FreeCoTaskMem(pointer); }
+            }
+            finally { Marshal.ReleaseComObject(client); }
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            System.Diagnostics.Trace.TraceError("Hardware Audio-Mixformat: {0}", ex);
+            return new(null, ex.HResult);
+        }
+    }
+
+    internal static MixFormat ParseMixFormat(byte[] data)
+    {
+        if (data.Length < 18) throw new InvalidOperationException("Unvollständiges Audio-Mixformat.");
+        var tag = BinaryPrimitives.ReadUInt16LittleEndian(data);
+        var extra = BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(16));
+        if (extra > data.Length - 18 || tag == 0xfffe && extra < 22)
+            throw new InvalidOperationException("Ungültiges erweitertes Audio-Mixformat.");
+        return new(tag, BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(2)),
+            BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(4)),
+            BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(8)),
+            BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(12)),
+            BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(14)),
+            tag == 0xfffe ? BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(18)) : null,
+            tag == 0xfffe ? BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(20)) : null,
+            tag == 0xfffe ? new Guid(data.AsSpan(24, 16)) : null);
+    }
+
     [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")]
     private class DeviceEnumerator { }
     [ComImport, Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -132,10 +186,16 @@ internal static class AudioTopology
     [ComImport, Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     private interface IDevice
     {
-        void Activate(ref Guid iid, uint context, IntPtr parameters, out IAudioSessionManager instance);
+        void Activate(ref Guid iid, uint context, IntPtr parameters, [MarshalAs(UnmanagedType.IUnknown)] out object instance);
         void OpenPropertyStore(uint access, out IPropertyStore properties);
         void GetId([MarshalAs(UnmanagedType.LPWStr)] out string id);
         void GetState(out uint state);
+    }
+    [ComImport, Guid("1CB9AD4C-DBFA-4C32-B178-C2F568A703B2"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IAudioClient
+    {
+        void Initialize(); void GetBufferSize(); void GetStreamLatency(); void GetCurrentPadding(); void IsFormatSupported();
+        void GetMixFormat(out IntPtr format);
     }
     [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     private interface IPropertyStore

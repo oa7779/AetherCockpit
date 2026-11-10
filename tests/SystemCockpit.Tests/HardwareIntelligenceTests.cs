@@ -179,6 +179,10 @@ internal static class HardwareIntelligenceTests
         var duplicateSensor = new SensorReading("duplicate", "CPU", "Package", "Temperature", 1, "°C");
         Check(HardwareSensorInventory.Read([duplicateSensor, duplicateSensor], Time, true, null)[0].Facts[0].State == "ProviderError",
             "duplicate sensor identities surface as provider error, not a sampling loop exception");
+        SensorStatistics();
+        WirelessAndNetwork();
+        NativeDetails();
+        StorageHealth();
         Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { 65, 66, 0, 0 } }), "name") == "AB", "EDID ASCII decoded without a database");
         Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { 999 } }), "name") is null, "invalid EDID character not guessed");
         Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { "65" } }), "name") is null, "EDID wrong type rejected");
@@ -204,6 +208,219 @@ internal static class HardwareIntelligenceTests
             Check(syntax.ExitCode == 0 && syntax.Output.Contains("syntax-ok"), "PowerShell read-only script syntax: " + syntax.Error);
         }
         return _assertions;
+    }
+
+    private static void SensorStatistics()
+    {
+        var stats = new SessionStatistics();
+        var sensor = new SensorReading("fixture/temp", "CPU", "Package", "Temperature", 0, "°C");
+        var limit = new SensorReading("/nvme/0/temperature/1", "SSD", "Critical Temperature", "Temperature", 90, "°C");
+        stats.AddSensors(Time, [sensor, limit], retainAbsent: false);
+        stats.AddSensors(Time.AddSeconds(1), [sensor with { Value = 20 }, limit], retainAbsent: false);
+        stats.AddSensors(Time.AddSeconds(2), [sensor with { Value = null }, limit], retainAbsent: false);
+        var inventory = HardwareSensorInventory.Read([sensor with { Value = null }, limit], Time.AddSeconds(2), true, null, stats);
+        var facts = inventory[0].Facts;
+        Check(facts.Single(f => f.Key == "min").Display == "0 °C", "statistics preserve zero minimum");
+        Check(facts.Single(f => f.Key == "max").Display == "20 °C", "statistics measured maximum");
+        Check(facts.Single(f => f.Key == "avg").Display == "10 °C", "statistics skip missing samples, not time weighted");
+        Check(facts.Single(f => f.Key == "count").Display == "2", "statistics count finite observations only");
+        Check(facts.Single(f => f.Key == "avg").Calculation!.Contains(Time.ToString("O")), "per-channel measurement start disclosed");
+        Check(facts.Single(f => f.Key == "avg").Observation.Metadata.Timestamp == Time.AddSeconds(1),
+            "history timestamp is last real observation, not current missing sample");
+        Check(facts.Single(f => f.Key == "avg").At(Time.AddSeconds(12)).State == "Stale", "history expires across missing samples");
+        Check(inventory[1].Facts.All(f => f.Key is not ("min" or "max" or "avg")), "limits never get measurement statistics");
+        Check(stats.ForSensor(sensor)?.Value.Count == 2, "statistics address exact channel identity");
+        Check(stats.ForSensor(sensor with { Hardware = "different" }) is null, "same sensor id cannot borrow hardware statistics");
+        stats.AddSensors(Time.AddSeconds(3), [sensor with { Type = "Power", Unit = "W", Value = 4 }], retainAbsent: false);
+        Check(stats.ForSensor(sensor) is null && stats.Snapshot().Count == 1, "type/unit changes remove obsolete series");
+        stats.AddSensors(Time.AddSeconds(4), [], retainAbsent: false);
+        Check(stats.Snapshot().Count == 0, "removed sensors cannot grow retained statistics");
+        try { stats.AddSensors(Time.AddSeconds(4), [sensor]); Check(false, "duplicate timestamp accepted"); }
+        catch (InvalidOperationException) { Check(stats.Snapshot().Count == 0, "out-of-order sample rejected without false measurement"); }
+        stats.Reset();
+        stats.AddSensors(Time, [sensor with { Value = double.NaN }], retainAbsent: false);
+        Check(stats.ForSensor(sensor) is null, "NaN cannot become a statistic");
+        stats.Reset();
+        stats.AddSensors(Time, [sensor with { Value = double.MaxValue }], retainAbsent: false);
+        stats.AddSensors(Time.AddSeconds(1), [sensor with { Value = -double.MaxValue }], retainAbsent: false);
+        Check(stats.ForSensor(sensor)?.Value.Average == 0, "finite opposing extremes cannot overflow the sample mean");
+        stats.Reset();
+        stats.AddSensors(Time, [sensor], retainAbsent: false);
+        Check(stats.ForSensor(sensor)?.Value.Count == 1, "explicit reset begins new measurement");
+        var view = new HardwareIntelligenceView { Synthetic = true };
+        view.UpdateSensors([sensor], Time, true, null);
+        view.UpdateSensors([sensor with { Value = 10 }], Time.AddSeconds(1), true, null);
+        Check(view.Snapshot.Components.Single().Facts.Single(f => f.Key == "avg").Display == "5 °C", "view wired to shared aggregation");
+        view.UpdateSensors([], Time.AddSeconds(2), false, null);
+        view.UpdateSensors([sensor with { Value = 30 }], Time.AddSeconds(3), true, null);
+        Check(view.Snapshot.Components.Single().Facts.Single(f => f.Key == "avg").Display == "30 °C", "disable resets view measurement");
+        var exported = HardwareReport.Export(view.Snapshot, "json", false);
+        Check(exported.Contains("Derived") && exported.Contains("Stichprobenmittel"), "statistics provenance exported");
+    }
+
+    private static void WirelessAndNetwork()
+    {
+        static void U32(byte[] data, int offset, uint value) => BitConverter.GetBytes(value).CopyTo(data, offset);
+        var connection = new byte[604];
+        U32(connection, 0, 1);
+        U32(connection, 520, 3);
+        connection[524] = 65; connection[525] = 66; connection[526] = 67;
+        U32(connection, 556, 1);
+        connection[560] = 42;
+        U32(connection, 568, 10);
+        U32(connection, 576, 70);
+        U32(connection, 580, 866_700_000);
+        U32(connection, 584, 433_300_000);
+        var facts = HardwareWifiReader.ParseConnection(connection, Time);
+        Check(facts.Single(f => f.Key == "phy").Display == "HE (802.11ax)", "PHY decoded without vendor guesses");
+        Check(facts.Single(f => f.Key == "signal").Display == "70 %", "signal quality is not fabricated dBm");
+        Check(facts.Single(f => f.Key == "rx-link").Display == "866700000 bit/s", "native WLAN linkrate unit preserved");
+        Check(facts.All(f => !f.Display.Contains("ABC")), "no SSID or profile export");
+        var bss = new byte[368];
+        U32(bss, 0, 368); U32(bss, 4, 1); U32(bss, 8, 3);
+        connection.AsSpan(524, 3).CopyTo(bss.AsSpan(12));
+        bss[48] = 42; U32(bss, 56, 1); U32(bss, 100, 6_115_000);
+        Check(HardwareWifiReader.FindFrequency(bss, connection) == 6_115_000, "frequency uses exact BSSID/SSID/BSS tuple");
+        Check(HardwareWifiReader.Band(6_115_000) == "6 GHz" && HardwareWifiReader.Band(2_412_000) == "2,4 GHz",
+            "overlapping channel numbers not used to guess band");
+        Check(HardwareWifiReader.Band(5_180_000) == "5 GHz" && HardwareWifiReader.Band(58_320_000) == "60 GHz", "5 and 60GHz classification");
+        Check(HardwareWifiReader.Band(0).StartsWith("Unbekannt"), "unknown frequency not fabricated");
+        bss[48] = 43;
+        Check(HardwareWifiReader.FindFrequency(bss, connection) is null, "wrong BSSID cannot supply frequency");
+        bss[48] = 42; bss[12] = 66;
+        Check(HardwareWifiReader.FindFrequency(bss, connection) is null, "wrong SSID cannot supply frequency");
+        bss[12] = 65;
+        var ambiguous = new byte[728];
+        bss.AsSpan(8, 360).CopyTo(ambiguous.AsSpan(8));
+        bss.AsSpan(8, 360).CopyTo(ambiguous.AsSpan(368));
+        U32(ambiguous, 0, 728); U32(ambiguous, 4, 2);
+        Check(HardwareWifiReader.FindFrequency(ambiguous, connection) is null, "ambiguous BSS frequency refused");
+        U32(bss, 4, 2);
+        try { HardwareWifiReader.FindFrequency(bss, connection); Check(false, "truncated BSS accepted"); }
+        catch (InvalidOperationException) { Check(true, "native length/count validated"); }
+        U32(connection, 520, 33);
+        try { HardwareWifiReader.ParseConnection(connection, Time); Check(false, "invalid SSID accepted"); }
+        catch (InvalidOperationException) { Check(true, "native connection bounds validated"); }
+        U32(connection, 520, 3); U32(connection, 576, 101);
+        try { HardwareWifiReader.ParseConnection(connection, Time); Check(false, "invalid quality accepted"); }
+        catch (InvalidOperationException) { Check(true, "invalid signal not clamped into a value"); }
+        Check(HardwareWifiReader.Availability(5) == DataAvailability.AccessDenied, "WLAN access denied explicit");
+        Check(HardwareWifiReader.Availability(50) == DataAvailability.Unsupported &&
+            HardwareWifiReader.Availability(5023) == DataAvailability.Unavailable &&
+            HardwareWifiReader.Availability(87) == DataAvailability.ProviderError, "WLAN native errors differentiated");
+        Check(HardwareWifiReader.Phy(999) == "Windows PHY-Code 999", "unknown future PHY retained");
+        Check(HardwareRuntimeReader.NetworkError(new System.Net.NetworkInformation.NetworkInformationException(10043)) == DataAvailability.Unsupported,
+            "WSAEPROTONOSUPPORT is unsupported protocol, not failed provider");
+        Check(HardwareRuntimeReader.NetworkError(new System.Net.NetworkInformation.NetworkInformationException(5)) == DataAvailability.AccessDenied &&
+            HardwareRuntimeReader.NetworkError(new System.Net.NetworkInformation.NetworkInformationException(87)) == DataAvailability.ProviderError,
+            "native network error code classification does not hide other errors");
+
+        static HardwareComponent Adapter(string id, ulong? bytes, DateTimeOffset time) =>
+            new(id, HardwareClass.Network, "Identisches Modell",
+                [bytes is { } value ? new HardwareFact("Rx Bytes (kumuliert; keine Rate)", "Rx", SourceObservation<string>.Present(
+                    value.ToString(System.Globalization.CultureInfo.InvariantCulture), "B",
+                    HardwareIntelligenceReader.Metadata("fixture", time)), HardwareCadence.Dynamic)
+                    : HardwareFact.Missing("Rx Bytes (kumuliert; keine Rate)", "Rx", "fixture", time, "missing")]);
+        var rates = new HardwareNetworkRates();
+        Check(!rates.Apply([Adapter("a", 100, Time)])[0].Facts.Single(f => f.Key == "Rx-rate").Observation.HasValue, "rate needs baseline");
+        var next = rates.Apply([Adapter("a", 300, Time.AddSeconds(2)), Adapter("b", 500, Time.AddSeconds(2))]);
+        Check(next[0].Facts.Single(f => f.Key == "Rx-rate").Display == "800 bit/s", "byte delta divided by actual interval");
+        Check(!next[1].Facts.Single(f => f.Key == "Rx-rate").Observation.HasValue, "same model cannot borrow another adapter baseline");
+        var reset = rates.Apply([Adapter("a", 10, Time.AddSeconds(3))])[0];
+        Check(!reset.Facts.Single(f => f.Key == "Rx-rate").Observation.HasValue, "counter reset needs new baseline");
+        Check(rates.Apply([Adapter("a", 10, Time.AddSeconds(4))])[0].Facts.Single(f => f.Key == "Rx-rate").Display == "0 bit/s", "valid idle zero preserved");
+        rates.Apply([Adapter("a", null, Time.AddSeconds(5))]);
+        Check(!rates.Apply([Adapter("a", 40, Time.AddSeconds(6))])[0].Facts.Single(f => f.Key == "Rx-rate").Observation.HasValue, "missing sample invalidates baseline");
+        rates.Apply([]);
+        Check(!rates.Apply([Adapter("a", 100, Time.AddSeconds(7))])[0].Facts.Single(f => f.Key == "Rx-rate").Observation.HasValue, "removal prunes baseline");
+    }
+
+    private static void NativeDetails()
+    {
+        HardwareDisplayConfig.ValidateLayout();
+        Check(HardwareDisplayConfig.Connection(5) == "HDMI" && HardwareDisplayConfig.Connection(11) == "DisplayPort eingebettet",
+            "DisplayConfig ABI and output technology codes");
+        Check(HardwareDisplayConfig.Connection(999).Contains("999"), "unknown output technology preserved");
+        var revision = HardwareCpuReader.RegistryMicrocode(new byte[] { 0, 0, 0, 0, 0x12, 0x34, 0, 0 }, Time);
+        Check(revision.Display == "0000000012340000", "microcode registry bytes preserved, no vendor-specific reinterpretation");
+        Check(revision.Provenance == "Direct" && revision.Name.Contains("rohe Bytefolge"), "microcode registry scope explicit");
+        Check(HardwareCpuReader.RegistryMicrocode(null, Time).State == "Unavailable", "missing microcode not zero");
+        Check(HardwareCpuReader.RegistryMicrocode("1234", Time).State == "ProviderError", "wrong microcode type explicit");
+        Check(HardwareCpuReader.RegistryMicrocode(new byte[64], Time).State == "ProviderError", "microcode length bounded");
+        Check(HardwareDirect3D.FeatureLevel(0xc200) == "12_2" && HardwareDirect3D.FeatureLevel(0xb000) == "11_0", "feature levels explicit");
+        Check(HardwareDirect3D.FeatureLevel(0xffff).Contains("FFFF"), "unknown D3D feature not guessed");
+        Check(HardwareDirect3D.Raytracing(0).StartsWith("Nicht unterstützt") && HardwareDirect3D.Raytracing(11) == "Tier 1.1",
+            "RT tier zero is actual lack of support, not missing");
+        Check(HardwareDirect3D.Raytracing(999).Contains("999"), "future raytracing tier retained");
+        var wave = new byte[40];
+        BitConverter.GetBytes((ushort)0xfffe).CopyTo(wave, 0);
+        BitConverter.GetBytes((ushort)2).CopyTo(wave, 2);
+        BitConverter.GetBytes(48000u).CopyTo(wave, 4);
+        BitConverter.GetBytes(384000u).CopyTo(wave, 8);
+        BitConverter.GetBytes((ushort)8).CopyTo(wave, 12);
+        BitConverter.GetBytes((ushort)32).CopyTo(wave, 14);
+        BitConverter.GetBytes((ushort)22).CopyTo(wave, 16);
+        BitConverter.GetBytes((ushort)24).CopyTo(wave, 18);
+        BitConverter.GetBytes(3u).CopyTo(wave, 20);
+        var pcm = new Guid("00000001-0000-0010-8000-00AA00389B71");
+        pcm.ToByteArray().CopyTo(wave, 24);
+        var format = AudioTopology.ParseMixFormat(wave);
+        Check(format.Channels == 2 && format.SamplesPerSecond == 48000, "audio mix channels and rate");
+        Check(format.BitsPerSample == 32 && format.ValidBits == 24, "audio container vs valid bits distinct");
+        Check(format.ChannelMask == 3 && format.Subformat == pcm, "audio channelmask and subtype retained");
+        Check(format.BytesPerSecond == 384000 && format.BlockAlign == 8, "audio format exact byte units");
+        try { AudioTopology.ParseMixFormat(wave[..39]); Check(false, "truncated audio format accepted"); }
+        catch (InvalidOperationException) { Check(true, "audio extension bounded"); }
+        try { AudioTopology.ParseMixFormat(wave[..17]); Check(false, "short WAVEFORMATEX accepted"); }
+        catch (InvalidOperationException) { Check(true, "audio base structure bounded"); }
+        var basic = new byte[18];
+        BitConverter.GetBytes((ushort)1).CopyTo(basic, 0);
+        Check(AudioTopology.ParseMixFormat(basic).Subformat is null, "basic format does not invent an extensible subtype");
+    }
+
+    private static void StorageHealth()
+    {
+        Check(HardwareStorageHealth.Device(3).Name == "/dev/pd3" && HardwareStorageHealth.Device(3).Type == "auto",
+            "documented smartctl Windows PhysicalDrive numbering, no guessed bus type");
+        const string nvme = """
+            {"device":{"name":"/dev/pd0"},"serial_number":"PRIVATE-SERIAL","nvme_smart_health_information_log":{
+              "critical_warning":0,"temperature":35,"available_spare":100,"percentage_used":2,
+              "data_units_read":18446744073709551615,"unsafe_shutdowns":0,"media_errors":0,"num_err_log_entries":10}}
+            """;
+        var facts = HardwareStorageHealth.Parse(nvme, "/dev/pd0", 8, Time);
+        Check(facts.Single(f => f.Key == "nvme:critical_warning").Display == "0", "NVMe critical warning zero is valid");
+        Check(facts.Single(f => f.Key == "nvme:temperature").Display == "35 °C", "smartctl temperature already Celsius");
+        Check(facts.Single(f => f.Key == "nvme:data_units_read").Observation.Value == "18446744073709551615", "NVMe counter precision not lost to double");
+        Check(facts.Single(f => f.Key == "nvme:percentage_used").Name.Contains("keine Restlebenszeit"), "used endurance not a health score");
+        Check(facts.Single(f => f.Key == "nvme:power_cycles").State == "Unavailable", "unreported NVMe fields stay missing");
+        Check(facts.Single(f => f.Key == "smart-exit").Display == "8", "SMART findings bit is not mistaken for read error");
+        Check(HardwareStorageHealth.Parse(nvme, "/dev/pd1", 0, Time).Single().State == "ProviderError", "wrong disk path refuses all health values");
+        Check(HardwareStorageHealth.Parse(nvme, "/dev/pd0", 2, Time).Single().Key == "smart-read", "open failure not accepted as health");
+        var exported = HardwareReport.Export(new(Time, [new("disk", HardwareClass.Storage, "private disk", facts)]), "json", false);
+        Check(!exported.Contains("PRIVATE-SERIAL"), "health provenance cannot leak serial used for joining");
+        const string ata = """
+            {"device":{"name":"/dev/pd0"},"serial_number":"PRIVATE-SERIAL","ata_smart_attributes":{"table":[
+              {"id":5,"value":100,"worst":99,"thresh":10,"raw":{"value":0,"string":"PRIVATE-VENDOR-TEXT"}}]}}
+            """;
+        facts = HardwareStorageHealth.Parse(ata, "/dev/pd0", 0, Time);
+        Check(facts.Single(f => f.Key == "ata:5:raw").Display == "0", "ATA raw zero preserved without cross-vendor interpretation");
+        Check(facts.Single(f => f.Key == "ata:5:text").Privacy == "Sensitive", "unstructured vendor text conservative privacy");
+        exported = HardwareReport.Export(new(Time, [new("disk", HardwareClass.Storage, "disk", facts)]), "csv", false);
+        Check(!exported.Contains("PRIVATE"), "ATA text redacted in CSV");
+        var duplicate = ata.Replace("\"id\":5", "\"id\":0", StringComparison.Ordinal);
+        try { HardwareStorageHealth.Parse(duplicate, "/dev/pd0", 0, Time); Check(false, "invalid ATA id accepted"); }
+        catch (JsonException) { Check(true, "ATA id range checked"); }
+        try { HardwareStorageHealth.Parse(nvme.Replace("\"critical_warning\":0", "\"critical_warning\":{}", StringComparison.Ordinal), "/dev/pd0", 0, Time); Check(false, "non-scalar NVMe field accepted"); }
+        catch (JsonException) { Check(true, "NVMe field shape checked"); }
+        var disk = new HardwareComponent("disk", HardwareClass.Storage, "identical model",
+            [Value("Number", "0"), Value("UniqueId", "EXACT-ID", DataClassification.Sensitive), Value("Path", "EXACT-PATH", DataClassification.Sensitive)]);
+        var identity = Row(new { Number = 0, UniqueId = "EXACT-ID", Path = "EXACT-PATH" });
+        Check(HardwareStorageHealth.SameWindowsIdentity(disk, [identity]), "Windows disk number and exact provider identities revalidated");
+        Check(!HardwareStorageHealth.SameWindowsIdentity(disk, [identity, identity]), "duplicate disk number refuses attribution");
+        Check(!HardwareStorageHealth.SameWindowsIdentity(disk, [Row(new { Number = 0, UniqueId = "NEW-ID", Path = "EXACT-PATH" })]),
+            "disk number reuse cannot borrow old health data");
+        Check(!HardwareStorageHealth.SameWindowsIdentity(disk, []), "removed disk refuses health data");
+        Check(!HardwareStorageHealth.SameWindowsIdentity(disk with { Facts = disk.Facts.Take(2).ToArray() }, [identity]), "missing identity property cannot become a match");
     }
 
     private static void Storage()

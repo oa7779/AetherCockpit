@@ -13,6 +13,7 @@ internal sealed record HardwareCimResult(string Key, DateTimeOffset Timestamp, D
 
 public sealed class HardwareIntelligenceReader
 {
+    private readonly HardwareNetworkRates _networkRates = new();
     public async Task<IReadOnlyList<HardwareComponent>> ReadAsync(HardwareClass category, CancellationToken token)
     {
         if (category == HardwareClass.Sensors)
@@ -37,19 +38,25 @@ public sealed class HardwareIntelligenceReader
         {
             try { components.AddRange(read()); }
             catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException or
-                System.Runtime.InteropServices.COMException or System.Net.NetworkInformation.NetworkInformationException)
+                System.Runtime.InteropServices.COMException or System.Net.NetworkInformation.NetworkInformationException or
+                DllNotFoundException or EntryPointNotFoundException or NotSupportedException)
             {
                 Trace.TraceError("Hardwareprovider {0}: {1}", name, ex);
                 components.Add(new("native-error:" + name, category, name,
                     [HardwareFact.Missing("error", "Providerstatus", name, DateTimeOffset.UtcNow,
-                        $"Providerfehler ({ex.GetType().Name}, HRESULT 0x{ex.HResult:X8}).", DataAvailability.ProviderError)]));
+                        $"Providerfehler ({ex.GetType().Name}, HRESULT 0x{ex.HResult:X8}).",
+                        ex is DllNotFoundException or EntryPointNotFoundException or NotSupportedException
+                            ? DataAvailability.Unsupported : DataAvailability.ProviderError)]));
             }
         }
         if (category == HardwareClass.Cpu) Supplement("CPU API", HardwareCpuReader.Read);
         if (category == HardwareClass.Gpu) Supplement("DXGI", HardwareGpuReader.Read);
-        if (category == HardwareClass.Network) Supplement("NetworkInterface", HardwareRuntimeReader.Network);
+        if (category == HardwareClass.Network) Supplement("NetworkInterface", () => _networkRates.Apply(HardwareRuntimeReader.Network()));
+        if (category == HardwareClass.Wlan) Supplement("Native Wi-Fi", () => HardwareWifiReader.Read(token));
         if (category == HardwareClass.Audio) Supplement("Core Audio", HardwareRuntimeReader.Audio);
         if (category == HardwareClass.Display) Supplement("Display API", HardwareRuntimeReader.Displays);
+        if (category == HardwareClass.Display) Supplement("DisplayConfig", HardwareDisplayConfig.Read);
+        if (category == HardwareClass.Storage) components = (await HardwareStorageHealth.ReadAsync(components, token).ConfigureAwait(false)).ToList();
         token.ThrowIfCancellationRequested();
         return components;
     }

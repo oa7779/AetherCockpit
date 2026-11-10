@@ -19,51 +19,87 @@ internal static class HardwareRuntimeReader
         foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
         {
             var source = ".NET NetworkInterface";
-            var facts = new List<HardwareFact>
+            var facts = new List<HardwareFact>();
+            void Read(string key, Func<object> read, string unit = "", DataClassification privacy = DataClassification.Normal)
             {
-                Fact("Modell", adapter.Description, source, time), Fact("Typ", adapter.NetworkInterfaceType, source, time),
-                Fact("Linkstatus", adapter.OperationalStatus, source, time),
-                Fact("Linkgeschwindigkeit", adapter.Speed, source, time, "bit/s"),
-                Fact("MAC", adapter.GetPhysicalAddress(), source, time, privacy: DataClassification.Sensitive)
-            };
-            try
-            {
-                var ip = adapter.GetIPProperties();
-                facts.Add(Fact("IP-Adressen", string.Join("; ", ip.UnicastAddresses.Select(a => a.Address)), source, time, privacy: DataClassification.Sensitive));
-                facts.Add(Fact("Gateways", string.Join("; ", ip.GatewayAddresses.Select(a => a.Address)), source, time, privacy: DataClassification.Sensitive));
-                facts.Add(Fact("DNS", string.Join("; ", ip.DnsAddresses), source, time, privacy: DataClassification.Sensitive));
-                var ipv4 = ip.GetIPv4Properties();
-                if (ipv4 is not null)
+                try { facts.Add(Fact(key, read(), source, time, unit, privacy)); }
+                catch (Exception ex) when (ex is NetworkInformationException or NotSupportedException)
                 {
-                    facts.Add(Fact("IPv4 MTU", ipv4.Mtu, source, time, "B"));
-                    facts.Add(Fact("DHCP", ipv4.IsDhcpEnabled, source, time));
+                    var state = NetworkError(ex);
+                    if (state == DataAvailability.ProviderError) System.Diagnostics.Trace.TraceError("Hardware Netzwerkfeld {0}: {1}", key, ex);
+                    else System.Diagnostics.Trace.TraceWarning("Hardware Netzwerkfeld {0}: {1}; {2}", key, state, ex.Message);
+                    facts.Add(HardwareFact.Missing(key, key, source, time,
+                        ex is NetworkInformationException native
+                            ? $"Netzwerkfeld nicht lesbar (Windows-Fehlercode {native.ErrorCode}, HRESULT 0x{ex.HResult:X8})."
+                            : $"Netzwerkfeld nicht lesbar ({ex.GetType().Name}, HRESULT 0x{ex.HResult:X8}).", state,
+                        unit, privacy));
                 }
-                var statistics = adapter.GetIPStatistics();
-                facts.Add(Fact("Rx Bytes (kumuliert; keine Rate)", statistics.BytesReceived, source, time, "B"));
-                facts.Add(Fact("Tx Bytes (kumuliert; keine Rate)", statistics.BytesSent, source, time, "B"));
-                facts.Add(Fact("Rx Fehler", statistics.IncomingPacketsWithErrors, source, time));
-                facts.Add(Fact("Tx Fehler", statistics.OutgoingPacketsWithErrors, source, time));
             }
-            catch (NetworkInformationException ex)
-            {
-                System.Diagnostics.Trace.TraceError("Hardware Netzwerkdetails: {0}", ex);
-                facts.Add(HardwareFact.Missing("network-error", "Adapterdetails", source, time,
-                    "Netzwerk-API fehlgeschlagen (Fehlercode " + ex.ErrorCode + ").", DataAvailability.ProviderError));
-            }
+            Read("Modell", () => adapter.Description);
+            Read("Typ", () => adapter.NetworkInterfaceType);
+            Read("Linkstatus", () => adapter.OperationalStatus);
+            Read("Linkgeschwindigkeit", () => adapter.Speed, "bit/s");
+            Read("MAC", () => adapter.GetPhysicalAddress(), privacy: DataClassification.Sensitive);
+            Read("IP-Adressen", () => string.Join("; ", adapter.GetIPProperties().UnicastAddresses.Select(a => a.Address)), privacy: DataClassification.Sensitive);
+            Read("Gateways", () => string.Join("; ", adapter.GetIPProperties().GatewayAddresses.Select(a => a.Address)), privacy: DataClassification.Sensitive);
+            Read("DNS", () => string.Join("; ", adapter.GetIPProperties().DnsAddresses), privacy: DataClassification.Sensitive);
+            Read("IPv4 MTU", () => adapter.GetIPProperties().GetIPv4Properties()?.Mtu
+                ?? throw new NotSupportedException("Keine IPv4-Eigenschaften."), "B");
+            Read("DHCP", () => adapter.GetIPProperties().GetIPv4Properties()?.IsDhcpEnabled
+                ?? throw new NotSupportedException("Keine IPv4-Eigenschaften."));
+            Read("Rx Bytes (kumuliert; keine Rate)", () => adapter.GetIPStatistics().BytesReceived, "B");
+            Read("Tx Bytes (kumuliert; keine Rate)", () => adapter.GetIPStatistics().BytesSent, "B");
+            Read("Rx Fehler", () => adapter.GetIPStatistics().IncomingPacketsWithErrors);
+            Read("Tx Fehler", () => adapter.GetIPStatistics().OutgoingPacketsWithErrors);
             result.Add(new(HardwareIntelligenceReader.Identity("net", adapter.Id), HardwareClass.Network, adapter.Name, facts));
         }
         return result;
     }
 
+    internal static DataAvailability NetworkError(Exception error) => error switch
+    {
+        NotSupportedException => DataAvailability.Unsupported,
+        NetworkInformationException { ErrorCode: 50 or 10043 or 10047 } => DataAvailability.Unsupported,
+        NetworkInformationException { ErrorCode: 5 } => DataAvailability.AccessDenied,
+        _ => DataAvailability.ProviderError
+    };
+
     internal static IReadOnlyList<HardwareComponent> Audio()
     {
         var time = DateTimeOffset.UtcNow;
-        return AudioTopology.Read().Select(a => new HardwareComponent(HardwareIntelligenceReader.Identity("audio", a.Id),
-            HardwareClass.Audio, a.Name,
-            [Fact("Name", a.Name, "Windows Core Audio", time),
-             Fact("Endpoint", a.Id, "IMMDevice.GetId", time, privacy: DataClassification.Sensitive),
-             Fact("Status", a.Status, "IMMDevice.GetState", time),
-             Fact("Standardrollen / Sitzungsstatus", a.Usage, "Windows Core Audio", time)])).ToArray();
+        var formats = new Dictionary<string, AudioTopology.FormatResult>(StringComparer.OrdinalIgnoreCase);
+        var devices = AudioTopology.Read((id, format) => formats.Add("SWD\\MMDEVAPI\\" + id, format));
+        return devices.Select(a =>
+        {
+            var facts = new List<HardwareFact>
+            {
+                Fact("Name", a.Name, "Windows Core Audio", time),
+                Fact("Endpoint", a.Id, "IMMDevice.GetId", time, privacy: DataClassification.Sensitive),
+                Fact("Status", a.Status, "IMMDevice.GetState", time),
+                Fact("Standardrollen / Sitzungsstatus", a.Usage, "Windows Core Audio", time)
+            };
+            const string source = "IAudioClient.GetMixFormat (Shared-Mode-Audioengine; kein physisches Ausgabeformat)";
+            if (formats.TryGetValue(a.Id, out var result) && result.Format is { } format)
+            {
+                facts.AddRange(new[]
+                {
+                    Fact("Audioengine / Formattag (Windows-Code)", format.Tag, source, time),
+                    Fact("Audioengine / Kanäle", format.Channels, source, time),
+                    Fact("Audioengine / Abtastrate", format.SamplesPerSecond, source, time, "Hz"),
+                    Fact("Audioengine / Containerbreite", format.BitsPerSample, source, time, "bit/Sample"),
+                    Fact("Audioengine / Datenrate", format.BytesPerSecond, source, time, "B/s"),
+                    Fact("Audioengine / Blockausrichtung", format.BlockAlign, source, time, "B")
+                });
+                if (format.ValidBits is { } valid) facts.Add(Fact("Audioengine / Gültige Samplebits", valid, source, time, "bit/Sample"));
+                if (format.ChannelMask is { } mask) facts.Add(Fact("Audioengine / Kanalmaske", $"0x{mask:X8}", source, time));
+                if (format.Subformat is { } subformat) facts.Add(Fact("Audioengine / Subformat-GUID", subformat, source, time));
+            }
+            else facts.Add(HardwareFact.Missing("mix-format", "Audioengine-Mixformat", source, time,
+                result is null ? "Endpunkt nicht aktiv; kein Mixformat abgefragt." : $"Formatabfrage HRESULT 0x{result.HResult:X8}.",
+                result is null ? DataAvailability.Unavailable :
+                    result.HResult == unchecked((int)0x80070005) ? DataAvailability.AccessDenied : DataAvailability.ProviderError));
+            return new HardwareComponent(HardwareIntelligenceReader.Identity("audio", a.Id), HardwareClass.Audio, a.Name, facts);
+        }).ToArray();
     }
 
     internal static IReadOnlyList<HardwareComponent> Displays()
