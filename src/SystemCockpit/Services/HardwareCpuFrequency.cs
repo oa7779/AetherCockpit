@@ -7,6 +7,32 @@ namespace SystemCockpit.Services;
 
 internal static class HardwareCpuFrequency
 {
+    internal sealed record NamedCounterSample(uint Status, DateTimeOffset Start, DateTimeOffset End,
+        IReadOnlyList<(string Name, uint Status, double Value)> Rows);
+    internal static async Task<NamedCounterSample> SampleNamedAsync(string counterPath, CancellationToken token)
+    {
+        var start = DateTimeOffset.UtcNow;
+        var status = PdhOpenQuery(null, UIntPtr.Zero, out var query);
+        if (status != 0) return new(status, start, DateTimeOffset.UtcNow, []);
+        try
+        {
+            status = PdhAddEnglishCounter(query, counterPath, UIntPtr.Zero, out var counter);
+            if (status == 0) status = PdhCollectQueryData(query);
+            if (status != 0) return new(status, start, DateTimeOffset.UtcNow, []);
+            start = DateTimeOffset.UtcNow;
+            await Task.Delay(300, token).ConfigureAwait(false);
+            status = PdhCollectQueryData(query);
+            var end = DateTimeOffset.UtcNow;
+            if (status != 0) return new(status, start, end, []);
+            var values = ReadArray(counter);
+            return new(values.Status, start, end, values.Rows);
+        }
+        finally
+        {
+            var close = PdhCloseQuery(query);
+            if (close != 0) Trace.TraceError("Process PDH close: 0x{0:X8}", close);
+        }
+    }
     private const string Source = "Windows PDH / Processor Information (englische Counterpfade)";
     internal static async Task<IReadOnlyList<HardwareComponent>> ReadAsync(CancellationToken token)
     {
