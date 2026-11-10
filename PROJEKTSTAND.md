@@ -66,11 +66,16 @@ sind offen gekennzeichnet statt erfunden.
 Keine Veröffentlichung, Push, Merge, Tag, Release, Installer oder Versionswechsel.
 Die Abnahme erfolgt auf Grundlage des unveränderten Abschlussberichts
 einschließlich seiner Grenzen. Der damalige Abnahmestopp ist historisch.
-**AETHER System Intelligence: lokal implementiert und geprüft; ausdrückliche
-Abnahme steht aus.** Ausgangscommit
+**AETHER System Intelligence: am 10. November 2026 ausdrücklich abgenommen.**
+Die Abnahme gilt für den lokal implementierten Umfang mit den im
+Abschlussbericht dokumentierten technischen und prüfbezogenen Grenzen.
+Diese Grenzen sind für diesen Entwicklungsstand akzeptiert und keine
+offenen Abnahmeblocker. Ausgangscommit
 `c7b6d962dd215575c2ab9b82154eca961dfbf90f`, Branch `rc/grosse-entfesselung`,
 sauberer Arbeitsbaum vor Phase 0. Phase-0-Baseline `5480685`.
 Quell-/Testabschluss `cd2ce3345901975cae1002111ed7148b31299b79`.
+Dokumentationsabschluss vor Abnahme:
+`a93da34f84ed6e35ee37be6ae983f9fb1e3d7b72`.
 [Abschlussbericht mit Umfang, lokalen Commits, Nachweisen und Grenzen](docs/SYSTEM-INTELLIGENCE-REPORT.md).
 
 Gemeinsames Evidenzmodell und lokale Retention verbinden Timeline,
@@ -95,7 +100,10 @@ alle Ansichten danach sammelbar. Kein Langzeit-/Leakfreiheitsnachweis.
 M3- und Prozess-Abnahme sowie alte Nachweise bleiben unverändert.
 Keine Veröffentlichung, Paketierung, öffentliche Versionsänderung oder
 Remoteänderung. Bestehende Pakete bleiben unverändert.
-**Auf die ausdrückliche System-Intelligence-Abnahme warten.**
+**Lokaler Abnahmeabschluss; STOPP. Kein neues Featurepaket begonnen.**
+Die Abnahme ist keine Langzeit-, Leakfreiheits-, universelle Windows-/
+Hardwarekompatibilitäts- oder physische DPI-/Monitor-/Docking-/Resume-/
+Hotplug-Freigabe. Die Veröffentlichungssperren bleiben bestehen.
 
 Installer-/Uploadauftrag abgeschlossen:
 [Beta `0.7.0-beta.45`](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)

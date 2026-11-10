@@ -1,9 +1,27 @@
 # AETHER System Intelligence — Abschlussbericht
 
-**Status: lokal implementiert und geprüft; ausdrückliche Abnahme ausstehend.**
+**Status: am 10. November 2026 ausdrücklich abgenommen.**
 Keine Veröffentlichung, Paketierung oder öffentliche Versionsänderung.
 Dieser Bericht bewertet den neuen Auftrag, nicht rückwirkend die bereits
 abgenommenen Hardware- und Prozesspakete.
+
+Der Auftraggeber hat den lokal implementierten Umfang mit den hier
+dokumentierten technischen und prüfbezogenen Grenzen ausdrücklich angenommen.
+Die Grenzen sind für diesen Entwicklungsstand akzeptiert und keine offenen
+Abnahmeblocker. Das umfasst insbesondere die bewusst nicht integrierten
+ETW-/Kernelsessions, Paketmitschnitte, dauerhaften prozessgenauen Netzwerkbytes,
+externen Reputationsdienste, proprietären Identitätsdatenbanken, automatischen
+Reparaturen und destruktiven Watch-Aktionen sowie die Grenzen historischer
+Rekonstruktion, Boot-Login-Desktop-Messung und universeller Win32-Zuordnung.
+Ebenso bleiben physische DPI-/Monitor-/Docking-/Resume-/Hotplug-Abnahme,
+mehrstündige Langzeit-, allgemeine Leakfreiheits- und universelle Windows-/
+Hardwarekompatibilitätsfreigabe außerhalb dieser Abnahme.
+
+Die technischen Befunde, Messwerte, Nachweise, Grenzen und Risiken bleiben
+unverändert. Aussagen zur damals noch ausstehenden Abnahme in den Abschnitten
+36 und 39 dokumentieren den ursprünglichen Berichtsstand und sind durch
+diesen Abnahmevermerk überholt. Nach dem lokalen Abnahmeabschluss gilt STOPP;
+kein neues Featurepaket und weiterhin keine Veröffentlichung.
 
 ## 1. Ausgangsbranch
 
@@ -26,8 +44,10 @@ Verifizierter **Quell-/Testabschluss**:
 Alle unten als abschließend bezeichneten Läufe prüfen dessen Produkt- und
 Testinhalt; die letzten Änderungen danach betreffen ausschließlich Dokumente.
 
-Dieser Bericht gehört zum separaten Dokumentationsabschluss. Dessen eigenen
-Hash kann eine Datei nicht vorab enthalten. Eindeutig auflösen:
+Dokumentationsabschluss vor Abnahme:
+`a93da34f84ed6e35ee37be6ae983f9fb1e3d7b72`.
+Der spätere lokale Abnahmecommit ändert nur Projekt- und Statusdokumentation.
+Seinen Hash eindeutig auflösen:
 
 ```powershell
 git log -1 --format=%H -- docs\SYSTEM-INTELLIGENCE-REPORT.md
@@ -48,7 +68,8 @@ Bestehende Pakete sowie Build-/Publishdefinitionen sind unverändert.
 | `04486c30aa84efc8e9aca1e66c693bbfdba92880` | Modell-/Quellen-/UI-/Lebenszyklus- und Regressionstests |
 | `c165f3e349d5c241a4cdb6226cf849fa4ac8fdb7` | Qualifizierte Ereigniskanten und wiederverwendete vollständige Prozesshistorien |
 | `cd2ce3345901975cae1002111ed7148b31299b79` | Zielgebundene Watch-Regeln, geprüfte WLAN-Joins, monotone Speicherintervalle und begrenzte Lebenszykluszustände |
-| Dokumentationsabschluss, über obigen Befehl auflösbar | `docs(system-intelligence): finalize implementation evidence and handoff` |
+| `a93da34f84ed6e35ee37be6ae983f9fb1e3d7b72` | Dokumentationsabschluss: `docs(system-intelligence): finalize implementation evidence and handoff` |
+| Abnahmecommit, über obigen Befehl auflösbar | `docs(system-intelligence): record explicit acceptance and local closure` |
 
 Die Reihenfolge folgt den tatsächlichen Abhängigkeiten: gemeinsames Modell
 vor Fachprojektionen, danach integrierte Bedienung und Nachweise.

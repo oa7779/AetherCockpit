@@ -11,6 +11,9 @@ Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 
 ## Unveröffentlicht — System Intelligence
 
+- Der lokal implementierte Umfang ist mit den im Abschlussbericht dokumentierten
+  technischen und prüfbezogenen Grenzen ausdrücklich abgenommen.
+  Nachweise und Grenzen bleiben unverändert; keine Veröffentlichung oder Paketierung.
 - Eigener Navigationsbereich mit gemeinsamer Timeline, Quelleninspektor,
   Baselines, Change Intelligence und A/B-Vergleich.
 - Software-, PnP-/Treiber-, Dienst-, Aufgaben-, Autostart- und Netzwerkdaten

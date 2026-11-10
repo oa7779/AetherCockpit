@@ -36,8 +36,9 @@ Zuverlässigkeitsereignisse, Software, Treiber und Netzwerk mit Diagnoseaufnahme
 Watch-Regeln und einer navigierbaren System Map. Die vorhandene Suche findet
 auch diese Entitäten. Quellenzeit, Identität und unvollständige Quellen bleiben
 sichtbar; zeitliche Nachbarschaft ist kein Ursachenbeweis.
-Die Erweiterung ist lokal implementiert und geprüft, noch nicht abgenommen
-oder veröffentlicht. [Abschlussbericht](docs/SYSTEM-INTELLIGENCE-REPORT.md).
+Die Erweiterung ist mit den im Abschlussbericht dokumentierten technischen
+und prüfbezogenen Grenzen ausdrücklich abgenommen, bleibt aber unveröffentlicht.
+[Abschlussbericht und Abnahmevermerk](docs/SYSTEM-INTELLIGENCE-REPORT.md).
 
 **Aktuelle Beta: 0.7.0-beta.45**
 
