@@ -122,7 +122,7 @@ internal static class InterfaceTests
             var pages = (TabControl)main.FindName("Pages");
             var routes = groups.Children.OfType<Expander>().SelectMany(g =>
                 ((StackPanel)g.Content).Children.OfType<Button>()).ToArray();
-            Check(routes.Length == 24 && routes.Select(b => (string)b.Tag).Distinct().Count() == 24,
+            Check(routes.Length == 25 && routes.Select(b => (string)b.Tag).Distinct().Count() == 25,
                 "Every main/secondary module is reachable exactly once in task navigation");
             var external = new HashSet<string> { "SMART", "Logs / Gaming", "Netzwerk", "Wartung", "Pakete",
                 "Autostart", "Auftraege", "Spuren", "Schluessel", "Einstellungen" };

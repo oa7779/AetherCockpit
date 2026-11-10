@@ -29,6 +29,10 @@ internal static class Program
             {
                 ProcessAcceptanceTests.Proof(args[1]); host.Shutdown(); return 0;
             }
+            if (args.Length == 2 && args[0] == "--intelligence-proof")
+            { SystemIntelligenceTests.Proof(args[1]); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--intelligence-acceptance")
+            { SystemIntelligenceTests.Live(args[1]); host.Shutdown(); return 0; }
             if (args.Length == 2 && args[0] == "--process-acceptance")
             {
                 ProcessAcceptanceTests.Live(args[1]); host.Shutdown(); return 0;
@@ -127,6 +131,7 @@ internal static class Program
             _assertions += HardwareIntelligenceTests.Run();
             _assertions += HardwareCompletionTests.Run();
             _assertions += ProcessCommandTests.Run();
+            _assertions += SystemIntelligenceTests.Run();
             _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
             _assertions += NeonFrameTests.Run();
@@ -457,8 +462,9 @@ internal static class Program
         Assert(value.Height >= 32 && value.Width >= 100, "Template metric values use large segmented LED display");
         Assert(instrument.Children.OfType<SystemCockpit.Controls.NeonGauge>().Count() == 1, "Metric uses segmented neon instrument");
         var pages = (System.Windows.Controls.TabControl)window.FindName("Pages");
-        Assert(pages.Items.Count == 14 && pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "HardwareIntelligence")),
-            "Existing modules remain and dedicated hardware intelligence navigation is added");
+        Assert(pages.Items.Count == 15 && pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "HardwareIntelligence")) &&
+            pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "SystemIntelligence")),
+            "Existing modules remain with dedicated hardware and system intelligence navigation");
         var pageHeaders = pages.Items.Cast<System.Windows.Controls.TabItem>().Select(t => (string)t.Header).ToList();
         Assert(pageHeaders[^1] == "Hilfe" && pageHeaders.IndexOf("Sensoren") < pageHeaders.IndexOf("Messauswertung") &&
             pageHeaders.IndexOf("Diagnose") < pageHeaders.IndexOf("Cleaner") && pageHeaders.IndexOf("Cleaner") < pageHeaders.IndexOf("Superadmin"),
@@ -472,9 +478,9 @@ internal static class Program
             .Children.OfType<System.Windows.Controls.Expander>().SelectMany(group =>
                 ((System.Windows.Controls.StackPanel)group.Content).Children.OfType<System.Windows.Controls.Button>())
             .Where(b => b.Tag is string route && pageRoutes.Contains(route)).ToList();
-        Assert(navButtons.Count == 14 && navButtons.All(b => pageRoutes.Contains((string)b.Tag)) &&
-            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 14,
-            "Left rubric buttons map one-to-one onto real page routes including hardware intelligence and help");
+        Assert(navButtons.Count == 15 && navButtons.All(b => pageRoutes.Contains((string)b.Tag)) &&
+            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 15,
+            "Left rubric buttons map one-to-one onto real page routes including system intelligence and help");
         var navBack = (System.Windows.Controls.Button)window.FindName("NavBack");
         var navForward = (System.Windows.Controls.Button)window.FindName("NavForward");
         var navTrail = (System.Windows.Controls.TextBlock)window.FindName("NavTrail");
