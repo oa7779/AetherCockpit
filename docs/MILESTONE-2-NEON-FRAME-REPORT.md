@@ -4,6 +4,11 @@ Stand: 9. November 2026.
 **MEILENSTEIN 2 ABNAHMEBEREIT** für den beauftragten Rahmenumfang.
 Keine RC-/Produktfreigabe. Stopp vor Meilenstein 3.
 
+Nachtrag: Der Auftraggeber hat diesen Stand ausdrücklich abgenommen und
+Meilenstein 3 freigegeben. Der folgende Bericht hält den damaligen
+Abschlussumfang fest; aktueller Folgeauftrag und Grenzen stehen in der
+[Projektübergabe](../PROJEKTSTAND.md).
+
 ## 1. Ausgangsstand
 
 Meilenstein 1 wurde vom Auftraggeber ausdrücklich abgenommen.

@@ -9,6 +9,23 @@ Buildbefehle stehen in [Entwicklung](docs/DEVELOPMENT.md),
 Prüfmodi in [Tests](docs/TESTING.md), aktueller Produktumfang in
 [Funktionen](docs/FEATURES.md).
 
+## Unveröffentlicht — Hardware Intelligence
+
+- Eigener Hardwarebereich mit 20 Klassen, kompakten Komponenten-/Wertetabellen,
+  M1-Quellenmetadaten und Quelleninspektor.
+- Lesende CIM-, CPUID-/Topologie-, DXGI-, Netzwerk-, Display- und Audiopfade;
+  exakte Storage-/USB-Beziehungen statt Modellnamen-Matches.
+- Klassenweise Inventur, Invalidierung und Stale-Zustände; Sensorübernahme
+  aus dem vorhandenen Cockpit ohne neuen Treiberzugriff.
+- JSON-/CSV-/Textberichte mit ausdrücklicher Sensitive-Freigabe,
+  Secret-Ausschluss und CSV-Formelschutz.
+- Eigene Fixtures, UI-/DPI-/Themeproofs und freigegebene lokale Read-only-
+  Prüfung; keine fremden Datenbanken oder Herstellerlogos übernommen.
+- Vollständige M3-Abnahme bleibt wegen fehlender Detailprovider und
+  offener realer Langzeit-/Ereignisprüfungen ausstehend.
+  [Abschlussbericht](docs/MILESTONE-3-HARDWARE-REPORT.md).
+- Keine Versionserhöhung, neue Pakete oder Veröffentlichung.
+
 ## 0.7.0-beta.45 — ruhige Neonrahmen und technische Konsolidierung
 
 - Zentrale Neonrahmen mit scharfer Kernkontur, getrenntem innerem/äußerem

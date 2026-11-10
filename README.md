@@ -12,6 +12,12 @@ Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop
 
 ## Aktueller Beta-Stand
 
+**Unveröffentlichter Arbeitsstand:** Eine eigene Hardwarezentrale mit
+Komponentenansichten, Quelleninspektor und datenschutzbewusstem Bericht ist
+implementiert. Der vollständige Hardware-Meilenstein ist noch nicht
+abnahmebereit; [Abdeckung und offene Lesepfade](docs/MILESTONE-3-HARDWARE-REPORT.md).
+Dieser Arbeitsstand ist nicht im folgenden Beta-Installer enthalten.
+
 **Aktuelle Beta: 0.7.0-beta.45**
 
 Ruhige Neonrahmen mit scharfer Kernkontur, getrenntem Glow und langsamer,

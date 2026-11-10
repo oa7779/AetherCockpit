@@ -83,6 +83,9 @@ Versions- oder Paketänderung umgesetzt; siehe
 [Konsolidierung](MILESTONE-1-CONSOLIDATION-REPORT.md) und
 [Neonrahmen](MILESTONE-2-NEON-FRAME-REPORT.md). Der separate
 [Messmodus](PERFORMANCE-BASELINE.md) benötigt nur einen Releasebuild.
+Auch der Hardwareauftrag für Meilenstein 3 bleibt ohne neue Paketierung,
+Versionswechsel oder Veröffentlichung. [Architektur und Abdeckung](HARDWARE-INTELLIGENCE-ARCHITECTURE.md),
+[Prüfmodi](TESTING.md#hardware-intelligence).
 
 Die Release-Version steht in
 `src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:

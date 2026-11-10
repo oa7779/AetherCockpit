@@ -316,3 +316,59 @@ beobachtet. Keine spekulative Mikrooptimierung aus statischen Treffern.
 
 Diese begrenzte KI-gestützte Musterprüfung kann Fehler übersehen und ersetzt
 keine menschliche Prüfung oder reale Produktprofilierung.
+
+## Meilenstein 3: Hardwarezentrale
+
+Neue Messung vom 10. November 2026, funktionaler Stand `5f3d22a`.
+`--hardware-proof` misst drei Runden im selben Release-Testprozess.
+Je Runde 66 synthetische Komponenten, 100 Snapshotprojektionen und ein
+redigierter JSON-Export. Keine Hardwareabfrage, kein erzwungener GC,
+keine allgemeine Produkt- oder GPU-Leistungsaussage.
+
+| Runde | Fixtureaufbau ms | 100 Snapshots ms | JSON ms | CPU ms | Working Set B | Private B | Handles | Threads |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 37,3495 | 5,0080 | 9,2617 | 46,875 | 59.289.600 | 19.718.144 | 280 | 8 |
+| 2 | 0,7368 | 1,4849 | 1,1019 | 0 | 61.669.376 | 22.179.840 | 280 | 8 |
+| 3 | 0,5618 | 1,4401 | 1,0963 | 0 | 64.094.208 | 24.567.808 | 280 | 8 |
+
+Der erste Lauf enthält kalte Initialisierung/JIT. CPU-Nullwerte liegen
+innerhalb der Auflösung der Prozesszeitmessung, nicht bei nachgewiesen
+kostenloser Verarbeitung. Der kurzfristige Speicheranstieg ist weder ein
+Leakbeweis noch ein Nachweis begrenzten Langzeitverbrauchs.
+Rohdatei `m3-proof-final\fixture-performance.json`, SHA256
+`FC90689012504CD322C154A6C35D9DB6D25D976AC9972AA6969378BC84245FE7`.
+
+Zusätzlich wurde nach ausdrücklicher Freigabe ein rein lesender echter
+Durchlauf mit 19 Klassen erfasst. Kein Vergleich mit der bisherigen
+Produktinventur: anderer Umfang, daher keine Beschleunigungsbehauptung.
+
+| Klasse | Dauer ms |
+|---|---:|
+| System | 9.345 |
+| CPU | 1.384 |
+| GPU | 812 |
+| NPU | 1.037 |
+| Mainboard | 333 |
+| Firmware | 2.684 |
+| Chipsatz | 10.110 |
+| RAM | 320 |
+| Storage | 1.172 |
+| PCI | 13.695 |
+| Netzwerk | 5.200 |
+| WLAN | 319 |
+| Bluetooth | 11.351 |
+| Audio | 2.104 |
+| Display | 346 |
+| USB | 15.228 |
+| Sicherheit | 5.356 |
+| Power | 295 |
+| Peripherie | 3.334 |
+
+Gerundete Konsolenausgabe; genaue Einzelwerte in
+`m3-readonly-final.json.timings.json`, SHA256
+`9C7F4F8E7DA83FBA494B8BA8890481FBC97A23D54112808499950BBC1180F2DB`.
+Die produktive Ansicht liest jeweils eine Klasse asynchron, nicht alle
+Klassen periodisch. Besonders USB/PCI/Bluetooth benötigen weitere
+Latenzarbeit. Reale Idle-/Langzeit-/Resume-/Hotplug- und UI-Latenzabnahme
+bleibt offen; Fixtures sind dafür kein Ersatz.
+[Vollständiger Prüfbericht](MILESTONE-3-HARDWARE-REPORT.md).

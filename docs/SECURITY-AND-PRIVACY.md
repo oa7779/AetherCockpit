@@ -54,6 +54,26 @@ Verantwortlichkeiten und Informationspflichten für den eigenen Einsatz
 gesondert prüfen. Der Projektanbieter erhält nicht allein durch den Einsatz
 eines selbst betriebenen Servers dessen Berichte.
 
+## Lokale Hardwareberichte
+
+Die unveröffentlichte Hardwarezentrale liest lokale Windows-/Hardwarequellen
+auf Anforderung. Sie eröffnet keinen zusätzlichen Kernel-/Sensorprovider und
+enthält keinen externen Uploadpfad. Der vorhandene ausdrücklich aktivierte
+Cockpit-Sensorpfad kann seine Messwerte an die Ansicht weiterreichen.
+
+Seriennummern, Gerätepfade, PnP-/EDID-Kennungen, MAC, IP, Gateway und DNS
+werden im Hardwarebericht standardmäßig redigiert. Der Export verlangt eine
+ausdrückliche Entscheidung, bevor Sensitive-Werte enthalten sein dürfen.
+Secret wird auch mit Zustimmung nicht exportiert. Interne Schlüssel und
+Komponentenanzeigenamen werden durch Berichtsaliasnamen ersetzt.
+CSV-Werte sind gegen Formelauswertung abgesichert.
+
+Ein lokal gespeicherter Bericht bleibt trotzdem vor Weitergabe zu prüfen:
+Hardwaremodelle und gewöhnliche Statuswerte können den Rechner beschreiben.
+Keine unredigierten Berichte oder lokalen Diagnoselogs in öffentliche Issues
+kopieren. Die Anzeige selbst ist keine anonymisierte Ansicht.
+[Quellenmodell und Exportgrenzen](HARDWARE-INTELLIGENCE-ARCHITECTURE.md).
+
 ## Codesignierung
 
 Die kostenlose Codesignierung über die SignPath Foundation wurde am

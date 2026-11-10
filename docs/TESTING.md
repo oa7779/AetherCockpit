@@ -1,5 +1,44 @@
 # Tests
 
+## Hardware Intelligence
+
+Der Grundrunner enthält 173 zusätzliche Assertions für die Hardwaregrundlage.
+Er verwendet synthetische Daten, einschließlich CPU-Topologie und
+Storage-/USB-Beziehungen. Die generierten PowerShell-Skripte werden zusätzlich
+nur mit dem PowerShell-AST-Parser geprüft, nicht als Hardwareabfrage gestartet.
+Bei insgesamt 4.558 Grundassertions sind frühere Assertions bereits enthalten.
+
+```powershell
+dotnet build .\SystemCockpit.slnx -c Release --no-restore
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-proof C:\Temp\aether-hardware-proof-01
+```
+
+Der optionale Proof benötigt einen neuen absoluten Ordner unter einem
+existierenden Elternordner. Er erzeugt drei Fixture-Messrunden sowie neun
+Bilder: Retro-Neon und Modern hell/dunkel, jeweils synthetische
+Root-DPI 100/150/200 Prozent mit ReducedMotion. Keine physische
+Monitorwechselprüfung. Die eigentliche Hardwarezentrale arbeitet asynchron;
+Fixture-Abbruch und Shutdown verwenden im Test einen Dispatcher-Kontext.
+
+Nur nach ausdrücklicher Freigabe des jeweiligen Entwicklungsrechners:
+
+```powershell
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-readonly C:\Temp\aether-hardware-readonly-01.json
+# Optional nur eine Klasse:
+dotnet run --project .\tests\SystemCockpit.Tests -c Release --no-build -- --hardware-readonly C:\Temp\aether-hardware-pci-01.json Pci
+```
+
+Der Berichtsname muss neu, absolut und unter einem existierenden Ordner
+liegen. Dieser Modus liest lokale CIM-/Windows-/CPU-/DXGI-/Netzwerk-/Audio-
+und Displaydaten, aber keine neuen Hardware-Sensortreiber. Er erzeugt einen
+redigierten JSON-Bericht, `.timings.json` und eine lokale `.diagnostics.log`.
+Er protokolliert Providerfehler ausdrücklich und führt keine Windows-
+Verwaltungsaktion, Installation oder Lastprüfung aus. Ein abgeschlossener
+Lauf bedeutet nicht, dass alle Providerwerte vorhanden oder unabhängig
+als richtig bestätigt sind. Reale Prüfung und Fixturetests sind im
+[M3-Bericht](MILESTONE-3-HARDWARE-REPORT.md) getrennt aufgeführt.
+
 ## Paketprüfung Beta 45
 
 Die endgültigen publizierten DLLs aus Quellcommit

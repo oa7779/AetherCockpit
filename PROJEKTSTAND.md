@@ -2,12 +2,36 @@
 
 ## Stand
 
+Meilenstein 2 ist ausdrücklich abgenommen. Meilenstein 3 „Hardware
+Intelligence Center“ hat eine implementierte und geprüfte Grundlage,
+ist als vollständiger Auftrag aber **NICHT ABNAHMEBEREIT**. Ausgangscommit
+`21b2a0b466c34b526961e83ab234e08430b6750e`.
+Der neue Auftrag erlaubt kleine lokale Commits, aber keinen Push, Tag,
+Release, Merge oder RC-Versionswechsel. Bestehende Pakete bleiben erhalten.
+Hardwareinventar ausschließlich lesend; keine neuen Treiber oder Logos.
+
+Eigene Hardwareansicht, 20 Klassen, Quelleninspektor, CIM-/CPU-/DXGI-/
+Netzwerk-/Audio-/Displayprovider, Storage-/USB-Beziehungen und redigierbare
+JSON-/CSV-/Textberichte implementiert. Lokale Implementierungscommits
+`7e5eff9`, `ca60dd6`, `37bb74c`, `c72ebe0`, `5f3d22a`.
+Releasebuild 0 Warnungen / 0 Fehler; STA 4.558, kombiniert mit Interface/
+Schoner/Branding 4.911 (inklusive Grundrunner), Modern-Smoke 3.611 bestanden.
+Neun neue Hardware-Theme-/Root-DPI-Bilder und drei Fixture-Messrunden.
+
+Reale Hardwareabfrage ausdrücklich freigegeben und nur lesend ausgeführt:
+5.024 Feldzeilen, 789 Sensitive-Zeilen redigiert. Keine neuen Sensorzugriffe.
+Nicht integrierte GPU-/Wi-Fi-/SPD-/Roh-SMART-/NVMe-/Statistikpfade und die
+reale Langzeit-/Resume-/Hotplug-Abnahme bleiben offen.
+[M3-Bericht mit Nachweisen und Grenzen](docs/MILESTONE-3-HARDWARE-REPORT.md).
+Nach Dokumentationsabschluss Stopp; keine neue Paketierung oder
+Veröffentlichung und kein Meilenstein 4.
+
 Installer-/Uploadauftrag abgeschlossen:
 [Beta `0.7.0-beta.45`](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.45)
 ist als GitHub-Vorabversion veröffentlicht, Dateiversion `0.7.0.45`.
 Binärquellstand und Tagziel: `792fa3db6f08826c1b5e7acd52faccb1c56ef542`
 auf `rc/grosse-entfesselung`. Dieser nachträgliche Dokumentationsnachweis
-ändert weder Paket noch Tag. Kein Merge nach main und kein Meilenstein 3.
+ändert weder Paket noch Tag. Im Releaseauftrag kein Merge nach main.
 Bestehende Pakete und die bisherige Latest-Markierung bleiben erhalten.
 
 Installer: `dist\AetherCockpit-Setup-0.7.0-beta.45-win-x64.exe`,
@@ -27,11 +51,12 @@ Ursache offen, keine behobene Abweichung behauptet;
 [Prüfdetails](docs/TESTING.md#paketprüfung-beta-45).
 
 Meilenstein 1 wurde ausdrücklich abgenommen. Meilenstein 2 „AETHER Neon
-Frame“ ist umgesetzt und **ABNAHMEBEREIT**, nicht als RC-Produktfreigabe.
+Frame“ ist umgesetzt und **ABGENOMMEN**, nicht als RC-Produktfreigabe.
 Ausgangscommit `4ba0497`, Branch `rc/grosse-entfesselung`.
 [Abschlussbericht mit allen lokalen M2-Commits](docs/MILESTONE-2-NEON-FRAME-REPORT.md).
 Der damalige M2-Stopp vor Version/Paketierung wurde nur für den oben
-genannten Installer-/Uploadauftrag aufgehoben. Stopp vor Meilenstein 3.
+genannten Installer-/Uploadauftrag aufgehoben. Der neue M3-Auftrag ist oben
+gesondert festgehalten.
 
 Zentrale Attached-/Adornerkomponente ersetzt die bisherigen umlaufenden
 Panelrahmen in Cockpit, xBar, Diagramm-/Eingabestyles und Schoner.
