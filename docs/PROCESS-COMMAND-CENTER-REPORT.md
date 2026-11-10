@@ -2,7 +2,11 @@
 
 ## Abschlussstatus
 
-**Lokal implementiert und geprüft; ausdrückliche Abnahme ausstehend.**
+**Lokal implementiert, geprüft und am 10. November 2026 ausdrücklich abgenommen.**
+Die Abnahme wurde mit dem nachfolgenden System-Intelligence-Masterauftrag
+erteilt. Die folgenden Messungen und Grenzen bleiben unverändert;
+Abnahmeempfehlungen und Stoppaussagen am ursprünglichen Berichtsende
+sind damit historisch. Keine Veröffentlichung aus dieser Abnahme abgeleitet.
 Stand: 10. November 2026. Keine öffentliche Versionsänderung, Paketierung
 oder Veröffentlichung. Nach Vorlage dieses Berichts gilt **STOPP**.
 Die bestehende Beta bleibt unverändert.

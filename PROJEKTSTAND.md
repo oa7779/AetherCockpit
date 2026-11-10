@@ -37,7 +37,7 @@ SPD und echter effektiver CPU-Zyklustakt bleiben begründet begrenzt.
 Physische Hotplug-/Resume-/Monitor-/DPI-Wechsel und Langzeitbetrieb wurden
 nicht ausgelöst und sind nicht als bestanden behauptet.
 
-**Process Command Center / System Correlation: implementiert, Abnahme ausstehend.**
+**Process Command Center / System Correlation: am 10. November 2026 ausdrücklich abgenommen.**
 Ausgang nach vollständigem M3-Dokumentationsabschluss:
 `5dc869299b57af93083f53e680d5afca3fc14536`.
 Sauberer Implementierungsbaseline nach Phase 0:
@@ -64,7 +64,13 @@ Nicht belegbare Netzwerkbyte-/Sensor-/klassische Software-/WER-Zuordnungen
 sind offen gekennzeichnet statt erfunden.
 
 Keine Veröffentlichung, Push, Merge, Tag, Release, Installer oder Versionswechsel.
-**STOPP: ausdrückliche Abnahme des Prozesspakets abwarten.**
+Die Abnahme erfolgt auf Grundlage des unveränderten Abschlussberichts
+einschließlich seiner Grenzen. Der damalige Abnahmestopp ist historisch.
+**Aktiver Auftrag: AETHER System Intelligence**, vollständiger Ausbau nach
+dem erteilten Masterauftrag. Ausgangscommit `c7b6d962dd215575c2ab9b82154eca961dfbf90f`,
+Branch `rc/grosse-entfesselung`, sauberer Arbeitsbaum vor Phase 0.
+Neue lokale Commits, keine Veröffentlichung oder Paketierung.
+Nach dem neuen Abschlussbericht erneut ausdrückliche Abnahme abwarten.
 Bestehende Pakete bleiben unverändert.
 
 Installer-/Uploadauftrag abgeschlossen:

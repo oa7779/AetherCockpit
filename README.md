@@ -28,7 +28,8 @@ Community Request: Prozesse können jetzt direkt über ihr Kontextmenü
 kontrolliert beendet werden – mit Sicherheitsdialog und geprüftem Endzustand.
 Die bestehende Suche über `Strg+K` findet auch Prozesse und neue Arbeitsabläufe.
 [Abschlussbericht, Nachweise und Grenzen](docs/PROCESS-COMMAND-CENTER-REPORT.md).
-Auch dieses Paket ist unveröffentlicht; seine Abnahme steht aus.
+Das Prozesspaket ist mit seinen dokumentierten Grenzen ausdrücklich abgenommen,
+bleibt aber unveröffentlicht. Der nächste lokale Auftrag ist AETHER System Intelligence.
 
 **Aktuelle Beta: 0.7.0-beta.45**
 
