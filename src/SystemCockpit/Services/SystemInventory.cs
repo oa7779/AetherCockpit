@@ -7,6 +7,8 @@ namespace SystemCockpit.Services;
 
 public sealed record InventoryItem(string Category, string Name, string Detail);
 public sealed record InstalledSoftware(string Name, string Version, string Publisher);
+internal sealed record SoftwareRegistration(string Id, string Name, string Version, string Publisher,
+    string Location, string InstallDate, string Architecture);
 public sealed record InventorySnapshot(
     DateTimeOffset GeneratedAt, IReadOnlyList<InventoryItem> Hardware, IReadOnlyList<InstalledSoftware> Software);
 
@@ -26,12 +28,24 @@ public static class SystemInventory
     public static List<InstalledSoftware> ReadInstalledSoftware()
     {
         var result = new Dictionary<string, InstalledSoftware>(StringComparer.OrdinalIgnoreCase);
+        foreach (var registration in ReadRegistrations(CancellationToken.None))
+        {
+            var item = new InstalledSoftware(registration.Name, registration.Version, registration.Publisher);
+            result[$"{item.Name}|{item.Version}"] = item;
+        }
+        return result.Values.OrderBy(s => s.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+    }
+
+    internal static IReadOnlyList<SoftwareRegistration> ReadRegistrations(CancellationToken token)
+    {
+        var result = new List<SoftwareRegistration>();
         void Scan(RegistryKey root, string path)
         {
             using var key = root.OpenSubKey(path, writable: false);
             if (key is null) return;
             foreach (var name in key.GetSubKeyNames())
             {
+                token.ThrowIfCancellationRequested();
                 using var entry = key.OpenSubKey(name, writable: false);
                 if (entry?.GetValue("DisplayName") is not string display || display.Trim().Length == 0) continue;
                 if (entry.GetValue("SystemComponent") is int component && component == 1) continue;
@@ -41,8 +55,9 @@ public static class SystemInventory
                      release.Contains("Hotfix", StringComparison.OrdinalIgnoreCase))) continue;
                 var version = entry.GetValue("DisplayVersion") as string ?? "";
                 var publisher = entry.GetValue("Publisher") as string ?? "";
-                var item = new InstalledSoftware(display.Trim(), version.Trim(), publisher.Trim());
-                result[$"{item.Name}|{item.Version}"] = item;
+                result.Add(new(root.Name + "\\" + path + "\\" + name, display.Trim(), version.Trim(), publisher.Trim(),
+                    entry.GetValue("InstallLocation") as string ?? "", entry.GetValue("InstallDate") as string ?? "",
+                    path.Contains("WOW6432Node", StringComparison.Ordinal) ? "32-Bit-Registrierung; keine Prozessarchitektur" : "Native Registrierung; Architektur nicht bewiesen"));
             }
         }
         foreach (var path in UninstallRoots)
@@ -50,7 +65,7 @@ public static class SystemInventory
             Scan(Registry.LocalMachine, path);
             Scan(Registry.CurrentUser, path);
         }
-        return result.Values.OrderBy(s => s.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+        return result;
     }
 
     public static async Task<InventorySnapshot> BuildAsync(CancellationToken token, IProgress<string>? progress = null)

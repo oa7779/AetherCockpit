@@ -14,6 +14,10 @@ internal sealed record ProcessRelation(string Kind, string Key, int? OwnerPid, s
     string Source, DateTimeOffset Timestamp, DataAvailability Availability, DataClassification Classification = DataClassification.Sensitive)
 {
     public string? LocalAddress { get; init; }
+    public int? LocalPort { get; init; }
+    public string? RemoteAddress { get; init; }
+    public int? RemotePort { get; init; }
+    public string? EndpointState { get; init; }
 }
 
 internal static class ProcessCorrelation
@@ -60,7 +64,11 @@ internal static class ProcessCorrelation
         var time = DateTimeOffset.UtcNow;
         var result = raw.Select(r => new ProcessRelation(r.Kind, r.Key, r.OwnerPid, r.Executable, r.Value, r.Source, r.Timestamp,
             Enum.TryParse<DataAvailability>(r.Availability, out var state) && Enum.IsDefined(state) ? state : throw new JsonException("Ungültiger Quellenstatus."))
-            { LocalAddress = r.LocalAddress }).ToList();
+            { LocalAddress = r.LocalAddress, LocalPort = r.LocalPort, RemoteAddress = r.RemoteAddress,
+                RemotePort = r.RemotePort, EndpointState = r.EndpointState }).ToList();
+        if (result.Any(r => r.LocalPort is < 0 or > 65535 || r.RemotePort is < 0 or > 65535 ||
+            r.RemoteAddress?.Length > 256 || r.EndpointState?.Length > 128))
+            throw new JsonException("Ungültige strukturierte Endpointdaten.");
         var adapters = new List<(string Address, string Id, string Name)>();
         foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
         {
@@ -86,9 +94,9 @@ internal static class ProcessCorrelation
     internal const string SystemScript = """
             $ErrorActionPreference='Stop'
             $rows=[Collections.Generic.List[object]]::new()
-            function Row($kind,$key,$pidValue,$exe,$value,$source,$status='Available',$local=$null) {
+            function Row($kind,$key,$pidValue,$exe,$value,$source,$status='Available',$local=$null,$localPort=$null,$remote=$null,$remotePort=$null,$endpointState=$null) {
                 if($rows.Count -ge 20000){throw 'Korrelationsgrenze erreicht'}
-                $rows.Add(@{Kind=$kind;Key=[string]$key;OwnerPid=$pidValue;Executable=$exe;Value=[string]$value;Source=$source;Availability=$status;LocalAddress=$local;Timestamp=[DateTimeOffset]::UtcNow.ToString('O')})
+                $rows.Add(@{Kind=$kind;Key=[string]$key;OwnerPid=$pidValue;Executable=$exe;Value=[string]$value;Source=$source;Availability=$status;LocalAddress=$local;LocalPort=$localPort;RemoteAddress=$remote;RemotePort=$remotePort;EndpointState=$endpointState;Timestamp=[DateTimeOffset]::UtcNow.ToString('O')})
             }
             function ExePath($command) {
                 $m=[regex]::Match([string]$command,'^\s*"([^"]+\.exe)"(?:\s|$)','IgnoreCase')
@@ -109,20 +117,23 @@ internal static class ProcessCorrelation
             }
             try {
                 Get-CimInstance Win32_Service -OperationTimeoutSec 6 | ForEach-Object {
-                    Row 'Dienst' $_.Name ([int]$_.ProcessId) $null ($_.Name+' / '+$_.State+' / Starttyp: '+$_.StartMode) 'Win32_Service.ProcessId/Name/StartMode'
+                    Row 'Dienst' $_.Name ([int]$_.ProcessId) (ExePath $_.PathName) ($_.Name+' / '+$_.State+' / Starttyp: '+$_.StartMode) 'Win32_Service.ProcessId/Name/StartMode/PathName'
                 }
+                Row 'Quellenabdeckung' 'Dienst' $null $null 'Vollständig gelesen; auch leer gültig' 'Win32_Service'
             } catch {Row 'Dienst' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Win32_Service' (FailureState $_)}
             try {
                 Get-NetTCPConnection -ErrorAction Stop | ForEach-Object {
                     $key=$_.LocalAddress+':'+$_.LocalPort+' -> '+$_.RemoteAddress+':'+$_.RemotePort
-                    Row 'TCP' $key ([int]$_.OwningProcess) $null ($key+' / '+$_.State) 'Get-NetTCPConnection / Owner-PID' 'Available' $_.LocalAddress
+                    Row 'TCP' $key ([int]$_.OwningProcess) $null ($key+' / '+$_.State) 'Get-NetTCPConnection / Owner-PID' 'Available' $_.LocalAddress ([int]$_.LocalPort) $_.RemoteAddress ([int]$_.RemotePort) ([string]$_.State)
                 }
+                Row 'Quellenabdeckung' 'TCP' $null $null 'Vollständig gelesen; auch leer gültig' 'Get-NetTCPConnection'
             } catch {Row 'TCP' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Get-NetTCPConnection' (FailureState $_)}
             try {
                 Get-NetUDPEndpoint -ErrorAction Stop | ForEach-Object {
                     $key=$_.LocalAddress+':'+$_.LocalPort
-                    Row 'UDP' $key ([int]$_.OwningProcess) $null ($key+' / lokaler Endpoint, kein Remoteziel') 'Get-NetUDPEndpoint / Owner-PID' 'Available' $_.LocalAddress
+                    Row 'UDP' $key ([int]$_.OwningProcess) $null ($key+' / lokaler Endpoint, kein Remoteziel') 'Get-NetUDPEndpoint / Owner-PID' 'Available' $_.LocalAddress ([int]$_.LocalPort) $null $null 'LocalEndpoint'
                 }
+                Row 'Quellenabdeckung' 'UDP' $null $null 'Vollständig gelesen; auch leer gültig' 'Get-NetUDPEndpoint'
             } catch {Row 'UDP' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Get-NetUDPEndpoint' (FailureState $_)}
             try {
                 foreach($root in @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Run','HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce',
@@ -135,6 +146,7 @@ internal static class ProcessCorrelation
                         Row 'Autostart' ($root+'\'+$name) $null $exe $(if($exe){$exe}else{'Ausführbare Datei nicht eindeutig auflösbar; keine Zuordnung'}) 'Registry Run/RunOnce / exakter ausführbarer Pfad'
                     }
                 }
+                Row 'Quellenabdeckung' 'Autostart' $null $null 'Vollständig gelesen; auch leer gültig' 'Run/RunOnce'
             } catch {Row 'Autostart' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Run/RunOnce' (FailureState $_)}
             try {
                 Get-ScheduledTask -ErrorAction Stop | ForEach-Object {
@@ -144,6 +156,7 @@ internal static class ProcessCorrelation
                         Row 'Geplante Aufgabe' ($task.TaskPath+$task.TaskName) $null $exe $(if($exe){$exe}else{'Keine eindeutige absolute Executable-Angabe; keine Prozesszuordnung'}) 'Get-ScheduledTask.Actions.Execute / exakter Pfad'
                     }
                 }
+                Row 'Quellenabdeckung' 'Geplante Aufgabe' $null $null 'Vollständig gelesen; auch leer gültig' 'Get-ScheduledTask'
             } catch {Row 'Geplante Aufgabe' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Get-ScheduledTask' (FailureState $_)}
             try {
                 Get-AppxPackage -ErrorAction Stop | ForEach-Object {
@@ -152,15 +165,17 @@ internal static class ProcessCorrelation
                     foreach($app in $manifest.Package.Applications.Application) {
                         if($app.Executable -and $package.InstallLocation) {
                             $exe=[IO.Path]::GetFullPath((Join-Path $package.InstallLocation ([string]$app.Executable)))
-                            Row 'Softwarepaket' ($package.PackageFullName+'/'+$app.Id) $null $exe $package.PackageFullName 'AppX-Paketmanifest / Applications.Application.Executable + InstallLocation'
+                            Row 'Softwarepaket' ($package.PackageFamilyName+'/'+$app.Id) $null $exe $package.PackageFullName 'AppX-Paketmanifest / PackageFamilyName / Applications.Application.Executable + InstallLocation'
                         }
                     }
                 }
+                Row 'Quellenabdeckung' 'Softwarepaket' $null $null 'Vollständig gelesen; auch leer gültig' 'Get-AppxPackageManifest'
             } catch {Row 'Softwarepaket' 'provider' $null $null ('Providerfehler: '+$_.Exception.HResult) 'Get-AppxPackageManifest' (FailureState $_)}
             ConvertTo-Json -InputObject @($rows.ToArray()) -Depth 4 -Compress
             """;
 
-    private sealed record RawRelation(string Kind, string Key, int? OwnerPid, string? Executable, string Value, string Source, string Availability, string? LocalAddress, DateTimeOffset Timestamp);
+    private sealed record RawRelation(string Kind, string Key, int? OwnerPid, string? Executable, string Value, string Source, string Availability, string? LocalAddress,
+        DateTimeOffset Timestamp, int? LocalPort = null, string? RemoteAddress = null, int? RemotePort = null, string? EndpointState = null);
     internal static IReadOnlyList<ProcessRelation> Events(ProcessIdentity identity, CancellationToken token)
     {
         var result = new List<ProcessRelation>();

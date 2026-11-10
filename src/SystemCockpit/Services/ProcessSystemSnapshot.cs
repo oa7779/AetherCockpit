@@ -29,6 +29,7 @@ internal sealed record ProcessSystemSnapshot(string Schema, DateTimeOffset Times
             snapshot.Relations.Any(r => r is null || r.Kind is null || r.Key is null || r.Value is null || r.Source is null ||
                 r.Kind.Length > 256 || r.Key.Length > 32768 || r.Value.Length > 65536 || r.Source.Length > 32768 ||
                 r.OwnerPid < 0 || r.Timestamp == default || r.Executable?.Length > 32768 || r.LocalAddress?.Length > 256 ||
+                r.LocalPort is < 0 or > 65535 || r.RemotePort is < 0 or > 65535 || r.RemoteAddress?.Length > 256 || r.EndpointState?.Length > 128 ||
                 !Enum.IsDefined(r.Availability) || !Enum.IsDefined(r.Classification)) ||
             snapshot.Hardware.Any(h => h is null || h.Key is null || h.Key.Length > 32768 || h.Availability is null || h.Timestamp == default ||
                 !Enum.TryParse<DataAvailability>(h.Availability, out var state) || !Enum.IsDefined(state)) ||
