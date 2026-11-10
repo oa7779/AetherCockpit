@@ -450,13 +450,14 @@ internal static class Program
             "Every main module explains itself via tooltip");
         // Navigation: Verlauf, Leiste und linke Rubriken muessen zusammenpassen.
         var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var pageRoutes = pages.Items.Cast<System.Windows.Controls.TabItem>().Select(t => (string)t.Tag).ToList();
         var navButtons = ((System.Windows.Controls.StackPanel)window.FindName("NavigationGroups"))
             .Children.OfType<System.Windows.Controls.Expander>().SelectMany(group =>
                 ((System.Windows.Controls.StackPanel)group.Content).Children.OfType<System.Windows.Controls.Button>())
-            .Where(b => b.Tag is string route && pageHeaders.Contains(route)).ToList();
-        Assert(navButtons.Count == 13 && navButtons.All(b => pageHeaders.Contains((string)b.Tag)) &&
-            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 13,
-            "Left rubric buttons map one-to-one onto real page headers including help");
+            .Where(b => b.Tag is string route && pageRoutes.Contains(route)).ToList();
+        Assert(navButtons.Count == 14 && navButtons.All(b => pageRoutes.Contains((string)b.Tag)) &&
+            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 14,
+            "Left rubric buttons map one-to-one onto real page routes including hardware intelligence and help");
         var navBack = (System.Windows.Controls.Button)window.FindName("NavBack");
         var navForward = (System.Windows.Controls.Button)window.FindName("NavForward");
         var navTrail = (System.Windows.Controls.TextBlock)window.FindName("NavTrail");

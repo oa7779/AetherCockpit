@@ -59,6 +59,10 @@ public static class HardwareSensorInventory
                     error is not null ? "Bestehender Sensorprovider meldet einen Fehler; Details im Cockpit." :
                         !enabled ? "Sensorzugriff im Cockpit deaktiviert." : "Provider meldet keine unterstützten Sensoren.",
                     error is null ? DataAvailability.Unavailable : DataAvailability.ProviderError)])];
+        if (readings.Select(s => s.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() != readings.Count)
+            return [new("sensors:identity-error", HardwareClass.Sensors, "Sensoridentitäten",
+                [HardwareFact.Missing("identity-error", "Sensorzuordnung", "LibreHardwareMonitor / bestehender Cockpit-Sensorpfad",
+                    timestamp, "Doppelte Sensoridentitäten; keine willkürliche Zuordnung vorgenommen.", DataAvailability.ProviderError)])];
         return readings.Select(s =>
         {
             var value = s.Value is { } number && double.IsFinite(number) ? number : (double?)null;

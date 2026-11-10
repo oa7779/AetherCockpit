@@ -36,16 +36,15 @@ internal static class HardwareIntelligenceTests
     {
         var q = HardwareCimCatalog.Queries.FirstOrDefault(q => q.Class == category);
         if (q is null) return HardwareSensorInventory.Read([new("sensor/0", "Fixture CPU", "Package", "Temperature", 0, "°C")], Time, true, null);
-        var rows = new Dictionary<string, JsonElement[]>
+        var properties = new Dictionary<string, object?>
         {
-            [q.Key] = [Row(new Dictionary<string, object?>
-            {
-                ["_Identity"] = "fixture/1", [q.Identity] = "fixture/1", [q.Label] = "AETHER Fixture / " + category,
-                [q.Properties[0].Property] = "Fixture 0",
-                ["Name"] = "AETHER Fixture", ["PNPDeviceID"] = @"PCI\VEN_1234&DEV_5678&SUBSYS_11223344&REV_02\PRIVATE",
-                ["Size"] = 1024, ["Temperature"] = 0, ["Capacity"] = 1024
-            })]
+            ["_Identity"] = "fixture/1", [q.Identity] = "fixture/1", [q.Label] = "AETHER Fixture / " + category,
+            [q.Properties[0].Property] = "Fixture 0", ["Name"] = "AETHER Fixture",
+            ["Size"] = 1024, ["Temperature"] = 0, ["Capacity"] = 1024
         };
+        if (q.Properties.Any(p => p.Property == "PNPDeviceID"))
+            properties["PNPDeviceID"] = @"PCI\VEN_1234&DEV_5678&SUBSYS_11223344&REV_02\PRIVATE";
+        var rows = new Dictionary<string, JsonElement[]> { [q.Key] = [Row(properties)] };
         return HardwareIntelligenceReader.Parse(category, Batches(category, rows));
     }
 
@@ -177,6 +176,12 @@ internal static class HardwareIntelligenceTests
         Check(HardwareSensorInventory.Read([], Time, true, null)[0].Facts[0].State == "Unavailable", "no sensors supported");
         Check(HardwareSensorInventory.Read([], Time, true, "fixture-error")[0].Facts[0].State == "ProviderError", "sensor error explicit");
         Check(HardwareSensorInventory.Read([], Time, false, null)[0].Facts[0].Observation.Metadata.Error!.Contains("deaktiviert"), "disabled stays disabled");
+        var duplicateSensor = new SensorReading("duplicate", "CPU", "Package", "Temperature", 1, "°C");
+        Check(HardwareSensorInventory.Read([duplicateSensor, duplicateSensor], Time, true, null)[0].Facts[0].State == "ProviderError",
+            "duplicate sensor identities surface as provider error, not a sampling loop exception");
+        Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { 65, 66, 0, 0 } }), "name") == "AB", "EDID ASCII decoded without a database");
+        Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { 999 } }), "name") is null, "invalid EDID character not guessed");
+        Check(HardwareIntelligenceReader.DecodeEdid(Row(new { name = new[] { "65" } }), "name") is null, "EDID wrong type rejected");
         var entry = new HardwareDatabaseEntry("id", "fixture-source", "CC0-1.0", DateOnly.FromDateTime(Time.UtcDateTime),
             "fixture-1", "PCI:1234:5678", DataConfidence.ProviderReported, new("https://example.org/hardware"));
         Check(HardwareDatabase.IsValidMatch(entry, "PCI:1234:5678"), "exact approved license match");

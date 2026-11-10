@@ -259,6 +259,19 @@ public sealed class HardwareIntelligenceReader
                      ("DriverDate", "PnP-Treiberdatum", "") })
             facts.Add(Fact(row, new(key, name, unit, key == "Parent" ? DataClassification.Sensitive : DataClassification.Normal,
                 HardwareCadence.Dynamic), "Get-PnpDeviceProperty", time));
+        if (id?.StartsWith("PCI\\", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            var validAddress = uint.TryParse(Text(row, "Address"), NumberStyles.None, CultureInfo.InvariantCulture, out var address) &&
+                (address >> 16) <= 31 && (address & 0xffff) <= 7;
+            foreach (var (name, value, calculation) in new[]
+            {
+                ("PCI Device", address >> 16, "DEVPKEY_Device_Address >> 16; nur gültige PCI Device-/Function-Bereiche"),
+                ("PCI Function", address & 0xffff, "DEVPKEY_Device_Address & 0xffff; nur gültige PCI Device-/Function-Bereiche")
+            })
+                facts.Add(validAddress ? Derived(name, name, value.ToString(CultureInfo.InvariantCulture), "DEVPKEY_Device_Address",
+                    time, calculation) : HardwareFact.Missing(name, name, "DEVPKEY_Device_Address", time,
+                    "Keine gültige PCI Device-/Function-Adresse gemeldet."));
+        }
     }
 
     internal static string Script(HardwareQuery[] queries, HardwareClass category)

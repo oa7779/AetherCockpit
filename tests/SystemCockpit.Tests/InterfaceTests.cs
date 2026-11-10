@@ -122,7 +122,7 @@ internal static class InterfaceTests
             var pages = (TabControl)main.FindName("Pages");
             var routes = groups.Children.OfType<Expander>().SelectMany(g =>
                 ((StackPanel)g.Content).Children.OfType<Button>()).ToArray();
-            Check(routes.Length == 23 && routes.Select(b => (string)b.Tag).Distinct().Count() == 23,
+            Check(routes.Length == 24 && routes.Select(b => (string)b.Tag).Distinct().Count() == 24,
                 "Every main/secondary module is reachable exactly once in task navigation");
             var external = new HashSet<string> { "SMART", "Logs / Gaming", "Netzwerk", "Wartung", "Pakete",
                 "Autostart", "Auftraege", "Spuren", "Schluessel", "Einstellungen" };
@@ -143,7 +143,7 @@ internal static class InterfaceTests
                     continue;
                 }
                 button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Pump();
-                Check(pages.SelectedItem is TabItem t && Equals(t.Header, button.Tag) &&
+                Check(pages.SelectedItem is TabItem t && Equals(t.Tag, button.Tag) &&
                     ((Expander)((StackPanel)button.Parent).Parent).IsExpanded && button.BorderThickness.Left == 2,
                     "Actual navigation opens destination and marks active group: " + button.Tag);
             }
