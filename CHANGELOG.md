@@ -2,19 +2,23 @@
 
 Neueste Version zuerst. Fachanleitungen stehen in `docs`.
 
-## 0.7.0-beta.53 — lokaler Kandidat, noch nicht veröffentlicht
+## 0.7.0-beta.53 — öffentliches Prerelease
 
+- Lokales Windows-Systemcockpit für Systemübersicht, Hardware, Prozesse,
+  Leistung, Diagnose und ausgewählte Verwaltungsabläufe.
 - AETHER Intelligence verbindet lokale Systeminformationen mit
-  strukturierten Claims und zugehörigen Evidence.
+  strukturierten Claims und zugehörigen Evidence; unbelegte und
+  widersprüchliche Claims werden vor der Anzeige abgelehnt.
 - Qualifizierter lokaler Phi-4-Mini-Pfad über Ollama nach separater
   Einrichtung, ausdrücklicher Lizenzannahme und erfolgreicher
   System-/Integritätsprüfung.
-- Widersprüchliche und unbelegte Claims werden abgelehnt; der Validator
-  ist keine allgemeine semantische Wahrheitsgarantie.
-- Startup- und Branding-Smoke-Test des lokalen Kandidaten bestanden.
-- Beta 53 ist für ein Portable-Paket vorgesehen. Installer,
-  Modellgewichte, aktuelle Screenshots und öffentliche Freigabe sind nicht
-  Bestandteil dieses Kandidaten.
+- Zero-Click Local AI verwendet den qualifizierten lokalen Modellpfad nach
+  abgeschlossener Einrichtung automatisch für Fragen.
+- Startup- und Branding-Ressourcenvertrag korrigiert; manueller Startup- und
+  Branding-Smoke-Test bestanden.
+- Öffentliches unsigniertes Portable-win-x64-Prerelease; Modellgewichte
+  sind nicht enthalten. Installer ist nicht verfügbar; aktuelle Screenshots
+  folgen später.
 
 ## 0.7.0-beta.47 — veröffentlichte Vorabversion
 

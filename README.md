@@ -142,16 +142,17 @@ Weitere Einzelheiten stehen unter
 
 ## Installation und Download
 
-Beta 53 ist ein lokaler Releasekandidat und noch nicht veröffentlicht.
-Vorgesehen ist ausschließlich das Portable-Paket
-`AETHER-0.7.0-beta.53-Portable-win-x64.zip`. Ein öffentlicher Downloadlink
-erscheint erst nach Freigabe auf der GitHub-Release-Seite; derzeit gibt es
-keinen Beta-53-Download. Ein Installer ist nicht freigegeben.
+**AETHER 0.7.0 Beta 53** ist als öffentliches GitHub-Prerelease verfügbar:
+[Portable win-x64 herunterladen](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Portable-win-x64.zip)
+und
+[SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/SHA256SUMS.txt).
 
 Das Portable-ZIP muss vollständig entpackt werden; DLLs, Laufzeit und
-Begleitdateien bleiben zusammen. Vor einem Start Herkunft und SHA-256-
-Prüfsumme prüfen. Das Paket ist unsigniert; Schutzfunktionen wegen einer
-Warnung nicht deaktivieren.
+Begleitdateien bleiben zusammen. `SystemCockpit.exe` für die unterstützten
+Verwaltungsabläufe erhöht starten. Vor dem Start Herkunft und SHA-256-
+Prüfsumme anhand der bereitgestellten Prüfsummendatei prüfen. Das Paket ist
+unsigniert; Schutzfunktionen wegen einer Warnung nicht deaktivieren. Ein
+Installer ist nicht verfügbar.
 
 ## Dokumentation
 
@@ -169,13 +170,11 @@ Warnung nicht deaktivieren.
 
 ## Beta-Status
 
-AETHER 0.7.0 Beta 53 ist eine Vorabversion. Der manuelle Startup- und
-Branding-Smoke-Test des lokalen Kandidaten ist bestanden; der qualifizierte
+AETHER 0.7.0 Beta 53 ist eine öffentliche Vorabversion. Der manuelle Startup-
+und Branding-Smoke-Test des Kandidaten ist bestanden; der qualifizierte
 Portable-Realtest mit lokalem Phi, erfolgreicher Validatorprüfung und ohne
-Fallback bleibt belegt. Screenshots sind in diesem Sprint bewusst
-zurückgestellt. Die lokale Paketprüfung und öffentliche Freigabe erfolgen
-getrennt; ein öffentlicher Download ist noch nicht verfügbar. Der Installer
-bleibt zurückgehalten.
+Fallback bleibt belegt. Screenshots folgen später. Der Build ist unsigniert;
+ein Installer ist nicht verfügbar.
 
 ## Lizenz
 
