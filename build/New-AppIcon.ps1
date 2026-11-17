@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $path = Join-Path $PSScriptRoot '..\src\SystemCockpit\Assets\aether.ico'
 $frames = @()
-foreach ($size in @(16, 24, 32, 48, 64, 128, 256)) {
+foreach ($size in @(16, 20, 24, 32, 40, 48, 64, 128, 256)) {
     $bitmap = [Drawing.Bitmap]::new($size, $size)
     $graphics = [Drawing.Graphics]::FromImage($bitmap)
     try {

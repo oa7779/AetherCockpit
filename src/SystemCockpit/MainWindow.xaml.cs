@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly CancellationTokenSource _stop = new();
     private readonly DisplayPulse _displayPulse;
     private readonly SemaphoreSlim _sensorGate = new(1);
+    private readonly SemaphoreSlim _processRefresh = new(0, 1);
     private readonly LocalHistory _history = new(Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AetherCockpit", "History"));
     private Task _samplingTask = Task.CompletedTask;
@@ -45,13 +46,87 @@ public partial class MainWindow : Window
     private SidebarWindow? _sidebar;
     private DesktopController? _desktop;
     private bool _exitRequested, _monitoringStarted;
+    private readonly bool _syntheticWindow;
     internal CockpitModel Model => _model;
+    private void GuardianTransactionPersisted(GuardianTransaction tx)
+    {
+        if (!Dispatcher.HasShutdownStarted)
+            Dispatcher.BeginInvoke(new Action(() => { if (!_exitRequested) Guardian.ObserveTransaction(tx); }));
+    }
 
     public MainWindow() : this(null) { }
 
     internal MainWindow(CockpitSettings? syntheticSettings)
     {
+        _syntheticWindow = syntheticSettings is not null;
         InitializeComponent();
+        IntelligenceFabric.RefreshHardwareSample = ReadIntelligenceSampleAsync;
+        IntelligenceFabric.DiagnosticNavigationRequested += SelectPage;
+        HardwareIntelligence.Synthetic = syntheticSettings is not null;
+        ProcessCenter.Synthetic = syntheticSettings is not null;
+        SystemIntelligence.Synthetic = syntheticSettings is not null;
+        Guardian.Synthetic = syntheticSettings is not null;
+        Guardian.Capture = SystemIntelligence.CaptureForGuardianAsync;
+        Guardian.Timeline = () => SystemIntelligence.Engine.Timeline;
+        Guardian.ProcessHistory = () => ProcessCenter.History;
+        Guardian.Recordings = () => SystemIntelligence.Recordings;
+        Guardian.Configuration = () => GuardianConfiguration.Capture(_model.Settings, SystemIntelligence.Engine.Rules,
+            SystemIntelligence.GuardianPreferences, TaskCenterPreferences.Load());
+        Guardian.ConfigurationAction = new(() => Dispatcher.Invoke(Guardian.Configuration),
+            (data, token) => Dispatcher.InvokeAsync(async () =>
+            {
+                var settings = GuardianConfiguration.Merge(_model.Settings, data);
+                settings.Save(); _model.Settings = settings;
+                data.Views.Save();
+                await SystemIntelligence.RestoreGuardianConfigurationAsync(data, token);
+                var saved = GuardianConfiguration.Capture(CockpitSettings.Load(), data.Rules, data.Intelligence, TaskCenterPreferences.Load());
+                if (GuardianConfiguration.Serialize(saved) != GuardianConfiguration.Serialize(data))
+                    throw new IOException("Gespeicherte AETHER-Konfiguration stimmt nicht mit dem freigegebenen Inhalt überein.");
+            }).Task.Unwrap());
+        Guardian.Mark = SystemIntelligence.Engine.Add;
+        ProcessCenter.TraceContext = identity => GuardianTraceProjection.ProcessContext(identity, Guardian.Artifacts);
+        if (syntheticSettings is null) GuardianCore.TransactionPersisted += GuardianTransactionPersisted;
+        SystemIntelligence.GuardianArtifacts = () => Guardian.Artifacts;
+        SystemIntelligence.RefreshGuardian = Guardian.RefreshIndexAsync;
+        SystemIntelligence.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
+        SystemIntelligence.ProcessHistory = () => ProcessCenter.History;
+        SystemIntelligence.NotificationRequested += message => { _model.Footer = message; _desktop?.NotifyDiagnostics(message); };
+        ProcessCenter.ActionObserved += result => SystemIntelligence.Engine.Mark(
+            result.State == ProcessActionState.Exited ? "ProcessConfirmedEnd" : "ProcessAction",
+            result.Identity + " / " + result.State, result.Message, DateTimeOffset.UtcNow, "process:" + result.Identity);
+        SystemIntelligence.NavigationRequested += entity =>
+        {
+            if (entity.Kind == IntelligenceKind.Guardian)
+            { SelectPage("Guardian"); Guardian.QuickAction(entity.Id); }
+            else if (entity.Kind == IntelligenceKind.Process && entity.Id.StartsWith("process:", StringComparison.Ordinal))
+            {
+                SelectPage("Taskmanager");
+                ProcessCenter.QuickAction("process-id:" + entity.Id[8..]);
+            }
+            else if (entity.Kind == IntelligenceKind.Event && entity.Fields.TryGetValue("channel", out var channel) &&
+                long.TryParse(entity.Fields.GetValueOrDefault("recordId"), out var recordId))
+            {
+                SelectPage("Ereignisse");
+                _ = EmbeddedEvents.NavigateToAsync(channel, recordId, entity.Metadata.Timestamp);
+            }
+            else if (entity.Kind == IntelligenceKind.Hardware && entity.Id.StartsWith("hardware:", StringComparison.Ordinal) &&
+                HardwareIntelligence.SelectExisting(entity.Id[9..])) SelectPage("HardwareIntelligence");
+            else if (entity.Kind == IntelligenceKind.Service)
+            { SelectPage("Superadmin"); Workbench.SelectArea("services"); }
+            else _model.Footer = "Quelle und genaue Identität stehen im Intelligence-Inspektor; keine heuristische Navigation.";
+        };
+        ProcessCenter.HardwareSnapshot = () => HardwareIntelligence.Snapshot;
+        HardwareIntelligence.ProcessLinksRequested += component =>
+        {
+            SelectPage("Taskmanager");
+            ProcessCenter.Reverse(component);
+        };
+        ProcessCenter.AttachDashboard(DashboardProcesses);
+        ProcessCenter.RefreshRequested += () =>
+        {
+            if (_processRefresh.CurrentCount == 0) _processRefresh.Release();
+            _model.Footer = "Prozessaktion abgeschlossen; gemeinsame Erfassung zur Aktualisierung angefordert.";
+        };
         InitializeNavigation();
         _displayPulse = new DisplayPulse(Dispatcher, _model, day => DisplayTime.Apply(this, day));
         _managerReporting = new ManagerReportingService(status =>
@@ -81,6 +156,8 @@ public partial class MainWindow : Window
                 });
         });
         DataContext = _model;
+        var productVersion = FileVersionInfo.GetVersionInfo(typeof(MainWindow).Assembly.Location).ProductVersion;
+        BuildVersion.Text = $"AETHER {productVersion?.Split('+')[0] ?? "Version nicht verfügbar"} / Windows x64";
         if (SkinCatalog.IsModern) NeonDesignTagline.Visibility = Visibility.Collapsed;
         _model.PropertyChanged += (_, e) =>
         {
@@ -95,7 +172,7 @@ public partial class MainWindow : Window
         Operations.CleanerRequested += (_, _) => SelectPage("Cleaner");
         using var identity = WindowsIdentity.GetCurrent();
         _model.AccessStatus = new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator)
-            ? "ACCESS / ADMINISTRATOR" : "ACCESS / STANDARD";
+            ? "Zugriff / Administratorrechte" : "Zugriff / Standardbenutzer";
         try
         {
             _model.Settings = syntheticSettings ?? CockpitSettings.Load();
@@ -143,6 +220,7 @@ public partial class MainWindow : Window
     {
         if (_monitoringStarted) return;
         _monitoringStarted = true;
+        SystemIntelligence.EnsureInitialized();
         _samplingTask = SampleLoopAsync();
         _probeTask = ProbeLoopAsync();
         _eventTask = EventLoopAsync();
@@ -238,10 +316,16 @@ public partial class MainWindow : Window
         }
         finally { _sensorGate.Release(); }
         _model.Apply(sample, _sensorsEnabled);
+        HardwareIntelligence.UpdateSensors(sample.Sensors, sample.Timestamp, _sensorsEnabled, sample.SensorError);
+        HardwareIntelligence.UpdateSensors(sample.Sensors, sample.Timestamp, _sensorsEnabled, sample.SensorError);
         report(DesktopUiText.Get("Boot.PerformanceInit"), 65);
         try
         {
-            _model.ApplyDashboard(await Task.Run(_dashboardMetrics.Read, token), sample);
+            var detail = await Task.Run(() => _dashboardMetrics.Read(token), token);
+            _model.ApplyDashboard(detail, sample);
+            ProcessCenter.Apply(detail);
+            SystemIntelligence.Apply(detail, sample);
+            IntelligenceFabric.ApplyLive(sample);
             report(DesktopUiText.Get("Boot.PerformanceBaseline"), 72);
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
@@ -274,16 +358,29 @@ public partial class MainWindow : Window
     {
         _stop.Cancel();
         HardwareBoard.Shutdown();
+        await HardwareIntelligence.ShutdownAsync();
+        await ProcessCenter.ShutdownAsync();
+        await AdminPlatform.ShutdownAsync();
+        await IntelligenceFabric.ShutdownAsync();
+        GuardianCore.TransactionPersisted -= GuardianTransactionPersisted;
+        await Guardian.ShutdownAsync();
+        await SystemIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask, HardwareBoard.Pending);
+        _managerReporting.Dispose();
+        _backgroundDiagnostics.Dispose();
         if (_desktop is not null)
         {
             await _desktop.StopAsync();
             _desktop.Dispose();
             _desktop = null;
         }
-        await Task.Run(_sensors.Dispose);
+        await _sensorGate.WaitAsync();
+        try { await Task.Run(_sensors.Dispose); }
+        finally { _sensorGate.Release(); }
+        _sensorGate.Dispose();
+        _processRefresh.Dispose();
         _stop.Dispose();
         _allowClose = true;
     }
@@ -291,6 +388,21 @@ public partial class MainWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
+        try
+        {
+            var before = TaskbarIdentity.Capture(this);
+            var after = TaskbarIdentity.EnsureWindowIdentity(this);
+            if (!_syntheticWindow)
+            {
+                TaskbarIdentity.WriteDiagnostic(before with { Stage = "Before" });
+                TaskbarIdentity.WriteDiagnostic(after with { Stage = "After" });
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Runtime.InteropServices.COMException or
+            Win32Exception or InvalidOperationException or InvalidDataException)
+        {
+            ReportError("Taskleistenidentität", ex);
+        }
         var result = WindowAppearance.DarkCaption(this);
         if (result != 0)
             ReportError("Dunkle Windows-Titelleiste", new Win32Exception(result));
@@ -323,12 +435,16 @@ public partial class MainWindow : Window
                     _model.Apply(sample, _sensorsEnabled);
                     try
                     {
-                        var detail = await Task.Run(_dashboardMetrics.Read, _stop.Token);
+                        var detail = await Task.Run(() => _dashboardMetrics.Read(_stop.Token), _stop.Token);
                         _model.ApplyDashboard(detail, sample);
+                        ProcessCenter.Apply(detail);
+                        SystemIntelligence.Apply(detail, sample);
+                        IntelligenceFabric.ApplyLive(sample);
                     }
                     catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NetworkInformationException)
                     {
                         _model.DashboardFailed(ex.Message);
+                        ProcessCenter.Failed(ex.Message);
                         ReportError("Dashboard-Messung", ex);
                     }
                     if (_recording && (sample.Timestamp - _lastRecorded).TotalSeconds >= _model.Settings.RecordIntervalSeconds)
@@ -354,10 +470,17 @@ public partial class MainWindow : Window
                     _model.DashboardFailed(ex.Message);
                     ReportError("Live-Messung", ex);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(2), _stop.Token);
+                await _processRefresh.WaitAsync(TimeSpan.FromSeconds(2), _stop.Token);
             }
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }
+    }
+
+    private async Task<LiveSample> ReadIntelligenceSampleAsync(CancellationToken token)
+    {
+        await _sensorGate.WaitAsync(token);
+        try { return await Task.Run(_metrics.Read, token); }
+        finally { _sensorGate.Release(); }
     }
 
     private async Task ProbeLoopAsync()
@@ -367,6 +490,7 @@ public partial class MainWindow : Window
             while (!_stop.IsCancellationRequested)
             {
                 await RefreshProbeAsync();
+                await SystemIntelligence.ObserveAsync();
                 await Task.Delay(TimeSpan.FromSeconds(60), _stop.Token);
             }
         }
@@ -379,7 +503,12 @@ public partial class MainWindow : Window
         {
             while (!_stop.IsCancellationRequested)
             {
-                try { _model.ApplyEvents(await EventMonitor.ReadAsync(_stop.Token)); }
+                try
+                {
+                    var events = await EventMonitor.ReadAsync(_stop.Token);
+                    _model.ApplyEvents(events);
+                    SystemIntelligence.ApplyEvents(events);
+                }
                 catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or TimeoutException or System.Text.Json.JsonException or System.Xml.XmlException or IOException)
                 {
                     _model.EventsFailed(ex.Message);
@@ -422,7 +551,7 @@ public partial class MainWindow : Window
             _model.Footer = DesktopUiText.Get("Main.AdminBusy");
             return;
         }
-        if (_model.AccessStatus == "ACCESS / ADMINISTRATOR")
+        if (_model.AccessStatus == "Zugriff / Administratorrechte")
         {
             _model.Footer = DesktopUiText.Get("Main.AdminAlready");
             return;
@@ -504,7 +633,7 @@ public partial class MainWindow : Window
             lines.AddRange(snapshot.Select(s => string.Join(",", CsvCell(time.ToString("O", CultureInfo.InvariantCulture)),
                 CsvCell(s.Id), CsvCell(s.Hardware), CsvCell(s.Name), CsvCell(s.Type), CsvCell(s.Unit),
                 s.Value is { } v && double.IsFinite(v) ? v.ToString("R", CultureInfo.InvariantCulture) : "",
-                CsvCell(SensorSemantics.IsTemperatureLimit(s) ? "Grenzwert / kein Messwert" : "Messkanal / Luecke ist unbekannt"))));
+                CsvCell(SensorSemantics.IsTemperatureLimit(s) ? "Grenzwert / kein Messwert" : "Messkanal / Lücke ist unbekannt"))));
             File.WriteAllLines(dialog.FileName, lines, new UTF8Encoding(true));
             _model.Footer = DesktopUiText.Format("Main.SensorsSaved", snapshot.Length);
         }
@@ -545,7 +674,7 @@ public partial class MainWindow : Window
         try
         {
             using var process = Process.Start(new ProcessStartInfo { FileName = file, Arguments = arguments, UseShellExecute = true });
-            _model.Footer = $"Windows-Werkzeug geoeffnet: {tool}";
+            _model.Footer = $"Windows-Werkzeug geöffnet: {tool}";
         }
 
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
@@ -561,8 +690,18 @@ public partial class MainWindow : Window
 
     internal void OpenTaskCenter()
     {
-        var window = new TaskCenterWindow { Owner = this };
+        var window = new TaskCenterWindow(_model.Processes.ToArray(), SystemIntelligence.SearchTasks()) { Owner = this };
         if (window.ShowDialog() != true || window.SelectedTask is not { } task) return;
+        if (task.QuickAction is { } quick)
+        {
+            SelectPage(task.Destination);
+            if (quick == "services") Workbench.SelectArea("services");
+            else if (task.Destination == "SystemIntelligence") SystemIntelligence.QuickAction(quick);
+            else if (task.Destination == "Guardian") Guardian.QuickAction(quick);
+            else if (quick == "hardware-report") HardwareIntelligence.RequestExport();
+            else ProcessCenter.QuickAction(quick);
+            return;
+        }
         if (task.Surface == "Systemkontrolle")
         {
             OpenControlCenterModule(task.Destination);
@@ -650,7 +789,7 @@ public partial class MainWindow : Window
 
     // GodMode ("Alle Aufgaben") existiert nicht auf jedem Windows-Build; neuere Builds
     // haben die CLSID entfernt. Dann wird ehrlich die vollstaendige klassische
-    // Systemsteuerung geoeffnet statt eines leeren Ordners oder einer Fehlermeldung.
+    // Systemsteuerung geöffnet statt eines leeren Ordners oder einer Fehlermeldung.
     private void OpenAllTasks()
     {
         var explorer = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
@@ -663,17 +802,17 @@ public partial class MainWindow : Window
                 Directory.CreateDirectory(folder);
                 using var process = Process.Start(new ProcessStartInfo
                     { FileName = explorer, Arguments = "\"" + folder + "\"", UseShellExecute = true });
-                _model.Footer = "GodMode-Aufgabenliste geoeffnet (Windows-Ansicht 'Alle Aufgaben').";
+                _model.Footer = "Ansicht „Alle Aufgaben“ geöffnet.";
                 return;
             }
             using var fallback = Process.Start(new ProcessStartInfo
                 { FileName = explorer, Arguments = "shell:::{21EC2020-3AEA-1069-A2DD-08002B30309D}", UseShellExecute = true });
-            _model.Footer = "GodMode ('Alle Aufgaben') ist auf diesem Windows-Build entfernt. " +
-                "Stattdessen geoeffnet: Alle Systemsteuerungselemente. Verwaltungskonsolen stehen daneben als eigene Knoepfe bereit.";
+            _model.Footer = "Die Ansicht „Alle Aufgaben“ ist in diesem Windows-Build nicht verfügbar. " +
+                "Stattdessen geöffnet: Alle Systemsteuerungselemente. Verwaltungskonsolen stehen daneben als eigene Schaltflächen bereit.";
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException)
         {
-            ReportError("GodMode/Systemsteuerung", ex);
+            ReportError("Systemsteuerung / Alle Aufgaben", ex);
             MessageBox.Show(this, ex.Message, DesktopUiText.Get("Main.ViewFailed"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
@@ -723,20 +862,9 @@ public partial class MainWindow : Window
         });
     }
 
-    private async void ProcessDetailsClicked(object sender, RoutedEventArgs e)
+    private void ProcessDetailsClicked(object sender, RoutedEventArgs e)
     {
-        if (_closing) return;
-        if (TaskmanagerProcesses.SelectedItem is not ProcessMetric process || process.StartTicks <= 0)
-        {
-            _model.Footer = DesktopUiText.Get("Main.ProcessSelect");
-            return;
-        }
-        OpenControlCenterClicked(sender, e);
-        if (_controlCenter is null) return;
-        await _controlCenter.DisplayReadOnlyAsync("Prozessdetails", token => CommandRunner.PowerShellAsync(
-            $"$p=Get-Process -Id {process.Id}; if($p.StartTime.ToUniversalTime().Ticks -ne {process.StartTicks}){{throw 'PID wurde wiederverwendet'}}; " +
-            "$p | Format-List Name,Id,StartTime,Path,PriorityClass,CPU,WorkingSet64,PrivateMemorySize64,VirtualMemorySize64,HandleCount; " +
-            "$p.Threads | Format-Table Id,ThreadState,StartTime,TotalProcessorTime", token));
+        if (!_closing) ProcessCenter.ShowSelectedDetails();
     }
 
     private async void ScanCleanupClicked(object sender, RoutedEventArgs e)
@@ -811,7 +939,8 @@ public partial class MainWindow : Window
         _cleanupStop = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
         try
         {
-            var result = await Task.Run(() => _cleaner.DeleteSelected(selected, _cleanupStop.Token));
+            var result = await GuardianInvocation.RunAsync("Dateivorschau: ausdrücklich ausgewählte temporäre Dateien löschen",
+                token => Task.Run(() => _cleaner.DeleteSelected(selected, token), token), _cleanupStop.Token);
             _model.CleanupFiles.Clear();
             _model.CleanupStatus = DesktopUiText.Format("Cleaner.Deleted",
                 DesktopUiText.Get(result.Cancelled ? "Cleaner.Canceled" : "Cleaner.Completed"),
@@ -902,7 +1031,7 @@ public partial class MainWindow : Window
         Operations.OpenWindowsAssistants();
     }
 
-    // Direktsprung in ein Systemkontroll-Modul: ein Klick statt Fenster oeffnen + Tab suchen.
+    // Direktsprung in ein Systemkontroll-Modul: ein Klick statt Fenster öffnen und Registerkarte suchen.
     private void OpenControlCenterModule(string module)
     {
         OpenControlCenterClicked(this, new RoutedEventArgs());
@@ -1081,14 +1210,24 @@ public partial class MainWindow : Window
         EmbeddedEvents.Shutdown();
         Operations.Shutdown();
         HardwareBoard.Shutdown();
+        await ProcessCenter.ShutdownAsync();
+        GuardianCore.TransactionPersisted -= GuardianTransactionPersisted;
+        await IntelligenceFabric.ShutdownAsync();
+        await Guardian.ShutdownAsync();
+        await SystemIntelligence.ShutdownAsync();
+        await HardwareIntelligence.ShutdownAsync();
         await Task.WhenAll(_samplingTask, _probeTask, _eventTask, _boardFeedTask, _managerReportingTask,
             _backgroundDiagnosticsTask,
             _currentProbe, _cleanupTask);
+        _managerReporting.Dispose();
+        _backgroundDiagnostics.Dispose();
         await Task.WhenAll(Workbench.Pending, EmbeddedEvents.Pending, Operations.Pending, HardwareBoard.Pending);
         if (controlCenter is not null) await controlCenter.PendingOperations;
         await _sensorGate.WaitAsync();
         try { await Task.Run(_sensors.Dispose); }
         finally { _sensorGate.Release(); }
+        _sensorGate.Dispose();
+        _processRefresh.Dispose();
         _stop.Dispose();
         _allowClose = true;
         await Dispatcher.InvokeAsync(Close);

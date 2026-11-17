@@ -36,11 +36,17 @@ jobs:
           $profile = [xml](Get-Content -LiteralPath .\src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml -Raw)
           $version = [string]$profile.Project.PropertyGroup.Version
           $fileVersion = [string]$profile.Project.PropertyGroup.FileVersion
-          if ($version -notmatch '^\d+\.\d+\.\d+-beta\.\d+$' -or $fileVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+          if ($version -notmatch '^\d+\.\d+\.\d+-(beta|rc)\.\d+$' -or $fileVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
             throw 'Invalid release profile version.'
           }
           "AETHER_VERSION=$version" >> $env:GITHUB_ENV
           "AETHER_FILE_VERSION=$fileVersion" >> $env:GITHUB_ENV
+
+      - name: Gate release candidate English readiness
+        if: ${{ contains(env.AETHER_VERSION, '-rc.') }}
+        run: |
+          python .\tests\desktop_localization_audit.py --require-complete
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Restore and build
         run: |
@@ -52,6 +58,8 @@ jobs:
       - name: Run STA and management assertions
         run: |
           dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --intelligence-fabric-tests
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet .\tests\AetherManager.Tests\bin\Release\net10.0-windows\AetherManager.Tests.dll
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -65,11 +73,42 @@ jobs:
           & .\build\Publish-Manager.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Install server browser test dependencies
+        run: |
+          npm ci --prefix .\tests\AetherManager.Tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\tests\AetherManager.Tests\node_modules\.bin\playwright.cmd install chromium
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify server browser with 48 synthetic devices
+        run: |
+          & .\build\Verify-ManagerBrowser.ps1
+
+      - name: Upload server browser screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aether-manager-screenshots-${{ github.run_id }}
+          path: tests\browser-screenshots\*.png
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Verify desktop presentation
         env:
           AETHER_SCREENSHOT_DIR: ${{ runner.temp }}\AetherDesktopScreenshots
         run: |
           dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --desktop-modern-smoke
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --gpu-presentation (Join-Path $env:AETHER_SCREENSHOT_DIR 'gpu')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify professional desktop workflows
+        env:
+          AETHER_WORKFLOW_SCREENSHOTS: ${{ runner.temp }}\AetherWorkflowScreenshots
+        run: |
+          New-Item -ItemType Directory -Path $env:AETHER_WORKFLOW_SCREENSHOTS -Force | Out-Null
+          $prefix = Join-Path $env:AETHER_WORKFLOW_SCREENSHOTS 'workflow'
+          dotnet .\tests\SystemCockpit.Tests\bin\Release\net10.0-windows\SystemCockpit.Tests.dll --professional-ui --catalog-ui --sensor-charts-ui --professional-screenshot-prefix $prefix
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload desktop screenshots
@@ -78,6 +117,15 @@ jobs:
         with:
           name: aether-desktop-screenshots-${{ github.run_id }}
           path: ${{ runner.temp }}\AetherDesktopScreenshots\*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload workflow screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aether-workflow-screenshots-${{ github.run_id }}
+          path: ${{ runner.temp }}\AetherWorkflowScreenshots\*.png
           if-no-files-found: warn
           retention-days: 14
 

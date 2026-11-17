@@ -19,7 +19,7 @@ internal static class DisplayTopology
                 if ((monitor.Flags & 1) == 0) continue;
                 var id = DeviceId(monitor.Id);
                 if (id is null)
-                    throw new InvalidOperationException("Aktiver Monitorpfad hat kein zuordenbares Windows-Geraeteformat: " + monitor.Id);
+                    throw new InvalidOperationException("Aktiver Monitorpfad hat kein zuordenbares Windows-Geräteformat: " + monitor.Id);
                 var existing = known.GetValueOrDefault(id);
                 var usage = $"Desktop aktiv / {(screen.Primary ? "Hauptbildschirm" : "Erweiterung/Spiegelung")} / " +
                     $"{screen.Bounds.Width} x {screen.Bounds.Height} / {screen.DeviceName}";
@@ -30,7 +30,7 @@ internal static class DisplayTopology
             if (!found)
                 result.Add(new("SCREEN:" + screen.DeviceName, screen.DeviceName, "Monitor", "Unknown", "",
                     $"Aktive Windows-Anzeigeflaeche / {(screen.Primary ? "Hauptbildschirm" : "Nebenbildschirm")} / " +
-                    $"{screen.Bounds.Width} x {screen.Bounds.Height}; physische Monitorzuordnung nicht verfuegbar", screen.Primary, true));
+                    $"{screen.Bounds.Width} x {screen.Bounds.Height}; physische Monitorzuordnung nicht verfügbar", screen.Primary, true));
         }
         return result;
     }

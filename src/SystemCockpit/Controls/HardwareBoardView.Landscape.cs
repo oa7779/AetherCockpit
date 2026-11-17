@@ -43,7 +43,7 @@ public partial class HardwareBoardView
         if (fill is not null)
             parent.Children.Add(new Path { Data = geometry, Fill = fill, IsHitTestVisible = false });
         // Layered vector strokes avoid full-surface blur intermediates on every animated frame.
-        foreach (var (spread, opacity) in new[] { (8.0, .08), (4.0, .18), (0.0, 1.0) })
+        foreach (var (spread, opacity) in new[] { (10.0, .20), (5.0, .34), (0.0, 1.0) })
             parent.Children.Add(new Path { Data = geometry, Stroke = stroke, StrokeThickness = thickness + spread,
                 Opacity = opacity, IsHitTestVisible = false });
     }

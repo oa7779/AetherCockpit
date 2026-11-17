@@ -1,23 +1,36 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.IO;
+using System.Text.Json;
 using SystemCockpit.Services;
 
 namespace SystemCockpit;
 
 public sealed class TaskCenterWindow : Window
 {
+    private sealed record CategoryChoice(string Id, string Name);
     public CockpitTask? SelectedTask { get; private set; }
     internal TextBox SearchBox { get; } = new() { Margin = new Thickness(0, 8, 0, 8) };
     internal ComboBox CategoryBox { get; } = new() { Margin = new Thickness(0, 0, 0, 8) };
-    internal ListBox Results { get; } = new() { DisplayMemberPath = nameof(CockpitTask.Title) };
+    internal ListBox Results { get; } = new();
+    internal Button OpenButton => _open;
     private readonly TextBlock _count = new(), _title = new(), _effect = new(), _steps = new();
-    private readonly Button _open = new() { Content = "Bereich oeffnen / nichts ausfuehren", Margin = new Thickness(0, 16, 0, 0) };
+    private readonly Button _open = new() { Content = DesktopUiText.Get("TaskCenter.Open"), Margin = new Thickness(0, 16, 0, 0) };
+    private readonly CheckBox _favorites = new() { Content = "Favoriten", Margin = new(0, 0, 12, 0) };
+    private readonly CheckBox _recent = new() { Content = "Zuletzt verwendet" };
+    private TaskCenterPreferences _preferences = TaskCenterPreferences.Empty;
+    private readonly IReadOnlyList<CockpitTask> _processTasks;
 
-    public TaskCenterWindow()
+    public TaskCenterWindow(IReadOnlyList<ProcessMetric>? processes = null, IReadOnlyList<CockpitTask>? intelligence = null)
     {
-        Title = "AETHER | Arbeitsplatz und Funktionssuche";
+        _processTasks = (processes ?? []).Where(p => p.Identity.IsKnown).Take(ProcessHistory.Capacity).Select(p =>
+            new CockpitTask("Prozesse", $"{p.Name} / PID {p.Id}", "Taskmanager", "Hauptfenster", "LESEND / vorhandene Prozessprobe",
+                "Prozess in der Zentrale auswählen. Vor jeder Aktion wird die Identität erneut geprüft.",
+                $"{p.Name} {p.Id}", QuickAction: "process-id:" + p.Identity)).Concat(intelligence ?? []).ToArray();
+        Title = DesktopUiText.Get("TaskCenter.Title");
         Width = 1040; Height = 720; MinWidth = 760; MinHeight = 540;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         SetResourceReference(BackgroundProperty, "WindowBackdrop");
@@ -27,17 +40,47 @@ public sealed class TaskCenterWindow : Window
         grid.RowDefinitions.Add(new() { Height = new GridLength(1, GridUnitType.Star) });
         Content = grid;
         var header = new StackPanel();
-        header.Children.Add(new TextBlock { Text = "ARBEITSPLATZ // FINDEN · PRUEFEN · GEZIELT HANDELN",
+        header.Children.Add(new TextBlock { Text = DesktopUiText.Get("TaskCenter.Heading"),
             Foreground = Brushes.Turquoise, FontSize = 21, TextWrapping = TextWrapping.Wrap });
-        header.Children.Add(new TextBlock { Text = "Suchbegriffe kombinieren. Die Auswahl oeffnet nur einen Bereich; Reparaturen, Updates und Mitschnitte starten hier nie.",
+        header.Children.Add(new TextBlock { Text = DesktopUiText.Get("TaskCenter.Notice"),
             TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0) });
         SearchBox.Style = (Style)FindResource("NeonTextBox");
-        System.Windows.Automation.AutomationProperties.SetName(SearchBox, "Funktionssuche");
+        System.Windows.Automation.AutomationProperties.SetName(SearchBox, DesktopUiText.Get("TaskCenter.Search"));
         header.Children.Add(SearchBox);
-        CategoryBox.ItemsSource = new[] { "Alle Bereiche" }.Concat(TaskCatalog.All.Select(t => t.Category).Distinct()).ToArray();
+        CategoryBox.ItemsSource = new[] { new CategoryChoice("", DesktopUiText.Get("TaskCenter.AllCategories")) }
+            .Concat(TaskCatalog.All.GroupBy(t => t.Category).Select(group => new CategoryChoice(group.Key, group.First().CategoryDisplay))).ToArray();
+        CategoryBox.DisplayMemberPath = nameof(CategoryChoice.Name);
+        CategoryBox.SelectedValuePath = nameof(CategoryChoice.Id);
         CategoryBox.SelectedIndex = 0;
-        System.Windows.Automation.AutomationProperties.SetName(CategoryBox, "Arbeitsbereich");
+        System.Windows.Automation.AutomationProperties.SetName(CategoryBox, DesktopUiText.Get("TaskCenter.Category"));
         header.Children.Add(CategoryBox); header.Children.Add(_count);
+        var tools = new WrapPanel();
+        tools.Children.Add(_favorites); tools.Children.Add(_recent);
+        var favorite = new Button { Content = "Favorit umschalten", Margin = new(12, 0, 0, 0) };
+        favorite.SetResourceReference(StyleProperty, "NeonButton"); tools.Children.Add(favorite);
+        header.Children.Add(tools);
+        try { _preferences = TaskCenterPreferences.Load(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            System.Diagnostics.Trace.TraceError("Befehlspaletten-Einstellungen: {0}", ex);
+            header.Children.Add(new TextBlock { Text = "Gespeicherte Werkzeuge konnten nicht gelesen werden. AETHER hat die Einstellungen unverändert gelassen.",
+                TextWrapping = TextWrapping.Wrap });
+        }
+        _favorites.Checked += (_, _) => Refresh(); _favorites.Unchecked += (_, _) => Refresh();
+        _recent.Checked += (_, _) => Refresh(); _recent.Unchecked += (_, _) => Refresh();
+        favorite.Click += (_, _) => SavePreference(() =>
+        {
+            if (Results.SelectedItem is CockpitTask task)
+            {
+                if (!TaskCatalog.All.Contains(task))
+                {
+                    MessageBox.Show(this, "Prozessauswahlen können nicht als Werkzeugfavorit gespeichert werden.",
+                        "Favorit nicht verfügbar", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                _preferences = _preferences.Toggle(task.Title);
+            }
+        });
         grid.Children.Add(header);
         var body = new Grid { Margin = new Thickness(0, 12, 0, 0) };
         body.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
@@ -47,6 +90,10 @@ public sealed class TaskCenterWindow : Window
         Results.Foreground = Brushes.Turquoise;
         Results.BorderBrush = Brushes.MediumPurple;
         Results.FontSize = 14;
+        var resultText = new FrameworkElementFactory(typeof(TextBlock));
+        resultText.SetBinding(TextBlock.TextProperty, new Binding(nameof(CockpitTask.TitleDisplay)));
+        resultText.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
+        Results.ItemTemplate = new DataTemplate { VisualTree = resultText };
         var itemStyle = new Style(typeof(ListBoxItem));
         itemStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
         itemStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
@@ -56,7 +103,7 @@ public sealed class TaskCenterWindow : Window
         itemStyle.Triggers.Add(selected);
         Results.ItemContainerStyle = itemStyle;
         Results.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, ScrollBarVisibility.Disabled);
-        System.Windows.Automation.AutomationProperties.SetName(Results, "Gefundene Funktionen");
+        System.Windows.Automation.AutomationProperties.SetName(Results, DesktopUiText.Get("TaskCenter.Results"));
         body.Children.Add(Results);
         var details = new StackPanel { Margin = new Thickness(20, 0, 0, 0) };
         foreach (var text in new[] { _title, _effect, _steps })
@@ -83,19 +130,24 @@ public sealed class TaskCenterWindow : Window
 
     private void Refresh()
     {
-        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedItem as string : null);
+        var terms = SearchBox.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var dynamicProcesses = terms.Length > 0 && (CategoryBox.SelectedIndex <= 0 || Equals(CategoryBox.SelectedValue, "Prozesse"))
+            ? _processTasks.Where(t => terms.All(term => t.SearchText.Contains(term, StringComparison.OrdinalIgnoreCase))) : [];
+        var tasks = TaskCatalog.Search(SearchBox.Text, CategoryBox.SelectedIndex > 0 ? CategoryBox.SelectedValue as string : null).Concat(dynamicProcesses)
+            .Where(task => (_favorites.IsChecked != true || _preferences.Favorites.Contains(task.Title)) &&
+                (_recent.IsChecked != true || _preferences.Recent.Contains(task.Title))).ToArray();
         Results.ItemsSource = tasks;
-        Results.SelectedIndex = tasks.Count > 0 ? 0 : -1;
-        _count.Text = $"{tasks.Count} Funktionen / Enter in der Ergebnisliste oeffnet den Bereich / Esc schliesst";
+        Results.SelectedIndex = tasks.Length > 0 ? 0 : -1;
+        _count.Text = DesktopUiText.Format("TaskCenter.Count", tasks.Length);
         ShowSelection();
     }
 
     private void ShowSelection()
     {
         var task = Results.SelectedItem as CockpitTask;
-        _title.Text = task?.Title ?? "Keine passende Funktion";
-        _effect.Text = task is null ? "" : $"{task.Category} / {task.Surface} / {task.Destination}\n{task.Effect}";
-        _steps.Text = task?.Steps ?? "Suchbegriffe reduzieren oder einen anderen Arbeitsbereich waehlen.";
+        _title.Text = task?.TitleDisplay ?? DesktopUiText.Get("TaskCenter.NoResults");
+        _effect.Text = task is null ? "" : $"{task.CategoryDisplay} / {task.SurfaceDisplay} / {task.DestinationDisplay}\n{task.EffectDisplay}";
+        _steps.Text = task?.StepsDisplay ?? DesktopUiText.Get("TaskCenter.NoResultsHint");
         _open.IsEnabled = task is not null;
     }
 
@@ -103,6 +155,17 @@ public sealed class TaskCenterWindow : Window
     {
         if (Results.SelectedItem is not CockpitTask task) return;
         SelectedTask = task;
+        if (TaskCatalog.All.Contains(task)) SavePreference(() => _preferences = _preferences.Use(task.Title), false);
         DialogResult = true;
+    }
+    private void SavePreference(Action update, bool refresh = true)
+    {
+        try { update(); _preferences.Save(); if (refresh) Refresh(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            System.Diagnostics.Trace.TraceError("Befehlspalette speichern: {0}", ex);
+            MessageBox.Show(this, "Werkzeugeinstellungen konnten nicht gespeichert werden.",
+                "Werkzeuge nicht gespeichert", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 }

@@ -44,7 +44,7 @@ public sealed class TempCleaner
             token.ThrowIfCancellationRequested();
             if (visited >= 10000)
             {
-                issues.Add("Scanlimit von 10000 Eintraegen erreicht. Vorschau ist unvollstaendig.");
+                issues.Add("Scanlimit von 10000 Einträgen erreicht. Vorschau ist unvollständig.");
                 break;
             }
             try
@@ -55,7 +55,7 @@ public sealed class TempCleaner
                     token.ThrowIfCancellationRequested();
                     if (++visited > 10000)
                     {
-                        issues.Add("Scanlimit von 10000 Eintraegen erreicht. Vorschau ist unvollstaendig.");
+                        issues.Add("Scanlimit von 10000 Einträgen erreicht. Vorschau ist unvollständig.");
                         break;
                     }
                     var attributes = File.GetAttributes(entry);
@@ -63,7 +63,7 @@ public sealed class TempCleaner
                     if ((attributes & FileAttributes.Directory) != 0)
                     {
                         if (directory.Depth < 32) queue.Push((entry, directory.Depth + 1));
-                        else issues.Add($"Tiefe > 32 uebersprungen: {entry}");
+                        else issues.Add($"Tiefe > 32 übersprungen: {entry}");
                         continue;
                     }
                     var file = new FileInfo(entry);
@@ -118,10 +118,10 @@ public sealed class TempCleaner
     private void VerifyParents(string directory)
     {
         var full = Path.GetFullPath(directory);
-        if (!IsWithinRoot(full)) throw new IOException("Pfad liegt ausserhalb des freigegebenen Temp-Ordners.");
+        if (!IsWithinRoot(full)) throw new IOException("Pfad liegt außerhalb des freigegebenen Temp-Ordners.");
         for (var current = new DirectoryInfo(full); current is not null; current = current.Parent)
             if ((current.Attributes & FileAttributes.ReparsePoint) != 0)
-                throw new IOException($"Verknuepfung/Junction wird nicht verfolgt: {current.FullName}");
+                throw new IOException($"Verknüpfung/Junction wird nicht verfolgt: {current.FullName}");
     }
 
     private bool IsWithinRoot(string path) => path.Equals(Root, StringComparison.OrdinalIgnoreCase) ||
@@ -143,7 +143,7 @@ public sealed class TempCleaner
             (info.Attributes & (0x400u | 0x10u | 0x1u | 0x4u)) != 0 ||
             info.Links != 1 || size != candidate.Bytes || writeTime != candidate.LastWriteUtc ||
             writeTime >= DateTime.UtcNow.AddDays(-7))
-            throw new IOException("Datei wurde geaendert, verknuepft oder ist nicht mehr loeschbar.");
+            throw new IOException("Datei wurde geändert, verknüpft oder ist nicht mehr löschbar.");
         var disposition = new Disposition { Delete = true };
         if (!SetFileInformationByHandle(handle, 4, ref disposition, (uint)Marshal.SizeOf<Disposition>()))
             throw new Win32Exception(Marshal.GetLastWin32Error());

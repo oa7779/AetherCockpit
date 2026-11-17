@@ -36,7 +36,7 @@ internal static class ModuleTests
         foreach (var bad in new[] { "", "a'b", "x$y", "mit\"quote", "back`tick", "endet.", new string('a', 201), "abc\u2026" })
             Check(!PackageCenter.ValidId(bad), $"ID '{bad}' darf nicht aktionierbar sein");
 
-        // ---- Paket-Center: Skript-Builder (nur geparst, nie ausgefuehrt) ----
+        // ---- Paket-Center: Skript-Builder (nur geparst, nie ausgeführt) ----
         var upgrade = PackageCenter.ActionScript("upgrade", ["Microsoft.PowerToys", "7zip.7zip"]);
         Check(upgrade.Contains("--id 'Microsoft.PowerToys' --exact") && upgrade.Contains("--id '7zip.7zip' --exact"),
             "Jede ID laeuft einzeln und exakt");
@@ -120,7 +120,7 @@ internal static class ModuleTests
             Check(!new EulaConsent(consentDir).IsAccepted(),
                 "Zustimmung zu einer aelteren EULA-Version zaehlt nicht");
             Check(EulaConsent.Text.Contains("ENDNUTZER-LIZENZVEREINBARUNG") &&
-                EulaConsent.Text.Contains("KEINE Gewaehrleistung") && EulaConsent.Text.Contains("MPL 2.0"),
+                EulaConsent.Text.Contains("KEINE Gewährleistung") && EulaConsent.Text.Contains("MPL 2.0"),
                 "EULA nennt Gewaehrleistungsausschluss und Fremdlizenzen");
         }
         finally { if (Directory.Exists(consentDir)) Directory.Delete(consentDir, recursive: true); }
@@ -195,9 +195,9 @@ internal static class ModuleTests
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             Check(SpeedTest.FormatResult(1048576, 1) == "1.0 MiB in 1.0 s = 8.4 Mbit/s", "Mbit/s-Umrechnung aus Bytes und Sekunden");
-            var assess = CacheCatalog.Assess(new("Chrome / Default / Cache", @"C:\x", 1, "Browser schliessen"), 12, 2097152);
+            var assess = CacheCatalog.Assess(new("Chrome / Default / Cache", @"C:\x", 1, "Browser schließen"), 12, 2097152);
             Check(assess.Contains("B / App-Cache") && assess.Contains("12 Dateien") && assess.Contains("2.00 MiB") &&
-                assess.Contains("Browser schliessen"), "Bewertung nennt Stufe, Summen und Katalog-Hinweis");
+                assess.Contains("Browser schließen"), "Bewertung nennt Stufe, Summen und Katalog-Hinweis");
             Check(CacheCatalog.Assess(new("Benutzer Temp", @"C:\x", 0, "r"), 0, 0).Contains("A / risikoarm") &&
                 CacheCatalog.Assess(new("Prefetch", @"C:\x", 3, "r"), 1, 1).Contains("D / systemnah"),
                 "Stufen folgen dem Katalog-Level");
@@ -259,7 +259,7 @@ internal static class ModuleTests
         }
         foreach (var free in new double?[] { null, double.NaN, double.PositiveInfinity, -1, 101 })
             Check(new Check("C:", "", "unknown", "", free).UsedPercent is null &&
-                  new Check("C:", "", "unknown", "", free).UsageSummary == "Nicht verfuegbar",
+                  new Check("C:", "", "unknown", "", free).UsageSummary == "Nicht verfügbar",
                 "Unknown or invalid drive space is unavailable, not zero or full");
         var leftWorkArea = new System.Drawing.Rectangle(-1920, 0, 1920, 1080);
         var docked = OverlayDocking.Snap(leftWorkArea, new System.Drawing.Rectangle(-900, 400, 250, 300));
@@ -307,14 +307,14 @@ internal static class ModuleTests
                 Sensors = [new SensorReading("/nvme/0/temperature/10", "SSD", "Warning Temperature", "Temperature", 90, "C")]
             };
             model.Apply(cool, true);
-            Check(model.StorageTemperature == "Nicht verfuegbar",
+            Check(model.StorageTemperature == "Nicht verfügbar",
                 "Nur Grenzwertkanaele ergeben keinen Storage-Messwert; Grenzwerte sind keine Temperaturen");
             Check(model.SidebarTemperatures.All(graph => graph.Trace.Count == 0 && graph.Value == "--"),
                 "Missing temperatures clear the chart rather than leaving stale curves");
             Check(overlay.AlertBanner.Visibility == Visibility.Collapsed && model.OverlayAlert.Length == 0,
                 "Banner verschwindet, wenn keine Schwelle mehr ueberschritten ist");
             model.MeasurementFailed("Testfall");
-            Check(model.StorageTemperature == "Nicht verfuegbar" && !model.CpuTempWarning && model.OverlayAlert.Length == 0,
+            Check(model.StorageTemperature == "Nicht verfügbar" && !model.CpuTempWarning && model.OverlayAlert.Length == 0,
                 "Fehlgeschlagene Messung loescht Overlay-Werte statt alte Werte zu zeigen");
             Check(model.SidebarTemperatures.All(graph => graph.Trace.Count == 0) &&
                   model.SidebarUpload.Trace.Count == 0 && model.SidebarUpload.Value == "--",
@@ -345,7 +345,7 @@ internal static class ModuleTests
             [
                 new("C:", "250 GB frei", "ok", "Testlaufwerk", 25),
                 new("D:", "750 GB frei", "ok", "Testlaufwerk", 75),
-                new("E:", "Nicht verfuegbar", "unknown", "Testlaufwerk")
+                new("E:", "Nicht verfügbar", "unknown", "Testlaufwerk")
             ],
             [
                 new("/intelcpu/0/temperature/0", "CPU", "CPU Package", "Temperature", 40 + i, "C"),

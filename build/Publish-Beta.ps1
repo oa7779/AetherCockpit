@@ -1,22 +1,43 @@
+param(
+    [switch]$NoRestore,
+    [string]$OutputDirectory
+)
+
 $ErrorActionPreference = 'Stop'
+$restoreArguments = @()
+if ($NoRestore) { $restoreArguments += '--no-restore' }
 $root = Split-Path $PSScriptRoot -Parent
 $profile = [xml](Get-Content -LiteralPath (Join-Path $root 'src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml') -Raw)
 $version = [string]$profile.Project.PropertyGroup.Version
 $fileVersion = [string]$profile.Project.PropertyGroup.FileVersion
-$destination = Join-Path $root "dist\AetherCockpit-$version-win-x64"
+$destination = if ($OutputDirectory) {
+    [IO.Path]::GetFullPath($OutputDirectory)
+} else {
+    Join-Path $root "dist\AetherCockpit-$version-win-x64"
+}
+if ($OutputDirectory) {
+    $distRoot = [IO.Path]::GetFullPath((Join-Path $root 'dist')).TrimEnd('\') + '\'
+    if ($destination.StartsWith($distRoot, [StringComparison]::OrdinalIgnoreCase) -or
+        $destination.Equals($root, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'An isolated test publish must be outside dist and must not target the repository root.'
+    }
+}
 if (Test-Path -LiteralPath $destination) { throw "Release directory already exists: $destination" }
 $temporary = Join-Path ([System.IO.Path]::GetTempPath()) ('AetherSaverPublish-' + [guid]::NewGuid().ToString('N'))
 try {
-    & dotnet publish (Join-Path $root 'src\SystemCockpit\SystemCockpit.csproj') -c Release -p:PublishProfile=PortableBeta `
-        "-p:Version=$version" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$fileVersion" -o $destination
+    & dotnet publish (Join-Path $root 'src\SystemCockpit\SystemCockpit.csproj') @restoreArguments -c Release -p:PublishProfile=PortableBeta `
+        "-p:Version=$version" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$fileVersion" -p:DebugType=none -p:DebugSymbols=false -o $destination
     if ($LASTEXITCODE -ne 0) { throw 'AETHER publish failed.' }
-    & dotnet publish (Join-Path $root 'src\AetherClient.Service\AetherClient.Service.csproj') -c Release -r win-x64 --self-contained true `
+    & dotnet publish (Join-Path $root 'src\AetherClient.Service\AetherClient.Service.csproj') @restoreArguments -c Release -r win-x64 --self-contained true `
         "-p:Version=$version" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$fileVersion" -p:DebugType=none -p:DebugSymbols=false -o (Join-Path $destination 'ManagedClient')
     if ($LASTEXITCODE -ne 0) { throw 'Managed client publish failed.' }
+    & dotnet publish (Join-Path $root 'src\AetherLocalAiSetup\AetherLocalAiSetup.csproj') @restoreArguments -c Release -r win-x64 --self-contained true `
+        "-p:Version=$version" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$fileVersion" -p:DebugType=none -p:DebugSymbols=false -o (Join-Path $destination 'AetherLocalAiSetup')
+    if ($LASTEXITCODE -ne 0) { throw 'Local AI setup helper publish failed.' }
     foreach ($script in @('Configure-ManagedClient.ps1', 'Manage-ClientService.ps1', 'Assert-ServiceFilesProtected.ps1')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $script) -Destination $destination
     }
-    & dotnet publish (Join-Path $root 'src\AetherScreensaver\AetherScreensaver.csproj') -c Release -r win-x64 --self-contained true `
+    & dotnet publish (Join-Path $root 'src\AetherScreensaver\AetherScreensaver.csproj') @restoreArguments -c Release -r win-x64 --self-contained true `
         "-p:Version=$version" -p:AssemblyVersion=0.7.0.0 "-p:FileVersion=$fileVersion" -p:DebugType=none -p:DebugSymbols=false -o $temporary
     if ($LASTEXITCODE -ne 0) { throw 'Screensaver publish failed.' }
     foreach ($name in @('AetherScreensaver.dll', 'AetherScreensaver.deps.json', 'AetherScreensaver.runtimeconfig.json')) {

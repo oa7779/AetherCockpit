@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using SystemCockpit.Services;
 
 namespace SystemCockpit;
 
@@ -19,9 +20,9 @@ public static partial class DiagnosticExport
     public static string Build(CockpitModel model)
     {
         var report = new StringBuilder();
-        report.AppendLine($"AETHER DIAGNOSEBERICHT / {DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}");
-        report.AppendLine($"Rechner: {Environment.MachineName} / Benutzer: {Environment.UserName}");
-        report.AppendLine("Lesender Bericht aus den zuletzt angezeigten Cockpit-Werten; keine neue Messung.");
+        report.AppendLine(DesktopUiText.Format("Export.ReportTitle", DateTimeOffset.Now));
+        report.AppendLine(DesktopUiText.Format("Export.Identity", Environment.MachineName, Environment.UserName));
+        report.AppendLine(DesktopUiText.Get("Export.ReadOnly"));
         report.AppendLine();
         report.AppendLine("== SYSTEM ==");
         report.AppendLine(model.SystemIdentity);
@@ -36,21 +37,20 @@ public static partial class DiagnosticExport
                 report.AppendLine($"[{check.State.ToUpperInvariant()}] {check.Name}: {check.Value} | {check.Detail}");
                 any = true;
             }
-            if (!any) report.AppendLine("(keine Eintraege)");
+            if (!any) report.AppendLine(DesktopUiText.Get("Export.NoEntries"));
         }
-        Section("WINDOWS-PRUEFUNGEN", model.Checks);
+        Section(DesktopUiText.Get("Export.WindowsChecks"), model.Checks);
         Section("STORAGE HEALTH", model.Disks);
         Section("VOLUMES", model.Volumes);
-        Section("ERWEITERTE DIAGNOSE", model.Diagnostics);
-        Section("AKTUELLE HINWEISE / SYSTEMPULS", model.Alerts);
+        Section(DesktopUiText.Get("Export.Diagnostics"), model.Diagnostics);
+        Section(DesktopUiText.Get("Export.Alerts"), model.Alerts);
         report.AppendLine();
-        report.AppendLine("== SENSOREN (AKTUELLE ANZEIGE) ==");
-        if (model.Sensors.Count == 0) report.AppendLine("(keine Sensorwerte in der aktuellen Anzeige)");
+        report.AppendLine(DesktopUiText.Get("Export.SensorsHeading"));
+        if (model.Sensors.Count == 0) report.AppendLine(DesktopUiText.Get("Export.NoSensors"));
         foreach (var sensor in model.Sensors)
             report.AppendLine($"{sensor.Hardware} | {sensor.Name} | {sensor.Type}: {sensor.Display}");
         report.AppendLine();
-        report.AppendLine("Hinweis: 'Nicht verfuegbar' bedeutet kein Messwert, nicht 0. " +
-            "Grenzwertkanaele sind gekennzeichnet und keine Ist-Temperaturen.");
+        report.AppendLine(DesktopUiText.Get("Export.SensorNotice"));
         return report.ToString();
     }
 

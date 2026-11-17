@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using SystemCockpit.Services;
 
@@ -11,15 +12,21 @@ public partial class MainWindow
 
     private void InitializeNavigation()
     {
+        var captionText = new FrameworkElementFactory(typeof(TextBlock));
+        captionText.SetBinding(TextBlock.TextProperty, new Binding());
+        captionText.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
+        var captionTemplate = new DataTemplate { VisualTree = captionText };
         (string Group, (string Caption, string Route, bool External)[] Items)[] groups =
         [
-            ("Navigation.Overview", [("Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false)]),
-            ("Navigation.Hardware", [("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
-                ("Navigation.Drives", "Laufwerke", false), ("SMART ↗", "SMART", true)]),
+            ("Navigation.Overview", [("Navigation.Cockpit", "Cockpit", false), ("Navigation.Processes", "Taskmanager", false),
+                ("Systemanalyse", "SystemIntelligence", false), ("AETHER Intelligence", "IntelligenceFabric", false), ("AETHER Guardian", "Guardian", false)]),
+            ("Navigation.Hardware", [("Hardwareübersicht", "HardwareIntelligence", false),
+                ("Navigation.Board", "Mainboard", false), ("Navigation.Sensors", "Sensoren", false),
+                ("Navigation.Drives", "Laufwerke", false), ("Navigation.Smart", "SMART", true)]),
             ("Navigation.Diagnostics", [("Navigation.WindowsDiagnostics", "Diagnose", false), ("Navigation.Protection", "Sicherheit", false),
                 ("Navigation.Events", "Ereignisse", false), ("Navigation.NetworkTests", "Netzwerk", true),
-                ("Navigation.Measurements", "Messauswertung", false), ("Logs / Gaming ↗", "Logs / Gaming", true)]),
-            ("Navigation.Maintenance", [("Cleaner", "Cleaner", false), ("Navigation.Plans", "Operations", false),
+                ("Navigation.Measurements", "Messauswertung", false), ("Navigation.LogsGaming", "Logs / Gaming", true)]),
+            ("Navigation.Maintenance", [("Navigation.Cleaner", "Cleaner", false), ("Navigation.Plans", "Operations", false),
                 ("Navigation.WindowsTools", "Wartung", true), ("Navigation.Packages", "Pakete", true)]),
             ("Navigation.Administration", [("Navigation.SystemAdministration", "Superadmin", false), ("Navigation.Startup", "Autostart", true),
                 ("Navigation.Jobs", "Auftraege", true), ("Navigation.Traces", "Spuren", true), ("Navigation.Keys", "Schluessel", true)]),
@@ -39,7 +46,8 @@ public partial class MainWindow
                     : caption.StartsWith("Navigation.", StringComparison.Ordinal) ? DesktopUiText.Get(caption) : caption;
                 var button = new Button { Content = displayedCaption, Tag = route, HorizontalContentAlignment = HorizontalAlignment.Left,
                     Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(7, 7, 7, 7), FontSize = 11,
-                    ToolTip = DesktopUiText.Get(external ? "Navigation.ExternalTooltip" : "Navigation.InternalTooltip") };
+                    ToolTip = DesktopUiText.Get(external ? "Navigation.ExternalTooltip" : "Navigation.InternalTooltip"),
+                    ContentTemplate = captionTemplate };
                 if (external) button.Click += ControlCenterNavigate; else button.Click += Navigate;
                 panel.Children.Add(button);
                 _navigation.Add((groupCaption, route, external, button, expander));

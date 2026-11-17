@@ -12,6 +12,8 @@ import pathlib
 import re
 import xml.etree.ElementTree as ET
 
+from german_ui_text_audit import PATTERN as TRANSLITERATION_PATTERN
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DISPLAY_PROPERTY = re.compile(
     r'(Text|Content|Header|Title|ToolTip|AutomationProperties.Name)="([^"]*)"'
@@ -29,13 +31,6 @@ GERMAN = re.compile(
     r"\b(?:frei|zeit|art|aktiv|befehl|keine?|nur|nicht|bitte|wird|wurden|"
     r"wurde|abgebrochen|abgeschlossen|beendet|lesen|starten|anhalten|"
     r"sekunden|minuten|tage|alt|thema|links|rechts|vorher|nachher)\b)"
-)
-ORIGINAL_DETECTOR = re.compile(
-    r"(?i)(?:schli[eß]|ueber|über|waeh|wähl|pruef|prüf|loesch|lösch|lesend|"
-    r"anzeigen|ausgabe|verfueg|verfüg|ausfue|ausfü|eintra|einträ|neustart|"
-    r"speicher|auftra|aufträ|geraet|gerät|bereinig|warnschw|messwert|rechner|"
-    r"belegt|zeitraum|erstellt|bestaet|bestät|einstell|zurue|zurü|hauptfenster|"
-    r"hinweis|herausgeber)"
 )
 INVARIANT_CODES = {
     "Cockpit", "Mainboard", "Taskmanager", "Sensoren", "Laufwerke",
@@ -108,6 +103,11 @@ def review_site(item):
         return "unreviewed-display", "New literal outside the reviewed static-caption inventory."
     if detection == "untranslated-display-confirmed":
         return detection, "Authored literal assigned directly to a text-bearing XAML property."
+    if name == "TaskCatalogEnglish.cs" and (
+        re.match(r'\["[^"]+"\]\s*=\s*new\(', text) or
+        re.match(r'"[^"]+"\s*=>\s*"[^"]+"', text)
+    ):
+        return "preserved-invariant-identifier", "German workflow or route lookup key; English display values are reviewed separately."
     if name == "ManagedActionTools.cs" and detection != "untranslated-direct-ui-confirmed":
         return "preserved-localized-definition", "Private OptionalDefinitions metadata is replaced by named resources in OptionalTools."
     if name == "MaintenancePlans.cs" and re.search(
@@ -143,6 +143,10 @@ def review_site(item):
     return "unreviewed-source", "Source surface outside the reviewed data paths."
 
 
+def has_ascii_transliteration(text):
+    return TRANSLITERATION_PATTERN.search(text) is not None
+
+
 def catalog(name):
     result = []
     for language in ("", ".en"):
@@ -166,7 +170,7 @@ def inventory():
     all_resource_keys = set().union(*(data.keys() for data in catalogs.values()))
     items = []
     missing = []
-    old_count = 0
+    transliterated_display_count = 0
     for subtree in ("SystemCockpit", "AetherScreensaver"):
         for file in sorted((ROOT / "src" / subtree).rglob("*")):
             if any(part in ("bin", "obj") for part in file.parts) or file.suffix not in (".xaml", ".cs"):
@@ -200,8 +204,8 @@ def inventory():
                         value = html.unescape(value)
                         if value.startswith("{") or not re.search(r"[A-Za-zÄÖÜäöüß]", value):
                             continue
-                        if prop not in ("Setter.Value", "inline-display") and ORIGINAL_DETECTOR.search(value):
-                            old_count += 1
+                        if prop not in ("Setter.Value", "inline-display") and has_ascii_transliteration(value):
+                            transliterated_display_count += 1
                         items.append({
                             "path": relative, "line": number, "property": prop,
                             "classification": "untranslated-display-confirmed" if GERMAN.search(value)
@@ -221,6 +225,10 @@ def inventory():
                     ]
                     if not german:
                         continue
+                    if DIRECT_SINK.search(line) and any(
+                        has_ascii_transliteration(value) for value in german
+                    ):
+                        transliterated_display_count += 1
                     if "Trace." in line or "Debug." in line:
                         classification = "non-ui-log"
                     elif all(value in INVARIANT_CODES for value in german):
@@ -249,12 +257,12 @@ def inventory():
         "single_instance_disposal_before_replacement_launch":
             exit_body.index("_activation?.Dispose()") < exit_body.index("StartReplacementAfterExit()"),
         "restart_uses_orderly_main_window_exit": "mainWindow.RequestExit()" in restart,
-        "original_120_text_detector_cleared": old_count == 0,
+        "ascii_transliterations_cleared": transliterated_display_count == 0,
     }
     return {
         "scope": ["src\\SystemCockpit", "src\\AetherScreensaver"],
         "coverage": "source inventory, not a complete semantic/data-flow audit",
-        "original_120_detector_remaining": old_count,
+        "ascii_transliterated_display_sites_remaining": transliterated_display_count,
         "catalog_key_counts": {name: len(data) for name, data in catalogs.items()},
         "missing_explicit_resources": missing,
         "source_safety_checks": source_checks,
@@ -277,9 +285,30 @@ def inventory():
     }
 
 
+def release_blockers(report):
+    blockers = []
+    if report["missing_explicit_resources"]:
+        blockers.append("Missing explicit resources.")
+    if not all(report["source_safety_checks"].values()):
+        blockers.append("A source safety check failed.")
+    if report["confirmed_untranslated_sites_detected"]:
+        blockers.append(
+            f'{report["confirmed_untranslated_sites_detected"]} untranslated source sites remain.'
+        )
+    if report["counts_by_classification"].get("unreviewed-display", 0):
+        blockers.append("Unreviewed display literals remain.")
+    if report["counts_by_classification"].get("unreviewed-source", 0):
+        blockers.append("Unreviewed source sites remain.")
+    if not report["english_complete"]:
+        blockers.append("Full English coverage and runtime review are not confirmed.")
+    return blockers
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=pathlib.Path)
+    parser.add_argument("--require-complete", action="store_true",
+                        help="Fail unless English is reviewed and ready for release.")
     args = parser.parse_args()
     report = inventory()
     if args.output:
@@ -288,6 +317,11 @@ def main():
             parser.error("Output must stay inside the project.")
         output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({key: value for key, value in report.items() if key != "sites"}, ensure_ascii=True, indent=2))
+    if args.require_complete:
+        blockers = release_blockers(report)
+        if blockers:
+            print("English release gate failed: " + " ".join(blockers))
+            return 1
     return 1 if report["missing_explicit_resources"] or not all(report["source_safety_checks"].values()) else 0
 
 

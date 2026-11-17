@@ -21,6 +21,7 @@ internal sealed class SaverWindow : Window
     private readonly HardwareBoardView _board;
     private readonly TextBlock _status;
     private readonly TextBlock _readings;
+    private readonly AnimatedBrand _brand;
     private readonly CockpitModel _model = new();
     private BoardSnapshot? _hardware;
     private readonly System.Drawing.Rectangle _bounds;
@@ -65,11 +66,15 @@ internal sealed class SaverWindow : Window
         Grid.SetRow(_board, 1);
         panel.Children.Add(_board);
         panel.Children.Add(header);
+        _brand = new AnimatedBrand { Width = 112, HorizontalAlignment = HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(12) };
+        header.Margin = new Thickness(12, 12, 140, 12);
+        panel.Children.Add(_brand);
         _neonFrame = new Border { BorderBrush = new LinearGradientBrush(
             Color.FromRgb(36, 255, 227), Color.FromRgb(255, 70, 224), 45),
             BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(12),
             Margin = new Thickness(8), IsHitTestVisible = false };
-        FrameGlow.SetVisible(_neonFrame, true);
+        AetherNeonFrame.SetEnabled(_neonFrame, true);
         Grid.SetRowSpan(_neonFrame, 2);
         panel.Children.Add(_neonFrame);
         header.RenderTransform = _headerDrift;
@@ -97,7 +102,7 @@ internal sealed class SaverWindow : Window
             _closed = true;
             _displayPulse.Dispose();
             SystemParameters.StaticPropertyChanged -= AnimationSettingsChanged;
-            _board.Shutdown(); SetMotion(false); FrameGlow.SetVisible(_neonFrame, false);
+            _board.Shutdown(); SetMotion(false); AetherNeonFrame.SetEnabled(_neonFrame, false);
         };
     }
 
@@ -148,7 +153,8 @@ internal sealed class SaverWindow : Window
         enabled = enabled && !_closed && IsLoaded && IsVisible && SystemParameters.ClientAreaAnimation;
         if (_motion == enabled) return;
         _motion = enabled;
-        FrameGlow.SetEnabled(_neonFrame, enabled);
+        _brand.MotionEnabled = enabled;
+        AetherNeonFrame.SetBreathingEnabled(_neonFrame, enabled);
         foreach (var stop in _backdrop.GradientStops)
             stop.BeginAnimation(GradientStop.ColorProperty, enabled ? new ColorAnimation(stop.Color,
                 _model.IsDaytime ? Color.FromRgb(62, 92, 128) : Colors.Black, TimeSpan.FromSeconds(43 + stop.Offset * 19)) {

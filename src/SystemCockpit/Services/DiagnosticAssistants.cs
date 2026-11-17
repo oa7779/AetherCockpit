@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SystemCockpit.Services;
 
@@ -7,7 +8,8 @@ public sealed record DiagnosticEvent(string Log, string TimeCreated, int Id, int
 public sealed record DiagnosticDevice(string Name, string Class, string Status, int? Problem, string InstanceId);
 public sealed record DiagnosticAdapter(string Name, string Description, string Status, string LinkSpeed);
 public sealed record DiagnosticApplication(string Name, string Version, string Publisher);
-public sealed record DiagnosticDriver(string Device, string Version, string Date, bool? IsSigned);
+public sealed record DiagnosticDriver(string Device, string Version,
+    [property: JsonConverter(typeof(DiagnosticAssistants.DiagnosticDriverDateConverter))] string? Date, bool? IsSigned);
 public sealed record WindowsDiagnosticSnapshot(
     string MachineName,
     string Windows,
@@ -85,7 +87,11 @@ public static class DiagnosticAssistants
                 }
             }
         )
-        $drivers=@(Get-CimInstance Win32_PnPSignedDriver | Select-Object @{n='Device';e={$_.DeviceName}},@{n='Version';e={$_.DriverVersion}},@{n='Date';e={$_.DriverDate}},IsSigned)
+        $drivers=@(Get-CimInstance Win32_PnPSignedDriver | Select-Object @{n='Device';e={$_.DeviceName}},@{n='Version';e={$_.DriverVersion}},@{n='Date';e={
+            if ($null -eq $_.DriverDate) { $null }
+            elseif ($_.DriverDate -is [datetime]) { $_.DriverDate.ToString('o', [System.Globalization.CultureInfo]::InvariantCulture) }
+            else { [string]$_.DriverDate }
+        }},IsSigned)
         [pscustomobject]@{
             MachineName=$env:COMPUTERNAME
             Windows=$os.Caption
@@ -111,6 +117,62 @@ public static class DiagnosticAssistants
             snapshot.Drivers is null || snapshot.Drivers.Any(d => d is null))
             throw new InvalidDataException(DesktopUiText.Get("Diagnostic.Incomplete"));
         return snapshot;
+    }
+
+    public sealed class DiagnosticDriverDateConverter : JsonConverter<string?>
+    {
+        private static readonly string[] IsoDateFormats =
+        [
+            "O",
+            "yyyy-MM-dd'T'HH:mm:ssK",
+            "yyyy-MM-dd'T'HH:mm:ss.FFFFFFFK",
+            "yyyy-MM-dd"
+        ];
+
+        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null) return null;
+            if (reader.TokenType == JsonTokenType.String) return ValidDate(reader.GetString());
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                using var ignored = JsonDocument.ParseValue(ref reader);
+                return null;
+            }
+
+            using var document = JsonDocument.ParseValue(ref reader);
+            foreach (var name in new[] { "value", "DateTime" })
+            {
+                if (TryGetProperty(document.RootElement, name, out var value) &&
+                    value.ValueKind == JsonValueKind.String &&
+                    ValidDate(value.GetString()) is { } date)
+                    return date;
+            }
+            return null;
+        }
+
+        public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+        {
+            if (ValidDate(value) is { } date) writer.WriteStringValue(date);
+            else writer.WriteNullValue();
+        }
+
+        private static string? ValidDate(string? value) =>
+            value is not null && DateTimeOffset.TryParseExact(value, IsoDateFormats,
+                System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out _)
+                ? value
+                : null;
+
+        private static bool TryGetProperty(JsonElement element, string name, out JsonElement value)
+        {
+            foreach (var property in element.EnumerateObject())
+                if (property.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    value = property.Value;
+                    return true;
+                }
+            value = default;
+            return false;
+        }
     }
 
     public static DiagnosticAgentReport Analyze(WindowsDiagnosticSnapshot snapshot, DateTimeOffset? capturedAt = null)

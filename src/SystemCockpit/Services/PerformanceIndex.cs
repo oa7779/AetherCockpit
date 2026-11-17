@@ -10,7 +10,7 @@ public sealed record PerformanceAssessment(int State, double? Base, double? Cpu,
     public string StateText => State switch
     {
         1 => "Gueltige gespeicherte Windows-Bewertung",
-        2 => "Hardware seit Messung geaendert / nicht gueltig",
+        2 => "Hardware seit Messung geändert / nicht gueltig",
         3 => "Keine Bewertung vorhanden",
         4 => "Ungueltige Bewertung",
         _ => "Bewertungszustand unbekannt"

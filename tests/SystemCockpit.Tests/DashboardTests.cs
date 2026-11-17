@@ -23,6 +23,24 @@ internal static class DashboardTests
         try { DashboardMetrics.CalculateProcessCpu(1, 0, 4); throw new InvalidOperationException("Zero CPU interval accepted"); }
         catch (ArgumentOutOfRangeException) { count++; }
         var model = new CockpitModel();
+        foreach (var (name, raw, expected) in new[]
+        {
+            ("Defender Echtzeitschutz", "AV: True | Echtzeit: False", "Virenschutz: Aktiv | Echtzeitschutz: Deaktiviert"),
+            ("Windows Firewall", "Domain: True | Private: False | Public: True", "Domänenprofil: Aktiv | Privates Profil: Deaktiviert | Öffentliches Profil: Aktiv"),
+            ("Secure Boot", "False", "Deaktiviert"),
+            ("Secure Boot", "Nicht verfügbar", "Nicht verfügbar"),
+            ("BitLocker Systemlaufwerk", "FullyDecrypted | Schutz: Off", "Verschlüsselung: Nicht verschlüsselt | Schutz: Deaktiviert"),
+            ("BitLocker Systemlaufwerk", "FutureState | Schutz: Unknown", "Verschlüsselung: FutureState | Schutz: Unknown"),
+            ("Neustart-Indikatoren", "False", "Kein Neustartindikator gesetzt")
+        })
+        {
+            var original = new Check(name, raw, "warning", "fixture source");
+            var displayed = UiStatusText.Protection(original);
+            Check(displayed.Value == expected && displayed.State == original.State && displayed.Detail == original.Detail &&
+                original.Value == raw, "Protection display preserves source and severity: " + name);
+        }
+        Check(UiStatusText.Drive(new("fixture drive", "Healthy", "ok", "Windows Storage Health")).Value == "Fehlerfrei",
+            "Drive source health has a readable label without changing health semantics");
         var time = DateTimeOffset.Now;
         var sample = new LiveSample(time, 25, 50, 16, 32, 1, 2,
             [new("C:\\", "8 GB frei", "info", "32 GB gesamt", 25)], [new("/fixture/fan", "GPU", "GPU FAN", "Fan", 1200, "RPM")]);
@@ -50,8 +68,28 @@ internal static class DashboardTests
         var parsed = EventMonitor.Parse(JsonSerializer.Serialize(snapshot));
         Check(parsed.Events.Count == 2 && parsed.Events[0].Severity == "Fehler", "Event JSON and severity roundtrip");
         model.ApplyEvents(parsed);
-        Check(model.EventCounts.Single(c => c.Name == "FEHLER").FreePercent == 50 && model.DiskGraphs.Count == 4,
-            "Snapshot proportions and disk throughput/activity/queue graphs");
+        Check(model.EventCounts.Single(c => c.Name == "FEHLER").FreePercent == 50 && model.DiskGraphs.Count == 1,
+            "Snapshot proportions and one grouped card per physical disk");
+        var disk = model.DiskGraphs.Single();
+        Check(disk.Name == "0 C:" && disk.Metrics.Length == 4 &&
+            disk.Metrics.Select(metric => metric.Accent.ToString()).Distinct().Count() == 4,
+            "Grouped disk retains four distinctly colored, named series");
+        Check(disk.Metrics.Select(metric => metric.NumericValue)
+                .SequenceEqual(new[] { "5.0", "2.0", "80.0", "1.0" }.Select(value =>
+                    double.Parse(value, System.Globalization.CultureInfo.InvariantCulture).ToString("0.0"))) &&
+            disk.Metrics.Select(metric => metric.Unit).SequenceEqual(new[] { "MB/s", "MB/s", "%", "I/O" }) &&
+            disk.Metrics[2].Level == 80,
+            "Disk grouping preserves measured values, units and fixed activity scale");
+        model.ApplyEvents(parsed with { DiskActivity = [new("0 C:", 4, 3, null, 2), new("1 D:", 8, 1, 25, 0)] });
+        Check(model.DiskGraphs.Count == 2 && ReferenceEquals(model.DiskGraphs[0], disk) &&
+            disk.Metrics[0].Trace.Count == 2 && disk.Metrics[2].Value == "--" && disk.Metrics[2].Trace.Count == 0,
+            "Polling preserves per-disk history while unavailable activity stays unavailable");
+        model.EventsFailed("synthetic disk failure");
+        Check(model.DiskGraphs.All(item => item.Metrics.All(metric => metric.Value == "--" && metric.Trace.Count == 0)),
+            "Failure clears all grouped disk series and stale histories");
+        model.ApplyEvents(parsed);
+        Check(model.DiskGraphs.Count == 1 && ReferenceEquals(model.DiskGraphs[0], disk),
+            "Removed disks disappear without recreating remaining disk cards");
         Check(model.EventBuckets.Count == 24 && model.EventBuckets.Sum(b => b.Count) == 2 && model.EventBuckets[^1].Height == 70,
             "24 hourly histogram buckets retain exact current-window event counts");
         model.SelectedEvent = eventRecord;
@@ -89,8 +127,10 @@ internal static class DashboardTests
             "Static neon halo is present with motion disabled and never captures input");
         var rims = (Grid)VisualTreeHelper.GetChild(adorner!, 0);
         Check(rims.Children.OfType<Border>().Count() == 3 && rims.Children.OfType<Border>().All(b =>
-                b.CornerRadius == border.CornerRadius && b.Effect is null && b.BorderBrush.IsFrozen),
-            "Frozen layered frame strokes preserve asymmetric glass corners without rasterizing content");
+                b.CornerRadius == border.CornerRadius && b.BorderBrush.IsFrozen) &&
+            rims.Children.OfType<Border>().Count(b => b.Effect is System.Windows.Media.Effects.BlurEffect { Radius: >= 10 }) == 1 &&
+            border.Effect is null,
+            "True blurred glow is confined to an empty outline and preserves sharp panel content");
         var trails = rims.Children.OfType<Rectangle>().ToArray();
         Check(trails.Length == 2 && trails.All(r => !r.HasAnimatedProperties && r.Visibility == Visibility.Hidden),
             "Motion-off frame keeps static glow with no energy clocks");

@@ -116,31 +116,31 @@ public partial class OperationsHub : UserControl
     {
         ApplyTemplate("Windows reparieren");
         Tabs.SelectedItem = Tabs.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Wartungsplan"));
-        Write("[VORBEREITET / NICHT AUSGEFUEHRT] Windows-Reparaturplan. Erst Vorschau pruefen und danach den Plan sowie jeden Aenderungsschritt einzeln bestaetigen.\n");
+        Write("[VORBEREITET / NICHT AUSGEFÜHRT] Windows-Reparaturplan. Erst Vorschau prüfen und danach den Plan sowie jeden Änderungsschritt einzeln bestätigen.\n");
     }
     private void BackgroundReportClicked(object sender, RoutedEventArgs e)
     {
         var path = BackgroundDiagnosticMonitor.ReportPath;
         if (!File.Exists(path))
         {
-            Write("[HINTERGRUNDDIAGNOSE] Noch kein Bericht vorhanden. AETHER muss mindestens einen Diagnosezyklus abschliessen.\n");
+            Write("[HINTERGRUNDDIAGNOSE] Noch kein Bericht vorhanden. AETHER muss mindestens einen Diagnosezyklus abschließen.\n");
             return;
         }
         try
         {
             Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-            Write("[HINTERGRUNDDIAGNOSE] Letzten lokalen Bericht geoeffnet: " + path + "\n");
+            Write("[HINTERGRUNDDIAGNOSE] Letzten lokalen Bericht geöffnet: " + path + "\n");
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)
         {
-            Trace.TraceError("AETHER Hintergrundbericht konnte nicht geoeffnet werden: {0}", ex);
-            Write("[FEHLER] Hintergrundbericht konnte nicht geoeffnet werden: " + ex.Message + "\n");
+            Trace.TraceError("AETHER-Hintergrundbericht konnte nicht geöffnet werden: {0}", ex);
+            Write("[FEHLER] Hintergrundbericht konnte nicht geöffnet werden: " + ex.Message + "\n");
         }
     }
     private async void AgentsRunClicked(object sender, RoutedEventArgs e) => await RunAsync("Komplettes lokales Diagnoseinventar", async token =>
     {
         SystemActions.RequireAdmin();
-        Write("[DIAGNOSE-AGENTEN] Nur lesende Windows-Abfragen / keine Aenderung und keine Netzwerkverbindung.\n");
+        Write("[DIAGNOSE-AGENTEN] Nur lesende Windows-Abfragen / keine Änderung und keine Netzwerkverbindung.\n");
         var result = await Execute(DiagnosticAssistants.CollectionScript, token);
         var report = DiagnosticAssistants.Analyze(DiagnosticAssistants.Parse(result.Output));
         var folder = CreateRun("diagnostic-agents");
@@ -166,8 +166,8 @@ public partial class OperationsHub : UserControl
     {
         var plan = BuildPlan();
         Console.Clear();
-        Write("[VORSCHAU / KEINE AUSFUEHRUNG] Ziel: " + Environment.MachineName + "\n");
-        Write("Wiederherstellungspunkt: " + (RequireRestorePoint.IsChecked == true ? "pflichtig vor Aenderungen" : "bewusst deaktiviert / Zusatzbestaetigung erforderlich") + "\n");
+        Write("[VORSCHAU / KEINE AUSFÜHRUNG] Ziel: " + Environment.MachineName + "\n");
+        Write("Wiederherstellungspunkt: " + (RequireRestorePoint.IsChecked == true ? "pflichtig vor Änderungen" : "bewusst deaktiviert / Zusatzbestätigung erforderlich") + "\n");
         foreach (var step in plan) Write($"\n{step.Action.Name} / {(step.Action.Changes ? "AENDERUNG" : "DIAGNOSE")}\n{step.Action.Description}\n{step.Script}\n");
         return Task.CompletedTask;
     });
@@ -220,7 +220,7 @@ public partial class OperationsHub : UserControl
                     checkpointDone = true;
                     if (_stopAfterStep)
                     {
-                        results.Add(new(step.Action.Name, "AUSGELASSEN", "Nach Sicherung angehalten / Aenderung nicht gestartet", started, DateTimeOffset.Now));
+                        results.Add(new(step.Action.Name, "AUSGELASSEN", "Nach Sicherung angehalten / Änderung nicht gestartet", started, DateTimeOffset.Now));
                         SaveResults(run, results);
                         continue;
                     }
@@ -228,20 +228,20 @@ public partial class OperationsHub : UserControl
                 Write($"\n[START] {step.Action.Name} / lokales Ziel {Environment.MachineName}\n");
                 var result = await Execute(step.Script, token, run);
                 if (step.Action.Id == "windowsSearch") LoadUpdates(result.Output);
-                results.Add(new(step.Action.Name, step.Action.Id == "sfc" ? "PRUEFEN" : "BEFEHL BEENDET / BEFUND PRUEFEN",
+                results.Add(new(step.Action.Name, step.Action.Id == "sfc" ? "PRÜFEN" : "BEFEHL BEENDET / BEFUND PRÜFEN",
                     result.Output + "\n" + result.Error, started, DateTimeOffset.Now));
             }
             catch (Exception ex) when (OperationError(ex))
             {
                 failed = true;
                 Write("[FEHLER / FOLGESCHRITTE STOPPEN] " + ex.Message + "\n");
-                results.Add(new(step.Action.Name, "FEHLER / TEILAENDERUNGEN MOEGLICH", ex.Message, started, DateTimeOffset.Now));
+                results.Add(new(step.Action.Name, "FEHLER / TEILÄNDERUNGEN MÖGLICH", ex.Message, started, DateTimeOffset.Now));
             }
             SaveResults(run, results);
             Write($"[PLAN] {results.Count} / {plan.Count} Aufgaben protokolliert; keine erfundene Gesamtrestzeit.\n");
         }
         Write("[BERICHT] " + run + "\n");
-        if (failed) throw new InvalidOperationException("Wartung bei Fehler angehalten. Ergebnis.json / Live.log lesen; Teilaenderungen moeglich.");
+        if (failed) throw new InvalidOperationException("Wartung bei Fehler angehalten. Ergebnis.json / Live.log lesen; Teiländerungen möglich.");
     });
     private void SaveResults(string run, List<MaintenanceResult> results)
     {
@@ -274,10 +274,20 @@ public partial class OperationsHub : UserControl
     {
         target ??= Environment.MachineName;
         Write("[BEFEHL]\n" + script + "\n");
-        ActionJournal.Append("operations-command-start", new { target, report });
         var timeout = _maintenance ? Timeout.InfiniteTimeSpan : target == Environment.MachineName ? TimeSpan.FromMinutes(90) : TimeSpan.FromMinutes(3);
+        var audit = new AetherOperations.TechnicalEvent("OperationsHub", "command",
+            AetherOperations.OperationPhase.Started, AetherOperations.DiagnosticSeverity.Audit,
+            "AdminShell", new(target == Environment.MachineName ? "local" : "remote",
+                AetherOperations.DataClassification.Normal), null, null,
+            _maintenance ? AetherOperations.StopBehavior.WaitForCurrentStep : AetherOperations.StopBehavior.TerminateProcessTree,
+            false, timeout == Timeout.InfiniteTimeSpan ? null : timeout.TotalSeconds);
+        ActionJournal.AppendTechnical("operations-command-start", audit, new { target, report });
         Exception? logError = null;
-        var result = await AdminShell.RunAsync("$ErrorActionPreference='Stop';\n" + script, timeout, token,
+        CommandResult result;
+        try
+        {
+            result = await GuardianInvocation.RunAsync("Wartungsplan: bestätigter Werkzeugaufruf", active =>
+                AdminShell.RunAsync("$ErrorActionPreference='Stop';\n" + script, timeout, active,
             new DirectProgress(text => Dispatcher.Invoke(() =>
             {
                 if (report is not null && logError is null)
@@ -291,10 +301,36 @@ public partial class OperationsHub : UserControl
                     }
                 }
                 Write(text);
-            })));
-        if (logError is not null) throw new IOException("Live.log nicht vollstaendig geschrieben; Teilaenderungen moeglich.", logError);
-        if (result.ExitCode != 0) throw new InvalidOperationException($"Exit {result.ExitCode}: {result.Error}. Teilaenderungen moeglich; Live-Protokoll beachten.");
-        ActionJournal.Append("operations-command-ended", new { target, report, result.ExitCode });
+            }))), token);
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException or IOException or
+            UnauthorizedAccessException or Win32Exception or InvalidOperationException)
+        {
+            var failure = audit with
+            {
+                Phase = AetherOperations.OperationPhase.Finished,
+                Severity = ex is OperationCanceledException ? AetherOperations.DiagnosticSeverity.Notice : AetherOperations.DiagnosticSeverity.Error,
+                Outcome = AetherOperations.OperationOutcome.FromException(ex, "AdminShell", token)
+            };
+            TechnicalLog.Write(failure);
+            try { ActionJournal.AppendTechnical("operations-command-ended", failure, new { target, report }); }
+            catch (Exception journalError) when (journalError is IOException or UnauthorizedAccessException)
+            {
+                throw new IOException("Aktionsprotokoll und Ausführung fehlgeschlagen; Teiländerungen möglich.",
+                    new AggregateException(ex, journalError));
+            }
+            throw;
+        }
+        var outcome = logError is not null && result.ExitCode == 0
+            ? new AetherOperations.OperationOutcome(AetherOperations.OperationState.Partial, "OperationsHub", "live-log-incomplete")
+            : result.Outcome();
+        ActionJournal.AppendTechnical("operations-command-ended", audit with
+        {
+            Phase = AetherOperations.OperationPhase.Finished,
+            Outcome = outcome
+        }, new { target, report, result.ExitCode });
+        if (logError is not null) throw new IOException("Live.log nicht vollständig geschrieben; Teiländerungen möglich.", logError);
+        if (result.ExitCode != 0) throw new InvalidOperationException($"Exit {result.ExitCode}: {result.Error}. Teiländerungen möglich; Live-Protokoll beachten.");
         return result;
     }
     private void LoadUpdates(string json)
@@ -302,7 +338,7 @@ public partial class OperationsHub : UserControl
         var updates = JsonSerializer.Deserialize<List<AvailableUpdate>>(json) ?? throw new InvalidDataException("Updateabfrage lieferte kein Listenformat.");
         if (updates.Count > 2000 || updates.Any(u => u is null || !MaintenancePlans.ValidUpdateId(u.Id) || u.Title is null || u.EulaText is null ||
             u.SizeMiB < 0 || !double.IsFinite(u.SizeMiB)) || updates.Select(u => u.Id).Distinct().Count() != updates.Count)
-            throw new InvalidDataException("Ungueltiges Updateformat; keine Installation moeglich.");
+            throw new InvalidDataException("Ungültiges Updateformat; keine Installation möglich.");
         _updates.Clear();
         foreach (var update in updates) _updates.Add(new(update));
         LicenseConsent.IsChecked = false;
@@ -323,7 +359,7 @@ public partial class OperationsHub : UserControl
         Scores.ItemsSource = null;
         IndexStatus.Text = "WinSAT wird gelesen; keine Bewertung angenommen.";
         var index = await PerformanceIndex.ReadAsync(token);
-        IndexStatus.Text = index.StateText + " / DataStore-Dateizeit (nicht garantiert Messzeit): " + (index.StoredAt ?? "nicht verfuegbar") + "\nBasisscore ist der von Windows gemeldete Legacy-Wert, keine neue Gesamtnote.";
+        IndexStatus.Text = index.StateText + " / DataStore-Dateizeit (nicht garantiert Messzeit): " + (index.StoredAt ?? "nicht verfügbar") + "\nBasisscore ist der von Windows gemeldete Legacy-Wert, keine neue Gesamtnote.";
         Scores.ItemsSource = new (string Title, double? Value)[]
         {
             ("WINDOWS / BASIS", index.Base), ("CPU", index.Cpu), ("SPEICHER", index.Memory),
@@ -346,7 +382,7 @@ public partial class OperationsHub : UserControl
         Write("[BERICHT] " + run + "\n");
     });
     private void CleanerClicked(object sender, RoutedEventArgs e) => CleanerRequested?.Invoke(this, EventArgs.Empty);
-    private void AddDeviceClicked(object sender, RoutedEventArgs e) => RunAsync("Geraeteziel speichern", _ =>
+    private void AddDeviceClicked(object sender, RoutedEventArgs e) => RunAsync("Geräteziel speichern", _ =>
     {
         var target = new ManagedDevice(Host.Text, UseHttps.IsChecked == true);
         if (_devices.Any(d => d.Host.Equals(target.Host, StringComparison.OrdinalIgnoreCase))) throw new ArgumentException("Ziel bereits eingetragen.");
@@ -376,7 +412,7 @@ public partial class OperationsHub : UserControl
         foreach (var target in SelectedDevices()) Write($"[VORSCHAU / KEIN NETZZUGRIFF] {target.Host} / {target.Transport}\n{ManagedDevices.DiagnosticScript(target)}\n");
         return Task.CompletedTask;
     });
-    private async void DeviceRunClicked(object sender, RoutedEventArgs e) => await RunAsync("Geraetediagnose", async token =>
+    private async void DeviceRunClicked(object sender, RoutedEventArgs e) => await RunAsync("Gerätediagnose", async token =>
     {
         var targets = SelectedDevices();
         if (!Confirm(DesktopUiText.Format("Plan.RemoteConsent",
@@ -392,7 +428,7 @@ public partial class OperationsHub : UserControl
         {
             token.ThrowIfCancellationRequested();
             var start = DateTimeOffset.Now;
-            target.Status = "Diagnose laeuft / " + start.ToString("HH:mm:ss");
+            target.Status = "Diagnose läuft / " + start.ToString("HH:mm:ss");
             try
             {
                 var result = await Execute(ManagedDevices.DiagnosticScript(target), token, run, target.Host);
@@ -402,7 +438,7 @@ public partial class OperationsHub : UserControl
             catch (OperationCanceledException)
             {
                 target.Status = "Diagnose abgebrochen";
-                results.Add(new(target.Host, "ABGEBROCHEN", "Verbindung/Abfrage abgebrochen; keine Aenderungsbefehle", start, DateTimeOffset.Now));
+                results.Add(new(target.Host, "ABGEBROCHEN", "Verbindung/Abfrage abgebrochen; keine Änderungsbefehle", start, DateTimeOffset.Now));
                 foreach (var remaining in targets.SkipWhile(t => t != target).Skip(1))
                 {
                     remaining.Status = "Nicht gestartet / Lauf abgebrochen";
@@ -420,7 +456,7 @@ public partial class OperationsHub : UserControl
             }
             SaveResults(run, results);
         }
-        Write("[GERAETEBERICHT] " + run + "\n");
+        Write("[GERÄTEBERICHT] " + run + "\n");
         if (failures > 0) throw new InvalidOperationException($"{failures} / {targets.Count} Ziele fehlgeschlagen; keine Erfolgsvortaeuschung. Einzelstatus/Berichte lesen.");
     });
     private async void CloudReadClicked(object sender, RoutedEventArgs e) => await RunAsync("Lokale M365-/Server-Voraussetzungen", async token => { await Execute(ManagedDevices.CloudReadinessScript, token); });
@@ -436,13 +472,13 @@ public partial class OperationsHub : UserControl
     private void Write(string text)
     {
         _lastOutput = DateTimeOffset.Now;
-        if (Console.Text.Length + text.Length > 1_000_000) Console.Text = Console.Text[^Math.Min(500_000, Console.Text.Length)..] + "\n[ANZEIGE GEKUERZT / vollstaendiges Live.log bei Berichtslaeufen]\n";
+        if (Console.Text.Length + text.Length > 1_000_000) Console.Text = Console.Text[^Math.Min(500_000, Console.Text.Length)..] + "\n[ANZEIGE GEKÜRZT / vollständiges Live.log bei Berichtslaeufen]\n";
         Console.AppendText(text);
         Console.ScrollToEnd();
     }
     private Task RunAsync(string label, Func<CancellationToken, Task> action)
     {
-        if (_stop is not null || _shutdown) { Status.Text = "Laufende Aktion zuerst beenden / Fenster schliesst."; return Task.CompletedTask; }
+        if (_stop is not null || _shutdown) { Status.Text = "Laufende Aktion zuerst beenden / Fenster wird geschlossen."; return Task.CompletedTask; }
         _pending = ExecuteOperation();
         return _pending;
         async Task ExecuteOperation()
@@ -455,8 +491,8 @@ public partial class OperationsHub : UserControl
             MaintenanceInputs.IsEnabled = DeviceInputs.IsEnabled = false;
             Tabs.IsEnabled = false;
             Status.Text = label + " laeuft ...";
-            try { await action(_stop.Token); Status.Text = label + " beendet. Befunde/Ausgaben pruefen."; }
-            catch (OperationCanceledException) { Status.Text = "Nicht freigegeben / abgebrochen; Teilaenderungen moeglich."; Write("[ABBRUCH]\n"); }
+            try { await action(_stop.Token); Status.Text = label + " beendet. Befunde/Ausgaben prüfen."; }
+            catch (OperationCanceledException) { Status.Text = "Nicht freigegeben / abgebrochen; Teiländerungen möglich."; Write("[ABBRUCH]\n"); }
             catch (Exception ex) when (OperationError(ex))
             {
                 Status.Text = label + ": " + ex.Message;

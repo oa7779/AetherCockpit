@@ -42,7 +42,7 @@ internal static class ManagementEndpoints
             TypedResults.Ok(await service.GetAuditAsync(token))).WithSummary("Read the latest 500 audit transitions");
 
         var device = app.MapGroup("/api/v1/management").AddEndpointFilter<DeviceTokenFilter>()
-            .RequireRateLimiting("management");
+            .RequireRateLimiting("device-management");
         device.MapPost("/heartbeat", async (HeartbeatRequest request, HttpContext context,
             IManagementService service, CancellationToken token) =>
             TypedResults.Ok(await service.HeartbeatAsync(DeviceId(context), request, token)))

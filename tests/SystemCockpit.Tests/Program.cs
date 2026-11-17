@@ -12,6 +12,24 @@ internal static class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--guardian-etw-matrix" && args.Length != 2)
+                throw new ArgumentException("--guardian-etw-matrix benötigt genau eine neue absolute JSON-Ergebnisdatei.");
+            if (args.Length > 0 && args[0] == "--guardian-etw-size-loss-probe" && args.Length != 2)
+                throw new ArgumentException("--guardian-etw-size-loss-probe benötigt genau eine neue absolute JSON-Ergebnisdatei.");
+            if (args.Length > 0 && args[0] == "--guardian-etw-custom-acceptance" && args.Length != 2)
+                throw new ArgumentException("--guardian-etw-custom-acceptance benötigt genau eine neue absolute JSON-Ergebnisdatei.");
+            if (args.Length > 0 && args[0] == "--model-qualification" &&
+                (args.Length != 5 || args[1] != "--allow-live-local-model-inference"))
+                throw new ArgumentException("--model-qualification benötigt --allow-live-local-model-inference, Phi-Store, Nemotron-Store und eine neue absolute JSON-Ergebnisdatei.");
+            if (args.Length > 0 && args[0] == "--normal-product-path" && args.Length != 1)
+                throw new ArgumentException("--normal-product-path benötigt keine weiteren Argumente.");
+            if (args.Length > 0 && (args[0] is "--guardian-etw-cpu-acceptance" or "--guardian-etw-cpu-diagnostic") &&
+                (args.Length != 3 || args[1] != "--enable-present-profile-privilege"))
+                throw new ArgumentException("Separater CPU-Modus benötigt zusätzlich --enable-present-profile-privilege und eine neue absolute JSON-Datei.");
+            if (args.Length == 1 && args[0] == "--process-fixture") return ProcessAcceptanceTests.Fixture();
+            if (args.Length == 1 && args[0] == "--guardian-trace-workload") return GuardianTraceMatrix.Workload();
+            if (args.Length == 2 && args[0] == "--guardian-restart-child") return GuardianContinuationTests.RestartChild(args[1]);
+            if (args.Length == 2 && args[0] == "--command-fixture") return CommandLifecycleTests.Fixture(args[1]);
             DesktopText.Configure("de");
             if (args.Length == 2 && args[0] == "--feed-server") return ScreensaverTests.PipeServer(args[1]);
             if (args.Length == 2 && args[0] == "--feed-client") return ScreensaverTests.PipeClient(args[1]);
@@ -23,6 +41,115 @@ internal static class Program
                 {
                     Source = new Uri($"pack://application:,,,/SystemCockpit;component/{source}")
                 });
+            if (args.Length == 1 && args[0] == "--published-branding-resource-contract")
+            {
+                var assertions = BootTests.PublishedResourceContract();
+                Console.WriteLine($"PASS: {assertions} published branding resource contract assertions.");
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 5 && args[0] == "--model-qualification")
+            {
+                var exit = RealModelQualification.RunAsync(args[2], args[3], args[4]).GetAwaiter().GetResult();
+                host.Shutdown();
+                return exit;
+            }
+            if (args.Length == 1 && args[0] == "--normal-product-path")
+            {
+                var exit = NormalProductPathAcceptance.Run();
+                host.Shutdown();
+                return exit;
+            }
+            if (args.Length == 2 && args[0] == "--process-proof")
+            {
+                ProcessAcceptanceTests.Proof(args[1]); host.Shutdown(); return 0;
+            }
+            if (args.Length == 2 && args[0] == "--intelligence-proof")
+            { SystemIntelligenceTests.Proof(args[1]); host.Shutdown(); return 0; }
+            if (args.Length == 1 && args[0] == "--guardian-tests")
+            { Console.WriteLine($"PASS: {GuardianTests.Run() + GuardianContinuationTests.Run() + GuardianTraceTests.Run()} Guardian assertions."); host.Shutdown(); return 0; }
+            if (args.Length == 1 && args[0] == "--admin-platform-tests")
+            { Console.WriteLine($"PASS: {PlatformTests.Contracts() + PlatformTests.Execution().GetAwaiter().GetResult() + PlatformTests.Interface()} administration platform assertions."); host.Shutdown(); return 0; }
+            if (args.Length is 1 or 2 && args[0] == "--intelligence-fabric-tests")
+            { Console.WriteLine($"PASS: {IntelligenceFabricTests.Run(args.Length == 2 ? args[1] : null).GetAwaiter().GetResult() + IntelligenceAssistantTests.Run().GetAwaiter().GetResult() + LocalAiSetupTests.Run() + IntelligenceFabricTests.Interface()} Intelligence Fabric assertions."); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--workspace-design-proof")
+            { Console.WriteLine($"PASS: {WorkspaceDesignTests.Run(args[1])} workspace design assertions."); host.Shutdown(); return 0; }
+            if (args.Length == 1 && args[0] == "--guardian-trace-tests")
+            { Console.WriteLine($"PASS: {GuardianTraceTests.Run()} Deep Trace assertions."); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--guardian-proof")
+            { GuardianProof.Run(args[1]); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--guardian-native")
+            { var exit = GuardianProof.Native(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-etw-acceptance")
+            { var exit = GuardianTraceAcceptance.Run(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-etw-matrix")
+            { var exit = GuardianTraceMatrix.Run(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 3 && args[0] == "--guardian-etw-cpu-acceptance")
+            { var exit = GuardianTraceMatrix.RunCpu(args[2]); host.Shutdown(); return exit; }
+            if (args.Length == 3 && args[0] == "--guardian-etw-cpu-diagnostic")
+            { var exit = GuardianTraceMatrix.RunCpuDiagnostic(args[2]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-etw-custom-acceptance")
+            { var exit = GuardianTraceMatrix.RunCustom(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-etw-size-loss-probe")
+            { var exit = GuardianTraceMatrix.RunLossProbe(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-reversible")
+            { var exit = GuardianReversibleProof.Run(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--guardian-resources")
+            { GuardianResourceProof.Run(args[1]); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--guardian-etw-denied-cycles")
+            { var exit = GuardianResourceProof.DeniedCycles(args[1]); host.Shutdown(); return exit; }
+            if (args.Length == 2 && args[0] == "--intelligence-acceptance")
+            { SystemIntelligenceTests.Live(args[1]); host.Shutdown(); return 0; }
+            if (args.Length == 2 && args[0] == "--process-acceptance")
+            {
+                ProcessAcceptanceTests.Live(args[1]); host.Shutdown(); return 0;
+            }
+            if (args.Length == 2 && args[0] == "--consolidation-baseline")
+            {
+                ConsolidationMeasurements.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--hardware-acceptance")
+            {
+                HardwareAcceptanceTests.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--hardware-proof")
+            {
+                HardwareIntelligenceTests.Proof(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length is 2 or 3 && args[0] == "--hardware-readonly")
+            {
+                HardwareClass? category = args.Length == 3 && Enum.TryParse<HardwareClass>(args[2], out var selected) && Enum.IsDefined(selected)
+                    ? selected : args.Length == 2 ? null : throw new ArgumentException("Ungültige Hardwareklasse.");
+                HardwareIntelligenceTests.ReadOnlyAsync(args[1], category).GetAwaiter().GetResult();
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--neon-frame-profile")
+            {
+                NeonFrameProof.Run(args[1]);
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--neon-frame-gallery")
+            {
+                var assertions = NeonFrameTests.Run();
+                var images = NeonFrameTests.Gallery(args[1]);
+                Console.WriteLine($"PASS: {assertions} frame assertions; {images} diagnostic images.");
+                host.Shutdown();
+                return 0;
+            }
+            if (args.Length == 1 && args[0] == "--neon-frame-motion")
+            {
+                Console.WriteLine($"PASS: {NeonFrameTests.Motion()} bounded real-time breathing assertions.");
+                host.Shutdown();
+                return 0;
+            }
             if (args.Contains("--desktop-language-smoke"))
             {
                 var assertions = ModernDesktopTests.Run();
@@ -47,6 +174,16 @@ internal static class Program
                 HardwareBoardTests.RenderProfile(index + 1 < args.Length ? args[index + 1] : "");
                 return 0;
             }
+            if (args.Contains("--gpu-presentation"))
+            {
+                var index = Array.IndexOf(args, "--gpu-presentation");
+                var screenshotPrefix = index + 1 < args.Length && !args[index + 1].StartsWith("--", StringComparison.Ordinal)
+                    ? args[index + 1] : null;
+                var assertions = HardwareBoardTests.GpuPresentation(screenshotPrefix);
+                Console.WriteLine($"PASS: {assertions} GPU perspective and occlusion assertions.");
+                host.Shutdown();
+                return 0;
+            }
             TestCpu();
             TestSparklines();
             TestSensorSelection();
@@ -57,7 +194,17 @@ internal static class Program
             TestStatistics();
             TestCleaner();
             _assertions += ExtendedTests.Run();
+            _assertions += ConsolidationTests.Run();
+            _assertions += HardwareIntelligenceTests.Run();
+            _assertions += HardwareCompletionTests.Run();
+            _assertions += ProcessCommandTests.Run();
+            _assertions += SystemIntelligenceTests.Run();
+            _assertions += GuardianTests.Run();
+            _assertions += GuardianContinuationTests.Run();
+            _assertions += GuardianTraceTests.Run();
+            _assertions += CommandLifecycleTests.Run();
             _assertions += DashboardTests.Run();
+            _assertions += NeonFrameTests.Run();
             _assertions += BootTests.Run();
             _assertions += StorageTemperatureTests.Run();
             _assertions += ModuleTests.Run();
@@ -238,7 +385,7 @@ internal static class Program
         ];
         Assert(CockpitModel.Find(sensors, "/intelcpu/", "Temperature", "CPU Package")?.Value == 60,
             "Select package, not first arbitrary core");
-        Assert(CockpitModel.Find(sensors, "/gpu-", "Temperature", "GPU Core")?.Display == "Nicht verfuegbar",
+        Assert(CockpitModel.Find(sensors, "/gpu-", "Temperature", "GPU Core")?.Display == "Nicht verfügbar",
             "Unavailable sensor is not zero");
         Assert(CockpitModel.Find(sensors, "/intelcpu/", "Power", "CPU Package") is null, "Missing sensor remains missing");
         Assert(HardwareSensors.NormalizeValue(0, true, true, false) is null, "Zero RAPL with unreadable CPU clocks is unavailable");
@@ -279,7 +426,7 @@ internal static class Program
             "Sensor error is visible");
         model.MeasurementFailed("native failure");
         Assert(model.Cards.All(c => c.Value == "--" && c.Trace.Count == 0), "Failed native measurement clears stale cards");
-        Assert(model.CpuTemperature == "Nicht verfuegbar", "Failed native measurement clears thermal display");
+        Assert(model.CpuTemperature == "Nicht verfügbar", "Failed native measurement clears thermal display");
     }
 
     private static void TestHistory()
@@ -332,7 +479,7 @@ internal static class Program
         Assert(second.MemoryTotalGb > 0 && second.MemoryUsedGb <= second.MemoryTotalGb, "Real physical memory");
         Assert(second.Volumes.Count > 0, "Real fixed volumes discovered");
         var report = await new WindowsProbe().ReadAsync(CancellationToken.None);
-        Assert(!string.IsNullOrWhiteSpace(report.Cpu) && report.Cpu != "Nicht verfuegbar", "Real CPU identified");
+        Assert(!string.IsNullOrWhiteSpace(report.Cpu) && report.Cpu != "Nicht verfügbar", "Real CPU identified");
         Assert(report.Checks.Count >= 10, "All Windows posture surfaces returned");
         Assert(report.Disks.Count > 0, "Real storage health returned");
         Assert(report.Checks.All(c => c.State is "ok" or "warning" or "unknown" or "info"), "Explicit status shapes");
@@ -355,13 +502,13 @@ internal static class Program
         Assert(WindowsProbe.ReadErrorStream(progress) == "", "Initialization progress is not an error");
         Assert(WindowsProbe.ReadErrorStream(error) == "Access denied", "Real PowerShell errors decoded to plain text, no raw XML");
         const string multiline = "#< CLIXML\n<Objs xmlns=\"http://schemas.microsoft.com/powershell/2004/04\">" +
-            "<S S=\"Error\">Kein OEM-Firmware-Produktschluessel vorhanden._x000D__x000A_</S>" +
+            "<S S=\"Error\">Kein OEM-Firmware-Produktschlüssel vorhanden._x000D__x000A_</S>" +
             "<S S=\"Error\">    + CategoryInfo          : OperationStopped_x000D__x000A_</S></Objs>";
         var decoded = WindowsProbe.ReadErrorStream(multiline);
         Assert(!decoded.Contains("<S") && !decoded.Contains("_x000D_") &&
-            decoded.Contains("Kein OEM-Firmware-Produktschluessel vorhanden.") && decoded.Contains("+ CategoryInfo"),
+            decoded.Contains("Kein OEM-Firmware-Produktschlüssel vorhanden.") && decoded.Contains("+ CategoryInfo"),
             "CLIXML error records render as readable lines with decoded escapes");
-        Assert(SystemActions.SecretScript("bitlocker", "").TrimEnd().EndsWith("Keine Schluessel werden erfunden.'}"),
+        Assert(SystemActions.SecretScript("bitlocker", "").TrimEnd().EndsWith("Keine Schlüssel werden erfunden.'}"),
             "BitLocker emptiness check runs after scanning all volumes and protectors");
         Assert(WindowsProbe.ReadErrorStream("raw failure") == "raw failure", "Raw stderr preserved");
         Assert(WindowsProbe.ReadErrorStream("") == "", "Empty stderr");
@@ -385,39 +532,45 @@ internal static class Program
         Assert(value.Height >= 32 && value.Width >= 100, "Template metric values use large segmented LED display");
         Assert(instrument.Children.OfType<SystemCockpit.Controls.NeonGauge>().Count() == 1, "Metric uses segmented neon instrument");
         var pages = (System.Windows.Controls.TabControl)window.FindName("Pages");
-        Assert(pages.Items.Count == 13, "Original modules plus hardware board, Taskmanager, events, Superadmin, Operations and help center");
+        Assert(pages.Items.Count == 17 && pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "IntelligenceFabric")) &&
+            pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "HardwareIntelligence")) &&
+            pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "SystemIntelligence")) &&
+            pages.Items.Cast<System.Windows.Controls.TabItem>().Any(t => Equals(t.Tag, "Guardian")),
+            "Existing modules remain with dedicated hardware, system intelligence and guardian navigation");
         var pageHeaders = pages.Items.Cast<System.Windows.Controls.TabItem>().Select(t => (string)t.Header).ToList();
         Assert(pageHeaders[^1] == "Hilfe" && pageHeaders.IndexOf("Sensoren") < pageHeaders.IndexOf("Messauswertung") &&
-            pageHeaders.IndexOf("Diagnose") < pageHeaders.IndexOf("Cleaner") && pageHeaders.IndexOf("Cleaner") < pageHeaders.IndexOf("Superadmin"),
+            pageHeaders.IndexOf("Diagnose") < pageHeaders.IndexOf("Cache-Bereinigung") &&
+            pageHeaders.IndexOf("Cache-Bereinigung") < pageHeaders.IndexOf("Systemverwaltung"),
             "Tabs follow observe-analyze-check-act-help order");
         Assert(pages.Items.Cast<System.Windows.Controls.TabItem>().All(t => t.ToolTip is string { Length: > 10 }),
             "Every main module explains itself via tooltip");
         // Navigation: Verlauf, Leiste und linke Rubriken muessen zusammenpassen.
         var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var pageRoutes = pages.Items.Cast<System.Windows.Controls.TabItem>().Select(t => (string)t.Tag).ToList();
         var navButtons = ((System.Windows.Controls.StackPanel)window.FindName("NavigationGroups"))
             .Children.OfType<System.Windows.Controls.Expander>().SelectMany(group =>
                 ((System.Windows.Controls.StackPanel)group.Content).Children.OfType<System.Windows.Controls.Button>())
-            .Where(b => b.Tag is string route && pageHeaders.Contains(route)).ToList();
-        Assert(navButtons.Count == 13 && navButtons.All(b => pageHeaders.Contains((string)b.Tag)) &&
-            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 13,
-            "Left rubric buttons map one-to-one onto real page headers including help");
+            .Where(b => b.Tag is string route && pageRoutes.Contains(route)).ToList();
+        Assert(navButtons.Count == 17 && navButtons.All(b => pageRoutes.Contains((string)b.Tag)) &&
+            navButtons.Select(b => (string)b.Tag).Distinct().Count() == 17,
+            "Left rubric buttons map one-to-one onto real page routes including system intelligence and help");
         var navBack = (System.Windows.Controls.Button)window.FindName("NavBack");
         var navForward = (System.Windows.Controls.Button)window.FindName("NavForward");
         var navTrail = (System.Windows.Controls.TextBlock)window.FindName("NavTrail");
         var selectPage = typeof(MainWindow).GetMethod("SelectPage", flags)!;
         selectPage.Invoke(window, ["Superadmin"]);
         selectPage.Invoke(window, ["Cleaner"]);
-        Assert(navBack.IsEnabled && !navForward.IsEnabled && navTrail.Text.Contains("CLEANER"),
+        Assert(navBack.IsEnabled && !navForward.IsEnabled && navTrail.Text.Contains("CACHE-BEREINIGUNG"),
             "Breadcrumb shows current page; back enabled after visiting submodules");
         var backClick = typeof(MainWindow).GetMethod("NavBackClicked", flags)!;
         backClick.Invoke(window, [navBack, new System.Windows.RoutedEventArgs()]);
-        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Superadmin" && navForward.IsEnabled,
+        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Systemverwaltung" && navForward.IsEnabled,
             "Back returns to previous view without the left bar; forward becomes available");
         backClick.Invoke(window, [navBack, new System.Windows.RoutedEventArgs()]);
-        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Cockpit",
+        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Systemübersicht",
             "History walks back to the main level");
         typeof(MainWindow).GetMethod("NavForwardClicked", flags)!.Invoke(window, [navForward, new System.Windows.RoutedEventArgs()]);
-        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Superadmin",
+        Assert((string)((System.Windows.Controls.TabItem)pages.SelectedItem).Header == "Systemverwaltung",
             "Forward replays the undone navigation");
         selectPage.Invoke(window, ["Cockpit"]);
         Assert(MainWindow.CsvCell("=cmd").StartsWith("\"'="), "CSV formula injection neutralized");
@@ -489,7 +642,10 @@ internal static class Program
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = Environment.GetEnvironmentVariable("ComSpec") ?? throw new InvalidOperationException("ComSpec missing"),
-                    UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 }
             };
             junctionCommand.StartInfo.ArgumentList.Add("/c");
@@ -535,7 +691,7 @@ internal static class Program
             Console.WriteLine($"  STORAGE: {reading.Hardware} | {reading.Id} | {reading.Name} | {reading.Type}: {reading.Display}");
         var gpu = CockpitModel.Find(readings, "/gpu-", "Load", "GPU Core");
         var cpu = CockpitModel.Find(readings, "/intelcpu/", "Temperature", "CPU Package");
-        Console.WriteLine($"  Cockpit GPU core: {gpu?.Display ?? "Nicht verfuegbar"}");
-        Console.WriteLine($"  Cockpit CPU package: {cpu?.Display ?? "Nicht verfuegbar"}");
+        Console.WriteLine($"  Cockpit GPU core: {gpu?.Display ?? "Nicht verfügbar"}");
+        Console.WriteLine($"  Cockpit CPU package: {cpu?.Display ?? "Nicht verfügbar"}");
     }
 }

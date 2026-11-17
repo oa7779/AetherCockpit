@@ -1,0 +1,357 @@
+<UserControl x:Class="SystemCockpit.Controls.IntelligenceFabricView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Background="{DynamicResource SceneBackdrop}" Foreground="{DynamicResource ModernTextPrimary}">
+ <UserControl.Resources>
+  <Style TargetType="TextBlock">
+   <Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/>
+   <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+  <Style TargetType="Button" BasedOn="{StaticResource NeonButton}">
+   <Setter Property="Padding" Value="10,7"/>
+   <Setter Property="Margin" Value="0,3,7,3"/>
+  </Style>
+  <Style TargetType="TextBox" BasedOn="{StaticResource NeonTextBox}">
+   <Setter Property="FontFamily" Value="Segoe UI"/>
+  </Style>
+ </UserControl.Resources>
+ <Grid Margin="8">
+  <Grid.RowDefinitions>
+   <RowDefinition Height="Auto"/>
+   <RowDefinition Height="Auto"/>
+   <RowDefinition Height="*"/>
+  </Grid.RowDefinitions>
+  <Border Style="{StaticResource StatusPanel}" Padding="12">
+   <StackPanel>
+    <TextBlock Text="AETHER Intelligence" FontSize="23" FontFamily="Consolas"
+               Foreground="{DynamicResource ModernAccent}"/>
+    <TextBlock Text="Lokale Untersuchung und beleggestützte Ergebnisse"
+               Margin="0,3,0,8" Foreground="{DynamicResource ModernTextSecondary}"/>
+    <TextBlock x:Name="Status" Text="Lokal · Arbeitsbereich nicht geladen · noch keine Untersuchung."
+               AutomationProperties.Name="Intelligence-Status"/>
+   </StackPanel>
+  </Border>
+  <Border Grid.Row="1" Style="{StaticResource StatusPanel}" Margin="0,7,0,0" Padding="8">
+   <TextBlock x:Name="SnapshotStatus"
+              Text="Hardwaremessung wird vor lokaler KI automatisch geprüft."
+              AutomationProperties.Name="Hardwaremessungsstatus"/>
+  </Border>
+  <TabControl Grid.Row="2" x:Name="Areas" Margin="0,8,0,0">
+   <TabItem Header="Assistent">
+    <Grid Margin="8">
+     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+     </Grid.RowDefinitions>
+     <Border Style="{StaticResource AssistantPanel}" Padding="10">
+      <StackPanel>
+       <TextBlock Text="Was soll AETHER untersuchen?" FontSize="17"
+                  Foreground="{DynamicResource ModernAccent}"/>
+       <TextBox x:Name="Question" Margin="0,8,0,2" Height="68" AcceptsReturn="True"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                AutomationProperties.Name="Untersuchungsanfrage"
+                Text="Fasse den aktuellen AETHER-Systemstatus zusammen."/>
+       <WrapPanel>
+        <Button x:Name="InvestigateButton" Content="Untersuchen" Click="InvestigateClicked"/>
+        <Button x:Name="CancelButton" Content="Abbrechen" Click="CancelClicked" IsEnabled="False"/>
+       </WrapPanel>
+       <StackPanel x:Name="OperationProgressPanel" Visibility="Collapsed" Margin="0,5,0,0">
+        <TextBlock x:Name="OperationPhase" Text="Bereitet Untersuchung vor."
+                   AutomationProperties.Name="Intelligence-Fortschritt"/>
+        <ProgressBar x:Name="OperationProgress" IsIndeterminate="True" Height="7"
+                     Foreground="{DynamicResource ModernAccent}" Background="#38204E" BorderThickness="0"/>
+       </StackPanel>
+      </StackPanel>
+     </Border>
+     <ScrollViewer Grid.Row="1" Margin="0,8,0,0" VerticalScrollBarVisibility="Auto"
+                   HorizontalScrollBarVisibility="Disabled">
+      <StackPanel>
+       <Border Style="{StaticResource ResultPanel}" Padding="10" Margin="0,0,0,7">
+        <StackPanel>
+         <TextBlock Text="SYSTEMZUSTAND" Foreground="{DynamicResource ModernAccent}"
+                    FontFamily="Consolas" Margin="0,0,0,5"/>
+         <TextBlock x:Name="SummaryText" Text="Noch keine Untersuchung gestartet."
+                    AutomationProperties.Name="AETHER-Zusammenfassung"/>
+        </StackPanel>
+       </Border>
+       <Border x:Name="FindingsPanel" Style="{StaticResource ResultPanel}" Padding="10" Margin="0,0,0,7">
+        <StackPanel>
+         <TextBlock Text="BEFUNDE" Foreground="{DynamicResource ModernAccent}"
+                    FontFamily="Consolas" Margin="0,0,0,5"/>
+         <ItemsControl x:Name="FindingsItems" AutomationProperties.Name="Belegte Befunde">
+          <ItemsControl.ItemTemplate>
+           <DataTemplate>
+            <Border Style="{StaticResource AssistantPanel}" Padding="8" Margin="0,3">
+             <StackPanel>
+              <TextBlock Text="{Binding Proof}" Foreground="{DynamicResource ModernAccent}"/>
+              <TextBlock Text="{Binding Text}" Margin="0,3,0,0"/>
+             </StackPanel>
+            </Border>
+           </DataTemplate>
+          </ItemsControl.ItemTemplate>
+         </ItemsControl>
+        </StackPanel>
+       </Border>
+       <Border Style="{StaticResource ResultPanel}" Padding="10" Margin="0,0,0,7">
+        <StackPanel>
+         <TextBlock Text="BEFUNDE · BELEGE" Foreground="{DynamicResource ModernAccent}"
+                    FontFamily="Consolas" Margin="0,0,0,5"/>
+         <ItemsControl x:Name="EvidenceItems" AutomationProperties.Name="Lesbare Messbelege">
+          <ItemsControl.ItemTemplate>
+           <DataTemplate>
+            <Border Style="{StaticResource AssistantPanel}" Padding="8" Margin="0,3">
+             <Grid>
+              <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="2*"/>
+               <ColumnDefinition Width="3*"/>
+              </Grid.ColumnDefinitions>
+              <StackPanel>
+               <TextBlock Text="{Binding Title}" Foreground="{DynamicResource ModernAccent}"/>
+               <TextBlock Text="{Binding Context}" FontSize="11"
+                          Foreground="{DynamicResource ModernTextSecondary}"/>
+              </StackPanel>
+              <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="16"
+                         VerticalAlignment="Center" HorizontalAlignment="Right"/>
+             </Grid>
+            </Border>
+           </DataTemplate>
+          </ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <TextBlock x:Name="NoEvidenceText" Text="Für diese Untersuchung liegen keine aktuellen Messbelege vor."
+                    Foreground="{DynamicResource ModernTextSecondary}"/>
+         <TextBlock x:Name="StorageStatusText" Visibility="Collapsed"
+                    Foreground="{DynamicResource ModernTextSecondary}"/>
+        </StackPanel>
+       </Border>
+       <Border x:Name="DiagnosisPanel" Visibility="Collapsed" Style="{StaticResource ResultPanel}" Padding="10" Margin="0,0,0,7">
+        <StackPanel>
+         <TextBlock Text="HYPOTHESEN" Foreground="{DynamicResource ModernAccent}" FontFamily="Consolas"/>
+         <ItemsControl x:Name="HypothesisItems">
+          <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Margin="0,4"/></DataTemplate></ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <TextBlock Text="EMPFOHLENE PRÜFUNGEN" Foreground="{DynamicResource ModernAccent}" FontFamily="Consolas" Margin="0,9,0,0"/>
+         <ItemsControl x:Name="DiagnosticCheckItems">
+          <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Margin="0,4"/></DataTemplate></ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <TextBlock Text="LÖSUNGSVORSCHLÄGE" Foreground="{DynamicResource ModernAccent}" FontFamily="Consolas" Margin="0,9,0,0"/>
+         <ItemsControl x:Name="DiagnosticSolutionItems">
+          <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Margin="0,4"/></DataTemplate></ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <TextBlock Text="MÖGLICHE AETHER-AKTIONEN" Foreground="{DynamicResource ModernAccent}" FontFamily="Consolas" Margin="0,9,0,0"/>
+         <ItemsControl x:Name="DiagnosticActionItems">
+          <ItemsControl.ItemTemplate>
+           <DataTemplate><Button Content="{Binding Label}" Tag="{Binding Route}" Click="DiagnosticNavigationClicked"
+                                 HorizontalAlignment="Left"/></DataTemplate>
+          </ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <TextBlock x:Name="NoDiagnosticActionsText" Text="Keine passende AETHER-Aktion vorgeschlagen."
+                    Foreground="{DynamicResource ModernTextSecondary}"/>
+        </StackPanel>
+       </Border>
+       <Border x:Name="RecommendationsPanel" Style="{StaticResource ResultPanel}" Padding="10" Margin="0,0,0,7">
+        <StackPanel>
+         <TextBlock Text="EMPFEHLUNGEN" Foreground="{DynamicResource ModernAccent}"
+                    FontFamily="Consolas" Margin="0,0,0,5"/>
+         <ItemsControl x:Name="RecommendationsItems" AutomationProperties.Name="Lesende Empfehlungen">
+          <ItemsControl.ItemTemplate>
+           <DataTemplate>
+            <TextBlock Text="{Binding}" Margin="0,3"/>
+           </DataTemplate>
+          </ItemsControl.ItemTemplate>
+         </ItemsControl>
+        </StackPanel>
+       </Border>
+       <Border Style="{StaticResource ResultPanel}" Padding="10">
+        <StackPanel>
+         <TextBlock Text="MÖGLICHE MASSNAHMEN" Foreground="{DynamicResource ModernAccent}"
+                    FontFamily="Consolas" Margin="0,0,0,5"/>
+         <TextBlock x:Name="ActionsText"
+                    Text="Es wurde keine Systemänderung ausgeführt. Änderungen benötigen eine eigene Vorschau und persönliche Freigabe."/>
+        </StackPanel>
+       </Border>
+       <Expander Header="Technische Details" IsExpanded="False" Margin="0,7,0,0">
+        <StackPanel>
+         <Expander Header="Laufdiagnose" IsExpanded="False">
+          <TextBox x:Name="RunDiagnosticText" IsReadOnly="True" TextWrapping="Wrap"
+                   Text="Noch keine Laufdiagnose vorhanden." AutomationProperties.Name="Laufdiagnose"/>
+         </Expander>
+         <Expander Header="Modellantwort (inhaltlich nicht verifiziert)" IsExpanded="False">
+          <TextBox x:Name="ModelAnswerText" IsReadOnly="True" TextWrapping="Wrap"
+                   MaxHeight="220" VerticalScrollBarVisibility="Auto"
+                   Text="Noch keine Modellantwort vorhanden." AutomationProperties.Name="Technische Modellantwort"/>
+         </Expander>
+        </StackPanel>
+       </Expander>
+      </StackPanel>
+     </ScrollViewer>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Untersuchungen">
+    <Grid Margin="8">
+     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+     </Grid.RowDefinitions>
+     <TextBlock Text="Ziele und Quellenstatus" FontSize="16"
+                Foreground="{DynamicResource ModernAccent}" Margin="0,0,0,7"/>
+     <DataGrid Grid.Row="1" x:Name="Targets" IsReadOnly="True" AutoGenerateColumns="False"
+               EnableRowVirtualization="True" AutomationProperties.Name="Untersuchungsziele">
+      <DataGrid.Columns>
+       <DataGridTextColumn Header="Ziel" Binding="{Binding Name}" Width="2*"/>
+       <DataGridTextColumn Header="Datenquelle" Binding="{Binding Source}" Width="2*"/>
+       <DataGridTextColumn Header="Status" Binding="{Binding State}" Width="*"/>
+      </DataGrid.Columns>
+     </DataGrid>
+     <Expander x:Name="InvestigationDetails" Grid.Row="2" Header="Weitere Details" IsExpanded="False" Margin="0,7,0,0">
+      <TextBox x:Name="Explanation" IsReadOnly="True" MaxHeight="220"
+               TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+               AutomationProperties.Name="Technische Untersuchungsdetails"/>
+     </Expander>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Modelle">
+    <Grid Margin="8">
+     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+     </Grid.RowDefinitions>
+     <TextBlock Text="Lokale Modellübersicht" FontSize="16"
+                Foreground="{DynamicResource ModernAccent}"/>
+     <StackPanel Grid.Row="1" Margin="0,5,0,4">
+      <TextBlock x:Name="AutoManageStatus" Text="Lokale KI automatisch verwalten: EIN"
+                 Foreground="{DynamicResource ModernAccent}" FontWeight="SemiBold"/>
+      <TextBlock x:Name="AutomaticModelStatus" Text="Lokale KI muss eingerichtet werden. Regelbasierter Fallback ist verfügbar."
+                 Margin="0,3,0,0" TextWrapping="Wrap" AutomationProperties.Name="Automatischer Modellstatus"/>
+     </StackPanel>
+     <DataGrid Grid.Row="2" x:Name="ModelRows" IsReadOnly="True" AutoGenerateColumns="False"
+               EnableRowVirtualization="True" AutomationProperties.Name="Lokale Modellübersicht">
+      <DataGrid.Columns>
+       <DataGridTextColumn Header="Modell" Binding="{Binding Name}" Width="2*"/>
+       <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+       <DataGridTextColumn Header="Rolle" Binding="{Binding Role}" Width="2*"/>
+       <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="*"/>
+       <DataGridTextColumn Header="Ausführung" Binding="{Binding Execution}" Width="*"/>
+       <DataGridTextColumn Header="Speicher" Binding="{Binding Memory}" Width="*"/>
+       <DataGridTextColumn Header="Kontext" Binding="{Binding Context}" Width="*"/>
+      </DataGrid.Columns>
+     </DataGrid>
+     <Expander x:Name="ModelDetails" Grid.Row="3" Header="Technische Modelldetails" IsExpanded="False" Margin="0,7,0,0">
+      <StackPanel>
+       <TextBox x:Name="ModelText" IsReadOnly="True" MaxHeight="220"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                AutomationProperties.Name="Einklappbare technische Modelldetails"/>
+       <Expander x:Name="AdvancedModelManagement" Header="Erweiterte Modellverwaltung" IsExpanded="False" Margin="0,7,0,0">
+        <StackPanel>
+         <CheckBox x:Name="DeveloperMode" Content="Entwicklermodus"
+                   Checked="DeveloperModeChanged" Unchecked="DeveloperModeChanged"
+                   AutomationProperties.Name="Entwicklermodus"/>
+         <WrapPanel x:Name="DeveloperManagementPanel" Visibility="Collapsed" Margin="0,5,0,0">
+          <TextBlock Text="Modus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+          <ComboBox x:Name="Modes" Width="170" AutomationProperties.Name="Intelligence-Betriebsmodus"/>
+          <TextBlock Text="Auswahl" VerticalAlignment="Center" Margin="12,0,6,0"/>
+          <ComboBox x:Name="ModelChoice" Width="280" DisplayMemberPath="Text"
+                    SelectionChanged="ModelSelectionChanged"
+                    ToolTip="{Binding SelectedItem.Text, RelativeSource={RelativeSource Self}}"
+                    AutomationProperties.Name="Intelligence-Modellauswahl"/>
+          <Button Content="Manifest wählen" Click="ModelClicked"/>
+          <Button Content="Integrität prüfen" Click="CheckModelClicked"/>
+          <Button Content="Modell laden" Click="LoadModelClicked"/>
+          <Button Content="Modell entladen" Click="UnloadModelClicked"/>
+          <Button Content="Hardware aktuell lesen" Click="HardwareClicked"/>
+          <Button x:Name="RetestButton" Content="Phi-End-to-End-Test" Click="RetestClicked"/>
+         </WrapPanel>
+        </StackPanel>
+       </Expander>
+      </StackPanel>
+     </Expander>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Wissen">
+    <Grid Margin="8">
+     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+     </Grid.RowDefinitions>
+     <WrapPanel>
+      <Button Content="Textquelle bewusst importieren" Click="KnowledgeClicked"/>
+      <Button Content="Importierte Quellen löschen" Click="DeleteKnowledgeClicked"/>
+     </WrapPanel>
+     <TextBlock Grid.Row="1" x:Name="KnowledgeSummary"
+                Text="Freigegebene lokale Textquellen erscheinen hier mit Titel, Gültigkeit und Status."
+                Margin="0,8" AutomationProperties.Name="Lokale Wissensquellen"/>
+     <Expander Grid.Row="2" Header="Technische Quelldetails" IsExpanded="False">
+      <TextBox x:Name="KnowledgeText" IsReadOnly="True" MaxHeight="220"
+               TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+     </Expander>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Aufträge">
+    <Grid Margin="8">
+     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+     </Grid.RowDefinitions>
+     <TextBlock Text="Vorschau, Freigabe und Nachprüfung" FontSize="16"
+                Foreground="{DynamicResource ModernAccent}"/>
+     <WrapPanel Grid.Row="1" Margin="0,5">
+      <ComboBox x:Name="SavedJobs" Width="210" DisplayMemberPath="Name"
+                AutomationProperties.Name="Gespeicherte Intelligence-Aufträge"/>
+      <Button Content="Auftrag ansehen" Click="LoadJobClicked"/>
+      <Button Content="Manuell nachprüfen" Click="ReconcileClicked"/>
+      <Button Content="Lesende Vorschau" Click="PreviewClicked"/>
+      <Button Content="Simulierte Testmarke vorbereiten" Click="MarkerClicked"/>
+      <Button Content="Persönlich freigeben" Click="ApproveClicked"/>
+      <Button Content="Ausführen" Click="ExecuteClicked"/>
+      <Button Content="Freigabe widerrufen" Click="RevokeClicked"/>
+      <Button Content="Eigener Rückweg" Click="RollbackClicked"/>
+      <Button Content="Bericht exportieren" Click="ExportClicked"/>
+     </WrapPanel>
+     <TextBlock Grid.Row="2" x:Name="PlanOverview"
+                Text="Für lesende Systemzusammenfassungen wird kein Verwaltungsauftrag ausgeführt."
+                Margin="0,6"/>
+     <Expander Grid.Row="3" Header="Technische Auftragsdetails" IsExpanded="False">
+      <TextBox x:Name="PlanText" IsReadOnly="True" MaxHeight="240"
+               TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+               AutomationProperties.Name="Technische Auftragsdetails"/>
+     </Expander>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Sicherheit">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+     <StackPanel Margin="8">
+      <TextBlock Text="Lokal und lesend" FontSize="16" Foreground="{DynamicResource ModernAccent}"/>
+      <TextBlock Text="AETHER überträgt keine Daten an Cloudanbieter. Lokale Modellnutzung folgt dem freigegebenen Setupkatalog; Verwaltungsänderungen benötigen eine separate Vorschau und persönliche Freigabe."
+                 Margin="0,6,0,8"/>
+      <WrapPanel>
+       <Button Content="Leistung prüfen" Click="EvaluateClicked"/>
+       <Button Content="Begrenztes Profil bestätigen" Click="ProfileClicked"/>
+      </WrapPanel>
+      <Expander Header="Sicherheitsgrenzen und Bedienhinweise" IsExpanded="False" Margin="0,5">
+       <TextBox x:Name="HelpText" IsReadOnly="True" MaxHeight="180"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                AutomationProperties.Name="Intelligence-Sicherheitsgrenzen"/>
+      </Expander>
+      <Expander Header="Agenten und Beleggrenzen" IsExpanded="False" Margin="0,5">
+       <TextBox x:Name="AgentText" IsReadOnly="True" MaxHeight="180"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+      </Expander>
+      <Expander Header="Leistungsdiagnose" IsExpanded="False" Margin="0,5">
+       <TextBox x:Name="EvaluationText" IsReadOnly="True" MaxHeight="220"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+      </Expander>
+      <Expander Header="Audit" IsExpanded="False" Margin="0,5">
+       <TextBox x:Name="AuditText" IsReadOnly="True" MaxHeight="180"
+                TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+      </Expander>
+     </StackPanel>
+    </ScrollViewer>
+   </TabItem>
+  </TabControl>
+ </Grid>
+</UserControl>

@@ -82,6 +82,17 @@ internal sealed class JsonManagerStore : IManagerStore
         return Task.FromResult(_adminToken ?? throw new InvalidOperationException("The manager store is not initialized."));
     }
 
+    public async Task<ReportMetadataResponse[]> GetLatestReportsAsync(CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            return _reports.Select(x => x.Metadata).GroupBy(x => x.DeviceId)
+                .Select(group => group.MaxBy(x => x.ReceivedAt)!).ToArray();
+        }
+        finally { _gate.Release(); }
+    }
+
     public async Task<EnrollmentCodeResponse> CreateEnrollmentCodeAsync(CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken);

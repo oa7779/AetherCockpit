@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 
 namespace SystemCockpit;
 
@@ -9,6 +9,47 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        var launch = Services.IntelligenceRunLog.ProcessContext();
+        launch.Stage = "ProcessStarted";
+        Services.IntelligenceRunLog launchLog;
+        try
+        {
+            launchLog = new Services.IntelligenceRunLog(System.IO.Path.Combine(launch.LocalAppDataPath!,
+                "AETHER", "IntelligenceFabric"), launch, launch: true);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            System.Diagnostics.Trace.TraceError("AETHER Startdiagnose: {0}", ex);
+            MessageBox.Show($"Der Programmstart kann nicht protokolliert werden.\nRunId: {launch.RunId}\n" +
+                $"Diagnoseziel: {launch.DiagnosticPath}\n{ex.Message}", "AETHER Laufdiagnose",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+            return;
+        }
+        using var launchReceipt = launchLog;
+        bool RecordLaunchStage(string stage)
+        {
+            launch.Stage = stage;
+            try { launchLog.Write(launch); return true; }
+            catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+            {
+                System.Diagnostics.Trace.TraceError("AETHER Startdiagnose: {0}", ex);
+                MessageBox.Show($"Der Programmstart kann nicht weiter protokolliert werden.\nRunId: {launch.RunId}\n" +
+                    $"Diagnoseziel: {launch.DiagnosticPath}\n{ex.Message}", "AETHER Laufdiagnose",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown(1);
+                return false;
+            }
+        }
+        bool RecordStartupException(string stage, Exception exception)
+        {
+            Services.IntelligenceRunLog.CaptureStartupException(launch, exception);
+            return RecordLaunchStage(stage);
+        }
+        var taskbarIdentityResult = Services.TaskbarIdentity.SetForCurrentProcess();
+        if (taskbarIdentityResult < 0)
+            System.Diagnostics.Trace.TraceError("AETHER taskbar identity could not be set (HRESULT 0x{0:X8}).",
+                taskbarIdentityResult);
         try { Services.DesktopText.ConfigureSupportedUi(Services.CockpitSettings.Load().Language); }
         catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or
             System.Text.Json.JsonException or ArgumentException)
@@ -33,14 +74,16 @@ public partial class App : Application
             return;
         }
         var identity = System.Security.Principal.WindowsIdentity.GetCurrent().User?.Value
-            ?? throw new InvalidOperationException("Windows-Benutzerkennung nicht verfuegbar.");
+            ?? throw new InvalidOperationException("Windows-Benutzerkennung nicht verfügbar.");
         _activation = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\AetherCockpit-" + identity, out var first);
         if (!first)
         {
+            if (!RecordLaunchStage("ActivationForwardedToExistingInstance")) return;
             if (!trayStart) _activation.Set();
             Shutdown();
             return;
         }
+        if (!RecordLaunchStage("PrimaryInstance")) return;
         _activationWait = ThreadPool.RegisterWaitForSingleObject(_activation, (_, _) =>
         {
             if (Dispatcher.HasShutdownStarted) return;
@@ -75,7 +118,7 @@ public partial class App : Application
         }
         Services.ModernWindowAppearance.Enable();
         Microsoft.Win32.SystemEvents.UserPreferenceChanged += WindowsPreferencesChanged;
-        // Erststart: Funktionsuebersicht, EULA-Pflichtzustimmung und Rechner-Inventar.
+        // Erststart: Funktionsübersicht, EULA-Pflichtzustimmung und Rechnerinventar.
         // Sprache und Design werden vor dem ersten Programmfenster gesetzt.
         var consent = Services.EulaConsent.Default;
         if (!consent.IsAccepted())
@@ -109,8 +152,10 @@ public partial class App : Application
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
             }
             catch (Exception ex) when (ex is System.IO.IOException or System.ComponentModel.Win32Exception or
-                InvalidOperationException or UnauthorizedAccessException or NotSupportedException or ArgumentException)
+                InvalidOperationException or UnauthorizedAccessException or NotSupportedException or ArgumentException or
+                System.Windows.Markup.XamlParseException)
             {
+                RecordStartupException("TrayStartupFailed", ex);
                 System.Diagnostics.Trace.TraceError("AETHER Hintergrundstart: {0}", ex);
                 MessageBox.Show(ex.Message, Services.DesktopUiText.Get("App.BackgroundFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
                 if (background is not null) background.RequestExit();
@@ -118,11 +163,23 @@ public partial class App : Application
             }
             return;
         }
-        var boot = new BootWindow();
+        BootWindow boot;
+        try { boot = new BootWindow(); }
+        catch (Exception ex) when (ex is System.IO.IOException or System.ComponentModel.Win32Exception or
+            InvalidOperationException or UnauthorizedAccessException or System.Windows.Markup.XamlParseException or
+            NotSupportedException or ArgumentException)
+        {
+            RecordStartupException("BootWindowFailed", ex);
+            System.Diagnostics.Trace.TraceError("AETHER BootWindow: {0}", ex);
+            MessageBox.Show(ex.Message, Services.DesktopUiText.Get("App.InitializationFailed"),
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+            return;
+        }
         MainWindow? cockpit = null;
-        Services.WindowActivation.Show(boot);
         try
         {
+            Services.WindowActivation.Show(boot);
             boot.Report(Services.DesktopUiText.Get("Boot.AccessGranted"), 3);
             cockpit = new MainWindow();
             var warnings = await cockpit.InitializeHardwareAsync(boot.Report, boot.Token);
@@ -144,6 +201,7 @@ public partial class App : Application
             InvalidOperationException or UnauthorizedAccessException or System.Windows.Markup.XamlParseException or
             NotSupportedException or ArgumentException)
         {
+            RecordStartupException("CockpitStartupFailed", ex);
             System.Diagnostics.Trace.TraceError("AETHER Boot: {0}", ex);
             MessageBox.Show(boot, ex.Message, Services.DesktopUiText.Get("App.InitializationFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
             if (cockpit is not null) await cockpit.ReleaseBeforeStartupAsync();

@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SystemCockpit.Services;
 
-internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<string> statusChanged)
+internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<string> statusChanged) : IDisposable
 {
     internal static readonly TimeSpan Interval = TimeSpan.FromMinutes(30);
     internal static string ReportPath => Path.Combine(
@@ -18,12 +18,14 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
     private CancellationTokenSource? _activeCycle;
     private bool _enabled;
     private string? _lastFailure;
+    private bool _disposed;
 
     internal void Configure(bool enabled)
     {
         CancellationTokenSource? active;
         lock (_sync)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             if (_enabled == enabled) return;
             _enabled = enabled;
             active = _activeCycle;
@@ -31,10 +33,10 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
 
         try { active?.Cancel(); }
         catch (ObjectDisposedException) { }
-        if (_wake.CurrentCount == 0)
+        lock (_sync)
         {
-            try { _wake.Release(); }
-            catch (SemaphoreFullException) { }
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            if (_wake.CurrentCount == 0) _wake.Release();
         }
     }
 
@@ -74,10 +76,11 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
                     InvalidOperationException or TimeoutException or JsonException or InvalidDataException)
                 {
                     Trace.TraceError("AETHER Hintergrunddiagnose: {0}", ex);
-                    statusChanged(DesktopUiText.Format("Background.Failure", ex.Message));
-                    if (!string.Equals(_lastFailure, ex.Message, StringComparison.Ordinal))
+                    statusChanged(DesktopUiText.Get("Background.Failure"));
+                    var failureKey = ex.GetType().FullName + "\0" + ex.Message;
+                    if (!string.Equals(_lastFailure, failureKey, StringComparison.Ordinal))
                     {
-                        _lastFailure = ex.Message;
+                        _lastFailure = failureKey;
                         notify(DesktopUiText.Get("Background.FailureNotice"));
                     }
                 }
@@ -130,5 +133,15 @@ internal sealed class BackgroundDiagnosticMonitor(Action<string> notify, Action<
         var temporary = path + ".tmp";
         File.WriteAllText(temporary, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
         File.Move(temporary, path, overwrite: true);
+    }
+
+    public void Dispose()
+    {
+        lock (_sync)
+        {
+            if (_disposed) return;
+            _wake.Dispose();
+            _disposed = true;
+        }
     }
 }

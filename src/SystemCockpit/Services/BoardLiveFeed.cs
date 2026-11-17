@@ -14,9 +14,17 @@ public sealed record BoardFeedFrame(DateTimeOffset Timestamp, BoardSnapshot Hard
 
 public static class BoardLiveFeed
 {
-    internal static string PipeName => "AetherBoard-" +
-        (WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("Windows SID fehlt.")) +
-        "-" + Process.GetCurrentProcess().SessionId;
+    internal static string PipeName
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            using var process = Process.GetCurrentProcess();
+            return "AetherBoard-" +
+                (identity.User?.Value ?? throw new InvalidOperationException("Windows SID fehlt.")) +
+                "-" + process.SessionId;
+        }
+    }
     private const int MaxFrameBytes = 2_000_000;
 
     public static bool IsFresh(BoardFeedFrame frame, DateTimeOffset now) =>
@@ -111,10 +119,10 @@ public static class BoardLiveFeed
         if (frame.Hardware is null || frame.Hardware.Devices is null || frame.Hardware.Warnings is null ||
             frame.Hardware.Board is null || frame.Hardware.Internet is null ||
             frame.Cpu is null || frame.Ram is null || frame.Gpu is null || frame.Download is null || frame.Temperature is null)
-            throw new InvalidDataException("Board-Livefeed ist unvollstaendig.");
+            throw new InvalidDataException("Board-Livefeed ist unvollständig.");
         if (frame.Sensors?.Any(s => s is null || s.Id is null || s.Hardware is null ||
             s.Name is null || s.Type is null || s.Unit is null) == true)
-            throw new InvalidDataException("Board-Livefeed enthaelt unvollstaendige Sensordaten.");
+            throw new InvalidDataException("Board-Livefeed enthält unvollständige Sensordaten.");
         return frame;
     }
 }

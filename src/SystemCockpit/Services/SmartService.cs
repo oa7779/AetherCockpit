@@ -9,6 +9,11 @@ public sealed record SmartDevice(string Name, string Type, string Info)
     public override string ToString() => $"{Name} [{Type}] {Info}";
 }
 public sealed record SmartReport(string Summary, string Json, int ExitCode);
+public sealed class SmartReadException(int exitCode) : IOException(
+    $"smartctl Befehls-/Zugriffsfehler (Bitmaske {exitCode}). Administratorrechte, Transport und Geräteunterstützung prüfen.")
+{
+    public int ExitCode { get; } = exitCode;
+}
 
 public sealed class SmartService(string executable)
 {
@@ -44,12 +49,12 @@ public sealed class SmartService(string executable)
     {
         if (device.Type.StartsWith("nvme", StringComparison.OrdinalIgnoreCase) &&
             operation is "conveyance" or "selective" or "aam" or "apm")
-            throw new NotSupportedException("Diese ATA-spezifische Aktion ist fuer NVMe nicht definiert. Short/Long nur bei gemeldeter Device-Self-Test-Unterstuetzung.");
+            throw new NotSupportedException("Diese ATA-spezifische Aktion ist für NVMe nicht definiert. Short/Long nur bei gemeldeter Device-Self-Test-Unterstützung.");
         var args = BuildOperation(device, operation, argument);
         var result = await RunAsync(args, token);
         CheckExit(result.ExitCode);
         return new($"SMART-Befehl abgeschlossen, Exit {result.ExitCode}. " +
-            "Selbsttests laufen im Laufwerk weiter; fuer Fortschritt und Ergebnis erneut Diagnose lesen.",
+            "Selbsttests laufen im Laufwerk weiter; für Fortschritt und Ergebnis erneut Diagnose lesen.",
             result.Output, result.ExitCode);
     }
 
@@ -82,12 +87,12 @@ public sealed class SmartService(string executable)
     {
         if (!Regex.IsMatch(device.Name, @"^(/dev/[A-Za-z0-9/_-]+|[A-Za-z]:|\\\\\.\\PhysicalDrive\d+)$") ||
             !Regex.IsMatch(device.Type, @"^[A-Za-z0-9,/_+-]+$"))
-            throw new ArgumentException("Unerwarteter SMART-Geraetepfad/-typ.");
+            throw new ArgumentException("Unerwarteter SMART-Gerätepfad/-typ.");
     }
     private async Task<CommandResult> RunAsync(string[] args, CancellationToken token)
     {
         if (!Path.IsPathFullyQualified(executable) || !File.Exists(executable))
-            throw new FileNotFoundException("smartctl fehlt. Offizielle smartmontools-Version installieren und EXE in Einstellungen auswaehlen.", executable);
+            throw new FileNotFoundException("smartctl fehlt. Offizielle smartmontools-Version installieren und EXE in Einstellungen auswählen.", executable);
         var result = await CommandRunner.RunAsync(executable, args, TimeSpan.FromSeconds(90), token, utf8: true);
         if (!string.IsNullOrWhiteSpace(result.Error)) throw new IOException($"smartctl: {result.Error}");
         return result;
@@ -95,7 +100,7 @@ public sealed class SmartService(string executable)
     private static void CheckExit(int exit)
     {
         // smartctl uses a bitmask: bits 0..2 are command/open/read failures, bits 3..7 are health/log findings.
-        if ((exit & 7) != 0) throw new IOException($"smartctl Befehls-/Zugriffsfehler (Bitmaske {exit}). Administratorrechte, Transport und Geraeteunterstuetzung pruefen.");
+        if ((exit & 7) != 0) throw new SmartReadException(exit);
     }
     public static string Summarize(string text, int exitCode)
     {
@@ -104,7 +109,7 @@ public sealed class SmartService(string executable)
         var lines = new List<string>();
         if (root.TryGetProperty("model_name", out var model)) lines.Add($"Modell: {model.GetString()}");
         if (root.TryGetProperty("smart_status", out var status) && status.TryGetProperty("passed", out var passed))
-            lines.Add(passed.GetBoolean() ? "SMART Gesamtstatus: PASSED (keine Garantie fuer Fehlerfreiheit)" : "SMART Gesamtstatus: FAILED");
+            lines.Add(passed.GetBoolean() ? "SMART Gesamtstatus: PASSED (keine Garantie für Fehlerfreiheit)" : "SMART Gesamtstatus: FAILED");
         else lines.Add("SMART Gesamtstatus: nicht gemeldet");
         if (root.TryGetProperty("temperature", out var temp) && temp.TryGetProperty("current", out var current))
             lines.Add($"Temperatur: {current} C");
@@ -113,12 +118,12 @@ public sealed class SmartService(string executable)
         {
             foreach (var field in new[] { "critical_warning", "percentage_used", "media_errors", "num_err_log_entries", "data_units_written", "available_spare" })
                 if (nvme.TryGetProperty(field, out var value)) lines.Add($"NVMe {field}: {value}");
-            lines.Add("NVMe num_err_log_entries ist kein ATA-Sektorzaehler. percentage_used ist verbrauchter Ausdauerwert, keine Restlebenszeit.");
+            lines.Add("NVMe num_err_log_entries ist kein ATA-Sektorzähler. percentage_used ist verbrauchter Ausdauerwert, keine Restlebenszeit.");
         }
         if (root.TryGetProperty("ata_smart_attributes", out var ata) && ata.TryGetProperty("table", out var table))
             foreach (var attribute in table.EnumerateArray())
                 lines.Add($"ATA {attribute.GetProperty("id")}: {attribute.GetProperty("name")} | {attribute.GetProperty("raw")}");
-        lines.Add($"smartctl Exit-Bitmaske: {exitCode}. Rohdaten enthalten Faehigkeiten, Fehler- und Selbsttestlogs.");
+        lines.Add($"smartctl Exit-Bitmaske: {exitCode}. Rohdaten enthalten Fähigkeiten, Fehler- und Selbsttestlogs.");
         return string.Join(Environment.NewLine, lines);
     }
 }

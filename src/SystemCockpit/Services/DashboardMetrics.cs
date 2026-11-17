@@ -8,6 +8,11 @@ namespace SystemCockpit.Services;
 public sealed record ProcessMetric(string Name, int Id, double? CpuPercent, double? MemoryMb,
     int? Threads, int? Handles, double? ReadMbps, double? WriteMbps, string Status, long StartTicks = 0)
 {
+    public ProcessIdentity Identity => new(Id, StartTicks);
+    public int? ParentPid { get; init; }
+    public double? PrivateMb { get; init; }
+    public int? Session { get; init; }
+    public DateTimeOffset ObservedAt { get; init; }
     public string CpuDisplay => CpuPercent is { } v ? $"{v:0.0}%" : "--";
     public double CpuLevel => CpuPercent ?? 0;
     public string MemoryDisplay => MemoryMb is { } v ? $"{v:0.0}" : "--";
@@ -27,7 +32,8 @@ public sealed class DashboardMetrics
     private Dictionary<int, (long Start, double Cpu, ulong Read, ulong Write)> _processes = [];
     private Dictionary<string, (long Read, long Write)> _adapters = [];
 
-    public DashboardSnapshot Read()
+    public DashboardSnapshot Read() => Read(CancellationToken.None);
+    public DashboardSnapshot Read(CancellationToken token)
     {
         var now = Stopwatch.GetTimestamp();
         var elapsed = _timestamp == 0 ? 0 : (double)(now - _timestamp) / Stopwatch.Frequency;
@@ -37,10 +43,14 @@ public sealed class DashboardMetrics
         if (!GetPerformanceInfo(ref performance, performance.Size)) throw new Win32Exception(Marshal.GetLastWin32Error());
         var processes = new List<ProcessMetric>();
         var baseline = new Dictionary<int, (long, double, ulong, ulong)>();
-        foreach (var process in Process.GetProcesses())
+        IReadOnlyDictionary<int, int> parents;
+        try { parents = ProcessNative.Parents(); }
+        catch (Win32Exception ex) { Trace.TraceError("Prozesseltern: {0}", ex); issues.Add("Prozesseltern nicht lesbar: " + ex.NativeErrorCode); parents = new Dictionary<int, int>(); }
+        foreach (var process in ProcessNative.EnumerateProcesses())
         {
             using (process)
             {
+                token.ThrowIfCancellationRequested();
                 try
                 {
                     var id = process.Id;
@@ -48,8 +58,12 @@ public sealed class DashboardMetrics
                     var start = process.StartTime.ToUniversalTime().Ticks;
                     var cpu = process.TotalProcessorTime.TotalSeconds;
                     var memory = process.WorkingSet64 / 1048576d;
-                    var hasIo = GetProcessIoCounters(process.Handle, out var io);
-                    var ioError = hasIo ? "" : new Win32Exception(Marshal.GetLastWin32Error()).Message;
+                    var hasIo = true;
+                    var ioError = "";
+                    (ulong ReadBytes, ulong WriteBytes) io = default;
+                    try { io = ProcessNative.Io(new(id, start)); }
+                    catch (Win32Exception ex) { hasIo = false; ioError = ex.Message; }
+                    catch (InvalidOperationException ex) { hasIo = false; ioError = ex.Message; }
                     double? cpuPercent = null, read = null, write = null;
                     if (_processes.TryGetValue(id, out var old) && old.Start == start && elapsed > 0)
                     {
@@ -62,12 +76,18 @@ public sealed class DashboardMetrics
                     }
                     baseline[id] = (start, cpu, hasIo ? io.ReadBytes : ulong.MaxValue, hasIo ? io.WriteBytes : ulong.MaxValue);
                     processes.Add(new(name, id, cpuPercent, memory, process.Threads.Count, process.HandleCount, read, write,
-                        hasIo ? "Lesbar" : $"I/O nicht lesbar: {ioError}", start));
+                        hasIo ? "Lesbar" : $"I/O nicht lesbar: {ioError}", start)
+                    {
+                        ParentPid = parents.TryGetValue(id, out var parent) ? parent : null,
+                        PrivateMb = process.PrivateMemorySize64 / 1048576d, Session = process.SessionId,
+                        ObservedAt = DateTimeOffset.UtcNow
+                    });
                 }
                 catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or NotSupportedException)
                 {
                     // Protected or exiting processes must remain visibly unknown, not appear idle.
-                    processes.Add(new($"PID {process.Id}", process.Id, null, null, null, null, null, null, ex.Message));
+                    processes.Add(new($"PID {process.Id}", process.Id, null, null, null, null, null, null, ex.Message)
+                        { ObservedAt = DateTimeOffset.UtcNow });
                 }
             }
         }
@@ -77,6 +97,7 @@ public sealed class DashboardMetrics
         foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces().Where(a =>
             a.OperationalStatus == OperationalStatus.Up && a.NetworkInterfaceType != NetworkInterfaceType.Loopback))
         {
+            token.ThrowIfCancellationRequested();
             try
             {
                 var stats = adapter.GetIPStatistics();
@@ -118,7 +139,7 @@ public sealed class DashboardMetrics
             if (status != 0 || returned <= 0 || returned % size != 0)
             {
                 _cores = null;
-                issues.Add($"CPU-Kernzeiten nicht verfuegbar: NTSTATUS 0x{status:X8}");
+                issues.Add($"CPU-Kernzeiten nicht verfügbar: NTSTATUS 0x{status:X8}");
                 return Enumerable.Repeat<double?>(null, Environment.ProcessorCount).ToArray();
             }
             var current = new ProcessorTimes[returned / size];

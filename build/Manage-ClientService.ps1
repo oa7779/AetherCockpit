@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)][string]$InstallDirectory,
     [Parameter(Mandatory=$true)][ValidateSet('Stop','Start','Remove')][string]$Operation
 )
@@ -7,7 +7,7 @@ $name = 'AetherManagedClient'
 $expected = '"' + (Join-Path ([IO.Path]::GetFullPath($InstallDirectory)) 'ManagedClient\AetherClient.Service.exe') + '"'
 $existing = Get-CimInstance Win32_Service -Filter "Name='$name'"
 if (!$existing) { Write-Output 'AETHER CLIENT NOT INSTALLED'; exit 0 }
-if ($existing.PathName -ne $expected) { throw 'Clientdienst gehoert zu einer anderen Installation; keine Aenderung vorgenommen.' }
+if ($existing.PathName -ne $expected) { throw 'Clientdienst gehört zu einer anderen Installation; keine Änderung vorgenommen.' }
 $service = Get-Service -Name $name
 if ($Operation -eq 'Start') {
     Start-Service -InputObject $service

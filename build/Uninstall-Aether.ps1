@@ -1,8 +1,11 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)][string]$InstallDirectory,
     [string]$DataDirectory,
     [string]$ValidationRoot = '',
-    [switch]$InspectRecoveryDirectory
+    [string]$LocalAiDirectory = '',
+    [switch]$InspectRecoveryDirectory,
+    [switch]$RemoveLocalAiConfiguration,
+    [switch]$RemoveLocalAiWeights
 )
 $ErrorActionPreference = 'Stop'
 
@@ -94,6 +97,60 @@ elseif (!$data.Equals((Join-Path $env:LOCALAPPDATA 'AetherCockpit'), [StringComp
 $data = Assert-DedicatedDirectory $data ''
 Assert-NoLinks $install
 if (Test-Path -LiteralPath $data) { Assert-NoLinks $data }
+if ($LocalAiDirectory -and !$ValidationRoot) {
+    throw 'A local AI directory override is allowed only for isolated validation.'
+}
+$localAiRoot = [IO.Path]::GetFullPath($(if ($LocalAiDirectory) {
+    $LocalAiDirectory
+} else {
+    Join-Path $env:LOCALAPPDATA 'AETHER\LocalAI'
+})).TrimEnd('\')
+if ($RemoveLocalAiConfiguration) {
+    $localAiRoot = Assert-DedicatedDirectory $localAiRoot ''
+}
+if ($LocalAiDirectory) {
+    $validationRootPath = [IO.Path]::GetFullPath($ValidationRoot).TrimEnd('\')
+    if (!$localAiRoot.StartsWith($validationRootPath + '\', [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Validation local AI directory must be a dedicated child of the validation root.'
+    }
+}
+$modelStore = Join-Path $localAiRoot 'models'
+$catalog = Join-Path $localAiRoot 'model-catalog.json'
+$ownerPath = Join-Path $localAiRoot 'aether-store.json'
+$ownership = $null
+if ($RemoveLocalAiWeights -and !$RemoveLocalAiConfiguration) {
+    throw 'Model weights may only be removed when local AI configuration removal was also explicitly selected.'
+}
+if ($RemoveLocalAiConfiguration) {
+    if (Test-Path -LiteralPath $ownerPath) {
+        $ownerItem = Get-Item -LiteralPath $ownerPath -Force
+        if ($ownerItem.PSIsContainer -or ($ownerItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+            $ownerItem.Length -gt 65536) {
+            throw 'AETHER-Modellstore-Herkunftsnachweis ist ein Link, Verzeichnis oder überschreitet das Größenlimit.'
+        }
+        $ownership = Get-Content -LiteralPath $ownerPath -Raw | ConvertFrom-Json
+        if ($ownership.schema -ne 1 -or
+            ![IO.Path]::GetFullPath([string]$ownership.modelStorePath).TrimEnd('\').Equals(
+                [IO.Path]::GetFullPath($modelStore).TrimEnd('\'), [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'AETHER-Modellstore-Herkunftsnachweis ist ungültig oder zeigt auf einen anderen Pfad.'
+        }
+    }
+    if (Test-Path -LiteralPath $catalog) {
+        $catalogItem = Get-Item -LiteralPath $catalog -Force
+        if ($catalogItem.PSIsContainer -or ($catalogItem.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw 'AETHER-Modellkatalog ist ein Link oder Verzeichnis; er wird nicht entfernt.'
+        }
+    }
+    if ($RemoveLocalAiWeights) {
+        if (!$ownership -and (Test-Path -LiteralPath $modelStore)) {
+            throw 'Modellgewichte ohne gültigen AETHER-Herkunftsnachweis werden nicht gelöscht.'
+        }
+        if ($ownership -and (Test-Path -LiteralPath $modelStore)) {
+            $modelStore = Assert-DedicatedDirectory $modelStore ''
+            Assert-NoLinks $modelStore
+        }
+    }
+}
 if (!$ValidationRoot) {
     $serviceHelper = Join-Path $install 'Manage-ClientService.ps1'
     if (Test-Path -LiteralPath $serviceHelper -PathType Leaf) {
@@ -152,5 +209,30 @@ if (!$ValidationRoot) {
 if (Test-Path -LiteralPath $data) {
     Remove-OwnedContents $data
     Remove-Item -LiteralPath $data -Force
+}
+if ($RemoveLocalAiConfiguration) {
+    if (Test-Path -LiteralPath $catalog) {
+        Remove-Item -LiteralPath $catalog -Force
+    }
+    if ($ownership) {
+        $environmentTarget = if ($ValidationRoot) { 'Process' } else { 'User' }
+        $currentModels = [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', $environmentTarget)
+        if ($currentModels -and $currentModels.Equals($modelStore, [StringComparison]::OrdinalIgnoreCase)) {
+            [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $ownership.previousModelsEnvironment, $environmentTarget)
+        }
+        $currentHost = [Environment]::GetEnvironmentVariable('OLLAMA_HOST', $environmentTarget)
+        if ($currentHost -and $currentHost.Equals('127.0.0.1:11434', [StringComparison]::OrdinalIgnoreCase)) {
+            [Environment]::SetEnvironmentVariable('OLLAMA_HOST', $ownership.previousHostEnvironment, $environmentTarget)
+        }
+    }
+    if ($RemoveLocalAiWeights) {
+        if ($ownership -and (Test-Path -LiteralPath $modelStore)) {
+            Remove-OwnedContents $modelStore
+            Remove-Item -LiteralPath $modelStore -Force
+        }
+        if ($ownership -and (Test-Path -LiteralPath $ownerPath)) {
+            Remove-Item -LiteralPath $ownerPath -Force
+        }
+    }
 }
 Write-Output 'AETHER cleanup preflight and current-account data removal completed.'

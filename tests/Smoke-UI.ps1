@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Executable = (Join-Path $PSScriptRoot '..\src\SystemCockpit\bin\Release\net10.0-windows\SystemCockpit.exe'),
     [string]$ScreenshotPath,
     [switch]$EnableSensors,
@@ -75,16 +75,16 @@ try {
             $root = [System.Windows.Automation.AutomationElement]::FromHandle($app.MainWindowHandle)
             $names = @(Read-Names)
             if ($root.Current.Name -like '*Neon Wave Boot*') {
-                $continue = Find-Element 'Cockpit oeffnen / Hinweise gelesen'
+                $continue = Find-Element 'Cockpit öffnen / Hinweise gelesen'
                 if ($continue) { $continue.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke() }
                 continue
             }
             if (($names | Where-Object { $_ -like '*CPU-Gesamtzeit*' }) -and
-                ($names | Where-Object { $_ -like '*bestandene Pruefungen*' })) { break }
+                ($names | Where-Object { $_ -like '*bestandene Prüfungen*' })) { break }
         }
     } while ((Get-Date) -lt $deadline)
     if ($null -eq $root -or -not $app.Responding) { throw 'No responsive native window' }
-    if (-not ($names | Where-Object { $_ -like '*bestandene Pruefungen*' })) {
+    if (-not ($names | Where-Object { $_ -like '*bestandene Prüfungen*' })) {
         throw "Windows posture did not arrive: $($names -join ' | ')"
     }
     $toggle = Find-Element 'Messverlauf lokal aufzeichnen'
@@ -131,7 +131,7 @@ try {
     if ($null -eq $advancedRoot) { throw 'Advanced control window missing' }
     $mainRoot = $root
     $root = $advancedRoot
-    foreach ($tab in @('SMART','Netzwerk','Wartung','Autostart','Logs / Gaming','Einstellungen','Schluessel')) {
+    foreach ($tab in @('SMART','Netzwerk','Wartung','Autostart','Logs / Gaming','Einstellungen','Windows- und WLAN-Schlüssel')) {
         $tabCondition = [System.Windows.Automation.AndCondition]::new(
             [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, $tab),
             [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,
@@ -185,7 +185,7 @@ try {
             $crtPattern = $crt.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)
             $crtPattern.Toggle()
             $crtPattern.Toggle()
-            $expand = Find-Element 'Konsole vergroessern'
+            $expand = Find-Element 'Konsole vergrößern'
             $expand.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
             Start-Sleep -Milliseconds 100
             $collapse = Find-Element 'Module anzeigen'

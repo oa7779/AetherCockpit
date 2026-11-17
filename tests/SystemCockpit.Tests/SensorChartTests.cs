@@ -44,7 +44,7 @@ internal static class SensorChartTests
         collisions.Add(Start.AddSeconds(4), [duplicate, duplicate with { Value = 99 }, otherChannel]);
         Check(collisions.Groups.Single().Series.Single(s => s.Name == duplicate.Name).Points[^1].Value is null &&
             collisions.Groups.Single().Series.Single(s => s.Name == otherChannel.Name).Points[^1].Value == 27 &&
-            collisions.Warning.Contains("widerspruechliche"),
+            collisions.Warning.Contains("widersprüchliche"),
             "Conflicting values of exactly the same channel produce an explicit unavailable gap, never an arbitrary first value");
         collisions.Add(Start.AddSeconds(6), [otherChannel]);
         Check(collisions.Groups.Single().Series.Single(s => s.Name == duplicate.Name).Points.Count == 4 &&
@@ -66,7 +66,7 @@ internal static class SensorChartTests
         var package = cpu.Series.Single(s => s.Name == "CPU Package");
         package.IsSelected = false;
         history.Add(Start.AddSeconds(2), Readings(null));
-        Check(!package.IsSelected && package.Current == "Nicht verfuegbar" && package.Points[^1].Value is null,
+        Check(!package.IsSelected && package.Current == "Nicht verfügbar" && package.Points[^1].Value is null,
             "Sensor selection survives updates and unavailable reading is null, never zero");
         history.Add(Start.AddSeconds(9), Readings(46));
         var plot = new Rect(0, 0, 90, 100);
@@ -136,7 +136,7 @@ internal static class SensorChartTests
         Check(model.SensorCharts.Groups.SelectMany(g => g.Series).All(s => s.Points[^1].Value is null),
             "Disabled hardware access cannot plot stale sample readings as current");
         model.MeasurementFailed("synthetic failure");
-        Check(model.SensorCharts.Groups.SelectMany(g => g.Series).All(s => s.Current == "Nicht verfuegbar"),
+        Check(model.SensorCharts.Groups.SelectMany(g => g.Series).All(s => s.Current == "Nicht verfügbar"),
             "Global measurement failure preserves history but visibly invalidates current chart readings");
         return assertions;
     }

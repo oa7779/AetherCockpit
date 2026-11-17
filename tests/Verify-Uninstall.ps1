@@ -4,6 +4,8 @@ $root = Join-Path ([IO.Path]::GetTempPath()) ('AetherUninstallTest-' + [guid]::N
 $app = Join-Path $root 'app'
 $data = Join-Path $root 'data'
 $outside = Join-Path $root 'external-file.txt'
+$oldModelsEnvironment = [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', 'Process')
+$oldHostEnvironment = [Environment]::GetEnvironmentVariable('OLLAMA_HOST', 'Process')
 New-Item -ItemType Directory -Path $root | Out-Null
 $ownedProcess = $null
 $portableProcess = $null
@@ -35,11 +37,30 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\build\aether-install.id') -Destination $marker -Force
     'PASS: rejected pre-uninstall aborts Inno before file/data removal.'
     $fixtureExe = Join-Path $app 'SystemCockpit.exe'
-    Add-Type -TypeDefinition 'public static class AetherUninstallFixture { public static void Main() { System.Threading.Thread.Sleep(120000); } }' `
-        -OutputAssembly $fixtureExe -OutputType ConsoleApplication
+    $fixtureProjectDirectory = Join-Path $root 'fixture-project'
+    $fixtureOutput = Join-Path $root 'fixture-output'
+    New-Item -ItemType Directory -Path $fixtureProjectDirectory | Out-Null
+    Set-Content -LiteralPath (Join-Path $fixtureProjectDirectory 'AetherUninstallFixture.csproj') -Encoding UTF8 -Value @'
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SystemCockpit</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>
+'@
+    Set-Content -LiteralPath (Join-Path $fixtureProjectDirectory 'Program.cs') -Encoding UTF8 -Value @'
+using System.Threading;
+Thread.Sleep(TimeSpan.FromMinutes(2));
+'@
+    & dotnet build (Join-Path $fixtureProjectDirectory 'AetherUninstallFixture.csproj') `
+        --configuration Release --nologo --output $fixtureOutput
+    if ($LASTEXITCODE -ne 0) { throw 'Could not build the isolated uninstall process fixture.' }
+    Copy-Item -Path (Join-Path $fixtureOutput '*') -Destination $app -Recurse -Force
     $portable = Join-Path $root 'portable'
     New-Item -ItemType Directory -Path $portable | Out-Null
-    Copy-Item -LiteralPath $fixtureExe -Destination $portable
+    Copy-Item -Path (Join-Path $fixtureOutput '*') -Destination $portable -Recurse -Force
     $ownedProcess = Start-Process -FilePath $fixtureExe -PassThru -WindowStyle Hidden
     $portableProcess = Start-Process -FilePath (Join-Path $portable 'SystemCockpit.exe') -PassThru -WindowStyle Hidden
     $uninstallLog = Join-Path $root 'uninstall.log'
@@ -84,8 +105,65 @@ try {
     }
     [IO.Directory]::Delete($link)
     'PASS: missing marker and directory junction reject all cleanup before data deletion.'
+
+    $localAi = Join-Path $root 'local-ai'
+    $modelStore = Join-Path $localAi 'models'
+    $ownerPath = Join-Path $localAi 'aether-store.json'
+    $catalogPath = Join-Path $localAi 'model-catalog.json'
+    New-Item -ItemType Directory -Path (Join-Path $modelStore 'blobs') -Force | Out-Null
+    Set-Content -LiteralPath (Join-Path $modelStore 'blobs\sha256-fixture') -Value 'fixture model bytes'
+    @{ schema = 1; modelStorePath = $modelStore; models = @(@{ modelId = 'phi4-mini:3.8b'; digest = ('a' * 64) });
+        previousModelsEnvironment = 'C:\fixture\previous-models'; previousHostEnvironment = '127.0.0.1:12345' } |
+        ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $ownerPath -Encoding UTF8
+    Set-Content -LiteralPath $catalogPath -Value '{}'
+    [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $modelStore, 'Process')
+    [Environment]::SetEnvironmentVariable('OLLAMA_HOST', '127.0.0.1:11434', 'Process')
+    New-Item -ItemType Directory -Path $app,$data -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\build\aether-install.id') -Destination (Join-Path $app 'aether-install.id') -Force
+    Set-Content -LiteralPath (Join-Path $data 'keep.txt') -Value 'fixture'
+    & $helper -InstallDirectory $app -DataDirectory $data -ValidationRoot $root `
+        -LocalAiDirectory $localAi -RemoveLocalAiConfiguration
+    if ((Test-Path -LiteralPath $catalogPath) -or !(Test-Path -LiteralPath (Join-Path $modelStore 'blobs\sha256-fixture')) -or
+        !(Test-Path -LiteralPath $ownerPath) -or
+        [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', 'Process') -ne 'C:\fixture\previous-models' -or
+        [Environment]::GetEnvironmentVariable('OLLAMA_HOST', 'Process') -ne '127.0.0.1:12345') {
+        throw 'Removing local AI configuration did not preserve model weights and restore only managed environment values.'
+    }
+    'PASS: local AI configuration removal preserves owned model weights and restores prior environment values.'
+
+    New-Item -ItemType Directory -Path $app,$data -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\build\aether-install.id') -Destination (Join-Path $app 'aether-install.id') -Force
+    Set-Content -LiteralPath $catalogPath -Value '{}'
+    [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $modelStore, 'Process')
+    [Environment]::SetEnvironmentVariable('OLLAMA_HOST', '127.0.0.1:11434', 'Process')
+    & $helper -InstallDirectory $app -DataDirectory $data -ValidationRoot $root `
+        -LocalAiDirectory $localAi -RemoveLocalAiConfiguration -RemoveLocalAiWeights
+    if ((Test-Path -LiteralPath $modelStore) -or (Test-Path -LiteralPath $ownerPath) -or
+        (Test-Path -LiteralPath $catalogPath)) {
+        throw 'Explicit AETHER model-weight removal left owned store contents.'
+    }
+    'PASS: explicit model-weight removal deletes only the marked AETHER model store.'
+
+    $foreignAi = Join-Path $root 'foreign-ai'
+    $foreignModels = Join-Path $foreignAi 'models'
+    New-Item -ItemType Directory -Path $app,$data,$foreignModels -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\build\aether-install.id') -Destination (Join-Path $app 'aether-install.id') -Force
+    Set-Content -LiteralPath (Join-Path $data 'keep.txt') -Value 'must survive foreign-model rejection'
+    Set-Content -LiteralPath (Join-Path $foreignModels 'foreign.bin') -Value 'must survive'
+    $foreignRejected = $false
+    try {
+        & $helper -InstallDirectory $app -DataDirectory $data -ValidationRoot $root `
+            -LocalAiDirectory $foreignAi -RemoveLocalAiConfiguration -RemoveLocalAiWeights
+    } catch { $foreignRejected = $true }
+    if (!$foreignRejected -or !(Test-Path -LiteralPath (Join-Path $foreignModels 'foreign.bin')) -or
+        !(Test-Path -LiteralPath (Join-Path $data 'keep.txt'))) {
+        throw 'Unowned model data was removed or validation failed after destructive cleanup.'
+    }
+    'PASS: unowned model-store data rejects removal before AETHER user-data cleanup.'
 }
 finally {
+    [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $oldModelsEnvironment, 'Process')
+    [Environment]::SetEnvironmentVariable('OLLAMA_HOST', $oldHostEnvironment, 'Process')
     foreach ($process in @($ownedProcess,$portableProcess)) {
         if ($process -and !$process.HasExited) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() }
         if ($process) { $process.Dispose() }

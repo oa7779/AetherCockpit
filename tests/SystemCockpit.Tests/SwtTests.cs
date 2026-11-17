@@ -1,4 +1,5 @@
 using System.IO;
+using System.Globalization;
 using System.Text.Json;
 using SystemCockpit;
 using SystemCockpit.Services;
@@ -9,6 +10,15 @@ internal static class SwtTests
     {
         var count = 0;
         void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de-DE");
+            Check(DesktopUiText.Get("Metric.Upload") == "Netzwerk / Versand" &&
+                DesktopText.Get("Board.Download") == "EMPFANG" && DesktopText.Get("Board.Upload") == "VERSAND",
+                "German network throughput labels use receiving and sending terminology");
+        }
+        finally { CultureInfo.CurrentUICulture = previousUiCulture; }
 
         // ---- Risikoanzeige: jede Katalogzeile traegt eine abgeleitete, konsistente Stufe ----
         Check(AdminCommandCatalog.All.All(c => c.RiskLevel is >= 0 and <= 2 && c.RiskBadge.StartsWith("RISIKO:")),
@@ -63,7 +73,7 @@ internal static class SwtTests
         Check(roundtrip.SidebarMonitorDeviceName == @"\\.\DISPLAY3" && roundtrip.SidebarDockSide == "left" &&
             !roundtrip.SidebarPinned && roundtrip.SidebarAutoHide == true &&
             roundtrip.SidebarHorizontalOffset == 0.32 && roundtrip.SidebarShortcuts.Single().Name == "Test-App",
-            "xBar-Monitor, Dock, Float/Auto-hide und eigene Verknuepfungen werden serialisiert");
+            "xBar-Monitor, Dock, Float/Auto-hide und eigene Verknüpfungen werden serialisiert");
         var oldSidebarSettings = JsonSerializer.Deserialize<CockpitSettings>("{}")!;
         Check(oldSidebarSettings.SidebarPinned && oldSidebarSettings.SidebarWidgetCpu &&
             oldSidebarSettings.SidebarShortcuts.Count == 0,
@@ -121,11 +131,11 @@ internal static class SwtTests
         Check(HelpCatalog.All.Count >= 18 && HelpCatalog.All.Select(t => t.Title).Distinct().Count() == HelpCatalog.All.Count,
             "Hilfe hat ausreichend eindeutige Themen");
         foreach (var module in new[] { "Cockpit", "Taskmanager", "Sensoren", "Laufwerke", "Messauswertung", "Diagnose",
-                     "Sicherheit", "Cleaner", "Ereignisse", "Superadmin", "Operations", "Pakete", "Netzwerk", "Spuren",
-                     "Schluessel", "Konsole" })
-            Check(HelpCatalog.All.Any(t => t.Module == module), $"Hilfethema fuer Modul '{module}' vorhanden");
+                     "Sicherheit", "Cache-Bereinigung", "Ereignisse", "Systemverwaltung", "Wartung", "Pakete", "Netzwerk", "Spuren",
+                     "Schlüssel", "Konsole" })
+            Check(HelpCatalog.All.Any(t => t.Module == module), $"Hilfethema für Modul '{module}' vorhanden");
         Check(HelpCatalog.All.All(t => t.Body.Length > 100 && t.Keywords.Length > 10),
-            "Jedes Hilfethema hat ausfuehrlichen Inhalt und Suchbegriffe");
+            "Jedes Hilfethema hat ausführlichen Inhalt und Suchbegriffe");
         Check(HelpCatalog.Search("unigetui") is { Count: > 0 } packageTopics && packageTopics.All(t => t.Module == "Pakete"),
             "Suche findet Paketthemen ueber Stichwoerter");
         Check(HelpCatalog.Search("GAMING").Count >= 2 && HelpCatalog.Search("qqqqq-nichts").Count == 0,
@@ -137,7 +147,7 @@ internal static class SwtTests
             [new("Secure Boot", "On", "ok", $"Host {Environment.MachineName}")],
             [new("Disk", "OK", "ok", "WD Blue")]));
         var report = DiagnosticExport.Build(model);
-        Check(report.Contains("== WINDOWS-PRUEFUNGEN ==") && report.Contains("Secure Boot") &&
+        Check(report.Contains("== WINDOWS-PRÜFUNGEN ==") && report.Contains("Secure Boot") &&
             report.Contains("== SENSOREN") && report.Contains(Environment.MachineName),
             "Bericht enthaelt Abschnitte und echte Modellwerte");
         var sample = $"PC {Environment.MachineName} Nutzer {Environment.UserName} " +
@@ -169,7 +179,7 @@ internal static class SwtTests
         for (var i = 0; i < 150; i++) bounded.Visit("Seite" + i);
         var steps = 0;
         while (bounded.Back() is not null) steps++;
-        Check(steps == NavigationTrail.MaxEntries - 1, "Verlauf ist auf 100 Eintraege begrenzt");
+        Check(steps == NavigationTrail.MaxEntries - 1, "Verlauf ist auf 100 Einträge begrenzt");
 
         // ---- Export-Vorschau: Schwaerzung ist Standard und live umschaltbar ----
         var preview = new ExportPreviewWindow("Rechner " + Environment.MachineName + " / 10.0.0.1");
@@ -179,7 +189,7 @@ internal static class SwtTests
                 preview.Preview.Text.Contains("[IPV4]"), "Vorschau startet geschwaerzt");
             preview.RedactToggle.IsChecked = false;
             Check(preview.Preview.Text.Contains(Environment.MachineName) && preview.Preview.Text.Contains("10.0.0.1"),
-                "Abschalten zeigt den Rohtext fuer die eigene Pruefung");
+                "Abschalten zeigt den Rohtext für die eigene Prüfung");
         }
         finally { preview.Close(); }
         return count;

@@ -363,6 +363,7 @@ public partial class HardwareBoardView : UserControl
         _componentDials.Clear();
         _dialMetrics.Clear();
         DrawBoard(visible);
+        if (!SkinCatalog.IsModern) AddNeonBloom();
         ApplyZoom();
         UpdateComponentReadings(null);
         StatusText.Text = (SkinCatalog.IsModern

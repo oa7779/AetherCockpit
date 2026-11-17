@@ -51,8 +51,8 @@
    <WrapPanel x:Name="LiveMetrics" Margin="0,6,0,0">
     <TextBlock Text="CPU " Foreground="#39FF68"/><TextBlock x:Name="CpuLive" Text="{Binding Cards[0].Value}" Foreground="White"/><TextBlock Text=" %    RAM " Foreground="#FFCE54"/>
     <TextBlock Text="{Binding Cards[1].Value}" Foreground="White"/><TextBlock Text=" %    GPU " Foreground="#F56AFF"/>
-    <TextBlock x:Name="GpuLive" Text="{Binding Cards[2].Value}" Foreground="White"/><TextBlock Text=" %    DOWNLOAD " Foreground="#24FFE3"/>
-    <TextBlock x:Name="DownloadLive" Text="{Binding Cards[3].Value}" Foreground="White"/><TextBlock x:Name="UploadMetricLabel" Text=" Mbit/s    UPLOAD " Foreground="#24FFE3"/>
+    <TextBlock x:Name="GpuLive" Text="{Binding Cards[2].Value}" Foreground="White"/><TextBlock x:Name="DownloadMetricLabel" Text=" %    EMPFANG " Foreground="#24FFE3"/>
+    <TextBlock x:Name="DownloadLive" Text="{Binding Cards[3].Value}" Foreground="White"/><TextBlock x:Name="UploadMetricLabel" Text=" Mbit/s    VERSAND " Foreground="#24FFE3"/>
     <TextBlock Text="{Binding SidebarUpload.Value}" Foreground="White"/>
     <TextBlock x:Name="CpuTemperatureMetricLabel" Text="    CPU-TEMP " Foreground="#32D5FF"/><TextBlock Text="{Binding CpuTemperature}" Foreground="White"/>
    </WrapPanel>

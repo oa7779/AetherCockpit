@@ -4,7 +4,7 @@ namespace SystemCockpit.Services;
 
 public sealed record CacheTarget(string Name, string Path, int Level, string Risk)
 {
-    public override string ToString() => $"{Name} | {Risk}";
+    public override string ToString() => $"{(Name == "Benutzer Temp" ? "Temporäre Benutzerdateien" : Name)} | {Risk}";
 }
 
 public static class CacheCatalog
@@ -16,7 +16,7 @@ public static class CacheCatalog
         var grade = target.Level switch
         {
             0 => "A / risikoarm",
-            1 => "B / App-Cache, Programm vorher schliessen",
+            1 => "B / App-Cache, Programm vorher schließen",
             2 => "C / Diagnosedaten gehen verloren",
             _ => "D / systemnah, bewusst entscheiden"
         };
@@ -52,7 +52,7 @@ public static class CacheCatalog
             foreach (var profile in profiles)
                 foreach (var cache in new[] { "Cache", "Code Cache", "GPUCache" })
                     targets.Add(new($"{browser.Item1} / {Path.GetFileName(profile)} / {cache}", Path.Combine(profile, cache),
-                        1, "Browser schliessen; Cache wird neu geladen"));
+                        1, "Browser schließen; Cache wird neu geladen"));
         }
         var firefox = Path.Combine(local, "Mozilla", "Firefox", "Profiles");
         if (Directory.Exists(firefox) && (File.GetAttributes(firefox) & FileAttributes.ReparsePoint) == 0)
@@ -60,12 +60,12 @@ public static class CacheCatalog
                 targets.Add(new($"Firefox / {Path.GetFileName(profile)}", Path.Combine(profile, "cache2"), 1, "Nur Cache; keine Lesezeichen oder Cookies"));
         foreach (var app in new[] { "discord", "Microsoft\\Teams", "Spotify", "Zoom", "Code", "Adobe\\Common" })
             foreach (var cache in new[] { "Cache", "Code Cache", "GPUCache" })
-                targets.Add(new($"{app} / {cache}", Path.Combine(roaming, app, cache), 1, "App schliessen; keine Offline-Downloads"));
+                targets.Add(new($"{app} / {cache}", Path.Combine(roaming, app, cache), 1, "App schließen; keine Offline-Downloads"));
         targets.Add(new("Teams / WebView Cache", Path.Combine(local, "Packages", "MSTeams_8wekyb3d8bbwe",
-            "LocalCache", "Microsoft", "MSTeams", "EBWebView", "Default", "Cache"), 1, "Teams schliessen"));
+            "LocalCache", "Microsoft", "MSTeams", "EBWebView", "Default", "Cache"), 1, "Teams schließen"));
         using var steam = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
         if (steam?.GetValue("SteamPath") is string steamPath && System.IO.Path.IsPathFullyQualified(steamPath))
-            targets.Add(new("Steam / htmlcache", System.IO.Path.Combine(steamPath, "config", "htmlcache"), 1, "Steam schliessen; keine Spiele/Downloads"));
+            targets.Add(new("Steam / htmlcache", System.IO.Path.Combine(steamPath, "config", "htmlcache"), 1, "Steam schließen; keine Spiele/Downloads"));
         return targets.Where(t => Directory.Exists(t.Path)).DistinctBy(t => t.Path, StringComparer.OrdinalIgnoreCase).ToList();
     }
 }

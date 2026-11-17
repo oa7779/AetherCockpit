@@ -1,11 +1,15 @@
-:root{color-scheme:dark;font-family:Segoe UI,system-ui,sans-serif;background:#070917;color:#e4f9ff}
-body{max-width:1500px;margin:auto;padding:24px}header{border-bottom:2px solid #14e8ff;box-shadow:0 6px 24px #14e8ff35}
-h1{color:#26efff;text-shadow:0 0 18px #16cfff}h1 span{color:#fa62dc;font-size:.6em}h2,h3{color:#75f6ff}
-section{background:#11162a;border:1px solid #294b61;border-radius:12px;margin:16px 0;padding:20px;box-shadow:0 0 18px #00e5ff12}
-button,input,select{font:inherit;background:#172237;color:#e4f9ff;border:1px solid #28b4c9;border-radius:6px;padding:9px;margin:5px}
-button{cursor:pointer}button:hover:not(:disabled){box-shadow:0 0 12px #00e5ff70;border-color:#fc69dd}button:disabled{opacity:.4;cursor:default}
-label{display:block;margin:9px 0}fieldset{margin:16px 0;border:1px solid #3f637a}pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:460px;overflow:auto;color:#c5eafa;background:#080f1d;padding:12px}
-.layout{display:grid;grid-template-columns:360px 1fr;gap:20px}.device{display:block;width:95%;text-align:left}.selected{border-color:#f968e3;box-shadow:0 0 10px #f968e355}
-#status{color:#ffb8e4;min-height:24px}#update-plan{grid-column:1/-1}footer{color:#9baac2;font-size:.9em;padding:20px}nav{display:flex;gap:10px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}body{padding:12px}}
-@media(prefers-reduced-motion:no-preference){h1{animation:glow 4s ease-in-out infinite alternate}@keyframes glow{to{text-shadow:0 0 28px #16cfff,0 0 42px #d931b970}}}
+:root{color-scheme:dark;font-family:Segoe UI,system-ui,sans-serif;--bg:#050509;--text:#e4f9ff;--panel:#111322;--input:#182030;--border:#38546a;--accent:#75f6ff;--selected:#fa8ee4;--muted:#aab8cf;--pre:#080f1d;--glow:0 0 18px #00e5ff25;background:var(--bg);color:var(--text)}
+:root[data-theme=modern-light]{color-scheme:light;--bg:#f3f3f3;--text:#202020;--panel:#fff;--input:#fafafa;--border:#c3c3c3;--accent:#005a9e;--selected:#005a9e;--muted:#595959;--pre:#f5f5f5;--glow:none}
+:root[data-theme=modern-dark]{color-scheme:dark;--bg:#202020;--text:#f4f4f4;--panel:#2b2b2b;--input:#333;--border:#737373;--accent:#8ecbff;--selected:#8ecbff;--muted:#c4c4c4;--pre:#242424;--glow:none}
+*{box-sizing:border-box}[hidden]{display:none!important}body{max-width:1600px;margin:auto;padding:24px}header{border-bottom:2px solid var(--accent);padding-bottom:16px;box-shadow:var(--glow)}
+h1{color:var(--accent)}:root:not([data-theme^=modern]) h1{text-shadow:0 0 18px #16cfff}h1 span{color:var(--selected);font-size:.6em}h2,h3{color:var(--accent)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin:16px 0;padding:20px;box-shadow:var(--glow);min-width:0}
+button,input,select{font:inherit;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px;margin:5px;max-width:100%}
+button{cursor:pointer}button:hover:not(:disabled){border-color:var(--selected);box-shadow:var(--glow)}button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}label{display:block;margin:9px 0}fieldset{margin:16px 0;border:1px solid var(--border);min-width:0}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:460px;overflow:auto;color:var(--text);background:var(--pre);padding:12px}
+.layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px}.device{display:block;width:100%;text-align:left;white-space:normal;margin:5px 0}.selected{border:2px solid var(--selected);box-shadow:var(--glow)}
+#devices{max-height:680px;overflow:auto}#status{color:var(--selected);min-height:24px;overflow-wrap:anywhere}#update-plan{grid-column:1/-1}
+footer{color:var(--muted);font-size:.9em;padding:20px}nav,.fleet-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.metric{background:var(--pre);border:1px solid var(--border);padding:16px;border-radius:8px}.metric p{font-size:1.1em;margin-bottom:0}#fleet-map{width:100%;display:block;cursor:pointer}p{line-height:1.5}#identity{overflow-wrap:anywhere}
+@media(max-width:900px){.layout{grid-template-columns:1fr}body{padding:12px}section{padding:14px}h1 span{display:block}.fleet-controls{gap:4px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

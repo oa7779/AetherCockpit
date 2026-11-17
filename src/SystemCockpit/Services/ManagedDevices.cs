@@ -54,10 +54,10 @@ public static class ManagedDevices
         if (document.RootElement.ValueKind != JsonValueKind.Array || document.RootElement.EnumerateArray().Any(item =>
             item.ValueKind != JsonValueKind.Object || !item.TryGetProperty("Host", out var host) || host.ValueKind != JsonValueKind.String ||
             !item.TryGetProperty("Https", out var tls) || tls.ValueKind is not (JsonValueKind.True or JsonValueKind.False)))
-            throw new InvalidDataException("Ziele benoetigen Host und explizite HTTPS-/HTTP-Auswahl; keine unsicheren Standardwerte.");
-        var saved = JsonSerializer.Deserialize<List<SavedDevice>>(json) ?? throw new InvalidDataException("Leere Geraetekonfiguration.");
+            throw new InvalidDataException("Ziele benötigen Host und explizite HTTPS-/HTTP-Auswahl; keine unsicheren Standardwerte.");
+        var saved = JsonSerializer.Deserialize<List<SavedDevice>>(json) ?? throw new InvalidDataException("Leere Gerätekonfiguration.");
         if (saved.Count > 500 || saved.Any(d => d is null) || saved.Select(d => d.Host).Distinct(StringComparer.OrdinalIgnoreCase).Count() != saved.Count)
-            throw new InvalidDataException("Ungueltige/doppelte Geraeteziele; keine Verbindung gestartet.");
+            throw new InvalidDataException("Ungültige/doppelte Geräteziele; keine Verbindung gestartet.");
         return saved.Select(d => new ManagedDevice(d.Host, d.Https)).ToList();
     }
     public static void Save(string path, IEnumerable<ManagedDevice> devices)
@@ -72,11 +72,11 @@ public static class ManagedDevices
         "LOCAL ONLY / keine Graph-Anmeldung, keine Cloud-Abfrage"
         Get-CimInstance Win32_OperatingSystem | Format-List Caption,Version
         Get-Service WinRM | Format-List Name,Status,StartType
-        "WinRM-Konfiguration wird nicht veraendert; kein TrustedHosts-Wildcard/Basic/SkipCACheck"
+        "WinRM-Konfiguration wird nicht verändert; kein TrustedHosts-Wildcard/Basic/SkipCACheck"
         $office='HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
         if(Test-Path -LiteralPath $office){Get-ItemProperty -LiteralPath $office | Select-Object ProductReleaseIds,VersionToReport,UpdateChannel | Format-List}else{'Office Click-to-Run nicht lokal gefunden'}
         Get-Module -ListAvailable Microsoft.Graph.Authentication,ExchangeOnlineManagement,MicrosoftTeams | Select-Object Name,Version | Format-Table
         "M365 / Entra / Intune / Copilot: nicht verbunden. Tenant, App-Registrierung, Rollen/Lizenzen und freigegebene Scopes erforderlich."
-        "Lokale Softwarepraesenz beweist keine Cloud-Lizenz oder Copilot-Verfuegbarkeit. Keine automatische Modulinstallation."
+        "Lokale Softwarepraesenz beweist keine Cloud-Lizenz oder Copilot-Verfügbarkeit. Keine automatische Modulinstallation."
         """;
 }

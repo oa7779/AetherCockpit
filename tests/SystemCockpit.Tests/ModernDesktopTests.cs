@@ -76,6 +76,109 @@ internal static class ModernDesktopTests
             Check(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de",
                 "Both desktop and saver startup gate unfinished English before any authored UI");
             DesktopText.Configure("en");
+            var workflowTasks = TaskCatalog.All.Where(t => t.Command is null).ToArray();
+            Check(workflowTasks.Length == 49 && workflowTasks.All(t =>
+                    !string.IsNullOrWhiteSpace(t.TitleDisplay) && !string.IsNullOrWhiteSpace(t.EffectDisplay) &&
+                    !string.IsNullOrWhiteSpace(t.StepsDisplay) && !string.IsNullOrWhiteSpace(t.CategoryDisplay) &&
+                    !string.IsNullOrWhiteSpace(t.SurfaceDisplay) && !string.IsNullOrWhiteSpace(t.DestinationDisplay)),
+                "Every English workflow has an explicit title, effect, instructions and route labels");
+            Check(TaskCatalog.Search("connection problems").Any(t => t.Destination == "Netzwerk") &&
+                TaskCatalog.Search("Sensorverläufe").Any(t => t.Destination == "Sensoren"),
+                "English workflow search accepts English and original German terms with unchanged routes");
+            Check(workflowTasks.Single(t => t.Destination == "Cleaner").StepsDisplay.Contains(
+                    "Hidden checked files remain included", StringComparison.Ordinal) &&
+                workflowTasks.Single(t => t.Destination == "Sensoren").StepsDisplay.Contains(
+                    "temperature limits are not measurements", StringComparison.Ordinal),
+                "English workflow instructions preserve deletion and sensor safety boundaries");
+            var reportModel = new CockpitModel();
+            reportModel.ApplyProbe(new("Test-CPU", "Test-GPU", "Board", "RAM", "Windows 11",
+                [new("Original Device", "Original Value", "ok", "EXTERNAL OUTPUT / unveraendert")], []));
+            var report = DiagnosticExport.Build(reportModel);
+            Check(report.Contains("AETHER DIAGNOSTIC REPORT", StringComparison.Ordinal) &&
+                report.Contains("== WINDOWS CHECKS ==", StringComparison.Ordinal) &&
+                report.Contains("== SENSORS (CURRENT DISPLAY) ==", StringComparison.Ordinal) &&
+                report.Contains("means no reading, not 0", StringComparison.Ordinal) &&
+                report.Contains("not actual temperatures", StringComparison.Ordinal) &&
+                DiagnosticExport.Redact(report).Contains("Computer: [RECHNER] / User: [BENUTZER]", StringComparison.Ordinal),
+                "English diagnostic report preserves unavailable-sensor warnings and identity redaction");
+            Check(report.Contains("[OK] Original Device: Original Value | EXTERNAL OUTPUT / unveraendert",
+                StringComparison.Ordinal), "Localized report retains original check values and external output");
+            Check(DesktopUiText.Get("Export.TextFilter") == "Text file (*.txt)|*.txt" &&
+                DesktopUiText.Get("Export.SaveFailed") == "Report not saved",
+                "English export dialog retains its text filter and error title");
+            Check(DesktopUiText.Format("EventBrowser.Status", "Original/Channel", 4, 500, 7,
+                    new DateTime(2026, 1, 2, 13, 14, 15)) ==
+                    "Original/Channel / 4 events / up to 500 entries / 7 days / 13:14:15" &&
+                DesktopUiText.Format("EventBrowser.Failed", "ORIGINAL ERROR") ==
+                    "Event query failed: ORIGINAL ERROR",
+                "English event status preserves the native channel, numbers, timestamp and original error");
+            var duplicateReading = new SensorReading("/test", "Original Hardware", "Original Sensor", "Temperature", 42, "C");
+            var (channels, sensorWarning) = SensorSemantics.MeasurementChannels(
+                [duplicateReading, duplicateReading with { Value = 43 }]);
+            Check(channels.Single().Value.Value is null &&
+                sensorWarning.Contains("conflicting channels are unavailable", StringComparison.Ordinal),
+                "English duplicate sensor warning preserves unavailable conflicting readings");
+            Check(DesktopUiText.Format("Speed.Result", "fixture", "example.invalid", 1.0)
+                    .Contains("no upload test and no plan or line guarantee", StringComparison.Ordinal) &&
+                DesktopUiText.Format("Speed.Result", "fixture", "example.invalid", 1.0)
+                    .Contains("one HTTPS connection", StringComparison.Ordinal),
+                "English speed test result retains its single-connection and no-guarantee caveats");
+            try
+            {
+                SpeedTest.DownloadAsync(0, CancellationToken.None).GetAwaiter().GetResult();
+                throw new InvalidOperationException("Invalid speed test size was accepted.");
+            }
+            catch (ArgumentException ex)
+            {
+                Check(ex.Message == "Test size: 1 to 200 MiB.",
+                    "English speed test validation rejects invalid size before network access");
+            }
+            var captureArgs = FrameTelemetry.CaptureArguments("Game.exe", 30, @"C:\fixture\frames.csv", "fixture-session");
+            Check(captureArgs.SequenceEqual(["--process_name", "Game.exe", "--timed", "30",
+                "--terminate_after_timed", "--output_file", @"C:\fixture\frames.csv", "--session_name", "fixture-session",
+                "--no_console_stats", "--v2_metrics", "--no_track_input"]),
+                "English frame capture preserves exact arguments");
+            var frameFile = Path.GetTempFileName();
+            try
+            {
+                File.WriteAllText(frameFile, "Application,CPUFrameTime\nOriginal.exe,16\n");
+                var frame = FrameTelemetry.Read(frameFile).Single();
+                Check(frame.Process == "Original.exe" && frame.Swapchain == "not reported" && frame.Frames == 1,
+                    "English frame output preserves external process names and identifies an unreported swapchain");
+                File.WriteAllText(frameFile, "Application,CPUFrameTime\nOriginal.exe,invalid\n");
+                try
+                {
+                    FrameTelemetry.Read(frameFile);
+                    throw new InvalidOperationException("Invalid frame time was accepted.");
+                }
+                catch (InvalidDataException ex)
+                {
+                    Check(ex.Message == "Invalid frame time on line 2.",
+                        "English frame error identifies the actual invalid input line");
+                }
+                File.WriteAllText(frameFile,
+                    """{"schema":1,"timestamp":"2026-01-01T00:00:00Z","CpuPercent":25,"MemoryPercent":50,"DownloadMbps":0,"UploadMbps":0,"Sensors":[]}""" + "\n" +
+                    """{"schema":2}""" + "\n");
+                var historyReport = HistoryReader.Read(frameFile, CancellationToken.None);
+                Check(historyReport.Series.Single(series => series.Id == "native/cpu").Label == "Total CPU" &&
+                    historyReport.Series.Single(series => series.Id == "native/ram").Label == "RAM usage" &&
+                    historyReport.Issues.Single() == "Line 2: Unknown log schema." &&
+                    historyReport.Series.Single(series => series.Id == "native/cpu").Summary.Contains("1 points", StringComparison.Ordinal),
+                    "English history retains stable series IDs and reports malformed log lines");
+                Check(HistoryReader.Compare(historyReport, new HistoryReport([], [])) == "No common measurement series.",
+                    "English comparison reports no matching series without inventing measurements");
+            }
+            finally { File.Delete(frameFile); }
+            Check(ManagerReportingService.NonApprovedStatus("pending").Contains("awaits manual approval", StringComparison.Ordinal) &&
+                ManagerReportingService.NonApprovedStatus("revoked").Contains("revoked; no reports will be sent", StringComparison.Ordinal) &&
+                ManagerReportingService.NonApprovedStatus("future-state").Contains("unknown device state (future-state)", StringComparison.Ordinal) &&
+                ManagerReportingService.NonApprovedStatus(null).Contains("unknown device state (not reported)", StringComparison.Ordinal),
+                "English management status distinguishes pending, revoked, and missing or unknown states");
+            Check(DesktopUiText.Get("ManagerClient.InvalidUrl").Contains("HTTPS for network hosts", StringComparison.Ordinal) &&
+                DesktopUiText.Get("ManagerClient.InvalidUrl").Contains("without a path or credentials", StringComparison.Ordinal) &&
+                DesktopUiText.Format("ManagerClient.Failure", "ORIGINAL SERVER ERROR")
+                    .Contains("ORIGINAL SERVER ERROR", StringComparison.Ordinal),
+                "English management errors preserve HTTPS restrictions and original server failures");
             Check(DesktopUiText.Get("Package.ConsentDetails").Contains("--exact", StringComparison.Ordinal) &&
                 DesktopUiText.Get("Package.ConsentDetails").Contains("licenses are accepted", StringComparison.Ordinal) &&
                 DesktopUiText.Get("Package.UninstallPermanent").Contains("permanently", StringComparison.Ordinal) &&
@@ -193,8 +296,11 @@ internal static class ModernDesktopTests
                 "English assistant description and restart confirmation use authored resources");
             DesktopText.Configure("de");
             Check(EulaConsent.Text.StartsWith("ENDNUTZER-LIZENZVEREINBARUNG", StringComparison.Ordinal) &&
-                SystemActions.Catalog.Single(a => a.Id == "sfc-repair").Warning == "Aendert/repariert geschuetzte Systemdateien. Vorher sichern.",
+                SystemActions.Catalog.Single(a => a.Id == "sfc-repair").Warning == "Ändert/repariert geschützte Systemdateien. Vorher sichern.",
                 "German defaults retain the existing EULA and repair warning");
+            Check(TaskCatalog.All.Single(t => t.Title == "Aufträge und Ergebnisse lesen").Destination == "Auftraege" &&
+                TaskCatalog.All.Single(t => t.Title == "Aufträge und Ergebnisse lesen").DestinationDisplay == "Aufträge",
+                "German workflow labels preserve the compiled destination identifier");
             Check(DesktopText.Get("Assistant.System.Name") == "Windows-Dateien und Komponenten" &&
                 DesktopText.Get("Safety.RestartNow.Body").Contains("AETHER jetzt neu starten", StringComparison.Ordinal),
                 "German assistant description and restart confirmation use authored resources");
@@ -568,6 +674,9 @@ internal static class ModernDesktopTests
         {
             neonSidebar.Show(); neonMain.Show(); neonBoot.Show();
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            CheckUi(neonMain.FindName("CockpitDetails") is null &&
+                ((DataGrid)neonMain.FindName("DashboardProcesses")).IsVisible,
+                "Neon cockpit shows its original panels without an enclosing detail expander");
             var neonPanels = VisualElements(neonSidebar).OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
             CheckUi(neonPanels.Length > 0 && neonPanels.All(item =>
                 item.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#60152239")),
@@ -575,7 +684,7 @@ internal static class ModernDesktopTests
             CheckUi(VisualElements(neonMain).OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).Any(item =>
                 item.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#0A0717")) &&
                 ((TextBlock)neonMain.FindName("NeonDesignTagline")).Visibility == Visibility.Visible &&
-                VisualElements(neonMain).OfType<TextBlock>().Any(item => item.Text == "System Observatory" && item.FontFamily.Source == "Consolas"),
+                VisualElements(neonMain).OfType<TextBlock>().Any(item => item.Text == "Systemübersicht" && item.FontFamily.Source == "Consolas"),
                 "Neon dashboard preserves its original chart background, decorative tagline and monospaced heading");
             CheckUi(((FrameworkElement)neonBoot.FindName("PerspectiveDecoration")).Visibility == Visibility.Visible &&
                 ((ProgressBar)neonBoot.FindName("BootProgress")).Background is SolidColorBrush bootTrack &&
@@ -602,6 +711,12 @@ internal static class ModernDesktopTests
             try
             {
                 Capture(main, "dashboard-navigation");
+                main.Show();
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                CheckUi(main.FindName("CockpitDetails") is null && main.FindName("CockpitOverview") is null &&
+                    ((DataGrid)main.FindName("DashboardProcesses")).IsVisible &&
+                    ((ItemsControl)main.FindName("CockpitCoreOverview")).IsVisible,
+                    $"Modern {modeName} cockpit shows original panels without a summary or enclosing detail expander");
                 var pages = (TabControl)main.FindName("Pages");
                 pages.SelectedItem = pages.Items.Cast<TabItem>().Single(tab => Equals(tab.Tag, "Superadmin"));
                 Capture(main, "superadmin");
@@ -710,7 +825,7 @@ internal static class ModernDesktopTests
                 }
                 var chartCanvases = elements.OfType<Canvas>().Where(item => Equals(item.Tag, "chart-canvas")).ToArray();
                 var chartPanels = elements.OfType<Border>().Where(item => Equals(item.Tag, "chart-panel")).ToArray();
-                if (name is "dashboard-navigation" or "xbar" or "gadget")
+                if (name is "dashboard-details" or "xbar" or "gadget")
                     CheckUi(chartCanvases.Length > 0 && chartPanels.Length > 0,
                         $"Modern {modeName} {name} assertions inspect actual realized chart canvases and panels");
                 foreach (var chart in chartCanvases)
@@ -733,7 +848,7 @@ internal static class ModernDesktopTests
                     text.FontFamily.Source == "Segoe UI" && text.Text != "NEON WAVE / GLASS CONTROL"),
                     $"Modern {modeName} {name} visible authored headings/body use Segoe UI and omit the neon design tagline");
                 CheckUi(elements.All(element => element.Effect is null &&
-                    !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element)),
+                    !FrameGlow.GetVisible(element) && !FrameGlow.GetEnabled(element) && !AetherNeonFrame.GetEnabled(element)),
                     $"Modern {modeName} {name} contains no neon glow effects");
                 CheckUi(ReferenceEquals(surface.Foreground, app.Resources["ModernTextPrimary"]) &&
                     ReferenceEquals(surface.Background, app.Resources["WindowBackdrop"]),

@@ -4,14 +4,24 @@ using System.Text;
 
 namespace SystemCockpit.Services;
 
-public sealed record CommandResult(int ExitCode, string Output, string Error);
+public sealed record CommandResult(int ExitCode, string Output, string Error)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool OutputTruncated { get; init; }
+}
 
 public static class CommandRunner
 {
+    public const int MaximumCapturedCharacters = 2_000_000;
+
     public static async Task<CommandResult> RunAsync(string executable, IEnumerable<string> arguments,
         TimeSpan timeout, CancellationToken token, IProgress<string>? progress = null, bool utf8 = false,
-        Encoding? outputEncoding = null, bool closeInput = false, string? standardInput = null)
+        Encoding? outputEncoding = null, bool closeInput = false, string? standardInput = null, string? workingDirectory = null,
+        Action<int, bool>? processLifecycle = null)
     {
+        token.ThrowIfCancellationRequested();
+        using var limit = CancellationTokenSource.CreateLinkedTokenSource(token);
+        limit.CancelAfter(timeout);
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -24,6 +34,7 @@ public static class CommandRunner
                 RedirectStandardInput = closeInput || standardInput is not null
             }
         };
+        if (workingDirectory is not null) process.StartInfo.WorkingDirectory = workingDirectory;
         if (utf8 || outputEncoding is not null)
         {
             process.StartInfo.StandardOutputEncoding = outputEncoding ?? Encoding.UTF8;
@@ -31,15 +42,14 @@ public static class CommandRunner
         }
         foreach (var argument in arguments) process.StartInfo.ArgumentList.Add(argument);
         if (!process.Start()) throw new InvalidOperationException("Werkzeug konnte nicht gestartet werden.");
-        if (closeInput && standardInput is null) process.StandardInput.Close();
-        progress?.Report($"[PROCESS] PID {process.Id} | {Path.GetFileName(executable)} | " +
-            (timeout == Timeout.InfiniteTimeSpan ? "Kein Zeitlimit / geordnetes Prozessende abwarten" : $"Timeout {timeout.TotalMinutes:0.##} min") + Environment.NewLine);
-        using var limit = CancellationTokenSource.CreateLinkedTokenSource(token);
-        limit.CancelAfter(timeout);
         var output = ReadAsync(process.StandardOutput, progress);
         var error = ReadAsync(process.StandardError, progress, errorStream: true);
         try
         {
+            processLifecycle?.Invoke(process.Id, false);
+            if (closeInput && standardInput is null) process.StandardInput.Close();
+            progress?.Report($"[PROCESS] PID {process.Id} | {Path.GetFileName(executable)} | " +
+                (timeout == Timeout.InfiniteTimeSpan ? "Kein Zeitlimit / geordnetes Prozessende abwarten" : $"Timeout {timeout.TotalMinutes:0.##} min") + Environment.NewLine);
             if (standardInput is not null)
             {
                 await process.StandardInput.WriteAsync(standardInput.AsMemory(), limit.Token);
@@ -49,20 +59,30 @@ public static class CommandRunner
             var stdout = await output;
             var stderr = await error;
             progress?.Report($"{Environment.NewLine}[PROCESS] Exitcode {process.ExitCode}{Environment.NewLine}");
-            return new(process.ExitCode, stdout, stderr);
+            return new(process.ExitCode, stdout.Text, stderr.Text)
+            {
+                OutputTruncated = stdout.Truncated || stderr.Truncated
+            };
         }
         catch (OperationCanceledException) when (!token.IsCancellationRequested)
         {
-            throw new TimeoutException($"Zeitlimit erreicht: {Path.GetFileName(executable)}");
+            throw new TimeoutException($"Zeitlimit erreicht: {Path.GetFileName(executable)}. " +
+                "Kein vollständiges Ergebnis; bereits erfolgte Änderungen wurden nicht automatisch zurückgenommen.");
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            throw new OperationCanceledException(token);
         }
         finally
         {
             if (!process.HasExited) process.Kill(entireProcessTree: true);
+            await process.WaitForExitAsync(CancellationToken.None);
             await Task.WhenAll(output, error);
+            processLifecycle?.Invoke(process.Id, true);
         }
     }
 
-    private static async Task<string> ReadAsync(StreamReader reader, IProgress<string>? progress, bool errorStream = false)
+    private static async Task<(string Text, bool Truncated)> ReadAsync(StreamReader reader, IProgress<string>? progress, bool errorStream = false)
     {
         var result = new StringBuilder();
         var truncated = false;
@@ -71,20 +91,21 @@ public static class CommandRunner
         // SFC/DISM can flush progress with carriage returns and no newline. Do not wait for ReadLine.
         while ((read = await reader.ReadAsync(buffer.AsMemory())) > 0)
         {
-            if (result.Length < 2_000_000)
+            var take = Math.Min(read, Math.Max(0, MaximumCapturedCharacters - result.Length));
+            if (take > 0)
             {
-                var chunk = new string(buffer, 0, Math.Min(read, 2_000_000 - result.Length));
+                var chunk = new string(buffer, 0, take);
                 result.Append(chunk);
                 progress?.Report(errorStream ? $"[STDERR] {chunk}" : chunk);
             }
-            else if (!truncated)
+            if (take < read && !truncated)
             {
-                result.AppendLine("[Ausgabe ueber 2 MB gekuerzt]");
-                progress?.Report("\n[Ausgabe ueber 2 MB gekuerzt]\n");
+                result.AppendLine("[Ausgabe über 2 MB gekürzt]");
+                progress?.Report("\n[Ausgabe über 2 MB gekürzt]\n");
                 truncated = true;
             }
         }
-        return result.ToString();
+        return (result.ToString(), truncated);
     }
 
     public static async Task<string> PowerShellAsync(string script, CancellationToken token)

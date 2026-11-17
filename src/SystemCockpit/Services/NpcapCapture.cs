@@ -36,7 +36,7 @@ internal sealed class NpcapCapture : IDisposable
     public NpcapCapture()
     {
         if (!File.Exists(LibraryPath))
-            throw new FileNotFoundException("Npcap ist nicht installiert. AETHER liefert keinen Capture-Treiber mit; offiziellen Download und Lizenzbedingungen separat pruefen.", LibraryPath);
+            throw new FileNotFoundException("Npcap ist nicht installiert. AETHER liefert keinen Capture-Treiber mit; offiziellen Download und Lizenzbedingungen separat prüfen.", LibraryPath);
         _library = LoadLibraryEx(LibraryPath, IntPtr.Zero, 0x00000100 | 0x00000800);
         if (_library == IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
         try
@@ -76,7 +76,7 @@ internal sealed class NpcapCapture : IDisposable
     public string Run(string name, string directory, Action<PacketSummary> receive, CancellationToken token,
         Action<string> started)
     {
-        if (!Devices().Any(device => device.Name == name)) throw new ArgumentException("Npcap-Schnittstelle nicht verfuegbar.");
+        if (!Devices().Any(device => device.Name == name)) throw new ArgumentException("Npcap-Schnittstelle nicht verfügbar.");
         var error = new StringBuilder(512);
         var handle = _open(name, SnapLength, 0, 250, error);
         if (handle == IntPtr.Zero) throw new InvalidOperationException("Npcap: " + error);

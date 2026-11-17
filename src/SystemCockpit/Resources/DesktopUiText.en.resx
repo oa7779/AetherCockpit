@@ -4,6 +4,89 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="ManagerClient.InvalidCode" xml:space="preserve"><value>Enter a valid single-use enrollment code.</value></data>
+  <data name="ManagerClient.EmptyEnrollment" xml:space="preserve"><value>The server returned no device enrollment.</value></data>
+  <data name="ManagerClient.InvalidEnrollment" xml:space="preserve"><value>The server returned an invalid device enrollment.</value></data>
+  <data name="ManagerClient.NotEnrolled" xml:space="preserve"><value>Central management: enabled, but this device is not enrolled.</value></data>
+  <data name="ManagerClient.Pending" xml:space="preserve"><value>Central management: device awaits manual approval (pending).</value></data>
+  <data name="ManagerClient.Revoked" xml:space="preserve"><value>Central management: device access was revoked; no reports will be sent.</value></data>
+  <data name="ManagerClient.UnknownState" xml:space="preserve"><value>Central management: unknown device state ({0}); no reports will be sent.</value></data>
+  <data name="ManagerClient.MissingState" xml:space="preserve"><value>not reported</value></data>
+  <data name="ManagerClient.NextReport" xml:space="preserve"><value>Central management: approved; next report after the full hourly interval.</value></data>
+  <data name="ManagerClient.ReportSent" xml:space="preserve"><value>Central management: diagnostic report sent ({0:HH:mm}).</value></data>
+  <data name="ManagerClient.Timeout" xml:space="preserve"><value>Central management: request timed out: {0}</value></data>
+  <data name="ManagerClient.Failure" xml:space="preserve"><value>Central management: transmission or query failed: {0}</value></data>
+  <data name="ManagerClient.EmptyStatus" xml:space="preserve"><value>The server returned no device status.</value></data>
+  <data name="ManagerClient.InvalidUrl" xml:space="preserve"><value>Server URL: HTTPS for network hosts; HTTP only for localhost. Enter a URL without a path or credentials.</value></data>
+  <data name="History.Summary" xml:space="preserve"><value>{0} points | MIN {1:0.##} | MAX {2:0.##} | AVG {3:0.##} {4}</value></data>
+  <data name="History.FileTooLarge" xml:space="preserve"><value>Log file exceeds 16 MiB.</value></data>
+  <data name="History.TooManyPoints" xml:space="preserve"><value>More than 43200 measurements per file.</value></data>
+  <data name="History.LineTooLarge" xml:space="preserve"><value>Log line exceeds 1 MiB.</value></data>
+  <data name="History.UnknownSchema" xml:space="preserve"><value>Unknown log schema.</value></data>
+  <data name="History.TotalCpu" xml:space="preserve"><value>Total CPU</value></data>
+  <data name="History.MemoryUsage" xml:space="preserve"><value>RAM usage</value></data>
+  <data name="History.MissingSensorId" xml:space="preserve"><value>Sensor ID is missing</value></data>
+  <data name="History.TooManyNotices" xml:space="preserve"><value>More than 100 log notices.</value></data>
+  <data name="History.LineError" xml:space="preserve"><value>Line {0}: {1}</value></data>
+  <data name="History.TooManyDamagedLines" xml:space="preserve"><value>More than 100 damaged log lines.</value></data>
+  <data name="History.TooManySeries" xml:space="preserve"><value>More than 2048 measurement series.</value></data>
+  <data name="History.NonFiniteValue" xml:space="preserve"><value>Non-finite measurement.</value></data>
+  <data name="History.NoMatchingSeries" xml:space="preserve"><value>No common measurement series.</value></data>
+  <data name="Frame.InvalidProcess" xml:space="preserve"><value>Enter the exact process name without a path, e.g. Game.exe.</value></data>
+  <data name="Frame.InvalidDuration" xml:space="preserve"><value>Capture duration must be 5 to 600 seconds.</value></data>
+  <data name="Frame.AbsolutePath" xml:space="preserve"><value>An absolute CSV path is required.</value></data>
+  <data name="Frame.TooLarge" xml:space="preserve"><value>Frame CSV exceeds 64 MiB.</value></data>
+  <data name="Frame.Empty" xml:space="preserve"><value>Frame CSV is empty.</value></data>
+  <data name="Frame.MissingColumns" xml:space="preserve"><value>PresentMon frame-time or Application columns are missing.</value></data>
+  <data name="Frame.TooManyFrames" xml:space="preserve"><value>More than 1 million frames.</value></data>
+  <data name="Frame.InvalidRow" xml:space="preserve"><value>Invalid CSV row.</value></data>
+  <data name="Frame.InvalidColumnCount" xml:space="preserve"><value>Invalid CSV column count on line {0}.</value></data>
+  <data name="Frame.InvalidTime" xml:space="preserve"><value>Invalid frame time on line {0}.</value></data>
+  <data name="Frame.NotReported" xml:space="preserve"><value>not reported</value></data>
+  <data name="Frame.TooManySwapchains" xml:space="preserve"><value>More than 256 swapchains.</value></data>
+  <data name="Sensor.DuplicateIds" xml:space="preserve"><value>{0} duplicate sensor IDs: different channel names are kept separate; identical reports are combined.</value></data>
+  <data name="Sensor.ConflictingChannels" xml:space="preserve"><value> {0} conflicting channels are unavailable.</value></data>
+  <data name="Speed.InvalidSize" xml:space="preserve"><value>Test size: {0} to {1} MiB.</value></data>
+  <data name="Speed.NoData" xml:space="preserve"><value>The test endpoint returned no data.</value></data>
+  <data name="Speed.Result" xml:space="preserve"><value>Download throughput: {0}
+Test endpoint: https://{1} (one HTTPS connection, {2:0.0} MiB transferred)
+Note: Application throughput for this single connection. Wi-Fi, VPN, load and server limits affect the result; no upload test and no plan or line guarantee.</value></data>
+  <data name="Speed.Timeout" xml:space="preserve"><value>The 120-second speed test time limit was reached.</value></data>
+  <data name="EventBrowser.SelectChannel" xml:space="preserve"><value>Select an event channel.</value></data>
+  <data name="EventBrowser.InvalidRange" xml:space="preserve"><value>Enter days 1..30 and a limit of 1..2000.</value></data>
+  <data name="EventBrowser.Status" xml:space="preserve"><value>{0} / {1} events / up to {2} entries / {3} days / {4:HH:mm:ss}</value></data>
+  <data name="EventBrowser.Issues" xml:space="preserve"><value> / NOTICES: {0}</value></data>
+  <data name="EventBrowser.InvalidChannels" xml:space="preserve"><value>Invalid channel format.</value></data>
+  <data name="EventBrowser.ChannelsStatus" xml:space="preserve"><value>{0} event channels / {1} query errors</value></data>
+  <data name="EventBrowser.SelectEvent" xml:space="preserve"><value>Select an event.</value></data>
+  <data name="EventBrowser.DetailsRead" xml:space="preserve"><value>Selected event / full text and XML read.</value></data>
+  <data name="EventBrowser.AlreadyRunning" xml:space="preserve"><value>A query is already running.</value></data>
+  <data name="EventBrowser.Reading" xml:space="preserve"><value>Reading event data ...</value></data>
+  <data name="EventBrowser.Cancelled" xml:space="preserve"><value>Event query cancelled.</value></data>
+  <data name="EventBrowser.Failed" xml:space="preserve"><value>Event query failed: {0}</value></data>
+  <data name="TaskCenter.Open" xml:space="preserve"><value>Open area / do not run anything</value></data>
+  <data name="TaskCenter.Title" xml:space="preserve"><value>AETHER | Workspace and feature search</value></data>
+  <data name="TaskCenter.Heading" xml:space="preserve"><value>WORKSPACE // FIND · REVIEW · ACT WITH PURPOSE</value></data>
+  <data name="TaskCenter.Notice" xml:space="preserve"><value>Combine search terms. Selecting an item only opens an area; repairs, updates and captures never start here.</value></data>
+  <data name="TaskCenter.Search" xml:space="preserve"><value>Feature search</value></data>
+  <data name="TaskCenter.AllCategories" xml:space="preserve"><value>All areas</value></data>
+  <data name="TaskCenter.Category" xml:space="preserve"><value>Work area</value></data>
+  <data name="TaskCenter.Results" xml:space="preserve"><value>Features found</value></data>
+  <data name="TaskCenter.Count" xml:space="preserve"><value>{0} features / Enter in the results opens the area / Esc closes</value></data>
+  <data name="TaskCenter.NoResults" xml:space="preserve"><value>No matching feature</value></data>
+  <data name="TaskCenter.NoResultsHint" xml:space="preserve"><value>Use fewer search terms or choose another work area.</value></data>
+  <data name="Export.ReportTitle" xml:space="preserve"><value>AETHER DIAGNOSTIC REPORT / {0:yyyy-MM-dd HH:mm:ss}</value></data>
+  <data name="Export.Identity" xml:space="preserve"><value>Computer: {0} / User: {1}</value></data>
+  <data name="Export.ReadOnly" xml:space="preserve"><value>Read-only report from the last displayed cockpit values; no new measurement.</value></data>
+  <data name="Export.NoEntries" xml:space="preserve"><value>(no entries)</value></data>
+  <data name="Export.WindowsChecks" xml:space="preserve"><value>WINDOWS CHECKS</value></data>
+  <data name="Export.Diagnostics" xml:space="preserve"><value>EXTENDED DIAGNOSTICS</value></data>
+  <data name="Export.Alerts" xml:space="preserve"><value>CURRENT NOTICES / SYSTEM PULSE</value></data>
+  <data name="Export.SensorsHeading" xml:space="preserve"><value>== SENSORS (CURRENT DISPLAY) ==</value></data>
+  <data name="Export.NoSensors" xml:space="preserve"><value>(no sensor readings in the current display)</value></data>
+  <data name="Export.SensorNotice" xml:space="preserve"><value>Notice: 'Unavailable' means no reading, not 0. Limit channels are identified and are not actual temperatures.</value></data>
+  <data name="Export.TextFilter" xml:space="preserve"><value>Text file (*.txt)|*.txt</value></data>
+  <data name="Export.SaveFailed" xml:space="preserve"><value>Report not saved</value></data>
   <data name="FirstRun.Title" xml:space="preserve"><value>AETHER | Welcome</value></data>
   <data name="FirstRun.StepIntro" xml:space="preserve"><value>Step 1 of 3 - Welcome</value></data>
   <data name="FirstRun.StepLicense" xml:space="preserve"><value>Step 2 of 3 - License agreement</value></data>
@@ -244,25 +327,29 @@ Otherwise the software exits.</value></data>
   <data name="Navigation.Maintenance"><value>Maintenance</value></data>
   <data name="Navigation.Administration"><value>Administration</value></data>
   <data name="Navigation.Help"><value>Help</value></data>
+  <data name="Navigation.Cockpit"><value>System overview</value></data>
   <data name="Navigation.Processes"><value>Processes / Performance</value></data>
   <data name="Navigation.Board"><value>Mainframe / Board</value></data>
   <data name="Navigation.Sensors"><value>Sensors</value></data>
   <data name="Navigation.Drives"><value>Drives</value></data>
+  <data name="Navigation.Smart"><value>SMART diagnostics ↗</value></data>
   <data name="Navigation.WindowsDiagnostics"><value>Windows diagnostics</value></data>
   <data name="Navigation.Protection"><value>Protection status</value></data>
   <data name="Navigation.Events"><value>Events</value></data>
-  <data name="Navigation.NetworkTests"><value>Network / Tests ↗</value></data>
-  <data name="Navigation.Measurements"><value>Measurement analysis</value></data>
-  <data name="Navigation.Plans"><value>Assistants / Plans</value></data>
+  <data name="Navigation.NetworkTests"><value>Network &amp; connections ↗</value></data>
+  <data name="Navigation.Measurements"><value>Analyze measurements</value></data>
+  <data name="Navigation.LogsGaming"><value>Measurement logs &amp; frame times ↗</value></data>
+  <data name="Navigation.Cleaner"><value>Cache cleanup</value></data>
+  <data name="Navigation.Plans"><value>Maintenance plans &amp; diagnostics</value></data>
   <data name="Navigation.WindowsTools"><value>Windows tools ↗</value></data>
-  <data name="Navigation.Packages"><value>Packages / Updates ↗</value></data>
+  <data name="Navigation.Packages"><value>Software packages &amp; updates ↗</value></data>
   <data name="Navigation.SystemAdministration"><value>System administration</value></data>
-  <data name="Navigation.Startup"><value>Startup ↗</value></data>
-  <data name="Navigation.Jobs"><value>Jobs ↗</value></data>
-  <data name="Navigation.Traces"><value>Folder traces ↗</value></data>
-  <data name="Navigation.Keys"><value>Keys ↗</value></data>
-  <data name="Navigation.HelpSearch"><value>Guide / Search</value></data>
-  <data name="Navigation.Parameters"><value>Parameters / Server ↗</value></data>
+  <data name="Navigation.Startup"><value>Startup apps ↗</value></data>
+  <data name="Navigation.Jobs"><value>Job status ↗</value></data>
+  <data name="Navigation.Traces"><value>Explorer history ↗</value></data>
+  <data name="Navigation.Keys"><value>Windows and Wi-Fi keys ↗</value></data>
+  <data name="Navigation.HelpSearch"><value>Help &amp; find a feature</value></data>
+  <data name="Navigation.Parameters"><value>Settings / Server ↗</value></data>
   <data name="Navigation.ExternalTooltip"><value>Opens the module in System Control; does not start an action.</value></data>
   <data name="Navigation.InternalTooltip"><value>Opens the area in the main window; does not start an action.</value></data>
   <data name="Module.Taskmanager"><value>Task manager</value></data>
@@ -275,13 +362,14 @@ Otherwise the software exits.</value></data>
   <data name="Module.Ereignisse"><value>Events</value></data>
   <data name="Module.Hilfe"><value>Help</value></data>
   <data name="Module.Netzwerk"><value>Network</value></data>
-  <data name="Module.Pakete"><value>Packages</value></data>
-  <data name="Module.Auftraege"><value>Jobs</value></data>
-  <data name="Module.Wartung"><value>Maintenance</value></data>
-  <data name="Module.Autostart"><value>Startup</value></data>
-  <data name="Module.Spuren"><value>Traces</value></data>
+  <data name="Module.Smart"><value>SMART diagnostics</value></data>
+  <data name="Module.Pakete"><value>Software packages</value></data>
+  <data name="Module.Auftraege"><value>Job status</value></data>
+  <data name="Module.Wartung"><value>Windows tools</value></data>
+  <data name="Module.Autostart"><value>Startup apps</value></data>
+  <data name="Module.Spuren"><value>Explorer history</value></data>
   <data name="Module.Einstellungen"><value>Settings</value></data>
-  <data name="Module.Schluessel"><value>Keys</value></data>
+  <data name="Module.Schluessel"><value>Windows and Wi-Fi keys</value></data>
   <data name="ControlCenter.Trail"><value>SYSTEM CONTROL  ▸  {0}</value></data>
   <data name="ControlCenter.BusyNavigation"><value>Wait for the current job to finish before changing modules.</value></data>
   <data name="ControlCenter.BusyCatalog"><value>Wait for the current job to finish before changing the catalog.</value></data>
@@ -464,6 +552,16 @@ Run now?</value></data>
   <data name="Main.Areas"><value>TASKS / AREAS</value></data>
   <data name="Main.Find"><value>FIND A FUNCTION</value></data>
   <data name="Main.FindTip"><value>Workspace with search and guided workflows (Ctrl+K). Opens areas only; does not start an action.</value></data>
+  <data name="Main.OverviewHeading"><value>SYSTEM STATUS / COCKPIT</value></data>
+  <data name="Main.OverviewDescription"><value>Windows check status, reported findings and current key readings at a glance.</value></data>
+  <data name="Main.WindowsChecks"><value>WINDOWS CHECKS</value></data>
+  <data name="Main.LastSystemRead"><value>LAST SYSTEM QUERY</value></data>
+  <data name="Main.OverviewMetrics"><value>LIVE KEY READINGS</value></data>
+  <data name="Main.OverviewFindings"><value>FINDINGS / CHECK NOTES</value></data>
+  <data name="Main.OverviewFindingsNotice"><value>Reported warnings, errors and unavailable check results appear here.</value></data>
+  <data name="Main.OverviewShortcuts"><value>QUICK ACCESS</value></data>
+  <data name="Main.OverviewDetails"><value>More live readings and detail views</value></data>
+  <data name="Main.OverviewDetailsTip"><value>Expand CPU cores, disks, sensors, process details, events and data recording.</value></data>
   <data name="Main.Desktop"><value>Appearance / Desktop</value></data>
   <data name="Main.DesktopTip"><value>Configure day/night mode, opacity, gadgets and background diagnostics.</value></data>
   <data name="Main.Motion"><value>Scanner animation</value></data>
@@ -547,6 +645,7 @@ Run now?</value></data>
   <data name="OptionalTool.AdkName"><value>Windows ADK / DISM tools</value></data>
   <data name="Metric.CpuLoad"><value>CPU / LOAD</value></data>
   <data name="Metric.RamUsage"><value>RAM / USAGE</value></data>
+  <data name="Metric.GpuCoreLoad"><value>GPU / CORE LOAD</value></data>
   <data name="Metric.Download"><value>NETWORK / DOWNLOAD</value></data>
   <data name="Metric.CpuTemperature"><value>CPU / TEMPERATURE</value></data>
   <data name="Metric.GpuTemperature"><value>GPU / TEMPERATURE</value></data>
@@ -731,8 +830,8 @@ The global animation toggle and Windows reduced-motion settings stop animation; 
 </value></data>
   <data name="Background.Checking"><value>Background diagnostics: reading Windows, events, devices, adapters and applications.</value></data>
   <data name="Background.FindingCount"><value>Background diagnostics: {0} findings in the current report; repairs remain manual.</value></data>
-  <data name="Background.Failure"><value>Background diagnostics failed: {0}</value></data>
-  <data name="Background.FailureNotice"><value>Background diagnostics failed. See AETHER status for details.</value></data>
+  <data name="Background.Failure"><value>Background diagnostics failed.</value></data>
+  <data name="Background.FailureNotice"><value>Background diagnostics failed.</value></data>
   <data name="Background.Notification"><value>New findings: {0}. {1} Repair requires approval.</value></data>
   <data name="Board.NeonRefresh"><value>REFRESH HARDWARE</value></data>
   <data name="Board.NeonInitialStatus"><value>Hardware is read locally when first opened.</value></data>
@@ -789,7 +888,7 @@ Scale 0 to {1:0.##} {2}; not a measured limit.</value></data>
   <data name="Layout.Certificates"><value>Check certificates / root CAs</value></data>
   <data name="Layout.StartupEntry"><value>Startup entry</value></data>
   <data name="Layout.DisableStartup"><value>Disable selected startup entry</value></data>
-  <data name="Layout.ShellbagsHeading"><value>Shellbag analysis / Explorer folder traces (read-only)</value></data>
+  <data name="Layout.ShellbagsHeading"><value>Explorer history (read-only)</value></data>
   <data name="Layout.ShellbagsNotice"><value>Windows remembers view settings of visited folders in the registry (BagMRU), including deleted folders. This analysis only reads HKCU. Name decoding is best effort: undecodable elements are explicitly shown as unknown, never invented. AETHER intentionally offers no Shellbag deletion.</value></data>
   <data name="Layout.Reading"><value>READING</value></data>
   <data name="Layout.PresentMonNotice"><value>External PresentMon console required; no built-in service. ETW capture for the selected process. CSV analysis per swapchain: AVG FPS, P99 frame time and 1% low. Different rendering chains are not mixed.</value></data>
@@ -920,6 +1019,7 @@ JSON / CAPABILITIES / LOGS:
   <data name="Control.SmartSaved"><value>SMART JSON saved. The file may contain local serial numbers; review before sharing.</value></data>
   <data name="Safety.Ping"><value>Sends ICMP to {0}. Host names use DNS. Only your own/authorized targets.</value></data>
   <data name="Safety.RouterPing"><value>Sends ICMP to the locally reported default gateway.</value></data>
+  <data name="Safety.WakeOnLan"><value>Sends a Wake-on-LAN magic packet for {0} as a local-network broadcast to UDP port 9. Only use with your own/authorized devices. Packet transmission does not confirm that the device wakes.</value></data>
   <data name="Control.SpeedSize"><value>Speedtest: specify an integer test size from {0} to {1} MiB.</value></data>
   <data name="Safety.SpeedTest" xml:space="preserve"><value>Download {0} MiB of test data from https://{1} now.
 Your IP address becomes visible to the measurement target; traffic counts on metered connections.
@@ -1078,6 +1178,10 @@ Current administrator account / Negotiate. No changes or WinRM setup. Collected 
   <data name="Layout.SmartHeading"><value>SMART / ATA / NVMe / error and self-test logs</value></data>
   <data name="Layout.ReadSmartLogs"><value>Read diagnostics / capabilities / logs</value></data>
   <data name="Layout.NetworkHeading"><value>LAN / Wi-Fi / connection control</value></data>
+  <data name="Layout.WakeOnLanHeading"><value>WAKE-ON-LAN / WAKE A DEVICE ON THE LOCAL NETWORK</value></data>
+  <data name="Layout.WakeOnLanMacTip"><value>Target MAC address, for example 00:11:22:33:44:55</value></data>
+  <data name="Layout.WakeOnLanSend"><value>Send magic packet</value></data>
+  <data name="Layout.WakeOnLanNotice"><value>UDP broadcast on port 9. BIOS/UEFI, network adapter and power state must support Wake-on-LAN; successful transmission does not prove wake-up.</value></data>
   <data name="Layout.SpeedNotice"><value>Download throughput of one HTTPS connection to speed.cloudflare.com; approval required, no upload test.</value></data>
   <data name="Layout.ReadArp"><value>Read ARP / MAC</value></data>
   <data name="Layout.OuiManufacturer"><value>OUI MANUFACTURER</value></data>
@@ -1197,7 +1301,7 @@ Current administrator account / Negotiate. No changes or WinRM setup. Collected 
   <data name="Layout.GodMode"><value>GodMode folder</value></data>
   <data name="Layout.WindowsToolsNotice"><value>Opens original Windows tools. Changes there are under your control. No background repairs or protection disabling.</value></data>
   <data name="Layout.SecurityTelemetry"><value>Security &amp; Windows telemetry</value></data>
-  <data name="Layout.CleanerHeading"><value>Cleaner / preview before control</value></data>
+  <data name="Layout.CleanerHeading"><value>Review and clean cache files</value></data>
   <data name="Layout.FindLargeFiles"><value>Find large files / read-only</value></data>
   <data name="Layout.UncheckAll"><value>Uncheck all</value></data>
   <data name="Layout.ModifiedUtc"><value>MODIFIED (UTC)</value></data>
@@ -1291,6 +1395,9 @@ Uninstallation permanently removes applications.</value></data>
   <data name="Center.LanResult" xml:space="preserve"><value>{0} replies/query errors in network {1}. Nonresponding devices cannot be ruled out.
 </value></data>
   <data name="Center.LanConsent" xml:space="preserve"><value>Probe private network {0} with up to 254 ICMP targets. Only with authorization in your own network.</value></data>
+  <data name="Center.WakeTitle" xml:space="preserve"><value>Wake-on-LAN</value></data>
+  <data name="Center.WakeSent" xml:space="preserve"><value>Sent {0} bytes as a broadcast for {1} to UDP port 9. There is no delivery confirmation.</value></data>
+  <data name="Center.WakeInvalid" xml:space="preserve"><value>Wake-on-LAN not started: {0}</value></data>
   <data name="Center.AutoLanPrevious" xml:space="preserve"><value>Let the previous automatic scan finish first.</value></data>
   <data name="Center.AutoLanConsent" xml:space="preserve"><value>Actively probe {0} using ICMP every 60 seconds while this window is open? Only in your own/authorized network. Stop at any time by cancelling or switching it off.</value></data>
   <data name="Center.AutoLanTitle" xml:space="preserve"><value>Approve recurring LAN scan</value></data>
@@ -1475,6 +1582,7 @@ No automatic elevation or changes to Defender or driver blocks. Enable sensor ac
   <data name="Ui.ListChannels" xml:space="preserve"><value>List channels</value></data>
   <data name="Ui.ConsoleCommand" xml:space="preserve"><value>Console command</value></data>
   <data name="Ui.LanNetwork" xml:space="preserve"><value>LAN network</value></data>
+  <data name="Ui.WakeOnLanMac" xml:space="preserve"><value>Target MAC address for Wake-on-LAN</value></data>
   <data name="Ui.LiveCharts" xml:space="preserve"><value>LIVE CHARTS</value></data>
   <data name="Ui.OpenBackgroundReport" xml:space="preserve"><value>Open latest background report</value></data>
   <data name="Ui.LogSeries" xml:space="preserve"><value>Log series</value></data>
@@ -1534,7 +1642,7 @@ No automatic elevation or changes to Defender or driver blocks. Enable sensor ac
   <data name="Ui.SensorBoot" xml:space="preserve"><value>Hardware sensors / initialized at boot</value></data>
   <data name="Ui.HistoryNotice" xml:space="preserve"><value>Live curves: up to 90 measurement points. Configurable JSONL interval (default 5s), max. 7 files / 16 MiB per day. Recording is off by default.</value></data>
   <data name="Ui.LogViewerTab" xml:space="preserve"><value>Log viewer / gaming / comparison</value></data>
-  <data name="Ui.LogsTab" xml:space="preserve"><value>Logs / gaming</value></data>
+  <data name="Ui.LogsTab" xml:space="preserve"><value>Measurement logs &amp; frame times</value></data>
   <data name="Ui.StatisticsHeading" xml:space="preserve"><value>Measurement analysis / MIN - MAX - AVG</value></data>
   <data name="Ui.LogViewerHeading" xml:space="preserve"><value>Measurement log viewer / comparison / frame telemetry</value></data>
   <data name="Ui.NetworkHeading" xml:space="preserve"><value>NETWORK / RX AND TX PER ACTIVE ADAPTER</value></data>

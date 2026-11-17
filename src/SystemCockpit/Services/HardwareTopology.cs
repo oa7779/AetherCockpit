@@ -59,7 +59,7 @@ public static class HardwareTopology
         try { audioDevices.AddRange(AudioTopology.Read()); }
         catch (Exception ex) when (ex is COMException or InvalidOperationException)
         {
-            warnings.Add("Aktive Audio-Endpunkte/Standardrollen nicht verfuegbar: " + ex.Message);
+            warnings.Add("Aktive Audio-Endpunkte/Standardrollen nicht verfügbar: " + ex.Message);
         }
         var inventory = MergeDevices(snapshot.Devices, audioDevices);
         try { inventory = MergeDevices(inventory, DisplayTopology.Read(inventory)); }
@@ -84,7 +84,7 @@ public static class HardwareTopology
             }
             return device;
         }).ToArray();
-        if (parentErrors > 0) warnings.Add($"Windows-Elternbeziehung fuer {parentErrors} Geraete nicht verfuegbar.");
+        if (parentErrors > 0) warnings.Add($"Windows-Elternbeziehung für {parentErrors} Geräte nicht verfügbar.");
         return snapshot with { Devices = devices, Warnings = warnings.ToArray() };
     }
 
@@ -139,7 +139,7 @@ public static class HardwareTopology
                 $name=if([string]::IsNullOrWhiteSpace($_.FriendlyName)){[string]$_.InstanceId}else{[string]$_.FriendlyName}
                 @{Id=[string]$_.InstanceId;Name=$name;Class=[string]$_.Class;Status=[string]$_.Status;ParentId=''}
             })
-        } catch { $warnings.Add('PnP-Erkennung nicht verfuegbar: '+$_.Exception.Message) }
+        } catch { $warnings.Add('PnP-Erkennung nicht verfügbar: '+$_.Exception.Message) }
         try {
             $disks=@(Get-Disk -ErrorAction Stop)
             foreach($disk in @(Get-CimInstance Win32_DiskDrive -ErrorAction Stop)) {
@@ -150,7 +150,7 @@ public static class HardwareTopology
                     }
                 }
             }
-        } catch { $warnings.Add('Laufwerks-Bustyp nicht verfuegbar; unbekannte Laufwerke erscheinen nicht im Schoner: '+$_.Exception.Message) }
+        } catch { $warnings.Add('Laufwerks-Bustyp nicht verfügbar; unbekannte Laufwerke erscheinen nicht im Schoner: '+$_.Exception.Message) }
         try {
             $monitors=@(Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorID -ErrorAction Stop)
             foreach($monitor in $monitors) {
@@ -163,21 +163,21 @@ public static class HardwareTopology
                 $devices=@($devices | Where-Object { $_.Id -ine $id })
                 $devices+=@{Id=$id;Name=$name;Class='Monitor';Status=$status;ParentId='';Usage=$usage;Preferred=[bool]$monitor.Active}
             }
-        } catch { $warnings.Add('Monitor-Modelle/aktive Monitorpfade nicht verfuegbar: '+$_.Exception.Message) }
+        } catch { $warnings.Add('Monitor-Modelle/aktive Monitorpfade nicht verfügbar: '+$_.Exception.Message) }
         try {
             $devices+=@(Get-CimInstance Win32_PhysicalMemory | ForEach-Object {
                 @{Id='RAM:'+[string]$_.Tag;Name=('{0} | {1} {2} | {3:N1} GB | {4} MT/s gemeldet' -f $_.DeviceLocator,$_.Manufacturer,$_.PartNumber,($_.Capacity/1GB),$_.ConfiguredClockSpeed);Class='Memory';Status=[string]$_.Status;ParentId=''}
             })
-        } catch { $warnings.Add('RAM-Baenke nicht verfuegbar: '+$_.Exception.Message) }
-        $board='Mainboard nicht verfuegbar'
+        } catch { $warnings.Add('RAM-Baenke nicht verfügbar: '+$_.Exception.Message) }
+        $board='Mainboard nicht verfügbar'
         try { $board=(Get-CimInstance Win32_BaseBoard | ForEach-Object { "$($_.Manufacturer) $($_.Product)" }) -join ' + ' }
-        catch { $warnings.Add('Mainboard nicht verfuegbar: '+$_.Exception.Message) }
-        $internet='Windows-Internetstatus nicht verfuegbar'
+        catch { $warnings.Add('Mainboard nicht verfügbar: '+$_.Exception.Message) }
+        $internet='Windows-Internetstatus nicht verfügbar'
         try {
             $nlm=[Activator]::CreateInstance([type]::GetTypeFromCLSID([guid]'DCB00C01-570F-4A9B-8D69-199FDBA5723B'))
             $flags=[int]$nlm.GetConnectivity()
             $internet=if(($flags -band 0x440) -ne 0){'Internet laut Windows verbunden (kein eigener Verbindungstest)'}else{'Windows meldet keine Internetverbindung'}
-        } catch { $warnings.Add('Internetstatus nicht verfuegbar: '+$_.Exception.Message) }
+        } catch { $warnings.Add('Internetstatus nicht verfügbar: '+$_.Exception.Message) }
         @{Devices=@($devices);Board=$board;Internet=$internet;Warnings=@($warnings.ToArray())} | ConvertTo-Json -Depth 5 -Compress
         """;
 }

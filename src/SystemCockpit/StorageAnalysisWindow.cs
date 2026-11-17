@@ -33,16 +33,16 @@ internal sealed class StorageAnalysisWindow : Window
         var header = new StackPanel();
         root.Children.Add(header);
         header.Children.Add(new TextBlock { Text = "SPEICHERPLATZ // GROSSE DATEIEN FINDEN", FontSize = 23, Foreground = Brushes.Turquoise });
-        header.Children.Add(new TextBlock { Text = "Nur lesend, keine Loeschfunktion. Ordner bewusst waehlen. Maximal 100.000 Eintraege / 32 Ebenen / 1.000 groesste Treffer. " +
-            "Links/Junctions werden ausgelassen; unzugaengliche Bereiche bleiben unbekannt. Das ist keine vollstaendige Datentraegerbelegung.",
+        header.Children.Add(new TextBlock { Text = "Nur lesend, keine Löschfunktion. Ordner bewusst wählen. Maximal 100.000 Einträge / 32 Ebenen / 1.000 größte Treffer. " +
+            "Links/Junctions werden ausgelassen; unzugängliche Bereiche bleiben unbekannt. Das ist keine vollständige Datenträgerbelegung.",
             TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
         var inputs = new WrapPanel();
         header.Children.Add(inputs);
-        var choose = new Button { Content = "Ordner waehlen / Analyse starten", Style = (Style)FindResource("NeonButton") };
+        var choose = new Button { Content = "Ordner wählen / Analyse starten", Style = (Style)FindResource("NeonButton") };
         var minimum = new TextBox { Text = "100", Width = 90, Margin = new Thickness(8, 0, 8, 0), Style = (Style)FindResource("NeonTextBox") };
-        System.Windows.Automation.AutomationProperties.SetName(minimum, "Mindestgroesse in MiB");
+        System.Windows.Automation.AutomationProperties.SetName(minimum, "Mindestgröße in MiB");
         inputs.Children.Add(choose); inputs.Children.Add(minimum);
-        inputs.Children.Add(new TextBlock { Text = "MiB Mindestgroesse", VerticalAlignment = VerticalAlignment.Center });
+        inputs.Children.Add(new TextBlock { Text = "Mindestgröße in MiB", VerticalAlignment = VerticalAlignment.Center });
         var cancel = new Button { Content = "Abbrechen", Style = (Style)FindResource("NeonButton"), Margin = new Thickness(12, 0, 0, 0) };
         inputs.Children.Add(cancel); cancel.Click += (_, _) => _stop?.Cancel();
         var status = new TextBlock { Text = "Noch kein Ordner gelesen.", TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Turquoise, Margin = new Thickness(0, 12, 0, 12) };
@@ -50,7 +50,7 @@ internal sealed class StorageAnalysisWindow : Window
         var grid = new DataGrid { Style = (Style)FindResource("NeonDataGrid"), SelectionMode = DataGridSelectionMode.Single };
         grid.Columns.Add(new DataGridTextColumn { Header = "DATEI", Binding = new Binding(nameof(LargeFile.Path)), Width = new DataGridLength(3, DataGridLengthUnitType.Star) });
         grid.Columns.Add(new DataGridTextColumn { Header = "MiB", Binding = new Binding(nameof(LargeFile.MiB)) { StringFormat = "0.00" }, Width = 100 });
-        grid.Columns.Add(new DataGridTextColumn { Header = "GEAENDERT (UTC)", Binding = new Binding(nameof(LargeFile.ModifiedUtc)) { StringFormat = "yyyy-MM-dd HH:mm" }, Width = 170 });
+        grid.Columns.Add(new DataGridTextColumn { Header = "GEÄNDERT (UTC)", Binding = new Binding(nameof(LargeFile.ModifiedUtc)) { StringFormat = "yyyy-MM-dd HH:mm" }, Width = 170 });
         Grid.SetRow(grid, 1); root.Children.Add(grid);
         var footer = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
         Grid.SetRow(footer, 2); root.Children.Add(footer);
@@ -66,13 +66,13 @@ internal sealed class StorageAnalysisWindow : Window
         {
             if (_stop is not null) { status.Text = "Erst laufende Analyse beenden."; return; }
             if (!int.TryParse(minimum.Text, NumberStyles.None, CultureInfo.InvariantCulture, out var mib) || mib is < 1 or > 1048576)
-            { status.Text = "Mindestgroesse: 1..1048576 MiB."; return; }
-            var dialog = new OpenFolderDialog { Title = "Eigenen Ordner fuer lesende Analyse auswaehlen" };
+            { status.Text = "Mindestgröße: 1..1048576 MiB."; return; }
+            var dialog = new OpenFolderDialog { Title = "Eigenen Ordner für lesende Analyse auswählen" };
             if (dialog.ShowDialog(this) != true) return;
             _stop = new CancellationTokenSource();
             choose.IsEnabled = false; minimum.IsEnabled = false;
             grid.ItemsSource = null; issues.Text = "";
-            status.Text = "Lesende Analyse laeuft: " + dialog.FolderName;
+            status.Text = "Lesende Analyse läuft: " + dialog.FolderName;
             _scan = ScanAsync(dialog.FolderName, (long)mib * 1048576, _stop.Token);
             await _scan;
         };
@@ -82,20 +82,20 @@ internal sealed class StorageAnalysisWindow : Window
             {
                 var result = await Task.Run(() => StorageAnalysis.Scan(path, bytes, token), token);
                 grid.ItemsSource = result.Files;
-                status.Text = $"{result.Inspected} Eintraege untersucht / {result.Files.Count} groesste Treffer / " +
+                status.Text = $"{result.Inspected} Einträge untersucht / {result.Files.Count} größte Treffer / " +
                     $"{(result.Limited ? "LIMIT ERREICHT: unvollstaendige Auswahl" : result.IssueCount > 0
-                        ? "MIT LESELUECKEN: keine vollstaendige Aussage" : "gewaehlter Bereich durchlaufen")} / {result.IssueCount} Lesehinweise.";
+                        ? "MIT LESELÜCKEN: keine vollständige Aussage" : "gewählter Bereich durchlaufen")} / {result.IssueCount} Lesehinweise.";
                 issues.Text = string.Join(Environment.NewLine, result.Issues) +
                     (result.IssueCount > result.Issues.Count ? $"\nNur erste {result.Issues.Count} Hinweise angezeigt." : "");
             }
-            catch (OperationCanceledException) { status.Text = "Analyse abgebrochen; keine Dateien geaendert. Keine Teilliste als vollstaendig ausgegeben."; }
+            catch (OperationCanceledException) { status.Text = "Analyse abgebrochen; keine Dateien geändert. Keine Teilliste als vollständig ausgegeben."; }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
             { status.Text = "Analyse fehlgeschlagen: " + ex.Message; }
             finally { _stop?.Dispose(); _stop = null; choose.IsEnabled = true; minimum.IsEnabled = true; }
         }
         show.Click += (_, _) =>
         {
-            if (grid.SelectedItem is not LargeFile file) { status.Text = "Datei auswaehlen."; return; }
+            if (grid.SelectedItem is not LargeFile file) { status.Text = "Datei auswählen."; return; }
             try
             {
                 if (!File.Exists(file.Path)) throw new IOException("Datei ist nicht mehr vorhanden. Neu analysieren.");
@@ -111,21 +111,21 @@ internal sealed class StorageAnalysisWindow : Window
             var rows = grid.Items.OfType<LargeFile>().ToArray();
             if (rows.Length == 0) { status.Text = "Keine Treffer zum Exportieren."; return; }
             var dialog = new SaveFileDialog { Filter = "CSV (*.csv)|*.csv", FileName = "Aether-Grosse-Dateien.csv" };
-            if (MessageBox.Show(this, "Dateipfade koennen vertrauliche Informationen enthalten. Lokal speichern und vor Weitergabe pruefen?",
+            if (MessageBox.Show(this, "Dateipfade können vertrauliche Informationen enthalten. Lokal speichern und vor Weitergabe prüfen?",
                 "Pfadliste exportieren", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes ||
                 dialog.ShowDialog(this) != true) return;
             try
             {
                 File.WriteAllLines(dialog.FileName, new[] { "Path,Bytes,ModifiedUtc" }.Concat(rows.Select(f => string.Join(",",
                     MainWindow.CsvCell(f.Path), f.Bytes.ToString(CultureInfo.InvariantCulture), MainWindow.CsvCell(f.ModifiedUtc.ToString("O", CultureInfo.InvariantCulture))))), new UTF8Encoding(true));
-                status.Text = $"{rows.Length} Treffer exportiert. Keine Dateien geloescht.";
+                status.Text = $"{rows.Length} Treffer exportiert. Keine Dateien gelöscht.";
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             { status.Text = "CSV nicht gespeichert: " + ex.Message; }
         };
         Closing += (_, e) =>
         {
-            if (!_scan.IsCompleted) { e.Cancel = true; _stop?.Cancel(); status.Text = "Abbruch angefordert; Analyseende abwarten, dann Fenster schliessen."; }
+            if (!_scan.IsCompleted) { e.Cancel = true; _stop?.Cancel(); status.Text = "Abbruch angefordert; Analyseende abwarten, dann Fenster schließen."; }
         };
     }
 }

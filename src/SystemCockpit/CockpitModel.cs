@@ -12,7 +12,7 @@ public sealed partial class CockpitModel : Observable
     [
         new(DesktopUiText.Get("Metric.CpuLoad"), "%", "#24FFE3"),
         new(DesktopUiText.Get("Metric.RamUsage"), "%", "#4294FF"),
-        new("GPU / CORE LOAD", "%", "#D45CFF"),
+        new(DesktopUiText.Get("Metric.GpuCoreLoad"), "%", "#D45CFF"),
         new(DesktopUiText.Get("Metric.Download"), "Mbit/s", "#32D5FF")
     ];
     public ObservableCollection<Check> Checks { get; } = [];
@@ -208,8 +208,8 @@ public sealed partial class CockpitModel : Observable
         SystemIdentity = $"{report.Cpu} / {report.Gpu}\n{report.Board} | {report.Memory}\n{report.Windows}";
         CpuIdentity = report.Cpu;
         MemoryIdentity = report.Memory;
-        Replace(Checks, report.Checks);
-        Replace(Disks, report.Disks);
+        Replace(Checks, report.Checks.Select(UiStatusText.Protection));
+        Replace(Disks, report.Disks.Select(UiStatusText.Drive));
         Replace(Diagnostics, report.Diagnostics ?? []);
         ProbeStatus = DesktopUiText.Format("Model.ProbeStatus", DateTimeOffset.Now);
         SecuritySummary = DesktopUiText.Format("Model.SecuritySummary", Checks.Count(c => c.State == "warning"),

@@ -19,7 +19,7 @@ public static class CertificateDiagnostics
                     var certificates = store.Certificates;
                     try
                     {
-                        if (certificates.Count > 1000) throw new InvalidOperationException("Zertifikatsspeicher ueber 1000 Eintraege; Abfrage begrenzt.");
+                        if (certificates.Count > 1000) throw new InvalidOperationException("Zertifikatsspeicher über 1000 Einträge; Abfrage begrenzt.");
                         foreach (var certificate in certificates)
                         {
                             token.ThrowIfCancellationRequested();
@@ -30,17 +30,17 @@ public static class CertificateDiagnostics
                             var expiring = certificate.NotAfter <= DateTime.Now.AddDays(30);
                             var statuses = string.Join(", ", chain.ChainStatus.Select(s => $"{s.Status}: {s.StatusInformation.Trim()}"));
                             results.Add(new($"{location}/{storeName} / {certificate.Subject}",
-                                $"Ablauf {certificate.NotAfter:yyyy-MM-dd} | offline Kette {(valid ? "OK" : "nicht bestaetigt")}",
+                                $"Ablauf {certificate.NotAfter:yyyy-MM-dd} | offline Kette {(valid ? "OK" : "nicht bestätigt")}",
                                 !valid || expiring ? "warning" : "info",
                                 $"Thumbprint {certificate.Thumbprint}. {statuses} " +
-                                "Keine Online-Sperrpruefung. Ein lokal vertrauter Root ist kein Beweis fuer Unbedenklichkeit; keine automatische Entfernung."));
+                                "Keine Online-Sperrprüfung. Ein lokal vertrauter Root ist kein Beweis für Unbedenklichkeit; keine automatische Entfernung."));
                         }
                     }
                     finally { foreach (var certificate in certificates) certificate.Dispose(); }
                 }
                 catch (Exception ex) when (ex is CryptographicException or UnauthorizedAccessException or InvalidOperationException)
                 {
-                    results.Add(new($"{location}/{storeName}", "Nicht vollstaendig lesbar", "unknown", ex.Message));
+                    results.Add(new($"{location}/{storeName}", "Nicht vollständig lesbar", "unknown", ex.Message));
                 }
             }
         return results;

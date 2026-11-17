@@ -154,6 +154,7 @@ public partial class HardwareBoardView
         ((ComboBoxItem)BoardZoom.Items[2]).Content = DesktopText.Get("Board.Zoom100");
         ((ComboBoxItem)BoardZoom.Items[3]).Content = DesktopText.Get("Board.Zoom125");
         LiveDataNotice.Text = DesktopText.Get("Board.LiveMetricsNotice");
+        DownloadMetricLabel.Text = " %    " + DesktopText.Get("Board.Download") + " ";
         UploadMetricLabel.Text = " Mbit/s    " + DesktopText.Get("Board.Upload") + " ";
         CpuTemperatureMetricLabel.Text = "    " + DesktopText.Get("Board.CpuTemperature") + " ";
         BoardZoom.SetResourceReference(Control.ForegroundProperty, "ModernTextPrimary");

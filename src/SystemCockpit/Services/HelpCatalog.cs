@@ -15,6 +15,21 @@ public static class HelpCatalog
 
     private static IReadOnlyList<HelpTopic> Build() =>
     [
+        new("AETHER Intelligence", "Lokale Untersuchung und beleggestützte Planung",
+            "AETHER Intelligence über die Übersicht öffnen. Arbeitsbereich bewusst laden und die explizite Testgruppe lesend untersuchen. " +
+            "Belege, regelbasierte Agenten, Quellen und offene Ursachen stehen im selben Arbeitsbereich. " +
+            "Pläne werden vor persönlicher Freigabe mit dem festen Aktionskern geprüft. Die reversible Testmarke ist ausschließlich simuliert und keine Reparatur.\n" +
+            "Ohne freigegebenes Modell arbeitet ein ausdrücklich modellloser Pfad. Keine automatischen Downloads, Modellserverstarts, " +
+            "Cloudübertragung, Shellausführung oder dauerhafte Chatablage. Grenzen und Modellfreigabe stehen in der integrierten Hilfe.",
+            "intelligence ki modell agenten wissen rag beleg plan freigabe profiler evaluation offline"),
+        new("Systemverwaltung", "Administrationsplattform: Ziele, Freigaben und Wellen",
+            "Unter Systemverwaltung den Reiter Administrationsplattform öffnen. Arbeitsbereich bewusst laden, Geräte markieren oder eine Gruppe wählen, " +
+            "Assistent und Grenzen prüfen, Vorschau erzeugen und den genauen Hash freigeben. Erst Ausführen startet Canary und Wellen.\n" +
+            "Grundinventur und eigene reversible Testmarken sind lokal beziehungsweise ausdrücklich simuliert qualifiziert. " +
+            "Nach Unterbrechungen zuerst nachprüfen; keine automatische Wiederholung oder zusätzliche Rechteerhöhung. " +
+            "Aufträge, Quellen, Sollzustand, lokale Berichte und Rückweg stehen im selben Arbeitsbereich. " +
+            "Die dortige Hilfe erklärt Limits und nicht konfigurierte Remote-/Cloudwege.",
+            "administrationsplattform geräte gruppen runbook assistent canary wellen freigabe audit topologie simulation"),
         new("Arbeitsplatz", "Funktion finden / Strg+K",
             "FUNKTION FINDEN oder Strg+K öffnet die Arbeitsplatzsuche. Arbeitsbereich und Suchbegriffe kombinieren, " +
             "Wirkung und Schritte lesen und den passenden Bereich öffnen. Die Suche startet keinen Auftrag und schaltet den Expertenmodus nicht ein.\n" +
@@ -22,7 +37,7 @@ public static class HelpCatalog
             "Ein Pfeil kennzeichnet Module der separaten Systemkontrolle. Der aktive Bereich bleibt im Besuchsverlauf sichtbar.\n" +
             "AUSGABE EIN/AUS schafft Platz für Tabellen. Aufträge zeigt bis zu 200 Einträge dieser Fenstersitzung im RAM; " +
             "freie Befehle und sensible Anzeigen bleiben ausgenommen. Wartungsberichte und Aktionsjournal werden getrennt geführt.",
-            "suche arbeitsplatz navigation auftraege warteschlange professionell"),
+            "suche arbeitsplatz navigation aufträge warteschlange professionell"),
         new("Pakete", "Quellen, Paketlisten und Aufträge",
             "WinGet-Pakete oder Updates laden und exakte ID und Quelle prüfen. Die Bestätigung zeigt alle Ziele; Pakete laufen danach nacheinander. " +
             "Einzelfehler, Abbruch und nicht gestartete Schritte stehen unter Aufträge. Nach dem Lauf die Liste neu laden.\n" +
@@ -38,17 +53,17 @@ public static class HelpCatalog
             "Mitschnitt zuerst stoppen, dann die lokale Datei nach Bestätigung an installiertes Wireshark übergeben. " +
             "128 aufgenommene Bytes erlauben keine vollständige Protokollanalyse oder TLS-Entschlüsselung.",
             "pcap pcapng wireshark filter tcp udp dns syn metadata"),
-        new("Cleaner", "Große Dateien finden und Auswahl filtern",
+        new("Cache-Bereinigung", "Große Dateien finden und Auswahl filtern",
             "Ordner und Mindestgröße wählen, dann den lesenden Scan starten. Höchstens 100.000 Einträge, 32 Ebenen und 1000 größte Treffer; " +
             "Links/Junctions werden nicht verfolgt. Fehler und Limits stehen im Ergebnis. CSV enthält Dateipfade; Explorer markieren öffnet nicht die Datei.\n" +
-            "Der Cache-Cleaner ist ein eigener Ablauf. Sein Pfadfilter ändert nur die Ansicht: versteckte angekreuzte Dateien bleiben ausgewählt. " +
+            "Die Cache-Bereinigung ist ein eigener Ablauf. Ihr Pfadfilter ändert nur die Ansicht: ausgeblendete angekreuzte Dateien bleiben ausgewählt. " +
             "Keine ankreuzen leert alles. Erst Vorschau und Gesamtbestätigung erlauben endgültiges Löschen ohne Papierkorb.",
             "speicherfresser grosse dateien filter cleanup temp autostart"),
         SkinCatalog.IsModern
             ? new(DesktopUiText.Get("Module.SystemSchema"), DesktopUiText.Get("Help.SchemaTitle"),
                 DesktopUiText.Get("Help.SchemaBody"), DesktopUiText.Get("Help.SchemaKeywords"))
             : new("Mainboard", "Virtuelles Mainboard / 1986",
-            "Hardware -> Mainframe / Board liest Windows-PnP-Geräte und RAM-Bänke. HARDWARE NEU LESEN aktualisiert die Momentaufnahme. " +
+            "Der Hardwarebereich liest Windows-PnP-Geräte und RAM-Bänke. HARDWARE NEU LESEN aktualisiert die Momentaufnahme. " +
             "Bauteil oder Beschriftung anklicken zeigt rechts die erfassten Geräte mit Status und verfügbarer Eltern-ID.\n" +
             "Die Platine mit CPU-Kühler, RAM, GPU und Anschlüssen ist schematisch. Datenpfade und Lüftertempo sind dekorativ, " +
             "keine elektrische Topologie oder Drehzahlmessung. Laufwerke erscheinen einzeln; weitere Schnittstellen bleiben in Gruppendetails.\n" +
@@ -75,7 +90,7 @@ public static class HelpCatalog
             "Der Uninstaller entfernt Autostart und Prozesse dieser Installation, den Installationsordner und %LOCALAPPDATA%\\AetherCockpit " +
             "des ausführenden Kontos einschließlich Einstellungen, Logs, Mitschnitten und Backups. Andere Profile und externe Dateien bleiben bestehen. " +
             "Portable Kopien behalten ihre Programmordner, teilen aber die entfernten Kontodaten. Ein Update erhält die Daten.",
-            "deinstallation uninstall entfernen loeschen daten backup"),
+            "deinstallation uninstall entfernen löschen daten backup"),
         new("Erste Schritte", "Erststart: EULA und Rechner-Inventar",
             "Beim ersten Start führt der Assistent durch Funktionsübersicht, EULA und Rechner-Inventar. " +
             "Ohne Zustimmung beendet sich AETHER; die Zustimmung wird im ausführenden Konto lokal gespeichert.\n" +
@@ -84,12 +99,12 @@ public static class HelpCatalog
             "erststart eula lizenz zustimmung inventar inventarisierung hardware software assistent"),
         new("Erste Schritte", "AETHER in zwei Minuten",
             "1. Mit UAC starten; AETHER initialisiert die Hardware-Sensoren.\n" +
-            "2. Im Cockpit Live-Werte, unter Taskmanager Prozesse und CPU-Kerne ansehen.\n" +
+            "2. In der Systemübersicht Live-Werte, unter Prozesse / Leistung Prozesse und logische Prozessoren ansehen.\n" +
             "3. Sensoren, Laufwerke und Messauswertung für Details öffnen.\n" +
             "4. Diagnose, Sicherheit und Ereignisse für Windows-Befunde nutzen.\n" +
-            "5. Änderungen in Cleaner, Superadmin oder Operations erst nach Vorschau freigeben.\n" +
+            "5. Änderungen in Bereinigung, Systemverwaltung oder Wartung erst nach Vorschau freigeben.\n" +
             "Ausnahme: Die freie Expertenkonsole startet eingegebene Befehle mit Enter direkt.",
-            "start einfuehrung ueberblick grundlagen uac administrator"),
+            "start einführung überblick grundlagen uac administrator"),
         new("Erste Schritte", "Desktop-Gadgets, Transparenz und Tray",
             "Das Tray-Symbol öffnet Desktop / Transparenz / Parameter. Diagrammgruppen wählen und Hauptfenster, xBar und Gadgets " +
             "getrennt auf 20–100 Prozent Deckkraft einstellen. Gadgets am Titel verschieben; sie liegen hinter normalen Fenstern auf der Explorer-Ebene.\n" +
@@ -112,7 +127,7 @@ public static class HelpCatalog
             "Maus-Daumentasten und Alt+Pfeil links/rechts führen dieselben Schritte aus.\n" +
             "Die erweiterte Systemkontrolle hat einen eigenen Modulverlauf und einen HAUPTFENSTER-Knopf. " +
             "Die Positionszeile zeigt den aktuellen Bereich. Bis zu 100 Besuche bleiben im RAM; ein neuer Besuch verwirft den Vorwärtszweig.",
-            "navigation zurueck vor verlauf maus daumentaste alt pfeil brotkrumen hauptebene"),
+            "navigation zurück vor verlauf maus daumentaste alt pfeil brotkrumen hauptebene"),
         new("Erste Schritte", "Einsteiger- und Expertenmodus",
             "Unter WARTUNG schaltet EXPERTENMODUS den freien Konsolenstart und vollständigen Katalog frei. " +
             "Enter führt dort auch ändernde Befehle sofort aus. Experte ist die gespeicherte Standardvorgabe.\n" +
@@ -125,19 +140,19 @@ public static class HelpCatalog
             "Externe Netzwerkziele können deine öffentliche IP-Adresse sehen.\n" +
             "SINNVOLL und VORSICHT erklären Anlass und Grenzen. Vor dem Start Ziel, Parameter und Wirkung lesen. " +
             "Die Einstufung ist kein Gesamturteil über die Sicherheit des Rechners.",
-            "risiko stufen farben lesend aendernd netzwerk badge"),
-        new("Cockpit", "Live-Instrumente und AETHER xBar",
+            "risiko stufen farben lesend ändernd netzwerk badge"),
+        new("Cockpit", "Systemübersicht und AETHER xBar",
             "Live-Werte werden ungefähr alle zwei Sekunden gelesen; Cockpitkurven halten 90 Punkte im RAM. " +
             "Die xBar zeigt sechs wählbare Gruppen: CPU, RAM, GPU, Temperaturen, Netzwerk und Laufwerksbelegung.\n" +
-            "Im Zahnrad Monitor, Seite und PIN/FLOAT wählen. FLOAT speichert freie Positionen; Auto-hide gilt nur angeheftet am Einzelmonitor. " +
+            "Im Zahnrad Monitor und Seite wählen sowie zwischen angeheftet und frei schwebend wechseln. Automatisches Ausblenden gilt nur bei angehefteter xBar und einem Monitor. " +
             "Die aktuelle xBar ist eine Diagrammleiste, kein Launcher. Fehlende Werte bleiben nicht verfügbar. " +
             "Exklusives Gaming-Vollbild kann xBar und Overlay verdecken.",
             "xbar sidebar diagramme graphen tortendiagramm belegt frei laufwerke widgets pin float monitor overlay gaming"),
-        new("Taskmanager", "Prozesse und CPU-Kerne",
+        new("Taskmanager", "Prozesse / Leistung",
             "Die Prozesstabelle lässt sich durchsuchen und sortieren. CPU-Anteil ist auf die gesamte Maschine und das Messintervall bezogen; " +
             "alle logischen Kerne besitzen eigene Graphen.\n" +
             "Prozessdetails lesen Threads, Pfad und Speicher mit PID-/Startzeitprüfung. Geschützte oder beendete Prozesse können unlesbar sein. " +
-            "Priorität und Beenden werden in Superadmin verwaltet. Ein beendeter Prozess lässt sich nicht automatisch zurücknehmen.",
+            "Priorität und Beenden werden in der Systemverwaltung gesteuert. Ein beendeter Prozess lässt sich nicht automatisch zurücknehmen.",
             "prozesse cpu kerne threads beenden details"),
         new("Sensoren", "Sensor-Diagramme, Detailmatrix und Grenzwerte",
             "LIVE-DIAGRAMME gruppiert gemeldete Kanäle nach Hardware und Einheit. Legendenhaken steuern Reihen dieser Sitzung; " +
@@ -166,47 +181,47 @@ public static class HelpCatalog
             "Diagnoseexport verwendet aktuelle Modellwerte mit Vorschau. Die Musterschwärzung ersetzt Rechner-/Benutzernamen, " +
             "Benutzerpfade, IPv4 und MAC. Sie ist keine vollständige Anonymisierung und gilt nicht automatisch für andere Berichte. " +
             "Den zu speichernden Text vor Weitergabe prüfen.",
-            "diagnose export bericht schwaerzung redaktion speicherdiagnose mdsched ram support"),
+            "diagnose export bericht schwärzung redaktion speicherdiagnose mdsched ram support"),
         new("Diagnose", "Windows-Assistenten und Hintergrunddiagnose",
             "Windows-Diagnose & Problemlösung öffnet Helfer für Systemdateien, Updates, Netzwerk und Geräte/Treiber. " +
             "Jeder startet einzeln und speichert einen lokalen Bericht. Reparaturplan vorbereiten wählt DISM/SFC-Schritte, führt sie nicht aus.\n" +
             "Hintergrunddiagnose in den Desktop-Einstellungen aktivieren: erster Lauf sofort, danach 30 Minuten Pause. " +
             "Der letzte Bericht liegt unter Operations\\Reports\\background-latest.json. Neue Befunde melden sich im Tray; " +
             "Klick öffnet die Assistenten. Anmeldestart braucht separat genehmigten Autostart. Automatische Reparaturen gibt es nicht.",
-            "assistent diagnose windows hintergrund ueberwachung reparatur update geraete treiber"),
+            "assistent diagnose windows hintergrund überwachung reparatur update geräte treiber"),
         new("Sicherheit", "Schutzstatus lesen",
             "Defender, Firewall, BitLocker, Secure Boot, TPM und Updatezustand werden getrennt gelesen. " +
             "Ein grüner Wert bestätigt nur die jeweilige Meldung; unbekannte Daten sind kein positiver Befund.\n" +
             "Get-HotFix beweist keine vollständige Aktualität, Defender bewertet kein alternatives Antivirusprodukt. " +
             "Zertifikatsketten werden offline geprüft. AETHER schaltet keine Schutzfunktionen ab.",
             "defender firewall bitlocker secure boot tpm schutz zertifikat"),
-        new("Cleaner", "Cache mit Vorschau bereinigen",
+        new("Cache-Bereinigung", "Cache mit Vorschau bereinigen",
             "1. Stufe und Kategorie wählen. 2. TEMP-DATEIEN PRÜFEN erstellt Vorschau, Anzahl, MiB und Risiko A–D. " +
             "3. Kandidaten unter LÖSCHEN? ankreuzen. 4. Gesamtmenge bestätigen; gelöscht wird endgültig ohne Papierkorb.\n" +
             "Nur Dateien älter als sieben Tage. Links, Hardlinks, gesperrte, schreibgeschützte oder geänderte Dateien werden nicht gelöscht. " +
             "Browser/Apps vorher schließen. Cookies, Lesezeichen, Downloads und Offline-Medien gehören nicht zu den Cachekategorien.",
-            "cleaner aufraeumen cache temp loeschen bewertung score vorschau"),
+            "cleaner aufräumen cache temp löschen bewertung score vorschau"),
         new("Ereignisse", "Ereignisanzeige nutzen",
             "Kanal, Zeitraum von 1–30 Tagen und Limit bis 2000 wählen, dann nach Text und Stufe filtern. " +
             "Einzelereignisse haben getrennte Volltext- und XML-Details.\n" +
             "Der Cockpitmonitor liest System/Application nach jeweils ungefähr 15 Sekunden erneut, höchstens 200 je Kanal aus 24 Stunden. " +
             "Zähler beschreiben diesen begrenzten Snapshot; Zugriffsfehler und keine Treffer bleiben unterscheidbar.",
             "ereignisse eventlog kanal fehler warnung filter"),
-        new("Superadmin", "Statusbasierte Verwaltung",
+        new("Systemverwaltung", "Statusbasierte Verwaltung",
             "Für Dienste, Aufgaben, Features, Adapter, Firewall oder Benutzer zunächst STATUS LESEN. " +
             "Dann Ziel und Aktion wählen, Vorschau prüfen und einzeln bestätigen.\n" +
             "Viele Aktionen unterstützen Rücknahme der letzten reversiblen Sitzungsaktion. Extern geänderte Ziele werden nicht blind " +
             "überschrieben. Prozessbeenden und bereits ausgeführte Dienst-/Aufgabenwirkungen sind nicht automatisch reversibel; " +
             "Fehler oder Abbruch können Teilergebnisse hinterlassen.",
             "superadmin dienste aufgaben firewall benutzer ruecknahme workbench"),
-        new("Operations", "Wartungspläne und Updates",
+        new("Wartung", "Wartungspläne und Updates",
             "17 Wartungskategorien mit vier Planvorlagen: Aufgaben wählen, Vorschau lesen, Lauf bestätigen und Änderungen einzeln freigeben. " +
             "Ein Wiederherstellungspunkt ist standardmäßig Pflicht; scheitert er, beginnt keine Wartungsänderung.\n" +
             "Updates verwenden GUID und Revision mit erneuter EULA-Prüfung. WinGet-Pläne benötigen exakte IDs. " +
             "STOP hält nach dem laufenden Schritt an, nicht gewaltsam DISM/SFC. Live-/HTML-Berichte bleiben lokal; " +
             "es gibt keine automatische Löschfrist für Planberichte.",
             "operations wartung plan update eula wiederherstellungspunkt protokoll"),
-        new("Pakete", "Paket-Center (WinGet)",
+        new("Pakete", "Paketverwaltung / WinGet",
             "INSTALLIERTE PAKETE oder VERFÜGBARE UPDATES laden, alternativ im Katalog suchen. " +
             "ID und Quelle prüfen und aktionierbare Zeilen markieren; Strg/Umschalt wählt mehrere.\n" +
             "Installieren, Aktualisieren oder Deinstallieren zeigt die vollständige Vorschau vor dem Start. " +
@@ -225,13 +240,13 @@ public static class HelpCatalog
             "Limit sind 2000 Einträge. Der Zeitstempel gehört zum Registry-Schlüssel, nicht zwingend zum letzten Ordnerbesuch. " +
             "AETHER bietet in diesem Modul keine Löschfunktion.",
             "shellbags spuren registry ordner forensik bagmru"),
-        new("Schluessel", "Sensible Schlüssel anzeigen",
+        new("Schlüssel", "Sensible Schlüssel anzeigen",
             "WLAN-, BitLocker-Recovery- und OEM-Firmwarekey werden nur nach Klick und Warndialog gelesen. " +
             "Eine digitale Lizenz erzeugt keinen Firmwarekey.\n" +
             "Die Anzeige wird bei Tabwechsel und Schließen geleert und hat keine AETHER-Speicher-/Exportfunktion. " +
             "Vorher Bildschirmfreigabe und Aufnahme beenden. Anzeigeleeren verhindert weder Bildschirmaufnahme noch " +
             "Speicherforensik oder Systemprotokollierung.",
-            "schluessel wlan passwort bitlocker recovery key oem lizenz"),
+            "schlüssel wlan passwort bitlocker recovery key oem lizenz"),
         new("Konsole", "CRT-Konsole und Befehlskatalog",
             "Katalogbefehl in die Eingabe übernehmen, Parameter und Platzhalter prüfen. ENTER startet direkt, auch bei Änderungen. " +
             "Im Einsteigermodus ist der freie Start gesperrt.\n" +

@@ -37,7 +37,7 @@
     <AdornerDecorator>
     <Border x:Name="BarNeonFrame" Background="#F10C0920" BorderBrush="{DynamicResource GlassRim}" BorderThickness="2"
             CornerRadius="14,4,14,4" Padding="10" Margin="5"
-            controls:FrameGlow.Visible="True" controls:FrameGlow.Enabled="{Binding MotionEnabled}">
+            controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="{Binding MotionEnabled}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

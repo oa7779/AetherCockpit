@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)][string]$HostName,
     [Parameter(Mandatory=$true)][string]$CertificateThumbprint,
     [ValidateRange(1,65535)][int]$Port = 5187,
@@ -24,27 +24,27 @@ if ($Remove) {
     exit 0
 }
 if ($existing) { throw 'Serverdienst bereits eingerichtet.' }
-if (!(Test-Path -LiteralPath $exe -PathType Leaf)) { throw 'Serverpaket vollstaendig entpacken.' }
+if (!(Test-Path -LiteralPath $exe -PathType Leaf)) { throw 'Serverpaket vollständig entpacken.' }
 if (!$exe.StartsWith($env:ProgramFiles.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
     throw 'Serverpaket vor der Dienstinstallation nach Program Files kopieren und dort vor Schreibzugriffen normaler Benutzer schuetzen.'
 }
 $current = $exe
 while ($current) {
-    if ((Test-Path -LiteralPath $current) -and ((Get-Item -LiteralPath $current -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "Dienstpfad darf keine Verknuepfung enthalten: $current" }
+    if ((Test-Path -LiteralPath $current) -and ((Get-Item -LiteralPath $current -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "Dienstpfad darf keine Verknüpfung enthalten: $current" }
     $current = Split-Path $current -Parent
 }
 $thumb = $CertificateThumbprint.Replace(' ', '')
 . (Join-Path $PSScriptRoot 'Assert-ServiceFilesProtected.ps1')
 Assert-ServiceFilesProtected $exe
-if ($thumb -notmatch '^[0-9a-fA-F]{40}$') { throw 'Ungueltiger SHA1-Zertifikatfingerabdruck.' }
+if ($thumb -notmatch '^[0-9a-fA-F]{40}$') { throw 'Ungültiger SHA1-Zertifikatfingerabdruck.' }
 $cert = Get-Item -LiteralPath "Cert:\LocalMachine\My\$thumb"
-if (!$cert.HasPrivateKey -or $cert.NotAfter -le (Get-Date) -or $cert.NotBefore -gt (Get-Date)) { throw 'Gueltiges Serverzertifikat mit privatem Schluessel erforderlich.' }
+if (!$cert.HasPrivateKey -or $cert.NotAfter -le (Get-Date) -or $cert.NotBefore -gt (Get-Date)) { throw 'Gültiges Serverzertifikat mit privatem Schlüssel erforderlich.' }
 Write-Host "HTTPS-Verwaltung auf https://${HostName}:$Port / Dienstkonto LocalSystem."
-Write-Host 'DNS/SAN, Vertrauenskette, Schluesselrechte und Zugang ueber VPN/Firewall separat einrichten.'
+Write-Host 'DNS/SAN, Vertrauenskette, Schlüsselrechte und Zugang über VPN/Firewall separat einrichten.'
 if ((Read-Host 'Zur Dienstinstallation JA eingeben') -cne 'JA') { throw 'Installation nicht freigegeben.' }
 $current = $data
 while ($current) {
-    if ((Test-Path -LiteralPath $current) -and ((Get-Item -LiteralPath $current -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "Datenpfad darf keine Verknuepfung enthalten: $current" }
+    if ((Test-Path -LiteralPath $current) -and ((Get-Item -LiteralPath $current -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "Datenpfad darf keine Verknüpfung enthalten: $current" }
     $current = Split-Path $current -Parent
 }
 New-Item -Path $data -ItemType Directory -Force | Out-Null
@@ -62,4 +62,4 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$name" -Name Env
     "AETHER_MANAGER_URLS=https://0.0.0.0:$Port", "ASPNETCORE_ALLOWEDHOSTS=$HostName",
     "AETHER_MANAGER_DATA=$data", "AETHER_MANAGER_CERT_THUMBPRINT=$thumb") | Out-Null
 Start-Service -Name $name
-Write-Output "Serverdienst gestartet. Administrator-Token liegt geschuetzt unter $data\admin-token.txt. HTTPS-Erreichbarkeit pruefen."
+Write-Output "Serverdienst gestartet. Administrator-Token liegt geschützt unter $data\admin-token.txt. HTTPS-Erreichbarkeit prüfen."

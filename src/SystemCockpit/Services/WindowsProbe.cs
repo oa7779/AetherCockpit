@@ -10,6 +10,7 @@ public sealed class WindowsProbe
 {
     public async Task<ProbeReport> ReadAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -28,8 +29,8 @@ public sealed class WindowsProbe
                      Convert.ToBase64String(Encoding.Unicode.GetBytes(Script)) })
             process.StartInfo.ArgumentList.Add(argument);
         if (!process.Start()) throw new InvalidOperationException("Windows-Abfrage konnte nicht starten.");
-        var stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
-        var stderr = process.StandardError.ReadToEndAsync(cancellationToken);
+        var stdout = process.StandardOutput.ReadToEndAsync();
+        var stderr = process.StandardError.ReadToEndAsync();
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(TimeSpan.FromSeconds(45));
         try
@@ -52,6 +53,8 @@ public sealed class WindowsProbe
         finally
         {
             if (!process.HasExited) process.Kill(entireProcessTree: true);
+            await process.WaitForExitAsync(CancellationToken.None);
+            await Task.WhenAll(stdout, stderr);
         }
     }
 
@@ -71,7 +74,7 @@ public sealed class WindowsProbe
         if (document.Root?.Name != ns + "Objs")
             throw new XmlException("Unerwartetes PowerShell-Streamformat.");
         // Windows PowerShell can emit module-initialization progress on stderr despite ProgressPreference.
-        // Fehlertexte werden als lesbarer Klartext zurueckgegeben (CLIXML-Escapes wie _x000D_ dekodiert),
+        // Fehlertexte werden als lesbarer Klartext zurückgegeben (CLIXML-Escapes wie _x000D_ dekodiert),
         // nicht als rohe XML-Elemente.
         return string.Join(Environment.NewLine, document.Root.Elements()
             .Where(element => !string.Equals((string?)element.Attribute("S"), "progress", StringComparison.OrdinalIgnoreCase))
@@ -92,10 +95,10 @@ public sealed class WindowsProbe
             @{ Name = [string]$name; Value = [string]$value; State = [string]$state; Detail = [string]$detail }
         }
         function Probe($name, [scriptblock]$read) {
-            try { & $read } catch { Item $name 'Nicht verfuegbar' 'unknown' $_.Exception.Message }
+            try { & $read } catch { Item $name 'Nicht verfügbar' 'unknown' $_.Exception.Message }
         }
-        $cpu = 'Nicht verfuegbar'; $gpu = 'Nicht verfuegbar'; $board = 'Nicht verfuegbar'
-        $memory = 'Nicht verfuegbar'; $windows = 'Nicht verfuegbar'
+        $cpu = 'Nicht verfügbar'; $gpu = 'Nicht verfügbar'; $board = 'Nicht verfügbar'
+        $memory = 'Nicht verfügbar'; $windows = 'Nicht verfügbar'
         $checks = @()
         try {
             $cpu = ((Get-CimInstance Win32_Processor).Name -join ' + ')
@@ -105,7 +108,7 @@ public sealed class WindowsProbe
             $os = Get-CimInstance Win32_OperatingSystem
             $windows = "$($os.Caption) | Build $($os.Version)"
             $memory = '{0:N1} GB nutzbarer RAM' -f ($os.TotalVisibleMemorySize / 1MB)
-        } catch { $checks += Item 'Hardware-Erkennung' 'Unvollstaendig' 'unknown' $_.Exception.Message }
+        } catch { $checks += Item 'Hardware-Erkennung' 'Unvollständig' 'unknown' $_.Exception.Message }
         $checks += Probe 'Defender Echtzeitschutz' {
             $d = Get-MpComputerStatus
             $state = if ($d.AntivirusEnabled -and $d.RealTimeProtectionEnabled) { 'ok' } else { 'warning' }
@@ -116,7 +119,7 @@ public sealed class WindowsProbe
             if ($null -eq $d.AntivirusSignatureLastUpdated) { throw 'Kein Signaturdatum gemeldet.' }
             $age = ((Get-Date) - $d.AntivirusSignatureLastUpdated).TotalDays
             $state = if ($age -gt 3) { 'warning' } else { 'ok' }
-            Item 'Defender Signaturen' $d.AntivirusSignatureLastUpdated.ToString('yyyy-MM-dd HH:mm') $state 'Warnung bei Signaturen aelter als 3 Tage; kein Malware-Scan.'
+            Item 'Defender Signaturen' $d.AntivirusSignatureLastUpdated.ToString('yyyy-MM-dd HH:mm') $state 'Warnung bei Signaturen älter als 3 Tage; kein Malware-Scan.'
         }
         $checks += Probe 'Windows Firewall' {
             $profiles = @(Get-NetFirewallProfile)
@@ -133,18 +136,18 @@ public sealed class WindowsProbe
         $checks += Probe 'BitLocker Systemlaufwerk' {
             $v = Get-BitLockerVolume -MountPoint $env:SystemDrive
             $state = if ([string]$v.ProtectionStatus -eq 'On') { 'ok' } else { 'warning' }
-            Item 'BitLocker Systemlaufwerk' "$($v.VolumeStatus) | Schutz: $($v.ProtectionStatus)" $state 'Nur Status; keine Schluessel oder Wiederherstellungsdaten werden gelesen.'
+            Item 'BitLocker Systemlaufwerk' "$($v.VolumeStatus) | Schutz: $($v.ProtectionStatus)" $state 'Nur Status; keine Schlüssel oder Wiederherstellungsdaten werden gelesen.'
         }
         $checks += Probe 'Letztes gemeldetes Windows-Update' {
             $last = Get-HotFix | Where-Object InstalledOn | Sort-Object InstalledOn -Descending | Select-Object -First 1
-            if ($null -eq $last) { throw 'Kein Installationsdatum in Get-HotFix verfuegbar.' }
+            if ($null -eq $last) { throw 'Kein Installationsdatum in Get-HotFix verfügbar.' }
             Item 'Letztes gemeldetes Windows-Update' "$($last.HotFixID) | $($last.InstalledOn.ToString('yyyy-MM-dd'))" 'info' 'Lokales Installationsdatum. Kein Online-Abgleich; beweist nicht, dass Windows aktuell ist.'
         }
         $checks += Probe 'Neustart-Indikatoren' {
             $pending = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') -or
                 (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired')
             $state = if ($pending) { 'warning' } else { 'info' }
-            Item 'Neustart-Indikatoren' ([string]$pending) $state 'CBS- und Windows-Update-Registryindikatoren; keine vollstaendige Neustarterkennung.'
+            Item 'Neustart-Indikatoren' ([string]$pending) $state 'CBS- und Windows-Update-Registryindikatoren; keine vollständige Neustarterkennung.'
         }
         $checks += Probe 'Windows Diagnosedaten' {
             $path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection'
@@ -154,20 +157,20 @@ public sealed class WindowsProbe
                 $p = $policy.PSObject.Properties['AllowTelemetry']
             }
             if ($null -eq $p) {
-                Item 'Windows Diagnosedaten' 'Keine Richtlinie gesetzt' 'info' 'Windows verwendet die Systemeinstellung. Kein Nachweis tatsaechlicher Datenuebertragung.'
+                Item 'Windows Diagnosedaten' 'Keine Richtlinie gesetzt' 'info' 'Windows verwendet die Systemeinstellung. Kein Nachweis tatsaechlicher Datenübertragung.'
             } else {
-                Item 'Windows Diagnosedaten' "AllowTelemetry = $($p.Value)" 'info' 'Konfigurierter Richtlinienwert, nicht effektiver Datenverkehr. Wert 0 schaltet auf Windows Pro Diagnosedaten nicht vollstaendig ab.'
+                Item 'Windows Diagnosedaten' "AllowTelemetry = $($p.Value)" 'info' 'Konfigurierter Richtlinienwert, nicht effektiver Datenverkehr. Wert 0 schaltet auf Windows Pro Diagnosedaten nicht vollständig ab.'
             }
         }
         $checks += Probe 'Autostarts' {
             $count = @(Get-CimInstance Win32_StartupCommand).Count
-            Item 'Autostarts' "$count Eintraege" 'info' 'Win32_StartupCommand; keine vollstaendige Liste von Diensten und geplanten Aufgaben.'
+            Item 'Autostarts' "$count Einträge" 'info' 'Win32_StartupCommand; keine vollständige Liste von Diensten und geplanten Aufgaben.'
         }
         $checks += Probe 'TCP Verbindungen' {
             $connections = @(Get-NetTCPConnection)
             $active = @($connections | Where-Object State -eq Established).Count
             $listening = @($connections | Where-Object State -eq Listen).Count
-            Item 'TCP Verbindungen' "$active verbunden | $listening lauschend" 'info' 'Lokale TCP-Zaehler; kein Mitschnitt, keine Bewertung von Verbindungszielen.'
+            Item 'TCP Verbindungen' "$active verbunden | $listening lauschend" 'info' 'Lokale TCP-Zähler; kein Mitschnitt, keine Bewertung von Verbindungszielen.'
         }
         $disks = @()
         try {
@@ -179,10 +182,10 @@ public sealed class WindowsProbe
                     if ($null -ne $r.Temperature -and $r.Temperature -gt 0) { $detail += " | $($r.Temperature) C" }
                     if ($null -ne $r.PowerOnHours) { $detail += " | $($r.PowerOnHours) h" }
                     if ($null -ne $r.Wear) { $detail += " | Verschleiss: $($r.Wear)%" }
-                } catch { $detail += " | Detailwerte nicht verfuegbar: $($_.Exception.Message)" }
+                } catch { $detail += " | Detailwerte nicht verfügbar: $($_.Exception.Message)" }
                 $disks += Item $disk.FriendlyName ([string]$disk.HealthStatus) $state $detail
             }
-        } catch { $disks += Item 'Storage Health' 'Nicht verfuegbar' 'unknown' $_.Exception.Message }
+        } catch { $disks += Item 'Storage Health' 'Nicht verfügbar' 'unknown' $_.Exception.Message }
         $diagnostics = @()
         $diagnostics += Probe 'Crash Analyzer / 30 Tage' {
             $events = @()
@@ -192,7 +195,7 @@ public sealed class WindowsProbe
                 if ($_.FullyQualifiedErrorId -notlike 'NoMatchingEventsFound*') { throw }
             }
             if ($events.Count -eq 0) {
-                Item 'Crash Analyzer / 30 Tage' 'Keine passenden Eintraege' 'info' 'Application-Log, IDs 1000/1001. Kein Nachweis vollstaendiger Absturzfreiheit.'
+                Item 'Crash Analyzer / 30 Tage' 'Keine passenden Einträge' 'info' 'Application-Log, IDs 1000/1001. Kein Nachweis vollständiger Absturzfreiheit.'
             } else {
                 foreach ($event in $events) {
                     $message = [string]$event.Message
@@ -219,14 +222,14 @@ public sealed class WindowsProbe
         }
         $diagnostics += Probe 'Autostart-Details' {
             $entries = @(Get-CimInstance Win32_StartupCommand | Select-Object -First 80)
-            if ($entries.Count -eq 0) { Item 'Autostart-Details' 'Keine Eintraege' 'info' 'Win32_StartupCommand; Teilansicht.' }
+            if ($entries.Count -eq 0) { Item 'Autostart-Details' 'Keine Einträge' 'info' 'Win32_StartupCommand; Teilansicht.' }
             foreach ($entry in $entries) {
-                Item "Autostart / $($entry.Name)" $entry.Location 'info' 'Verwaltung ueber Windows Task-Manager. Keine automatische Deaktivierung.'
+                Item "Autostart / $($entry.Name)" $entry.Location 'info' 'Verwaltung über Windows Task-Manager. Keine automatische Deaktivierung.'
             }
         }
         $diagnostics += Probe 'Zertifikatsablauf' {
             $certificates = @(Get-ChildItem Cert:\LocalMachine\My,Cert:\CurrentUser\My | Where-Object NotAfter -lt (Get-Date).AddDays(30) | Select-Object -First 40)
-            if ($certificates.Count -eq 0) { Item 'Zertifikatsablauf' 'Keine innerhalb von 30 Tagen ablaufenden Zertifikate' 'info' 'Nur persoenliche Zertifikatsspeicher, keine Bewertung von Root-CAs oder Vertrauensketten.' }
+            if ($certificates.Count -eq 0) { Item 'Zertifikatsablauf' 'Keine innerhalb von 30 Tagen ablaufenden Zertifikate' 'info' 'Nur persönliche Zertifikatsspeicher, keine Bewertung von Root-CAs oder Vertrauensketten.' }
             foreach ($certificate in $certificates) {
                 Item 'Zertifikatsablauf' $certificate.NotAfter.ToString('yyyy-MM-dd') 'warning' $certificate.Subject
             }

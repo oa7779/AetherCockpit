@@ -18,7 +18,7 @@ public static class StorageAnalysis
     public static StorageScan Scan(string root, long minimumBytes, CancellationToken token)
     {
         if (minimumBytes < 0 || !Path.IsPathFullyQualified(root) || !Directory.Exists(root))
-            throw new ArgumentException("Vorhandenen absoluten Ordner und nichtnegative Mindestgroesse waehlen.");
+            throw new ArgumentException("Vorhandenen absoluten Ordner und nichtnegative Mindestgröße wählen.");
         var fullRoot = Path.GetFullPath(root);
         for (var parent = new DirectoryInfo(fullRoot); parent is not null; parent = parent.Parent)
             if ((parent.Attributes & FileAttributes.ReparsePoint) != 0)

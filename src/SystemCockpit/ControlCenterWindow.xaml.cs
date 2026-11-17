@@ -90,7 +90,7 @@ public partial class ControlCenterWindow : Window
         var initialModule = (Modules.SelectedItem as TabItem)?.Tag as string ?? "SMART";
         _trail.Visit(initialModule);
         CcTrail.Text = DesktopUiText.Format("ControlCenter.Trail", ((Modules.SelectedItem as TabItem)?.Header as string ?? "SMART").ToUpperInvariant());
-        OsCompat.Text = $"Erkanntes System: {DetectOs()} | Katalog fuer Windows 10/11; versionsabhaengige Befehle melden fehlende Unterstuetzung selbst.";
+        OsCompat.Text = $"Erkanntes System: {DetectOs()} | Katalog für Windows 10/11; versionsabhängige Befehle melden fehlende Unterstützung selbst.";
         MaintenanceActions.ItemsSource = SystemActions.Catalog.Where(a => a.Id is not ("wlan" or "wlan-profiles" or "neighbors" or "bluetooth" or "arp")).ToList();
         MaintenanceActions.SelectedIndex = 0;
         PopulateSettings();
@@ -194,7 +194,7 @@ public partial class ControlCenterWindow : Window
         RefreshCommandList();
     }
 
-    // Einsteiger-Modus zeigt die sichere Kernliste: ausschliesslich lesende Befehle.
+    // Einsteiger-Modus zeigt die sichere Kernliste: ausschließlich lesende Befehle.
     public static List<AdminCommand> FilterCatalog(string search, bool expert) => AdminCommandCatalog.All
         .Where(c => (expert || c.RiskLevel == 0) && c.SearchText.Contains(search, StringComparison.OrdinalIgnoreCase))
         .ToList();
@@ -225,7 +225,7 @@ public partial class ControlCenterWindow : Window
     }
 
     public Task DisplayReadOnlyAsync(string label, Func<CancellationToken, Task<string>> read) =>
-        RunAsync(label, read, sensitive: true);
+        RunAsync(label, read, sensitive: true, guardianInvocation: false);
 
     protected override void OnSourceInitialized(EventArgs e)
     {
@@ -293,7 +293,7 @@ public partial class ControlCenterWindow : Window
     }
 
     private Task RunAsync(string label, Func<CancellationToken, Task<string>> action,
-        string? warning = null, bool admin = false, bool sensitive = false, bool detailedConfirmation = false)
+        string? warning = null, bool admin = false, bool sensitive = false, bool detailedConfirmation = false, bool guardianInvocation = true)
     {
         if (_active is not null || _closing)
         {
@@ -334,9 +334,13 @@ public partial class ControlCenterWindow : Window
             {
                 if (admin) SystemActions.RequireAdmin();
                 if (warning is not null && !sensitive) ActionJournal.Append("action-start", new { label });
-                var result = await action(_active.Token);
+                var result = guardianInvocation && (warning is not null || sensitive)
+                    ? await GuardianInvocation.RunAsync(sensitive ? "Wartungscenter: privater manueller Aufruf" : "Wartungscenter: " + label, action, _active.Token)
+                    : await action(_active.Token);
                 AppendTerminal(DesktopUiText.Format("Job.Result", result, label, _elapsed.Elapsed));
                 Status.Text = DesktopUiText.Format("Job.Completed", label);
+                if (guardianInvocation && (warning is not null || sensitive))
+                    AppendTerminal("\n[GUARDIAN] Aufruf dokumentiert; Systemwirkung nicht allgemein verifiziert. Kein automatischer Rückweg.\n");
                 if (warning is not null && !sensitive) ActionJournal.Append("action-complete", new { label });
                 if (job is not null)
                 {
@@ -399,7 +403,7 @@ public partial class ControlCenterWindow : Window
     private async void SmartExecuteClicked(object sender, RoutedEventArgs e) =>
         await RunAsync(DesktopUiText.Get("Safety.Smart.Title"), async token =>
         {
-            var operation = ((ComboBoxItem)SmartOperation.SelectedItem).Content.ToString()!;
+            var operation = ((ComboBoxItem)SmartOperation.SelectedItem).Tag.ToString()!;
             var result = await Smart().ExecuteAsync(SelectedDevice(), operation, SmartArgument.Text, token);
             return result.Summary + "\n" + result.Json;
         }, DesktopUiText.Get("Safety.Smart.Body"), admin: true);
@@ -434,7 +438,7 @@ public partial class ControlCenterWindow : Window
             Status.Text = DesktopUiText.Format("Control.SpeedSize", SpeedTest.MinMiB, SpeedTest.MaxMiB);
             return;
         }
-        await RunAsync("Speedtest Download", token => SpeedTest.DownloadAsync(mib, token, ProgressOutput(raw: true)),
+        await RunAsync("Download-Geschwindigkeit testen", token => SpeedTest.DownloadAsync(mib, token, ProgressOutput(raw: true)),
             DesktopUiText.Format("Safety.SpeedTest", mib, SpeedTest.TargetHost));
     }
 
@@ -461,6 +465,7 @@ public partial class ControlCenterWindow : Window
             if (result.ExitCode != 0)
                 throw new InvalidOperationException(DesktopUiText.Format("Package.NativeExit", result.ExitCode));
             var rows = PackageCenter.ParseTable(result.Output);
+            PackageCenter.RecordEvidence(kind, rows, result.OutputTruncated);
             _packageRows = rows;
             _packageKind = kind;
             PackagesGrid.ItemsSource = rows;
@@ -547,6 +552,29 @@ public partial class ControlCenterWindow : Window
         }, DesktopUiText.Format("Center.LanConsent", cidr));
     }
 
+    private async void WakeOnLanClicked(object sender, RoutedEventArgs e)
+    {
+        var macAddress = WakeMacAddress.Text.Trim();
+        try { _ = WakeOnLan.BuildMagicPacket(macAddress); }
+        catch (ArgumentException ex)
+        {
+            Status.Text = DesktopUiText.Format("Center.WakeInvalid", ex.Message);
+            return;
+        }
+
+        await RunAsync(DesktopUiText.Get("Center.WakeTitle"), async token =>
+        {
+            var sent = await WakeOnLan.SendAsync(macAddress, WakeOnLan.DefaultPort, token);
+            return DesktopUiText.Format("Center.WakeSent", sent, macAddress);
+        }, DesktopUiText.Format("Safety.WakeOnLan", macAddress));
+    }
+
+    private void LanDeviceSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (LanGrid.SelectedItem is LanDevice { Mac.Length: > 0 } device)
+            WakeMacAddress.Text = device.Mac;
+    }
+
     private async void AutoLanChanged(object sender, RoutedEventArgs e)
     {
         if (!IsLoaded || _closing) return;
@@ -579,7 +607,7 @@ public partial class ControlCenterWindow : Window
                         using var linked = CancellationTokenSource.CreateLinkedTokenSource(token, active);
                         var devices = await NetworkTools.ScanAsync(cidr, linked.Token, ouiCsv: _model.Settings.OuiCsvPath);
                         LanGrid.ItemsSource = devices;
-                        return $"{DateTime.Now:HH:mm:ss}: {devices.Count} Antworten/Fehler im freigegebenen Netz {cidr}. Naechster Scan nach 60s.";
+                        return $"{DateTime.Now:HH:mm:ss}: {devices.Count} Antworten/Fehler im freigegebenen Netz {cidr}. Nächster Scan nach 60s.";
                     });
                 await Task.Delay(TimeSpan.FromSeconds(60), token);
             }
@@ -774,7 +802,8 @@ public partial class ControlCenterWindow : Window
     private async void ExplorerClicked(object sender, RoutedEventArgs e) =>
         await RunAsync(DesktopUiText.Get("Center.ExplorerTitle"), async token =>
         {
-            var session = Process.GetCurrentProcess().SessionId;
+            using var current = Process.GetCurrentProcess();
+            var session = current.SessionId;
             var explorers = Process.GetProcessesByName("explorer");
             try
             {
@@ -798,7 +827,7 @@ public partial class ControlCenterWindow : Window
         }, DesktopUiText.Get("Safety.ExplorerRestart"));
 
     private async void DeliveryClicked(object sender, RoutedEventArgs e) =>
-        await RunAsync("Delivery Optimization", token => CommandRunner.PowerShellAsync(
+        await RunAsync("Übermittlungsoptimierung", token => CommandRunner.PowerShellAsync(
             DesktopScriptText.Preamble("Center.DeliveryResult") + "Delete-DeliveryOptimizationCache -Force; $aetherDesktopText['Center.DeliveryResult']", token),
             DesktopUiText.Get("Safety.DeliveryCleanup"), admin: true);
     private async void CertificatesClicked(object sender, RoutedEventArgs e) =>
@@ -838,22 +867,29 @@ public partial class ControlCenterWindow : Window
         if (StartupDetails is null) return;
         StartupDetails.Text = StartupEntries.SelectedItem is StartupEntry row
             ? $"{row.Hive} / {row.Name} / {(row.Enabled ? "Run-Wert vorhanden" : "lokale Sicherung")}\n{row.Command}"
-            : "Kein Eintrag ausgewaehlt.";
+            : "Kein Eintrag ausgewählt.";
     }
     private async void StartupChangeClicked(object sender, RoutedEventArgs e)
     {
         if (StartupEntries.SelectedItem is not StartupEntry entry) { Status.Text = DesktopUiText.Get("Control.SelectStartup"); return; }
         var enabled = sender is Button { Tag: "on" };
         if (entry.Enabled == enabled) { Status.Text = DesktopUiText.Get("Control.StartupUnchanged"); return; }
-        await RunAsync(DesktopUiText.Get("Control.StartupChange"), _ =>
+        await RunAsync(DesktopUiText.Get("Control.StartupChange"), async token =>
         {
-            _startup.SetEnabled(entry, enabled);
+            var adapter = new GuardianActions();
+            var target = await adapter.InspectAsync("startup", entry.Hive + "\\" + entry.Name, token);
+            if (target.Fields.GetValueOrDefault("command") != entry.Command)
+                throw new InvalidOperationException("Autostart seit Auswahl geändert. Neu lesen.");
+            var engine = new GuardianCore(new(GuardianVault.DefaultDirectory), IntelligenceSources.GuardianContext);
+            var tx = await engine.ExecuteAsync(engine.Plan("Autostart ändern", GuardianActions.MakePlan(target, enabled ? "enable" : "disable")),
+                adapter, true, token);
+            if (tx.State != ChangeState.Completed) throw new InvalidOperationException("Guardian: " + tx.State + " / " + tx.VerificationResult);
             _startupRows = _startup.Read();
             RefreshStartup();
-            return Task.FromResult(DesktopUiText.Format("Control.StartupResult", entry.Name,
-                DesktopUiText.Get(enabled ? "Control.StartupEnabled" : "Control.StartupDisabled")));
+            return DesktopUiText.Format("Control.StartupResult", entry.Name,
+                DesktopUiText.Get(enabled ? "Control.StartupEnabled" : "Control.StartupDisabled"));
         }, DesktopUiText.Format("Safety.StartupChange", entry.Hive, entry.Name,
-            DesktopUiText.Get(enabled ? "Control.StartupEnable" : "Control.StartupDisable"), entry.Command));
+            DesktopUiText.Get(enabled ? "Control.StartupEnable" : "Control.StartupDisable"), entry.Command), guardianInvocation: false);
     }
 
     private async void OpenLogClicked(object sender, RoutedEventArgs e)

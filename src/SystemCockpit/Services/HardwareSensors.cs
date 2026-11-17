@@ -25,7 +25,7 @@ public sealed class HardwareSensors : IDisposable
             return hvci
                 ? "Kernelzugriff: Kernisolierung/Speicherintegritaet (HVCI) ist aktiv und der PawnIO-Treiber fehlt. " +
                   "Der klassische WinRing0-Treiber steht auf der Microsoft-Blockliste verwundbarer Treiber und kann nicht laden; " +
-                  "CPU-Temperatur und CPU-Package-Leistung bleiben dann 'Nicht verfuegbar'. " +
+                  "CPU-Temperatur und CPU-Package-Leistung bleiben dann 'Nicht verfügbar'. " +
                   "Loesung ohne Schutzabschaltung: den signierten PawnIO-Treiber installieren (https://pawnio.eu), danach AETHER neu starten. " +
                   "Kernisolierung nicht abschalten."
                 : "Kernelzugriff: PawnIO-Treiber fehlt; es wird der klassische Treiberweg versucht. " +
@@ -70,7 +70,7 @@ public sealed class HardwareSensors : IDisposable
     }
 
     public string Report() => "[KERNELZUGRIFF] " + KernelAccessHint + Environment.NewLine + Environment.NewLine +
-        (_computer?.GetReport() ?? "Hardwareprovider ist nicht geoeffnet. Sensorzugriff im Cockpit aktivieren.");
+        (_computer?.GetReport() ?? "Hardwareprovider ist nicht geöffnet. Sensorzugriff im Cockpit aktivieren.");
 
     private static void ReadHardware(IHardware hardware, List<SensorReading> readings)
     {
@@ -81,7 +81,12 @@ public sealed class HardwareSensors : IDisposable
             readings.Add(SensorSemantics.Classify(new(sensor.Identifier.ToString(), hardware.Name, sensor.Name,
                 sensor.SensorType.ToString(),
                 NormalizeValue(sensor.Value, hardware.HardwareType == HardwareType.Cpu,
-                    sensor.SensorType == SensorType.Power, cpuClockReadable), Unit(sensor.SensorType))));
+                    sensor.SensorType == SensorType.Power, cpuClockReadable), Unit(sensor.SensorType))
+                {
+                    ProviderDeviceId = hardware.Identifier.ToString(),
+                    ProviderParentId = hardware.Parent?.Identifier.ToString(),
+                    PnpDeviceId = hardware is LibreHardwareMonitor.Hardware.Gpu.GenericGpu gpu ? gpu.DeviceId : null
+                }));
         foreach (var child in hardware.SubHardware) ReadHardware(child, readings);
     }
 

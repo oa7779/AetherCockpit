@@ -23,9 +23,9 @@ public static class AdminManagement
 
     public static IReadOnlyList<AdminArea> Areas { get; } =
     [
-        new("processes", "Prozesse / Taskmanager", "Exakte PID + Startzeit schuetzen vor PID-Wiederverwendung. Beenden ist nicht rueckgaengig.",
+        new("processes", "Prozesse / Taskmanager", "Exakte PID + Startzeit schuetzen vor PID-Wiederverwendung. Beenden ist nicht rückgaengig.",
             "Get-Process | ForEach-Object { $p=$_; try { Row $p.Id $p.ProcessName $p.PriorityClass ('RAM MB: '+[math]::Round($p.WorkingSet64/1MB,1)+' / Threads: '+$p.Threads.Count+' / CPU gesamt s: '+$p.CPU) $p.StartTime.ToUniversalTime().Ticks } catch { Row $p.Id ('PID '+$p.Id) 'Nicht lesbar' $_.Exception.Message } }",
-            ["Beenden", "Prioritaet Normal", "Prioritaet BelowNormal", "Prioritaet AboveNormal"]),
+            ["Prozess beenden", "Prioritaet Normal", "Prioritaet BelowNormal", "Prioritaet AboveNormal"]),
         new("services", "Dienste", "Start/Stop/Neustart und Starttyp. Kein pauschales Deaktivieren wichtiger Dienste. Wiederherstellung umfasst Starttyp, nicht vergangene Dienstaktionen.",
             """
             Get-CimInstance Win32_Service | ForEach-Object {
@@ -34,10 +34,10 @@ public static class AdminManagement
             }
             """,
             ["Starten", "Stoppen", "Neustarten", "Starttyp Automatisch", "Starttyp Manuell", "Starttyp Deaktiviert"]),
-        new("tasks", "Geplante Aufgaben", "Ausfuehren, beenden, aktivieren/deaktivieren. Gestartete Aufgaben koennen bereits Systemaenderungen gemacht haben.",
+        new("tasks", "Geplante Aufgaben", "Ausführen, beenden, aktivieren/deaktivieren. Gestartete Aufgaben können bereits Systemänderungen gemacht haben.",
             "Get-ScheduledTask | ForEach-Object { Row ($_.TaskPath+$_.TaskName) $_.TaskName $_.State $_.TaskPath $_.TaskPath ([string]$_.Settings.Enabled) }",
-            ["Ausfuehren", "Beenden", "Aktivieren", "Deaktivieren"]),
-        new("features", "Windows-Features", "Windows Optional Features eingebettet; kein automatischer Neustart. Zustandswechsel koennen Downloads und Neustart erfordern.",
+            ["Ausführen", "Beenden", "Aktivieren", "Deaktivieren"]),
+        new("features", "Windows-Features", "Windows Optional Features eingebettet; kein automatischer Neustart. Zustandswechsel können Downloads und Neustart erfordern.",
             "Get-WindowsOptionalFeature -Online | ForEach-Object { Row $_.FeatureName $_.FeatureName $_.State 'Online Windows-Feature / Abhaengigkeiten beachten' }",
             ["Aktivieren", "Deaktivieren"]),
         new("packages", "Installierte Apps / WinGet", "GUI-Inventar aus Uninstall-Registry (nicht alle AppX-Pakete). WinGet-Ziel-ID im Parameterfeld explizit eingeben; keine Namensraten.",
@@ -46,13 +46,13 @@ public static class AdminManagement
                 foreach($p in Get-ItemProperty $path) { if($p.DisplayName) { Row $p.PSPath $p.DisplayName $p.DisplayVersion ('Herausgeber: '+$p.Publisher) } }
             }
             """, ["WinGet suchen", "WinGet Details", "WinGet installieren", "WinGet aktualisieren", "WinGet deinstallieren"]),
-        new("updates", "Windows-Update-Historie", "Lokale Updatehistorie ueber Windows Update COM; kein versteckter Zwangsneustart. Reparatur und Windows-Featureverwaltung separat.",
+        new("updates", "Windows-Update-Historie", "Lokale Updatehistorie über Windows Update COM; kein versteckter Zwangsneustart. Reparatur und Windows-Featureverwaltung separat.",
             """
             $searcher=(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher()
             $count=[Math]::Min(300,$searcher.GetTotalHistoryCount())
             if($count -gt 0) { $searcher.QueryHistory(0,$count) | ForEach-Object { Row $_.UpdateIdentity.UpdateID $_.Title $_.ResultCode ($_.Date.ToString('s')+' / Operation: '+$_.Operation) } }
             """, ["WinGet Updateangebot", "DISM Zustand"]),
-        new("power", "Energieplaene", "Vorhandene Energieplaene aus Windows lesen/aktivieren. Keine ungeprueften Ultimate-Performance-Presets.",
+        new("power", "Energieplaene", "Vorhandene Energieplaene aus Windows lesen/aktivieren. Keine ungeprüften Ultimate-Performance-Presets.",
             """
             $plans=& powercfg.exe /list
             if($LASTEXITCODE -ne 0){throw 'powercfg /list fehlgeschlagen'}
@@ -87,13 +87,13 @@ public static class AdminManagement
             Row 'winhttp' 'WinHTTP Systemproxy' 'Status siehe Detail' ($detail | Out-String) '' ($dump -join "`n")
             """,
             ["Proxy setzen", "Proxy direkt"]),
-        new("firewall", "Firewallregeln", "Vorhandene Regeln gezielt aktivieren/deaktivieren, nicht Firewall global abschalten. GPO-Regeln koennen gesperrt sein.",
+        new("firewall", "Firewallregeln", "Vorhandene Regeln gezielt aktivieren/deaktivieren, nicht Firewall global abschalten. GPO-Regeln können gesperrt sein.",
             "Get-NetFirewallRule | ForEach-Object { Row $_.Name $_.DisplayName $_.Enabled ($_.Direction.ToString()+' / '+$_.Action+' / '+$_.Profile+' / '+$_.PolicyStoreSourceType) }",
             ["Aktivieren", "Deaktivieren"]),
         new("users", "Lokale Benutzer", "Kontenstatus/Details; kein Passwort exportiert. Eigenes Admin-Konto nicht deaktivieren; kein Garant gegen Aussperren.",
             "Get-LocalUser | ForEach-Object { Row $_.SID.Value $_.Name $_.Enabled ('Letzte Anmeldung: '+$_.LastLogon+' / Passwort erforderlich: '+$_.PasswordRequired) }",
             ["Aktivieren", "Deaktivieren"]),
-        new("groups", "Gruppen / Mitgliedschaften", "Gruppe auswaehlen, Mitglied als Konto/SID im Parameterfeld. Adminrechteaenderung kann neue Anmeldung erfordern.",
+        new("groups", "Gruppen / Mitgliedschaften", "Gruppe auswählen, Mitglied als Konto/SID im Parameterfeld. Adminrechteänderung kann neue Anmeldung erfordern.",
             """
             Get-LocalGroup | ForEach-Object {
                 $group=$_
@@ -103,8 +103,8 @@ public static class AdminManagement
                 } catch { Row $group.SID.Value $group.Name 'Mitgliedschaften nicht lesbar' $_.Exception.Message '' 'unavailable' }
             }
             """,
-            ["Mitglieder lesen", "Mitglied hinzufuegen", "Mitglied entfernen"]),
-        new("acl", "Dateiberechtigungen / ACL", "Absoluten vorhandenen Datei-/Ordnerpfad im Parameterfeld eingeben. Vererbung oder Rechte werden nicht rekursiv pauschal veraendert.",
+            ["Mitglieder lesen", "Mitglied hinzufügen", "Mitglied entfernen"]),
+        new("acl", "Dateiberechtigungen / ACL", "Absoluten vorhandenen Datei-/Ordnerpfad im Parameterfeld eingeben. Vererbung oder Rechte werden nicht rekursiv pauschal verändert.",
             "Row 'acl' 'Datei-/Ordnerberechtigungen' 'Pfad erforderlich' 'Absoluten Pfad im Parameterfeld eingeben; ACL-Ausgabe und Vorschau in der eingebetteten Konsole.'",
             ["ACL lesen", "Vererbung deaktivieren / Rechte behalten", "Vererbung aktivieren"])
     ];
@@ -118,7 +118,7 @@ public static class AdminManagement
             if (!System.IO.Path.IsPathFullyQualified(parameter)) throw new ArgumentException("Absoluten ACL-Zielpfad eingeben.");
             query = "Import-Module \"$PSHOME\\Modules\\Microsoft.PowerShell.Security\\Microsoft.PowerShell.Security.psd1\"; " +
                 $"$item=Get-Item -LiteralPath {Quote(parameter)} -Force; " +
-                "if($item.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'ACL-Ziel ist ReparsePoint; keine automatische Rechteaenderung'}; " +
+                "if($item.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'ACL-Ziel ist ReparsePoint; keine automatische Rechteänderung'}; " +
                 "$acl=Get-Acl -LiteralPath $item.FullName; Row $item.FullName $item.Name 'ACL / SDDL gelesen' $acl.AccessToString $item.CreationTimeUtc.Ticks $acl.Sddl";
         }
         var json = await CommandRunner.PowerShellAsync(ItemFunction + "\n$rows=@(& { " + query + " }); " +
@@ -134,7 +134,7 @@ public static class AdminManagement
     public static AdminPlan Plan(AdminArea area, string action, AdminEntity? entity, string parameter)
     {
         if (!Areas.Contains(area) || !area.Actions.Contains(action)) throw new ArgumentException("Unbekannte Verwaltungsaktion.");
-        var row = entity ?? throw new ArgumentException("Zuerst eine Tabellenzeile auswaehlen.");
+        var row = entity ?? throw new ArgumentException("Zuerst eine Tabellenzeile auswählen.");
         var id = Quote(row.Id);
         var name = Quote(row.Name);
         var script = "";
@@ -144,16 +144,17 @@ public static class AdminManagement
         {
             case "processes":
                 if (!int.TryParse(row.Id, out var pid) || pid <= 4 || !long.TryParse(row.Token, out var ticks))
-                    throw new ArgumentException("Keine sichere PID/Startzeit vorhanden; geschuetzte Systemprozesse bleiben gesperrt.");
-                script = $"$p=Get-Process -Id {pid}; if($p.StartTime.ToUniversalTime().Ticks -ne {ticks} -or $p.Id -eq $PID){{throw 'Prozess hat sich geaendert oder ist diese Shell'}}; ";
-                if (action == "Beenden") script += "$p.Kill()";
+                    throw new ArgumentException("Keine sichere PID/Startzeit vorhanden; geschützte Systemprozesse bleiben gesperrt.");
+                script = $"$p=Get-Process -Id {pid}; if($p.StartTime.ToUniversalTime().Ticks -ne {ticks} -or $p.Id -eq $PID){{throw 'Prozess hat sich geändert oder ist diese Shell'}}; ";
+                if (action == "Prozess beenden")
+                    script = "# Native Prozessaktion: PID/Erstellungszeit, Windows-Schutz, Eigenkomponenten, Sicherheitsdialog und verifiziertes Prozessende. Kein PowerShell-Kill.";
                 else
                 {
                     var priority = action["Prioritaet ".Length..];
                     if (row.Status is not ("Normal" or "BelowNormal" or "AboveNormal" or "High" or "Idle"))
-                        throw new ArgumentException("Vorherige Prioritaet nicht sicher lesbar.");
+                        throw new ArgumentException("Vorherige Priorität nicht sicher lesbar.");
                     restore = script + $"$p.PriorityClass={Quote(row.Status)}";
-                    script += $"$p.PriorityClass={Quote(priority)}; $p.Refresh(); if([string]$p.PriorityClass -ne {Quote(priority)}){{throw 'Prioritaet nicht verifiziert'}}";
+                    script += $"$p.PriorityClass={Quote(priority)}; $p.Refresh(); if([string]$p.PriorityClass -ne {Quote(priority)}){{throw 'Priorität nicht verifiziert'}}";
                 }
                 break;
             case "services":
@@ -162,7 +163,7 @@ public static class AdminManagement
                 {
                     var type = action switch { "Starttyp Automatisch" => "Automatic", "Starttyp Manuell" => "Manual", _ => "Disabled" };
                     var old = row.Token switch { "Auto" => "Automatic", "Manual" => "Manual", "Disabled" => "Disabled", _ => throw new ArgumentException("Starttyp unbekannt.") };
-                    var guard = $"if((Get-CimInstance Win32_Service | Where-Object Name -eq {id}).StartMode -ne {Quote(row.Token)}){{throw 'Starttyp extern geaendert'}}; ";
+                    var guard = $"if((Get-CimInstance Win32_Service | Where-Object Name -eq {id}).StartMode -ne {Quote(row.Token)}){{throw 'Starttyp extern geändert'}}; ";
                     script += guard + $"Set-Service -Name {id} -StartupType {type}";
                     if (row.Auxiliary is not ("0" or "1" or "absent")) throw new ArgumentException("DelayedAutoStart nicht sicher lesbar.");
                     var servicePath = Quote(@"HKLM:\SYSTEM\CurrentControlSet\Services\" + row.Id);
@@ -188,9 +189,9 @@ public static class AdminManagement
                 }
                 break;
             case "features":
-                if (row.Status is not ("Enabled" or "Disabled")) throw new ArgumentException("Featurezustand ist pending/unbekannt. Erst Windows-Neustart/Status pruefen.");
+                if (row.Status is not ("Enabled" or "Disabled")) throw new ArgumentException("Featurezustand ist pending/unbekannt. Erst Windows-Neustart/Status prüfen.");
                 var enable = action == "Aktivieren";
-                script = $"if([string](Get-WindowsOptionalFeature -Online -FeatureName {id}).State -ne {Quote(row.Status)}){{throw 'Featurezustand geaendert'}}; " +
+                script = $"if([string](Get-WindowsOptionalFeature -Online -FeatureName {id}).State -ne {Quote(row.Status)}){{throw 'Featurezustand geändert'}}; " +
                     (enable ? $"Enable-WindowsOptionalFeature -Online -FeatureName {id} -NoRestart" : $"Disable-WindowsOptionalFeature -Online -FeatureName {id} -NoRestart");
                 restore = row.Status == "Enabled" ? $"Enable-WindowsOptionalFeature -Online -FeatureName {id} -NoRestart" : $"Disable-WindowsOptionalFeature -Online -FeatureName {id} -NoRestart";
                 break;
@@ -212,9 +213,9 @@ public static class AdminManagement
                 break;
             case "adapters":
                 if (action.StartsWith("DNS") && row.Auxiliary == "unavailable")
-                    throw new ArgumentException("Adapter hat keine DNS-Providerdaten; kein DNS-Wechsel moeglich.");
+                    throw new ArgumentException("Adapter hat keine DNS-Providerdaten; kein DNS-Wechsel möglich.");
                 if (!int.TryParse(row.Id, out var index) || index < 1 || !Guid.TryParse(row.Token, out _)) throw new ArgumentException("Adapterkennung nicht lesbar.");
-                var guardAdapter = $"$a=Get-NetAdapter | Where-Object ifIndex -eq {index}; if($null -eq $a -or [string]$a.InterfaceGuid -ne {Quote(row.Token)}){{throw 'Adapterkennung geaendert'}}; ";
+                var guardAdapter = $"$a=Get-NetAdapter | Where-Object ifIndex -eq {index}; if($null -eq $a -or [string]$a.InterfaceGuid -ne {Quote(row.Token)}){{throw 'Adapterkennung geändert'}}; ";
                 script = guardAdapter;
                 if (action is "Aktivieren" or "Deaktivieren")
                 {
@@ -250,12 +251,12 @@ public static class AdminManagement
             case "firewall":
                 var enabled = action == "Aktivieren" ? "True" : "False";
                 if (row.Status is not ("True" or "False")) throw new ArgumentException("Regelzustand unbekannt.");
-                script = $"if([string](Get-NetFirewallRule -Name {id}).Enabled -ne {Quote(row.Status)}){{throw 'Firewallregel geaendert'}}; Set-NetFirewallRule -Name {id} -Enabled {enabled}";
+                script = $"if([string](Get-NetFirewallRule -Name {id}).Enabled -ne {Quote(row.Status)}){{throw 'Firewallregel geändert'}}; Set-NetFirewallRule -Name {id} -Enabled {enabled}";
                 restore = $"Set-NetFirewallRule -Name {id} -Enabled {row.Status}";
                 break;
             case "users":
                 if (!row.Id.StartsWith("S-1-", StringComparison.Ordinal) || row.Status is not ("True" or "False")) throw new ArgumentException("Benutzer-SID/Status fehlt.");
-                var userGuard = $"$u=Get-LocalUser -SID {id}; if($u.SID.Value -eq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value){{throw 'Eigenes Konto wird nicht veraendert'}}; ";
+                var userGuard = $"$u=Get-LocalUser -SID {id}; if($u.SID.Value -eq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value){{throw 'Eigenes Konto wird nicht verändert'}}; ";
                 script = userGuard + $"{(action == "Aktivieren" ? "Enable" : "Disable")}-LocalUser -SID {id}";
                 restore = userGuard + $"{(row.Status == "True" ? "Enable" : "Disable")}-LocalUser -SID {id}";
                 break;
@@ -266,12 +267,12 @@ public static class AdminManagement
                 else
                 {
                     ArgumentException.ThrowIfNullOrWhiteSpace(parameter);
-                    if (row.Auxiliary == "unavailable") throw new ArgumentException("Mitgliedschaften nicht lesbar; keine sichere Aenderung.");
+                    if (row.Auxiliary == "unavailable") throw new ArgumentException("Mitgliedschaften nicht lesbar; keine sichere Änderung.");
                     var member = Quote(parameter);
                     var adding = action == "Mitglied hinzufuegen";
                     var memberGuard = $"$group=Get-LocalGroup -SID {id}; $memberSid=if({member}.StartsWith('S-1-')){{[Security.Principal.SecurityIdentifier]::new({member})}}else{{([Security.Principal.NTAccount]::new({member})).Translate([Security.Principal.SecurityIdentifier])}}; ";
                     script = memberGuard + $"$members=@(Get-LocalGroupMember -SID {id}); " +
-                        $"if((($members.SID.Value | Sort-Object) -join ',') -ne {Quote(row.Auxiliary)}){{throw 'Mitgliedschaften extern geaendert'}}; " +
+                        $"if((($members.SID.Value | Sort-Object) -join ',') -ne {Quote(row.Auxiliary)}){{throw 'Mitgliedschaften extern geändert'}}; " +
                         $"if(($members.SID.Value -contains $memberSid.Value) -eq ${(adding ? "true" : "false")}){{throw 'Mitgliedzustand bereits wie angefordert'}}; " +
                         $"{(adding ? "Add" : "Remove")}-LocalGroupMember -SID {id} -Member $memberSid.Value";
                     restore = memberGuard + $"{(adding ? "Remove" : "Add")}-LocalGroupMember -SID {id} -Member $memberSid.Value";
@@ -288,9 +289,9 @@ public static class AdminManagement
                 {
                     if (!row.Id.Equals(System.IO.Path.GetFullPath(parameter), StringComparison.OrdinalIgnoreCase) ||
                         !long.TryParse(row.Token, out var creation) || creation <= 0 || string.IsNullOrWhiteSpace(row.Auxiliary))
-                        throw new ArgumentException("ACL-Ziel erst ueber 'Status lesen' laden: Original-SDDL/Dateiidentitaet erforderlich.");
-                    var aclGuard = aclImport + $"$item=Get-Item -LiteralPath {path} -Force; if($item.CreationTimeUtc.Ticks -ne {creation} -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)){{throw 'ACL-Zielidentitaet geaendert'}}; $acl=Get-Acl -LiteralPath {path}; ";
-                    script = aclGuard + $"if($acl.Sddl -ne {Quote(row.Auxiliary)}){{throw 'ACL extern geaendert'}}; " +
+                        throw new ArgumentException("ACL-Ziel erst über 'Status lesen' laden: Original-SDDL/Dateiidentitaet erforderlich.");
+                    var aclGuard = aclImport + $"$item=Get-Item -LiteralPath {path} -Force; if($item.CreationTimeUtc.Ticks -ne {creation} -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)){{throw 'ACL-Zielidentitaet geändert'}}; $acl=Get-Acl -LiteralPath {path}; ";
+                    script = aclGuard + $"if($acl.Sddl -ne {Quote(row.Auxiliary)}){{throw 'ACL extern geändert'}}; " +
                         $"$acl.SetAccessRuleProtection(${(action.StartsWith("Vererbung deaktivieren") ? "true" : "false")},$true); Set-Acl -LiteralPath {path} -AclObject $acl";
                     restore = aclGuard + $"$acl.SetSecurityDescriptorSddlForm({Quote(row.Auxiliary)},[Security.AccessControl.AccessControlSections]::Access); Set-Acl -LiteralPath {path} -AclObject $acl";
                 }
@@ -299,9 +300,9 @@ public static class AdminManagement
         }
         return new($"{area.Name} / {action}", "$ErrorActionPreference='Stop'; " + script, restore is null ? null : "$ErrorActionPreference='Stop'; " + restore,
             $"{area.Description}\nZiel: {row.Name} ({row.Id})\n" +
-            (changes ? "SYSTEMAENDERUNG. Vorher sichern; Teilaktionen bleiben bei Fehler/Abbruch bestehen." : "Abfrage; ggf. Netzwerkzugriff/sensible Informationen.") +
-            "\n" + (restore is null ? "Keine automatische Ruecknahme fuer diese Aktion; bewusste manuelle Wiederherstellung erforderlich." :
-                "Ruecknahme im Sitzungsverlauf verfuegbar. Vorherigen Zustand pruefen; keine Wiederherstellung vergangener Daten/Prozessaktionen."));
+            (changes ? "SYSTEMÄNDERUNG. Vorher sichern; Teilaktionen bleiben bei Fehler/Abbruch bestehen." : "Abfrage; ggf. Netzwerkzugriff/sensible Informationen.") +
+            "\n" + (restore is null ? "Keine automatische Rücknahme für diese Aktion; bewusste manuelle Wiederherstellung erforderlich." :
+                "Rücknahme im Sitzungsverlauf verfügbar. Vorherigen Zustand prüfen; keine Wiederherstellung vergangener Daten/Prozessaktionen."));
     }
 
     internal static string DnsRestore(int index, string json)
@@ -310,7 +311,7 @@ public static class AdminManagement
             throw new ArgumentException("DNS-Sicherung fehlt.");
         if (configurations.Count is < 1 or > 2 || configurations.Any(c => c is null || c.Family is not ("IPv4" or "IPv6") || c.Servers is null) ||
             configurations.Select(c => c.Family).Distinct().Count() != configurations.Count)
-            throw new ArgumentException("Ungueltige DNS-Konfigurationssicherung.");
+            throw new ArgumentException("Ungültige DNS-Konfigurationssicherung.");
         return string.Join("; ", configurations.Select(c =>
         {
             var addresses = Regex.Split(c.Servers.Trim(), @"[,\s;]+").Where(a => a.Length > 0).ToArray();

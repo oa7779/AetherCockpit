@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -17,6 +18,18 @@ internal static class AdminTests
         void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
         Check(AdminManagement.Areas.Count == 13 && AdminManagement.Areas.All(a => a.Actions.Count > 0 && a.Description.Length > 0),
             "All administration domains expose explicit status queries, actions and explanations");
+        var deploymentCommand = AdminCommandCatalog.All.First(c => c.Category == "Deployment");
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de-DE");
+            Check(deploymentCommand.CategoryDisplay == "Bereitstellung" &&
+                deploymentCommand.SearchText.Contains("Bereitstellung", StringComparison.Ordinal),
+                "Deployment commands use a German display category and searchable label");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            Check(deploymentCommand.CategoryDisplay == "Deployment", "English deployment label remains unchanged");
+        }
+        finally { CultureInfo.CurrentUICulture = previousUiCulture; }
         Check(AdminManagement.Quote("O'Brien; $(x)") == "'O''Brien; $(x)'", "PowerShell arguments quote apostrophe/metacharacters as data");
         var cpu = new List<SensorReading>
         {
@@ -134,7 +147,7 @@ internal static class AdminTests
             try
             {
                 var pages = (TabControl)main.FindName("Pages");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => (string)t.Header == "Superadmin");
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => (string)t.Header == "Systemverwaltung");
                 Pump();
                 var workbench = (AdminWorkbench)main.FindName("Workbench");
                 workbench.SelectArea("services");
@@ -145,9 +158,9 @@ internal static class AdminTests
                 grid.ItemsSource = new[] { row };
                 grid.SelectedIndex = 0;
                 ((ComboBox)workbench.FindName("Operation")).SelectedItem = "Starttyp Manuell";
-                var preview = FindButton(workbench, "Aenderungsvorschau") ?? throw new InvalidOperationException("Preview button missing");
+                var preview = FindButton(workbench, "Änderungsvorschau") ?? throw new InvalidOperationException("Preview button missing");
                 preview.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                if (!((TextBox)workbench.FindName("Console")).Text.Contains("[VORSCHAU / KEINE AUSFUEHRUNG]"))
+                if (!((TextBox)workbench.FindName("Console")).Text.Contains("[VORSCHAU / KEINE AUSFÜHRUNG]"))
                     throw new InvalidOperationException("GUI preview must be visible without running change");
                 if (screenshotPrefix is not null)
                 {
@@ -179,7 +192,7 @@ internal static class AdminTests
                 if (SystemParameters.ClientAreaAnimation && GlowCount(main) == 0)
                     throw new InvalidOperationException("Enabled neon frames have no animated light adorner");
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-events.png");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => (string)t.Header == "Taskmanager");
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => (string)t.Tag == "Taskmanager");
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-taskmanager.png");
                 Console.WriteLine($"ADMIN UI: {scripts.Count} scripts parsed only; preview controls and embedded event details verified. No real system changes executed.");
             }

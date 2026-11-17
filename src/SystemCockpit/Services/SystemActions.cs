@@ -54,7 +54,7 @@ public static class SystemActions
                 "$store | $state | $($cert.NotAfter.ToString('yyyy-MM-dd')) | $($cert.Subject) | $($cert.Thumbprint)"
             }
         }
-        'Keine pauschale Root-CA-Freigabe: Ablaufdatum ist kein vollstaendiger Vertrauensbeweis. Keine Online-Revocation-Abfrage.'
+        'Keine pauschale Root-CA-Freigabe: Ablaufdatum ist kein vollständiger Vertrauensbeweis. Keine Online-Revocation-Abfrage.'
         """;
     public const string StabilityScript = """
         $events=@()
@@ -79,17 +79,17 @@ public static class SystemActions
                         }
                     }
                 }
-                if(-not $found){throw 'Keine RecoveryPassword-Protektoren gemeldet. Keine Schluessel werden erfunden.'}
+                if(-not $found){throw 'Keine RecoveryPassword-Protektoren gemeldet. Keine Schlüssel werden erfunden.'}
                 """,
             "windows-key" => """
                 $key=(Get-CimInstance SoftwareLicensingService).OA3xOriginalProductKey
-                if([string]::IsNullOrWhiteSpace($key)){throw 'Kein OEM-Firmware-Produktschluessel vorhanden. Digitale Lizenz wird nicht als Schluessel erfunden.'}
+                if([string]::IsNullOrWhiteSpace($key)){throw 'Kein OEM-Firmware-Produktschlüssel vorhanden. Digitale Lizenz wird nicht als Schlüssel erfunden.'}
                 $key
                 """,
             "wifi" => string.IsNullOrWhiteSpace(profile) || profile.Length > 128
                 ? throw new ArgumentException("Gespeicherten WLAN-Profilnamen eingeben.")
                 : $"& \"$env:SystemRoot\\System32\\netsh.exe\" wlan show profile name='{profile.Replace("'", "''")}' key=clear; if($LASTEXITCODE -ne 0){{throw 'WLAN-Profil konnte nicht gelesen werden.'}}",
-            _ => throw new ArgumentException("Unbekannte Schluesselabfrage.")
+            _ => throw new ArgumentException("Unbekannte Schlüsselabfrage.")
         };
     }
 }
@@ -106,7 +106,7 @@ public sealed class StartupManager(string backupDirectory)
 
     private List<StartupEntry> Backups() => !File.Exists(BackupPath) ? []
         : JsonSerializer.Deserialize<List<StartupEntry>>(File.ReadAllText(BackupPath))
-            ?? throw new InvalidDataException("Ungueltige Autostart-Sicherung.");
+            ?? throw new InvalidDataException("Ungültige Autostart-Sicherung.");
 
     public List<StartupEntry> Read()
     {
@@ -137,8 +137,8 @@ public sealed class StartupManager(string backupDirectory)
         {
             if (!entry.Enabled || key.GetValue(entry.Name, null, RegistryValueOptions.DoNotExpandEnvironmentNames) is not string current ||
                 current != entry.Command || key.GetValueKind(entry.Name) != RegistryValueKind.String)
-                throw new IOException("Autostarteintrag wurde geaendert. Neu einlesen.");
-            if (backups.Any(b => b.Hive == entry.Hive && b.Name == entry.Name)) throw new IOException("Sicherung existiert bereits. Nicht ueberschreiben.");
+                throw new IOException("Autostarteintrag wurde geändert. Neu einlesen.");
+            if (backups.Any(b => b.Hive == entry.Hive && b.Name == entry.Name)) throw new IOException("Sicherung existiert bereits. Nicht überschreiben.");
             backups.Add(entry with { Enabled = false });
             Save(backups);
             key.DeleteValue(entry.Name, throwOnMissingValue: true);
@@ -148,7 +148,7 @@ public sealed class StartupManager(string backupDirectory)
             var backup = backups.SingleOrDefault(b => b.Hive == entry.Hive && b.Name == entry.Name && b.Command == entry.Command)
                 ?? throw new IOException("Keine passende lokale Sicherung.");
             if (key.GetValueNames().Contains(entry.Name, StringComparer.OrdinalIgnoreCase))
-                throw new IOException("Aktiver Autostarteintrag existiert. Konflikt nicht ueberschreiben.");
+                throw new IOException("Aktiver Autostarteintrag existiert. Konflikt nicht überschreiben.");
             key.SetValue(entry.Name, backup.Command, RegistryValueKind.String);
             backups.Remove(backup);
             Save(backups);

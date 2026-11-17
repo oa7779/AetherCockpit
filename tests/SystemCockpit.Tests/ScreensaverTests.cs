@@ -173,17 +173,17 @@ internal static class ScreensaverTests
             if (window.Content is not System.Windows.Documents.AdornerDecorator decorator ||
                 decorator.Child is not System.Windows.Controls.Grid panel ||
                 panel.Children.OfType<System.Windows.Controls.Border>().Single() is not { IsHitTestVisible: false } frame ||
-                !SystemCockpit.Controls.FrameGlow.GetVisible(frame))
+                !SystemCockpit.Controls.AetherNeonFrame.GetEnabled(frame))
                 throw new InvalidOperationException("Saver needs a non-interactive, static neon frame inside its own adorner layer.");
             var hardware = HardwareBoardTests.Example;
             var feed = new BoardFeedFrame(DateTimeOffset.UtcNow, hardware, "--", "--", "--", "--", null, "--", false);
             window.Present(hardware, feed, "SYNTHETIC");
-            if (SystemCockpit.Controls.FrameGlow.GetEnabled(frame) ||
+            if (SystemCockpit.Controls.AetherNeonFrame.GetBreathingEnabled(frame) ||
                 ((System.Windows.Media.LinearGradientBrush)window.Background).GradientStops.Any(stop => stop.HasAnimatedProperties) ||
                 panel.Children.OfType<System.Windows.Controls.StackPanel>().Single().RenderTransform.HasAnimatedProperties)
                 throw new InvalidOperationException("Disabled motion must not start neon/background/header clocks.");
             window.Present(hardware, feed with { Motion = true }, "SYNTHETIC");
-            if (SystemCockpit.Controls.FrameGlow.GetEnabled(frame) ||
+            if (SystemCockpit.Controls.AetherNeonFrame.GetBreathingEnabled(frame) ||
                 ((System.Windows.Media.LinearGradientBrush)window.Background).GradientStops.Any(stop => stop.HasAnimatedProperties))
                 throw new InvalidOperationException("A detached preview must not start neon clocks before loading.");
             var text = panel.Children.OfType<System.Windows.Controls.StackPanel>().Single()
@@ -213,6 +213,13 @@ internal static class ScreensaverTests
             saver.Show();
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
             if (!saver.ResizePreview()) throw new InvalidOperationException("SCR preview failed to attach to parent");
+            var brand = FindVisual<SystemCockpit.Controls.AnimatedBrand>(saver)
+                ?? throw new InvalidOperationException("Saver animated brand missing.");
+            if (!brand.IsVisible || brand.MotionActive != SystemParameters.ClientAreaAnimation)
+                throw new InvalidOperationException("Saver brand must be visible and honor Windows animation permission.");
+            saver.Present(frame.Hardware, frame with { Motion = false }, "SYNTHETIC");
+            if (brand.MotionActive) throw new InvalidOperationException("Saver brand must stop when live-feed motion is disabled.");
+            saver.Present(frame.Hardware, frame, "SYNTHETISCHER VORSCHAUTEST / KEINE ECHTEN LIVE-MESSWERTE");
             var board = FindVisual<SystemCockpit.Controls.HardwareBoardView>(saver)
                 ?? throw new InvalidOperationException("Saver scene missing.");
             var canvas = (System.Windows.Controls.Canvas)board.FindName("BoardCanvas");

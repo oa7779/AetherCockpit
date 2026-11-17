@@ -28,9 +28,10 @@ deren Offenlegungsbedingungen. Nicht verfügbare Sensoren werden durch
 eine Lizenz oder Installation nicht automatisch zugänglich.
 
 Transitive NuGet-Abhängigkeiten behalten die Lizenzen ihrer Paketmetadaten.
-Der separate Verwaltungsserver referenziert Microsoft.AspNetCore.OpenApi
-und Microsoft.Extensions.Hosting.WindowsServices; seine Abhängigkeiten
-werden nicht als Serverinstallation mit dem Cockpit ausgeliefert.
+Der separate Verwaltungsserver referenziert Microsoft.AspNetCore.OpenApi,
+Microsoft.Extensions.Hosting.WindowsServices und Microsoft.Identity.Client
+(MSAL.NET 4.92.0, [MIT-Lizenz](https://licenses.nuget.org/MIT)); seine
+Abhängigkeiten werden nicht als Serverinstallation mit dem Cockpit ausgeliefert.
 Der optionale Clientdienst verwendet Microsoft.Extensions.Hosting.WindowsServices
 und System.Security.Cryptography.ProtectedData. Seine Laufzeit liegt getrennt
 unter `ManagedClient`; der Verwaltungsserver bleibt ein eigenes Paket.

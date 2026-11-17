@@ -4,7 +4,7 @@ using SystemCockpit.Services;
 namespace SystemCockpit;
 
 /// <summary>
-/// Erststart-Assistent: Funktionsuebersicht, Pflicht-Zustimmung zur EULA und
+/// Erststart-Assistent: Funktionsübersicht, erforderliche Zustimmung zur EULA und
 /// lokale Rechner-Inventarisierung. DialogResult true = akzeptiert und fertig,
 /// false = abgelehnt (Programm wird beendet).
 /// </summary>

@@ -17,6 +17,26 @@ internal static class OperationsTests
         var count = 0;
         void Check(bool valid, string message) { count++; if (!valid) throw new InvalidOperationException(message); }
         count += ManagedActionTests.Run();
+        var magicPacket = WakeOnLan.BuildMagicPacket("00:11:22:33:44:55");
+        Check(magicPacket.Length == 102 && magicPacket.Take(6).All(value => value == byte.MaxValue) &&
+            Enumerable.Range(0, 16).All(copy => magicPacket.Skip(6 + copy * 6).Take(6)
+                .SequenceEqual(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 })),
+            "Wake-on-LAN packet contains six sync bytes and 16 exact target-MAC repetitions");
+        Check(WakeOnLan.ParseMacAddress("00-11-22-33-44-55").SequenceEqual(
+                new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 }) &&
+            WakeOnLan.ParseMacAddress("001122334455").SequenceEqual(
+                new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 }),
+            "Wake-on-LAN accepts colon, hyphen, and compact MAC formats");
+        foreach (var invalidMac in new[] { "01:11:22:33:44:55", "00:00:00:00:00:00", "GG:11:22:33:44:55", "00:11:22:33:44" })
+        {
+            try { WakeOnLan.BuildMagicPacket(invalidMac); throw new InvalidOperationException("Invalid Wake-on-LAN MAC accepted."); }
+            catch (ArgumentException) { count++; }
+        }
+        Check(AdminCommandCatalog.All.Any(command => command.Category == "Wiederherstellung" &&
+                command.Command == "reagentc.exe /info" && command.RiskLevel == 0) &&
+            AdminCommandCatalog.All.Any(command => command.Category == "Deployment" &&
+                command.Command.StartsWith("Get-WindowsOptionalFeature", StringComparison.Ordinal) && command.RiskLevel == 0),
+            "PowerShell catalog exposes read-only Windows recovery and deployment inventories");
         var valid = PerformanceIndex.Parse("""{"State":1,"Base":8.9,"Cpu":9.5,"Memory":9.4,"Graphics":9.2,"Disk":8.9,"StoredAt":null}""");
         Check(valid.Valid && valid.Base == 8.9 && valid.Cpu == 9.5, "Display real valid Windows scores");
         var invalid = PerformanceIndex.Parse("""{"State":2,"Base":9.9,"Cpu":9.9,"Memory":9.9,"Graphics":9.9,"Disk":9.9,"StoredAt":null}""");
@@ -93,6 +113,26 @@ internal static class OperationsTests
         Check(parsedDiagnostic.MachineName == "fixture-host" &&
             DiagnosticAssistants.Analyze(parsedDiagnostic).Findings.Any(f => f.Severity == "INFORMATION"),
             "Agent report parser preserves zero-result states without inventing a health score");
+        var parsedDrivers = DiagnosticAssistants.Parse("""
+            {"MachineName":"fixture-host","Windows":"Windows 11","DisplayVersion":"24H2","Build":"26100.1",
+             "Events":[],"Devices":[],"Adapters":[],"Applications":[],
+             "Drivers":[
+               {"Device":"ISO date","Version":"1","Date":"2025-02-03T04:05:06.0000000Z","IsSigned":true},
+               {"Device":"PowerShell 5.1 date","Version":"2","Date":{"DateTime":"2025-02-03T04:05:06.0000000Z","value":"2025-02-03T04:05:06.0000000Z"},"IsSigned":true},
+               {"Device":"Malformed date","Version":"3","Date":"February 3, 2025","IsSigned":null},
+               {"Device":"Missing date","Version":"4","IsSigned":false},
+               {"Device":"Empty date","Version":"5","Date":"","IsSigned":false},
+               {"Device":"Null date","Version":"6","Date":null,"IsSigned":false}
+             ]}
+            """);
+        Check(parsedDrivers.Drivers.Length == 6 &&
+            parsedDrivers.Drivers[0].Date == "2025-02-03T04:05:06.0000000Z" &&
+            parsedDrivers.Drivers[1].Date == parsedDrivers.Drivers[0].Date &&
+            parsedDrivers.Drivers.Skip(2).All(driver => driver.Date is null),
+            "driver dates accept ISO and legacy PowerShell CIM shapes while malformed, missing, empty, and null dates do not drop the snapshot");
+        Check(DiagnosticAssistants.CollectionScript.Contains("DriverDate.ToString('o'", StringComparison.Ordinal) &&
+            DiagnosticAssistants.CollectionScript.Contains("CultureInfo]::InvariantCulture", StringComparison.Ordinal),
+            "PowerShell driver dates are serialized explicitly as invariant round-trip timestamps");
         var package = MaintenancePlans.Catalog.Single(a => a.Id == "wingetInstall");
         var script = MaintenancePlans.Build(package, [], "Microsoft.PowerToys\nMicrosoft.PowerToys\n7zip.7zip");
         Check(script.Split("--id").Length == 3 && !script.Contains("--all") && !script.Contains("--allow-reboot"), "Exact app IDs de-duplicated, no all/reboot");
@@ -200,7 +240,7 @@ internal static class OperationsTests
                 }
                 """;
             var rejected = AdminShell.RunAsync(mock + "\n" + installScript, TimeSpan.FromSeconds(20), CancellationToken.None).GetAwaiter().GetResult();
-            if (rejected.ExitCode == 0 || !rejected.Error.Contains("Lizenz seit Vorschau geaendert"))
+            if (rejected.ExitCode == 0 || !rejected.Error.Contains("Lizenz seit Vorschau geändert"))
                 throw new InvalidOperationException("Changed EULA must stop mocked installation before download/install");
             var path = Path.Combine(folder, "targets.json");
             ManagedDevices.Save(path, [new("fixture-host"), new("192.0.2.1", false)]);
@@ -227,7 +267,7 @@ internal static class OperationsTests
                 model.ApplyDashboard(snapshot, sample);
                 model.ApplyEvents(EventMonitor.ReadAsync(CancellationToken.None).GetAwaiter().GetResult());
                 var pages = (TabControl)main.FindName("Pages");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Taskmanager"));
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Tag, "Taskmanager"));
                 main.WindowState = WindowState.Maximized;
                 Pump();
                 main.UpdateLayout();
@@ -247,21 +287,21 @@ internal static class OperationsTests
                     model.ApplyDashboard(snapshot, sample);
                     VerifyAllCoreBounds(cores, snapshot.Cores.Count);
                     if (screenshotPrefix is not null) Capture(main, screenshotPrefix + $"-taskmanager-{width}.png");
-                    pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Cockpit"));
+                    pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Tag, "Cockpit"));
                     Pump(); main.UpdateLayout();
                     VerifyAllCoreBounds((ItemsControl)main.FindName("CockpitCoreOverview"), snapshot.Cores.Count);
                     if (screenshotPrefix is not null) Capture(main, screenshotPrefix + $"-cockpit-{width}.png");
-                    pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Taskmanager"));
+                    pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Tag, "Taskmanager"));
                     Pump(); main.UpdateLayout();
                 }
                 main.WindowState = WindowState.Maximized;
                 Pump(); main.UpdateLayout();
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-taskmanager.png");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Cockpit"));
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Tag, "Cockpit"));
                 if (((ItemsControl)main.FindName("CockpitCoreOverview")).Items.Count != snapshot.Cores.Count)
                     throw new InvalidOperationException("Cockpit live core overview missing");
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-cockpit.png");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Cleaner"));
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Cache-Bereinigung"));
                 var grid = (DataGrid)main.FindName("CleanupGrid");
                 model.CleanupFiles.Clear();
                 var first = new CleanupCandidate(Path.Combine(folder, "never-delete-a.txt"), 1048576, DateTime.UtcNow);
@@ -269,7 +309,7 @@ internal static class OperationsTests
                 model.CleanupFiles.Add(first); model.CleanupFiles.Add(second);
                 grid.SelectedIndex = 0;
                 Pump();
-                Find<Button>(main, b => Equals(b.Content, "Angekreuzte Dateien loeschen")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Find<Button>(main, b => Equals(b.Content, DesktopUiText.Get("Layout.DeleteChecked"))).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if (first.Selected || second.Selected || !model.CleanupStatus.StartsWith("Keine Dateien angekreuzt"))
                     throw new InvalidOperationException("Row highlighting must not authorize deletion");
                 Find<Button>(main, b => Equals(b.Content, "Sichtbare ankreuzen")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -284,7 +324,7 @@ internal static class OperationsTests
                 if (!second.Selected || !((TextBlock)main.FindName("CleanupSelectionStatus")).Text.Contains("2 / 2"))
                     throw new InvalidOperationException("Rendered checkbox did not update model/count");
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-cleaner.png");
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Operations"));
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(p => Equals(p.Header, "Wartungspläne & Diagnose"));
                 Pump();
                 var hub = (OperationsHub)main.FindName("Operations");
                 var tasks = (DataGrid)hub.FindName("Tasks");
@@ -302,7 +342,7 @@ internal static class OperationsTests
                         !Descendants(hub).OfType<Button>().Any(button => Equals(button.Tag, assistant.Id))))
                     throw new InvalidOperationException("Dedicated Windows troubleshooting assistants are missing from the Operations UI");
                 if (!Descendants(hub).OfType<Button>().Any(button =>
-                        Equals(button.Content, "Letzten Hintergrundbericht oeffnen")))
+                        Equals(button.Content, "Letzten Hintergrundbericht öffnen")))
                     throw new InvalidOperationException("Background diagnosis report shortcut is missing");
                 pages.SelectedItem = pages.Items.Cast<TabItem>().Single(page => Equals(page.Header, "Diagnose"));
                 Pump();
@@ -310,10 +350,10 @@ internal static class OperationsTests
                     .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 Pump();
                 if (!ReferenceEquals(pages.SelectedItem, pages.Items.Cast<TabItem>()
-                        .Single(page => Equals(page.Header, "Operations"))) ||
+                        .Single(page => Equals(page.Header, "Wartungspläne & Diagnose"))) ||
                     !Equals(assistantTabs.SelectedItem is TabItem selected ? selected.Header : null, "Windows-Assistenten"))
                     throw new InvalidOperationException("Main cockpit shortcut does not open the Windows assistants");
-                Find<Button>(hub, button => Equals(button.Content, "Windows-Reparaturplan vorbereiten / noch nichts ausfuehren"))
+                Find<Button>(hub, button => Equals(button.Content, "Windows-Reparaturplan vorbereiten / noch nichts ausführen"))
                     .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 Pump();
                 if (!Equals(assistantTabs.SelectedItem is TabItem repairTab ? repairTab.Header : null, "Wartungsplan") ||
@@ -323,8 +363,8 @@ internal static class OperationsTests
                     throw new InvalidOperationException("Preparing a Windows repair plan unexpectedly executed a repair");
                 Pump();
                 if (screenshotPrefix is not null) Capture(main, screenshotPrefix + "-operations.png");
-                Find<Button>(hub, b => Equals(b.Content, "Plan anzeigen / noch nichts ausfuehren")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                if (!((TextBox)hub.FindName("Console")).Text.Contains("[VORSCHAU / KEINE AUSFUEHRUNG]"))
+                Find<Button>(hub, b => Equals(b.Content, "Plan anzeigen / noch nichts ausführen")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                if (!((TextBox)hub.FindName("Console")).Text.Contains("[VORSCHAU / KEINE AUSFÜHRUNG]"))
                     throw new InvalidOperationException("Native maintenance preview did not produce plan without side effects");
                 Console.WriteLine($"OPERATIONS UI: {snapshot.Cores.Count} / {snapshot.Cores.Count} core graphs fit maximized {main.ActualWidth:0}x{main.ActualHeight:0}; checkbox delete guards, 17-task preview, WinSAT/readiness and {scripts.Count} parsed-only scripts verified.");
             }

@@ -66,7 +66,7 @@ public static class NetworkTools
                             : vendors.TryGetValue(Convert.ToHexString(macBytes[..3]), out var name) ? name
                             : ouiCsv.Length == 0 ? "OUI-Datenbank nicht geladen" : "OUI nicht gefunden";
                         devices.Add(new(address.ToString(), "Antwort", response.RoundtripTime,
-                            arpResult == 0 ? "ICMP/ARP. OUI identifiziert die Registrierung, nicht zwingend den Endgeraetehersteller."
+                            arpResult == 0 ? "ICMP/ARP. OUI identifiziert die Registrierung, nicht zwingend den Endgerätehersteller."
                                 : $"ICMP-Antwort; ARP-Status {arpResult}. Nur im direkt erreichbaren IPv4-Segment.", mac, vendor));
                         progress?.Report($"{address}: {response.RoundtripTime} ms");
                     }
@@ -84,7 +84,7 @@ public static class NetworkTools
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         if (path.Length == 0) return result;
-        if (new FileInfo(path).Length > 16 * 1024 * 1024) throw new InvalidDataException("OUI-Datei groesser als 16 MiB.");
+        if (new FileInfo(path).Length > 16 * 1024 * 1024) throw new InvalidDataException("OUI-Datei größer als 16 MiB.");
         using var parser = new TextFieldParser(path) { TextFieldType = FieldType.Delimited, HasFieldsEnclosedInQuotes = true };
         parser.SetDelimiters(",");
         var header = parser.ReadFields() ?? throw new InvalidDataException("OUI-CSV leer.");
@@ -117,7 +117,7 @@ public static class NetworkTools
             using var response = await client.GetAsync("http://www.msftconnecttest.com/connecttest.txt",
                 HttpCompletionOption.ResponseHeadersRead, limit.Token);
             if ((int)response.StatusCode is >= 300 and < 400)
-                return $"Moegliches Captive Portal: HTTP {(int)response.StatusCode}, Umleitung {response.Headers.Location}. Kein automatisches Oeffnen.";
+                return $"Mögliches Captive Portal: HTTP {(int)response.StatusCode}, Umleitung {response.Headers.Location}. Kein automatisches Öffnen.";
             using var bodyStream = await response.Content.ReadAsStreamAsync(limit.Token);
             var buffer = new byte[1025];
             var bytesRead = 0;
@@ -127,15 +127,15 @@ public static class NetworkTools
                 if (read == 0) break;
                 bytesRead += read;
             }
-            if (bytesRead > 1024) return "Abweichende Konnektivitaetsantwort groesser als 1 KiB; moegliches Portal/Proxy. Inhalt nicht geladen.";
+            if (bytesRead > 1024) return "Abweichende Konnektivitätsantwort größer als 1 KiB; mögliches Portal/Proxy. Inhalt nicht geladen.";
             var body = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             return response.IsSuccessStatusCode && body.Trim() == "Microsoft Connect Test"
-                ? "Microsoft-Konnektivitaetsprobe erfolgreich. Kein Nachweis, dass jede Verbindung frei ist."
-                : $"Abweichende Konnektivitaetsantwort HTTP {(int)response.StatusCode}; moegliches Portal, Proxy oder Filter.";
+                ? "Microsoft-Konnektivitätsprobe erfolgreich. Kein Nachweis, dass jede Verbindung frei ist."
+                : $"Abweichende Konnektivitätsantwort HTTP {(int)response.StatusCode}; mögliches Portal, Proxy oder Filter.";
         }
         catch (OperationCanceledException) when (!token.IsCancellationRequested)
         {
-            throw new TimeoutException("Konnektivitaetsprobe hat das Zeitlimit von 10 Sekunden erreicht.");
+            throw new TimeoutException("Konnektivitätsprobe hat das Zeitlimit von 10 Sekunden erreicht.");
         }
     }
 }

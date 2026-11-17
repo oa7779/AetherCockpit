@@ -55,7 +55,7 @@ internal static class InterfaceTests
         try
         {
             var settingsPanel = (StackPanel)((ScrollViewer)settingsWindow.Content).Content;
-            var modeControl = settingsPanel.Children.OfType<ComboBox>().First();
+            var modeControl = settingsPanel.Children.OfType<ComboBox>().Single(control => control.Name == "DisplayModeSelector");
             Check(savedModes.Count == 0 && Equals(modeControl.SelectedValue, "day"),
                 "Opening display settings reflects the saved mode without writing any settings");
             foreach (var value in new[] { "night", "auto", "day" }) modeControl.SelectedValue = value;
@@ -75,6 +75,46 @@ internal static class InterfaceTests
         try
         {
             host.Show(); Pump();
+            var shellFrame = (Border)main.FindName("ShellNeonFrame");
+            Check(AetherNeonFrame.GetEnabled(shellFrame) && !FrameGlow.GetVisible(shellFrame) &&
+                System.Windows.Documents.AdornerLayer.GetAdornerLayer(shellFrame)?.GetAdorners(shellFrame)?
+                    .OfType<AetherNeonFrame.NeonAdorner>().Count() == 1,
+                "Cockpit shell uses exactly one new frame and no legacy moving rim");
+            main.Model.MotionEnabled = false; Pump();
+            Check(!AetherNeonFrame.GetMotionActive(shellFrame) && AetherNeonFrame.GetEnabled(shellFrame),
+                "Cockpit motion switch retains static neon contour");
+            main.Model.MotionEnabled = true; Pump();
+            Check(AetherNeonFrame.GetMotionActive(shellFrame) == SystemParameters.ClientAreaAnimation,
+                "Cockpit breathing follows existing application and Windows gates");
+            for (var index = 0; index < 30; index++)
+                main.Model.ApplyEvents(new(DateTimeOffset.Now, [], [],
+                    [new("0 / SYNTHETISCH C:", index % 8 * 12, index % 5 * 9, index % 10 * 10, index % 4),
+                     new("1 / SYNTHETISCH D:", index % 6 * 7, index % 9 * 5, null, index % 3)]));
+            var disks = (ItemsControl)main.FindName("CockpitDiskOverview");
+            disks.BringIntoView(); Pump();
+            Check(disks.Items.Count == 2 &&
+                ReferenceEquals(disks.ItemsSource, main.Model.DiskGraphs) &&
+                main.Model.DiskGraphs.All(disk => disk.Metrics.Length == 4),
+                "Cockpit binds one four-series card per physical disk");
+            Check(main.Model.DiskGraphs[1].Metrics[2].Value == "--",
+                "Grouped disk UI never substitutes unavailable activity");
+            var diskCard = (FrameworkElement)disks.ItemContainerGenerator.ContainerFromIndex(0);
+            Check(diskCard.ActualWidth >= 280 && diskCard.ActualHeight >= 180,
+                "Grouped disk card reserves readable space for all four labeled histories");
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-disks.png");
+            ((ScrollViewer)main.FindName("CockpitScroll")).ScrollToTop(); Pump();
+            Check(main.FindName("CockpitOverview") is null && main.FindName("CockpitDetails") is null,
+                "Cockpit has no replacement summary or enclosing detail expander");
+            Check(((DataGrid)main.FindName("DashboardProcesses")).IsVisible &&
+                ((ItemsControl)main.FindName("CockpitCoreOverview")).IsVisible &&
+                ((DataGrid)main.FindName("DashboardEvents")).IsVisible &&
+                main.FindName("SensorToggle") is CheckBox && main.FindName("HistoryToggle") is CheckBox,
+                "Original process, CPU-core, event and data-control views are directly reachable");
+            var cockpitScroll = (ScrollViewer)main.FindName("CockpitScroll");
+            host.Width = 1060; host.Height = 680; Pump();
+            Check(cockpitScroll.ViewportWidth > 0 && cockpitScroll.ExtentWidth <= cockpitScroll.ViewportWidth + 1,
+                "Original cockpit fits the minimum supported window width without horizontal overflow");
+            host.Width = 1440; host.Height = 940; Pump();
             var groups = (StackPanel)main.FindName("NavigationGroups");
             Check(groups.Children.OfType<Expander>().Select(g => (string)g.Header)
                 .SequenceEqual(new[] { "Übersicht", "Hardware", "Diagnose", "Wartung", "Verwaltung", "Hilfe" }),
@@ -82,16 +122,96 @@ internal static class InterfaceTests
             var pages = (TabControl)main.FindName("Pages");
             var routes = groups.Children.OfType<Expander>().SelectMany(g =>
                 ((StackPanel)g.Content).Children.OfType<Button>()).ToArray();
-            Check(routes.Length == 23 && routes.Select(b => (string)b.Tag).Distinct().Count() == 23,
+            Check(routes.Length == 27 && routes.Select(b => (string)b.Tag).Distinct().Count() == 27,
                 "Every main/secondary module is reachable exactly once in task navigation");
+            foreach (var (route, caption) in new[]
+            {
+                ("Cockpit", "Systemübersicht"), ("Taskmanager", "Prozesse / Leistung"),
+                ("SystemIntelligence", "Systemanalyse"), ("HardwareIntelligence", "Hardwareübersicht")
+            })
+            {
+                var tab = pages.Items.Cast<TabItem>().Single(t => Equals(t.Tag, route));
+                Check(Equals(routes.Single(b => Equals(b.Tag, route)).Content, caption) && Equals(tab.Header, caption),
+                    "Canonical caption retains exact route: " + route);
+                pages.SelectedItem = tab; Pump();
+                Check(((TextBlock)main.FindName("NavTrail")).Text.EndsWith(caption.ToUpperInvariant(), StringComparison.Ordinal),
+                    "Breadcrumb uses canonical caption: " + route);
+                var functionalText = string.Join("\n", Elements(content).OfType<FrameworkElement>()
+                    .Where(e => e.IsVisible).Select(e => e switch
+                    {
+                        TextBlock t => t.Text, ContentControl c => c.Content as string, _ => null
+                    }));
+                Check(new[] { "System Observatory", "TASK-MANAGER", "PROCESS COMMAND CENTER", "Storage Observatory",
+                    "SUPERADMIN", "eingebettet verwalten", "Profilvertrag" }.All(term =>
+                        !functionalText.Contains(term, StringComparison.OrdinalIgnoreCase)),
+                    "Functional view omits obsolete developer labels: " + route);
+            }
+            Check(main.Title.Contains("Systemübersicht", StringComparison.Ordinal) &&
+                ((TextBlock)main.FindName("BuildVersion")).Text.StartsWith("AETHER ", StringComparison.Ordinal),
+                "Shell identifies the system overview and displays its actual assembly product version");
+            pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Tag, "Taskmanager"));
+            foreach (var scale in new[] { 1.0, 1.25, 1.5 })
+            foreach (var coresCount in new[] { 24, 64 })
+            {
+                main.Model.ApplyDashboard(snapshot with { Cores = Enumerable.Repeat<double?>(99.9, coresCount).ToArray() }, sample);
+                VisualTreeHelper.SetRootDpi(host, new DpiScale(scale, scale));
+                content.Measure(new Size(1420, 900)); content.Arrange(new Rect(0, 0, 1420, 900)); content.UpdateLayout(); Pump();
+                var cores = (ItemsControl)main.FindName("TaskmanagerCoreOverview");
+                Check(cores.Items.Count == coresCount, $"Process cores retained at {scale * 100}%");
+                for (var index = 0; index < coresCount; index++)
+                {
+                    var item = (FrameworkElement)cores.ItemContainerGenerator.ContainerFromIndex(index);
+                    var label = Elements(item).OfType<TextBlock>().First(t => t.Text.StartsWith("Log. Prozessor", StringComparison.Ordinal));
+                    var led = Elements(item).OfType<LedDisplay>().Single();
+                    var trace = Elements(item).OfType<Viewbox>().Single();
+                    var labelBounds = label.TransformToAncestor(item).TransformBounds(new Rect(label.RenderSize));
+                    var ledBounds = led.TransformToAncestor(item).TransformBounds(new Rect(led.RenderSize));
+                    var traceBounds = trace.TransformToAncestor(item).TransformBounds(new Rect(trace.RenderSize));
+                    Check(labelBounds.Bottom <= ledBounds.Top && ledBounds.Bottom <= traceBounds.Top &&
+                        traceBounds.Bottom <= item.ActualHeight && trace.ActualHeight >= 10,
+                        $"Process core {index} label/value/trace do not overlap at {scale * 100}%");
+                }
+                var process = (ProcessCommandView)main.FindName("ProcessCenter");
+                var viewName = (ComboBox)process.FindName("ViewName");
+                var editor = (TextBox?)viewName.Template.FindName("PART_EditableTextBox", viewName);
+                Check(editor is { IsVisible: true } && editor.Text == "Standard" && editor.ActualWidth >= 120 &&
+                    ((TextBlock)process.FindName("ViewNameLabel")).IsVisible,
+                    $"Saved process view has a labelled, readable default at {scale * 100}%");
+                viewName.Text = "Prüfansicht"; Pump();
+                Check(editor!.Text == "Prüfansicht", "Editable saved-view name remains bound without saving settings");
+                viewName.Text = "Standard";
+            }
+            VisualTreeHelper.SetRootDpi(host, new DpiScale(1, 1));
+            pages.SelectedIndex = 0; host.UpdateLayout(); Pump();
+            foreach (var group in groups.Children.OfType<Expander>())
+            {
+                group.IsExpanded = true; host.UpdateLayout(); Pump();
+                var frames = VisualFrames((StackPanel)group.Content).ToArray();
+                Check(frames.Length == ((StackPanel)group.Content).Children.Count &&
+                    frames.All(frame => System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame)?.GetAdorners(frame)?
+                        .Single().Visibility == Visibility.Visible),
+                    "Every expanded navigation entry has one visible frame: " + group.Header);
+                group.IsExpanded = false; host.UpdateLayout(); Pump();
+                Check(frames.All(frame => !frame.IsVisible &&
+                    System.Windows.Documents.AdornerLayer.GetAdornerLayer(frame)?.GetAdorners(frame)?.Single().Visibility != Visibility.Visible),
+                    "Collapsed navigation hides all shared-layer contours: " + group.Header);
+            }
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-navigation-collapsed.png");
+            ((Expander)groups.Children[0]).IsExpanded = true; host.UpdateLayout(); Pump();
+            if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(host, screenshotPrefix + "-navigation-overview.png");
             var external = new HashSet<string> { "SMART", "Logs / Gaming", "Netzwerk", "Wartung", "Pakete",
                 "Autostart", "Auftraege", "Spuren", "Schluessel", "Einstellungen" };
             var center = new ControlCenterWindow(main.Model);
             try
             {
                 var modules = (TabControl)center.FindName("Modules");
+                var smart = (ComboBox)center.FindName("SmartOperation");
+                Check(smart.Items.Cast<ComboBoxItem>().Select(item => item.Tag).SequenceEqual(
+                    new object[] { "short", "long", "conveyance", "selective", "abort", "aam", "apm" }) &&
+                    Equals(((ComboBoxItem)smart.SelectedItem).Content, "Kurzer Selbsttest"),
+                    "Human-readable SMART selection preserves every internal operation code without execution");
                 Check(routes.Where(b => external.Contains((string)b.Tag)).All(b =>
-                    modules.Items.Cast<TabItem>().Any(t => Equals(t.Header, b.Tag))),
+                    modules.Items.Cast<TabItem>().Any(t => Equals(t.Tag, b.Tag))),
                     "Secondary routes reference real modules without executing commands");
             }
             finally { center.Close(); }
@@ -99,11 +219,11 @@ internal static class InterfaceTests
             {
                 if (Equals(button.Tag, "Ereignisse") || Equals(button.Tag, "Superadmin") || Equals(button.Tag, "Operations"))
                 {
-                    Check(pages.Items.Cast<TabItem>().Any(t => Equals(t.Header, button.Tag)), "Live module route remains available");
+                    Check(pages.Items.Cast<TabItem>().Any(t => Equals(t.Tag, button.Tag)), "Live module route remains available");
                     continue;
                 }
                 button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Pump();
-                Check(pages.SelectedItem is TabItem t && Equals(t.Header, button.Tag) &&
+                Check(pages.SelectedItem is TabItem t && Equals(t.Tag, button.Tag) &&
                     ((Expander)((StackPanel)button.Parent).Parent).IsExpanded && button.BorderThickness.Left == 2,
                     "Actual navigation opens destination and marks active group: " + button.Tag);
             }
@@ -158,7 +278,7 @@ internal static class InterfaceTests
             Check(((ListBox)board.FindName("DeviceList")).Items.Count == 1 &&
                 ((BoardDevice)((ListBox)board.FindName("DeviceList")).Items[0]).Id == "audio-routed",
                 "Appearance changes preserve the exact selected peripheral, not only its group");
-            pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, "Cockpit")); Pump();
+            pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Tag, "Cockpit")); Pump();
             main.Model.IsDaytime = false;
             pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, "Mainboard")); Pump();
             var nightSky = (LinearGradientBrush)((Canvas)board.FindName("BoardCanvas"))
@@ -220,5 +340,19 @@ internal static class InterfaceTests
     }
 
     private static void Pump() => Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+
+    private static IEnumerable<DependencyObject> Elements(DependencyObject root)
+    {
+        yield return root;
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            foreach (var child in Elements(VisualTreeHelper.GetChild(root, i))) yield return child;
+    }
+
+    private static IEnumerable<FrameworkElement> VisualFrames(DependencyObject root)
+    {
+        if (root is FrameworkElement element && AetherNeonFrame.GetEnabled(element)) yield return element;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            foreach (var frame in VisualFrames(VisualTreeHelper.GetChild(root, index))) yield return frame;
+    }
 
 }

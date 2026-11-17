@@ -11,8 +11,8 @@ namespace SystemCockpit;
 
 /// <summary>
 /// Kompaktes Always-on-top-Panel mit den Live-Warnstufenwerten des Cockpits.
-/// Zeigt dieselben Modellwerte wie das Hauptfenster: nicht verfuegbare Sensoren
-/// bleiben "Nicht verfuegbar". Bei exklusivem Vollbild kann Windows das
+/// Zeigt dieselben Modellwerte wie das Hauptfenster: nicht verfügbare Sensoren
+/// bleiben "Nicht verfügbar". Bei exklusivem Vollbild kann Windows das
 /// Overlay verdecken; das ist eine Plattformgrenze, kein Messfehler.
 /// </summary>
 public partial class OverlayWindow : Window
@@ -62,7 +62,7 @@ public partial class OverlayWindow : Window
         var monitor = monitors.FirstOrDefault(s => string.Equals(s.DeviceName,
             _settings.OverlayMonitorDeviceName, StringComparison.OrdinalIgnoreCase));
         monitor ??= monitors.FirstOrDefault(s => s.IsPrimary) ?? monitors.FirstOrDefault();
-        if (monitor is null) throw new InvalidOperationException("Windows meldet keinen verfuegbaren Bildschirm.");
+        if (monitor is null) throw new InvalidOperationException("Windows meldet keinen verfügbaren Bildschirm.");
 
         var window = ReadWindowBounds(handle);
         var position = OverlayDocking.Restore(monitor.WorkArea, window.Size,

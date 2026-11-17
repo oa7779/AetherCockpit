@@ -1,188 +1,63 @@
-# Entwicklung und Paketierung
-
-## Projektstruktur
-
-| Pfad | Aufgabe |
-|---|---|
-| `src\SystemCockpit` | WPF-Cockpit, Windows-Abfragen, Sensoren, Verwaltung und lokaler Reportingclient |
-| `src\AetherScreensaver` | Nicht erhöhter Schonerhost und nativer Windows-SCR-Starter |
-| `src\AetherManager.Server` | Separate ASP.NET-Core-Verwaltungs-API |
-| `src\AetherClient.Service` | Optionaler Windows-Dienst für Heartbeats, Berichte und feste Remote-Aufträge |
-| `src\AetherOperations.Shared` | Gemeinsamer Werkzeugkatalog, sichere Prozessausführung und Verwaltungsprotokoll |
-| `tests\SystemCockpit.Tests` | STA-Konsolenrunner mit Assertions und optionalen UI-/Live-Modi |
-| `tests\AetherManager.Tests` | Hardwarefreier Konsolenrunner für Verwaltung und Clientfreigaben |
-| `tests` | Isolierte Setup-, Recovery-, Uninstall- und Produkt-Smoke-Skripte |
-| `build` | Publishskript, Inno-Setup-Definition, Iconerzeugung und Uninstallhilfe |
-| `tools` | Originale Messwerkzeuge, Lizenztexte, Quellarchiv und Herkunftsmanifest |
-| `docs` | Fachanleitungen ohne Versionsgeschichte |
-| `dist` | Bestehende portable Builds, ZIPs, Setups und historische Intune-Ausgabe |
-
-Der Workspace ist mit der bestehenden GitHub-Historie von
-`oa7779/AetherCockpit` verbunden; Arbeitsbranch ist `main` mit
-Upstream `origin/main`. Vor Veröffentlichungen Status und Remote-Stand prüfen.
-Keine Release-Verzeichnisse als Arbeitskopie verwenden.
+# Entwicklung
 
 ## Voraussetzungen
 
-- Windows x64 mit .NET 10 SDK.
-- Für WPF-UI-Tests ein grafischer Desktop.
-- Visual C++ x64 Build Tools und Windows SDK für den nativen `Aether.scr`.
-- Inno Setup 6 für die Setup-Erzeugung.
-- NuGet-Zugriff bei fehlenden SDK-/Runtimepaketen.
+- Windows x64 und .NET 10 SDK.
+- Ein grafischer Desktop für WPF- und Interfaceprüfungen.
+- Visual C++ x64 Build Tools und Windows SDK für native
+  Bildschirmschonerkomponenten.
+- NuGet-Zugriff zum Wiederherstellen fehlender Abhängigkeiten.
 
-Der Server referenziert ASP.NET Core OpenAPI und WindowsServices.
-Die Cockpit-Abhängigkeit und mitgelieferten Messwerkzeuge sind unter
-[Drittanbieter-Hinweise](../THIRD-PARTY-NOTICES.md) dokumentiert.
-Keine Werkzeuge oder Lizenzen durch handgeschriebene Ersatzdateien ersetzen.
+## Projektübersicht
+
+| Pfad | Aufgabe |
+|---|---|
+| `src\SystemCockpit` | WPF-Cockpit, Windows- und Hardwareansichten |
+| `src\AetherOperations.Shared` | Gemeinsam genutzte lokale Operations- und Intelligence-Komponenten |
+| `src\AetherLocalAiSetup` | Separater Assistent für die qualifizierte lokale Modellinstallation |
+| `src\AetherManager.Server` | Optionaler, separat betriebener Verwaltungsserver |
+| `src\AetherClient.Service` | Optionaler Clientdienst für den getrennten Verwaltungsablauf |
+| `src\AetherScreensaver` | Optionaler Windows-Bildschirmschoner |
+| `tests` | Konsolenrunner und gezielte Prüfungen |
+| `build` | Build- und Portable-Publishskripte |
 
 ## Build
 
-Vom Workspace-Stamm:
+Vom Repository-Stamm:
 
 ```powershell
-$env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 dotnet build .\SystemCockpit.slnx -c Release
 ```
 
-Bei vorhandenen Restore-Ergebnissen kann `--no-restore` verwendet werden.
-Ein Build startet keine produktive App und keine Sensoren.
-[Tests und ihre Nebenwirkungen](TESTING.md) sind separat beschrieben.
+Einzelne Projekte lassen sich direkt mit `dotnet build` bauen. Für
+Prüfmodi, UI-Voraussetzungen und deren Grenzen siehe
+[Tests](TESTING.md).
 
-## GitHub Actions
+## Separater Portable-Publish
 
-Der Workflow [Windows build](../.github/workflows/windows-build.yml) baut
-auf `windows-2022` mit .NET 10 bei Pushes nach `main` und `ci/windows-build`,
-bei Pull Requests nach `main`
-oder manuellem Start. Er liest die Versionswerte aus dem Publishprofil,
-führt beide Konsolenrunner ohne optionale Live-/UI-Schalter aus und erzeugt
-Client, Server sowie Setup mit den vorhandenen Publishskripten.
-Der STA-Grundlauf wird zusätzlich mit den publizierten Assemblies wiederholt.
-Ein synthetischer Desktop-Smoke-Test prüft Windows Modern und erzeugt
-System-Schema-Bilder für hell und dunkel als eigenes Screenshot-Artefakt.
-
-ZIPs, Setup, SHA256-Manifest und Build-Herkunft werden als unsignierte
-Workflow-Artefakte für 14 Tage gespeichert. Der Workflow erstellt keinen
-GitHub-Release, installiert kein Produkt und enthält noch keine SignPath-
-Anbindung. Der Desktop-Smoke-Test ersetzt nicht die vollständigen
-grafischen UI-/Hardwareprüfungen oder die
-Intune-Paketierung. SignPath-Annahme, Freigaberollen und Signing-Konfiguration
-müssen vor einer Zertifikatsnutzung separat eingerichtet werden.
-Der Antrag bei der SignPath Foundation ist eingereicht, die Entscheidung
-steht aus. [Aktueller Signaturstatus](SECURITY-AND-PRIVACY.md#codesignierung).
-
-## Versionsquelle
-
-Die Release-Version steht in
-`src\SystemCockpit\Properties\PublishProfiles\PortableBeta.pubxml`:
-aktuell `0.7.0-beta.38`, Dateiversion `0.7.0.38`,
-Assembly-Version `0.7.0.0`.
-
-`build\AetherCockpit.iss` muss dazu passen: `AppVersion`, `PublishDir`,
-`VersionInfoVersion` und `VersionInfoProductVersion`.
-Das normale Projektbuild ohne Publishprofil setzt diese Releasewerte
-nicht selbst. Nicht aus einer gewöhnlichen Build-DLL auf den
-veröffentlichten Beta-Stand schließen.
-
-Der Client meldet beim Enrollment die Assembly-Version, nicht automatisch
-den vollständigen Beta-Tag. Die Dokumentation verspricht daher keine
-Beta-genaue Geräteversionsanzeige.
-
-## Publish mit Bildschirmschoner
+Das Publishskript verlangt einen neuen Ausgabepfad. Bestehende
+`dist`-Ausgaben nicht überschreiben:
 
 ```powershell
-powershell -NoProfile -File .\build\Publish-Beta.ps1
+$outputRoot = Join-Path $env:LOCALAPPDATA ("AETHER\Builds\dev-" + [guid]::NewGuid().ToString("N"))
+$publishDirectory = Join-Path $outputRoot "publish"
+.\build\Publish-Beta.ps1 -OutputDirectory $publishDirectory
 ```
 
-Das Skript publiziert Cockpit und Schoner selbstenthalten für `win-x64`.
-Es prüft, dass beide dieselbe Cockpit-DLL verwenden, übernimmt die
-Schonerdateien und baut den nativen SCR-Starter mit Visual C++.
-Der Host heißt in der Ausgabe `AetherMainboard.scr`, der Discovery-Starter
-`Aether.scr`. Beide teilen die Cockpit-Runtime.
+Der Befehl erzeugt ein lokales Buildartefakt, veröffentlicht nichts und
+erstellt keinen Installer. Releasewerte und Paketinhalt vor einer
+Weitergabe gesondert prüfen.
 
-Der Ausgabeordner wird aus der Profilversion gebildet:
-`dist\AetherCockpit-0.7.0-beta.38-win-x64`.
-**Existiert er bereits, bricht das Skript ab.** Beta 38 liegt im aktuellen
-Workspace bereits vor. Vorhandene Releases nicht überschreiben.
-Für eine spätere Ausgabe Versionsänderung und neuen Zielpfad als eigenen
-Release-Schritt planen. Der Publish kopiert den optionalen Clientdienst unter
-`ManagedClient` und seine Einrichtungs-/Lebenszyklusskripte ins Paket.
+## Dokumentation und Paketinhalt
 
-Das separate selbstenthaltene Serverpaket erzeugen:
+Die Desktopprojektdatei legt die mit dem Portable-Paket ausgelieferten
+Dokumente fest. Interne Übergaben, lokale Pfade und
+Releasevorbereitungen gehören nicht in ein öffentliches Paket. Vor einem
+Publish sowohl die ausgewerteten Projektdateien als auch
+das fertige Ausgabeverzeichnis prüfen.
 
-```powershell
-powershell -NoProfile -File .\build\Publish-Manager.ps1
-```
+## Drittanbieter
 
-Ziel: `dist\AetherManager-0.7.0-beta.38-win-x64`. Auch dieses Skript verweigert
-vorhandene Ausgaben. Die Dienstassistenten werden zur Buildprüfung nicht ausgeführt.
-
-Nach Erzeugung des passenden Setups das Intune-Paket separat bauen:
-
-```powershell
-powershell -NoProfile -File .\build\Publish-Intune.ps1
-```
-
-Das offizielle Microsoft Win32 Content Prep Tool muss lokal unter
-`tools\intune\IntuneWinAppUtil.exe` bereitstehen. Das Skript verwendet nur das
-Setup als Quelle und verweigert vorhandene versionsbezogene Intune-Ausgaben.
-[Deployment und Erkennungsregeln](INTUNE-DEPLOYMENT.md).
-
-## ZIP, Setup und Prüfsummen
-
-Für einen neu erzeugten, noch nicht archivierten Release:
-
-```powershell
-$release = (Resolve-Path .\dist\AetherCockpit-0.7.0-beta.38-win-x64).Path
-[System.IO.Compression.ZipFile]::CreateFromDirectory($release, "$release.zip")
-$iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
-if (-not (Test-Path -LiteralPath $iscc)) {
-    $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
-}
-& $iscc .\build\AetherCockpit.iss
-Get-FileHash "$release.zip" -Algorithm SHA256
-Get-FileHash .\dist\AetherCockpit-Setup-0.7.0-beta.38-win-x64.exe -Algorithm SHA256
-```
-
-Die obigen Namen beschreiben Beta 38; vorhandene ZIP-/Setup-Dateien vorher
-nicht überschreiben. `ISCC` schützt bestehende Ausgaben nicht wie das
-Publishskript. Prüfsummen als `.sha256` mit Hash und Dateiname speichern.
-ZIP-Einträge, Größen und SHA256 jeweils gegen den Publish-Ordner vergleichen.
-Buildwerkzeuge und Laufzeitpakete beeinflussen Binärdateien; ein erneut
-gebautes Paket ist nicht zwangsläufig bytegleich.
-
-## Dokumentationsübernahme
-
-Die Content-Einträge in `SystemCockpit.csproj` übernehmen README, Changelog,
-Betatester-Anleitung, Fachdokumente, AETHER-Lizenz und Drittanbieter-Hinweise.
-Das vorhandene Logo wird mit seinem relativen Pfad mitgeliefert.
-Server-README und HTTP-Beispiele werden als Dokumentation übernommen,
-nicht als installierter Server.
-
-Inno Setup kopiert den Publish-Ordner rekursiv; ZIP archiviert ihn vollständig.
-Änderungen an Quellen allein aktualisieren **keine bereits erzeugten
-Release-Pakete**. Dokumentationsübernahme vor einer neuen Ausgabe statisch
-prüfen. Historische `dist`-Dateien und deren Prüfsummen bleiben unverändert.
-
-## Serverentwicklung
-
-Serverstart, Listener, Token und Datenordner:
-[Zentrale Verwaltung](CENTRAL-MANAGEMENT.md).
-Der Server wird separat gebaut und gestartet; er ist kein automatisch
-laufender Bestandteil der Desktopinstallation.
-
-## Technische Invarianten
-
-- Fehlende Sensoren bleiben fehlend; NVMe-Temperaturgrenzen sind keine Messwerte.
-- GPU-Werte bleiben einem Gerät zugeordnet; Kanalidentitäten berücksichtigen
-  doppelte Provider-IDs.
-- Prozessdetails sichern PID mit Startzeit; Prozess-I/O bleibt von Disk-I/O getrennt.
-- Geführte Änderungen behalten Vorschau, Bestätigung und Zustandsprüfung.
-- Operations verwendet für SFC den vorhandenen UTF-16-Ausgabehelper;
-  lange PowerShell-Skripte werden über Standardinput transportiert.
-- Bei Operations-Journalfehlern Ausgabe weiter drainen und Folgeschritte stoppen.
-- Paketaktionen verwenden vollständige IDs/Quellen; Import startet keine Installer.
-- Einzelplatzmodus bleibt ohne Managerkontakt; Berichts- und Capturefreigaben
-  sind voneinander unabhängig.
-
-Im Workspace hält `PROJEKTSTAND.md` lokale Ausgaben und offene Arbeiten fest.
-Die Übergabe wird nicht in Benutzerpakete übernommen.
+Abhängigkeiten, Werkzeuge und Lizenzbedingungen sind in
+[Drittanbieterhinweisen](../THIRD-PARTY-NOTICES.md) dokumentiert. Keine
+Werkzeuge oder Lizenztexte durch eigene Ersatzdateien austauschen.

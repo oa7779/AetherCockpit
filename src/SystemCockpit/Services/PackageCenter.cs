@@ -6,11 +6,17 @@ public sealed record WingetRow(string Name, string Id, string Version, string Av
 {
     // Nur eindeutig lesbare IDs sind aktionierbar; abgeschnittene Spalten enden mit U+2026.
     public bool Actionable => PackageCenter.ValidId(Id);
-    public string ActionableDisplay => Actionable ? "ja" : "nein / ID unvollstaendig";
+    public string ActionableDisplay => Actionable ? "ja" : "nein / ID unvollständig";
 }
 
 public static partial class PackageCenter
 {
+    internal sealed record ObservedPackages(string Kind, DateTimeOffset Observed, IReadOnlyList<WingetRow> Rows, bool Truncated);
+    internal static ObservedPackages? LastObserved { get; private set; }
+    internal static void RecordEvidence(string kind, IReadOnlyList<WingetRow> rows, bool truncated)
+    {
+        if (kind is "list" or "upgrade") LastObserved = new(kind, DateTimeOffset.UtcNow, rows.ToArray(), truncated);
+    }
     public const int MaxIds = 100;
 
     [GeneratedRegex(@"^[A-Za-z0-9][A-Za-z0-9 ._+\-\\{}()]{0,199}$")]
@@ -30,13 +36,13 @@ public static partial class PackageCenter
         var trimmed = term.Trim();
         if (trimmed.Length is < 1 or > 100 || trimmed.Any(char.IsControl) || trimmed.Contains('\'') ||
             trimmed.Contains('"') || trimmed.Contains('`') || trimmed.Contains('$'))
-            throw new ArgumentException("Suchbegriff: 1..100 Zeichen ohne Anfuehrungszeichen, Backticks oder $.");
+            throw new ArgumentException("Suchbegriff: 1..100 Zeichen ohne Anführungszeichen, Backticks oder $.");
         return Script("search", trimmed);
     }
 
     private static string Script(string verb, string? argument) =>
         $"& winget.exe {verb}{(argument is null ? "" : " " + AdminManagement.Quote(argument))} --disable-interactivity; " +
-        "if($LASTEXITCODE -eq -1978335189){'KEINE PASSENDEN EINTRAEGE'; $global:LASTEXITCODE=0} " +
+        "if($LASTEXITCODE -eq -1978335189){'KEINE PASSENDEN EINTRÄGE'; $global:LASTEXITCODE=0} " +
         "elseif($LASTEXITCODE -ne 0){throw \"WinGet Exit $LASTEXITCODE\"}";
 
     // Jede ID laeuft einzeln mit --exact; Fehler werden pro ID gemeldet, weitere IDs laufen weiter.

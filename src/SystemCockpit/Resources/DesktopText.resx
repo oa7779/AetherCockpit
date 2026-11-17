@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="App.AdminRequired.Body" xml:space="preserve"><value>AETHER benötigt Administratorrechte. Bitte die Windows-UAC-Abfrage beim Programmstart freigeben.</value></data>
   <data name="App.AdminRequired.Title" xml:space="preserve"><value>AETHER / Administratorrechte erforderlich</value></data>
-  <data name="Desktop.Settings.Title" xml:space="preserve"><value>AETHER / Desktop, Transparenz und Parameter</value></data>
+  <data name="Desktop.Settings.Title" xml:space="preserve"><value>AETHER / Desktop, Transparenz und Einstellungen</value></data>
   <data name="Desktop.Settings.Header" xml:space="preserve"><value>DESKTOP / GADGETS</value></data>
   <data name="Desktop.Settings.Appearance" xml:space="preserve"><value>FENSTEROBERFLÄCHE UND SPRACHE</value></data>
   <data name="Desktop.Settings.Copyright" xml:space="preserve"><value>Copyright (c) 2026 Olaf Weins</value></data>
@@ -20,7 +20,7 @@
   <data name="Desktop.Settings.RestartNo" xml:space="preserve"><value>Später</value></data>
   <data name="Desktop.Settings.PreferenceSaved" xml:space="preserve"><value>Gespeichert. Die aktuelle Sitzung wird nicht umgestaltet.</value></data>
   <data name="Desktop.Settings.SaveFailed" xml:space="preserve"><value>Die Einstellung konnte nicht gespeichert werden.</value></data>
-  <data name="Desktop.Settings.DisplayMode" xml:space="preserve"><value>TAG / NACHT / Hauptfenster und Mainframe</value></data>
+  <data name="Desktop.Settings.DisplayMode" xml:space="preserve"><value>TAG / NACHT / Hauptfenster und Mainboard</value></data>
   <data name="Desktop.Settings.ModernDisplayMode"><value>Windows Modern folgt automatisch der Windows-App-Farbeinstellung. Die Tag-/Nacht-Auswahl gilt nur für die anderen Designs und bleibt gespeichert.</value></data>
   <data name="Desktop.Settings.Auto" xml:space="preserve"><value>Automatisch: Tag 07–19 Uhr (lokale Zeit)</value></data>
   <data name="Desktop.Settings.Day" xml:space="preserve"><value>Immer Tag</value></data>
@@ -36,7 +36,7 @@
   <data name="Desktop.Settings.Memory" xml:space="preserve"><value>RAM</value></data>
   <data name="Desktop.Settings.Gpu" xml:space="preserve"><value>GPU</value></data>
   <data name="Desktop.Settings.Temperatures" xml:space="preserve"><value>Temperaturen: CPU, GPU, SSD</value></data>
-  <data name="Desktop.Settings.Network" xml:space="preserve"><value>Netzwerk: Download / Upload</value></data>
+  <data name="Desktop.Settings.Network" xml:space="preserve"><value>Netzwerk: Herunterladen / Hochladen</value></data>
   <data name="Desktop.Settings.Drives" xml:space="preserve"><value>Laufwerke: Belegt-/Frei-Torten</value></data>
   <data name="Desktop.Settings.GadgetHelp" xml:space="preserve"><value>Am Gadget-Titel ziehen. Position und Deckkraft werden gespeichert. Minimieren, Wiederherstellen und Beenden über das AETHER-Symbol bei der Uhr.</value></data>
   <data name="Desktop.Settings.NetworkButton" xml:space="preserve"><value>Netzwerküberwachung / Npcap / Alarme</value></data>
@@ -80,14 +80,14 @@
   <data name="Board.LabelDevice" xml:space="preserve"><value>Gerät</value></data>
   <data name="Board.LabelParentId" xml:space="preserve"><value>Windows-Eltern-ID (leer = nicht verfügbar)</value></data>
   <data name="Board.MotionToggle" xml:space="preserve"><value>Animation: schematische Datenflüsse und aktive Geräte</value></data>
-  <data name="Board.ZoomFit" xml:space="preserve"><value>Board einpassen</value></data>
-  <data name="Board.Zoom75" xml:space="preserve"><value>Board 75 %</value></data>
-  <data name="Board.Zoom100" xml:space="preserve"><value>Board 100 %</value></data>
-  <data name="Board.Zoom125" xml:space="preserve"><value>Board 125 %</value></data>
-  <data name="Board.ZoomTooltip" xml:space="preserve"><value>Einpassen oder Details vergrößern; Zeichnung scrollt unabhängig von der Geräteliste.</value></data>
+  <data name="Board.ZoomFit" xml:space="preserve"><value>Mainboard einpassen</value></data>
+  <data name="Board.Zoom75" xml:space="preserve"><value>Mainboard 75 %</value></data>
+  <data name="Board.Zoom100" xml:space="preserve"><value>Mainboard 100 %</value></data>
+  <data name="Board.Zoom125" xml:space="preserve"><value>Mainboard 125 %</value></data>
+  <data name="Board.ZoomTooltip" xml:space="preserve"><value>Einpassen oder Details vergrößern; das Schaubild lässt sich unabhängig von der Geräteliste verschieben.</value></data>
   <data name="Board.LiveMetricsNotice" xml:space="preserve"><value>ECHTE LIVE-MESSWERTE / separat, nicht pro Leiterbahn</value></data>
-  <data name="Board.Download" xml:space="preserve"><value>DOWNLOAD</value></data>
-  <data name="Board.Upload" xml:space="preserve"><value>UPLOAD</value></data>
+  <data name="Board.Download" xml:space="preserve"><value>EMPFANG</value></data>
+  <data name="Board.Upload" xml:space="preserve"><value>VERSAND</value></data>
   <data name="Board.CpuTemperature" xml:space="preserve"><value>CPU-TEMP</value></data>
   <data name="Board.ActiveDeviceTooltip" xml:space="preserve"><value>Windows meldet eine aktive Nutzungssitzung.</value></data>
   <data name="Board.DeviceDetailTitle" xml:space="preserve"><value>{0} / {1} Geräteeinträge</value></data>

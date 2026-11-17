@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/AetherClient.Service/AetherClient.Service.csproj" />
+    <Project Path="src/AetherLocalAiSetup/AetherLocalAiSetup.csproj" />
     <Project Path="src/AetherOperations.Shared/AetherOperations.Shared.csproj" />
     <Project Path="src/AetherManager.Server/AetherManager.Server.csproj" />
     <Project Path="src/AetherScreensaver/AetherScreensaver.csproj" />

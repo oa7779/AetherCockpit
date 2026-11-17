@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SystemCockpit.Controls"
         xmlns:loc="clr-namespace:SystemCockpit.Services"
-        Title="AETHER | System Observatory | Olaf Weins" Width="1440" Height="940" MinWidth="1060" MinHeight="680"
+        Title="AETHER | Systemübersicht | Olaf Weins" Width="1440" Height="940" MinWidth="1060" MinHeight="680"
         Background="{DynamicResource WindowBackdrop}" Foreground="#E1EAF7" FontFamily="Segoe UI" WindowStartupLocation="CenterScreen" Icon="Assets/aether.ico">
     <Window.Resources>
         <ResourceDictionary>
@@ -26,8 +26,8 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style x:Key="Panel" TargetType="Border">
-            <Setter Property="controls:FrameGlow.Visible" Value="True"/>
-            <Setter Property="controls:FrameGlow.Enabled" Value="{Binding DataContext.MotionEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Setter Property="controls:AetherNeonFrame.Enabled" Value="True"/>
+            <Setter Property="controls:AetherNeonFrame.BreathingEnabled" Value="{Binding DataContext.MotionEnabled, RelativeSource={RelativeSource AncestorType=Window}}"/>
             <Setter Property="Background" Value="{DynamicResource GlossPanel}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource GlassRim}"/>
             <Setter Property="BorderThickness" Value="2,1,1,2"/>
@@ -49,7 +49,7 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="DashboardGraphTemplate">
-            <Border Tag="chart-panel" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
+            <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="{DynamicResource GlossPanel}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="10,2,10,2" Margin="0,0,8,8" Padding="10">
                 <StackPanel>
                     <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
                     <DockPanel Margin="0,4"><TextBlock DockPanel.Dock="Right" Text="{Binding Unit}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/><controls:LedDisplay Text="{Binding NumericValue}" Accent="{Binding Accent}" Height="30" HorizontalAlignment="Left" Width="128"/></DockPanel>
@@ -57,7 +57,9 @@
                         <Canvas Tag="chart-canvas" Width="280" Height="56" Background="#0A0717">
                             <Line X1="0" Y1="28" X2="280" Y2="28" Stroke="#2D2248"/>
                             <Line X1="0" Y1="56" X2="280" Y2="56" Stroke="#2D2248"/>
-                            <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="7" Opacity="0.12"/>
+                            <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="7" Opacity="0.4">
+                                <Polyline.Effect><BlurEffect Radius="6"/></Polyline.Effect>
+                            </Polyline>
                             <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="4" Opacity="0.3"/>
                             <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="2"/>
                         </Canvas>
@@ -67,8 +69,26 @@
                 </StackPanel>
             </Border>
         </DataTemplate>
+        <DataTemplate x:Key="ProcessCoreTemplate">
+            <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False"
+                    Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
+                <Grid ToolTip="{Binding Detail}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="24"/><RowDefinition Height="20"/><RowDefinition Height="5"/></Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Title}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="10" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                    <controls:LedDisplay Grid.Row="1" Text="{Binding NumericValue}" Accent="#39FF68" Width="68" Height="24"/>
+                    <Viewbox Grid.Row="2" Stretch="Fill" Margin="0,3">
+                        <Canvas Tag="chart-canvas" Width="280" Height="56" Background="#071711">
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="7" Opacity="0.4"><Polyline.Effect><BlurEffect Radius="6"/></Polyline.Effect></Polyline>
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="4" Opacity="0.3"/>
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="2"/>
+                        </Canvas>
+                    </Viewbox>
+                    <ProgressBar Grid.Row="3" Value="{Binding Level, Mode=OneWay}" Maximum="100" Foreground="#39FF68" Background="#183426" BorderThickness="0"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
         <DataTemplate x:Key="CompactCoreTemplate">
-            <Border Tag="chart-panel" Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
+            <Border Tag="chart-panel" controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False" Background="#090511" BorderBrush="#19A991" BorderThickness="1" Margin="2" Padding="4" CornerRadius="5">
                 <Grid ToolTip="{Binding Detail}">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="5"/></Grid.RowDefinitions>
                     <DockPanel>
@@ -78,7 +98,7 @@
                     <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,3">
                         <Canvas Tag="chart-canvas" Width="180" Height="56" Background="#071711">
                             <Line X1="0" X2="180" Y1="28" Y2="28" Stroke="#19432B"/>
-                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="7" Opacity="0.12"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
+                            <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="7" Opacity="0.4"><Polyline.Effect><BlurEffect Radius="6"/></Polyline.Effect><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                             <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="4" Opacity="0.3"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                             <Polyline Points="{Binding Trace}" Stroke="#39FF68" StrokeThickness="2" RenderTransformOrigin="0,0"><Polyline.RenderTransform><ScaleTransform ScaleX="0.643"/></Polyline.RenderTransform></Polyline>
                         </Canvas>
@@ -88,28 +108,46 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="CompactDiskTemplate">
-            <Border Tag="chart-panel" Background="#120711" BorderBrush="#FF576E" BorderThickness="1" Margin="3" Padding="8" Height="92" CornerRadius="6">
-                <Grid ToolTip="{Binding Detail}">
-                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="6"/></Grid.RowDefinitions>
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Right" Text="{Binding Unit}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,0"/>
-                        <controls:LedDisplay DockPanel.Dock="Right" Text="{Binding NumericValue}" Accent="#FF354A" Width="96" Height="28"/>
-                        <TextBlock Text="{Binding Title}" Foreground="#FF576E" FontFamily="Consolas" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    </DockPanel>
-                    <Viewbox Grid.Row="1" Stretch="Fill" Margin="0,4"><Canvas Tag="chart-canvas" Width="280" Height="56" Background="#08060C">
-                        <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#392027"/>
-                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="7" Opacity="0.12"/>
-                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="4" Opacity="0.3"/>
-                        <Polyline Points="{Binding Trace}" Stroke="#FF354A" StrokeThickness="2"/>
-                    </Canvas></Viewbox>
-                    <ProgressBar Grid.Row="2" Value="{Binding Level, Mode=OneWay}" Maximum="100" Foreground="#FF354A" Background="#391321" BorderThickness="0"/>
-                </Grid>
+            <Border Tag="chart-panel" Background="#120711" BorderBrush="#FF576E" BorderThickness="1" Margin="3" Padding="8" CornerRadius="6"
+                    controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="False">
+                <StackPanel>
+                    <TextBlock Text="{Binding Name, StringFormat=DATENTRÄGER {0}}" Foreground="#FF576E" FontFamily="Consolas" FontSize="12"
+                               FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" Margin="0,0,0,6"/>
+                    <ItemsControl ItemsSource="{Binding Metrics}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,3" ToolTip="{Binding Detail}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="112"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="10"/>
+                                        <TextBlock Text="{Binding Value}" Foreground="{Binding Accent}" FontFamily="Consolas" FontSize="12"/>
+                                        <TextBlock Text="{Binding ScaleLabel}" Foreground="{StaticResource Muted}" FontSize="9"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                        <Viewbox Stretch="Fill" Height="30">
+                                            <Canvas Tag="chart-canvas" Width="280" Height="56" Background="#08060C">
+                                                <Line X1="0" X2="280" Y1="28" Y2="28" Stroke="#392027"/>
+                                                <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="8" Opacity="0.4">
+                                                    <Polyline.Effect><BlurEffect Radius="6"/></Polyline.Effect>
+                                                </Polyline>
+                                                <Polyline Points="{Binding Trace}" Stroke="{Binding Accent}" StrokeThickness="2"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <ProgressBar Value="{Binding Level, Mode=OneWay}" Maximum="100" Height="3"
+                                                     Foreground="{Binding Accent}" Background="#391321" BorderThickness="0" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="15s / getrennte Skalen je Messreihe" Foreground="{StaticResource Muted}" FontSize="10" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                </StackPanel>
             </Border>
         </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
     <Border x:Name="ShellNeonFrame" Margin="6" BorderBrush="{DynamicResource GlassRim}" BorderThickness="1" CornerRadius="12"
-            controls:FrameGlow.Visible="True" controls:FrameGlow.Enabled="{Binding MotionEnabled}">
+            controls:AetherNeonFrame.Enabled="True" controls:AetherNeonFrame.BreathingEnabled="{Binding MotionEnabled}">
     <Grid Background="{StaticResource ConsoleGrid}">
         <Grid.ColumnDefinitions><ColumnDefinition Width="212"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
         <Border Background="{DynamicResource ChromeSidebar}" BorderBrush="{DynamicResource GlassRim}" BorderThickness="0,0,3,0">
@@ -122,11 +160,7 @@
                     </Style>
                 </StackPanel.Resources>
                 <StackPanel DockPanel.Dock="Top">
-                    <Image x:Name="DashboardLogo" Source="/SystemCockpit;component/Assets/aether-logo.png"
-                           Height="112" Stretch="Uniform" Margin="0,0,0,10"/>
-                    <TextBlock Text="A E T H E R" Foreground="#24FFE3" FontFamily="Consolas" FontSize="25" FontWeight="Bold">
-                        <TextBlock.Effect><DropShadowEffect Color="#24FFE3" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></TextBlock.Effect>
-                    </TextBlock>
+                    <controls:AnimatedBrand x:Name="DashboardBrand" MotionEnabled="{Binding MotionEnabled}" Margin="0,0,0,4"/>
                     <TextBlock x:Name="NeonDesignTagline" Text="NEON WAVE / GLASS CONTROL" Foreground="#F56AFF" FontFamily="Consolas" FontSize="10" Margin="0,8,0,14"/>
                     <Border Background="#D45CFF" Height="12" CornerRadius="6,0,0,6" Margin="0,0,0,5"/>
                     <Border Background="#4294FF" Height="7" CornerRadius="4,0,0,4" Margin="22,0,0,18"/>
@@ -146,7 +180,7 @@
                             <TextBlock Text="{loc:DesktopLabel Main.LocalNotice}" TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,8,0,0"/>
                         </StackPanel>
                     </Border>
-                    <TextBlock Text="NATIVE / WINDOWS / v0.7" Foreground="#A8A4C5" FontFamily="Consolas" FontSize="10" Margin="0,16,0,0"/>
+                    <TextBlock x:Name="BuildVersion" Foreground="#A8A4C5" FontFamily="Consolas" FontSize="10" Margin="0,16,0,0" TextWrapping="Wrap"/>
                     <TextBlock Text="Copyright (c) 2026 Olaf Weins" TextWrapping="Wrap" Foreground="#32D5FF" FontFamily="Consolas" FontSize="10" Margin="0,6,0,0"/>
                 </StackPanel>
             </StackPanel>
@@ -158,7 +192,7 @@
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                 <StackPanel>
                     <TextBlock Text="{loc:DesktopLabel Main.Tagline}" Foreground="#24FFE3" FontFamily="Consolas" FontSize="11"/>
-                    <TextBlock Text="System Observatory" Foreground="#DCA4FF" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Margin="0,5,0,5"/>
+                    <TextBlock Text="Systemübersicht" Foreground="#DCA4FF" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding SystemIdentity}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" MaxWidth="760" HorizontalAlignment="Left"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="16,0,0,0">
@@ -174,7 +208,7 @@
                             ToolTip="{loc:DesktopLabel Navigation.BackTip}"/>
                     <Button x:Name="NavForward" Content="{loc:DesktopLabel Navigation.ForwardButton}" Click="NavForwardClicked" IsEnabled="False" Margin="0,0,8,0" Padding="8,3" FontSize="11"
                             ToolTip="{loc:DesktopLabel Navigation.ForwardTip}"/>
-                    <Button Content="&#8962; COCKPIT" Click="NavHomeClicked" Margin="0,0,8,0" Padding="8,3" FontSize="11"
+                    <Button Content="&#8962; Systemübersicht" Click="NavHomeClicked" Margin="0,0,8,0" Padding="8,3" FontSize="11"
                             ToolTip="{loc:DesktopLabel Navigation.CockpitTip}"/>
                     <Button Content="{loc:DesktopLabel Navigation.HelpButton}" Click="NavHelpClicked" DockPanel.Dock="Right" Padding="8,3" FontSize="11"
                             ToolTip="{loc:DesktopLabel Navigation.HelpTip}"/>
@@ -184,15 +218,15 @@
                 </DockPanel>
             </Border>
             <TabControl x:Name="Pages" Grid.Row="2" SelectionChanged="PageChanged" Background="Transparent" Foreground="#E1EAF7" BorderThickness="0" Padding="0">
-                <TabControl.Resources>
+                <TabControl.ItemContainerStyle>
                     <Style TargetType="TabItem"><Setter Property="Visibility" Value="Collapsed"/></Style>
-                </TabControl.Resources>
-                <TabItem Header="Cockpit" Tag="Cockpit" ToolTip="{loc:DesktopLabel Module.CockpitTip}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                </TabControl.ItemContainerStyle>
+                <TabItem Header="{loc:DesktopLabel Navigation.Cockpit}" Tag="Cockpit" ToolTip="{loc:DesktopLabel Module.CockpitTip}">
+                    <ScrollViewer x:Name="CockpitScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,12" Padding="12">
                                 <StackPanel>
-                                    <TextBlock Text="CPU // MEMORY // STORAGE // LIVE" Foreground="#39FF68" FontFamily="Consolas" FontSize="18"/>
+                                    <TextBlock Text="CPU / Arbeitsspeicher / Datenträger / Live" Foreground="#39FF68" FontFamily="Consolas" FontSize="18"/>
                                     <TextBlock Text="{Binding CpuIdentity}" Foreground="#24FFE3" TextWrapping="Wrap" Margin="0,4"/>
                                     <TextBlock Text="{Binding MemoryIdentity}" Foreground="#FD59FF" TextWrapping="Wrap" Margin="0,0,0,6"/>
                                     <Grid>
@@ -216,8 +250,8 @@
                                         <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="{Binding CoreColumns}"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     </ItemsControl>
                                     <TextBlock Text="{loc:DesktopLabel Main.PhysicalDisks}" Foreground="#FF576E" FontFamily="Consolas" Margin="0,8"/>
-                                    <ItemsControl ItemsSource="{Binding DiskGraphs}" ItemTemplate="{StaticResource CompactDiskTemplate}">
-                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="4"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                    <ItemsControl x:Name="CockpitDiskOverview" ItemsSource="{Binding DiskGraphs}" ItemTemplate="{StaticResource CompactDiskTemplate}">
+                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     </ItemsControl>
                                 </StackPanel>
                             </Border>
@@ -236,7 +270,7 @@
                                                             <MultiDataTrigger>
                                                                 <MultiDataTrigger.Conditions>
                                                                     <Condition Binding="{Binding MotionEnabled}" Value="True"/>
-                                                                    <Condition Binding="{Binding Path=(controls:FrameGlow.MotionActive), ElementName=ShellNeonFrame}" Value="True"/>
+                                                                    <Condition Binding="{Binding Path=(controls:AetherNeonFrame.MotionActive), ElementName=ShellNeonFrame}" Value="True"/>
                                                                     <Condition Binding="{Binding IsVisible, RelativeSource={RelativeSource Self}}" Value="True"/>
                                                                 </MultiDataTrigger.Conditions>
                                                                 <MultiDataTrigger.EnterActions>
@@ -339,7 +373,7 @@
                             </Border>
                             <Border Style="{StaticResource Panel}" Margin="0,0,0,16">
                                 <StackPanel>
-                                    <TextBlock Text="EVENTMONITOR / SYSTEM + APPLICATION" FontFamily="Consolas" Foreground="#D45CFF" FontSize="19"/>
+                                    <TextBlock Text="Ereignisanzeige / System und Anwendung" FontFamily="Consolas" Foreground="#D45CFF" FontSize="19"/>
                                     <TextBlock Text="{Binding EventStatus}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8"/>
                                     <TextBlock Text="{loc:DesktopLabel Layout.EventBuckets}" Foreground="#32D5FF" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                     <ItemsControl ItemsSource="{Binding EventBuckets}" Height="115" Margin="0,0,0,12">
@@ -437,28 +471,18 @@
                 <TabItem Header="{loc:DesktopLabel Module.Taskmanager}" Tag="Taskmanager" ToolTip="{loc:DesktopLabel Module.ProcessesTip}">
                     <Border Style="{StaticResource Panel}">
                     <Grid>
-                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="1.3*"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                         <StackPanel>
-                            <TextBlock Text="{loc:DesktopLabel Ui.TaskManagerHeading}" FontFamily="Consolas" Foreground="#24FFE3" FontSize="22"/>
+                            <TextBlock Text="Prozesse und Systembeziehungen" FontFamily="Consolas" Foreground="#24FFE3" FontSize="22"/>
                             <TextBlock Text="{Binding DashboardStatus}" Foreground="{StaticResource Muted}" Margin="0,8" TextWrapping="Wrap"/>
-                            <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged}" Foreground="#E1EAF7" Background="#15102D" Padding="8" ToolTip="{loc:DesktopLabel Ui.ProcessFilterTip}"/>
                         </StackPanel>
-                        <ItemsControl Grid.Row="1" x:Name="TaskmanagerCoreOverview" ItemsSource="{Binding CoreGraphs}" ItemTemplate="{StaticResource CompactCoreTemplate}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,6">
-                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="{Binding CoreColumns}"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding ProcessView}" x:Name="TaskmanagerProcesses" SelectionMode="Single">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="2*"/>
-                                <DataGridTextColumn Header="PID" Binding="{Binding Id}" Width="80"/>
-                                <DataGridTextColumn Header="CPU %" Binding="{Binding CpuDisplay}" SortMemberPath="CpuPercent" Width="100"/>
-                                <DataGridTextColumn Header="RAM MB" Binding="{Binding MemoryDisplay}" SortMemberPath="MemoryMb" Width="100"/>
-                                <DataGridTextColumn Header="THREADS" Binding="{Binding Threads}" Width="90"/>
-                                <DataGridTextColumn Header="HANDLES" Binding="{Binding Handles}" Width="90"/>
-                                <DataGridTextColumn Header="READ MB/s" Binding="{Binding ReadDisplay}" SortMemberPath="ReadMbps" Width="110"/>
-                                <DataGridTextColumn Header="WRITE MB/s" Binding="{Binding WriteDisplay}" SortMemberPath="WriteMbps" Width="110"/>
-                                <DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="2*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <ScrollViewer Grid.Row="1" MaxHeight="240" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl x:Name="TaskmanagerCoreOverview" ItemsSource="{Binding CoreGraphs}" ItemTemplate="{StaticResource ProcessCoreTemplate}" HorizontalContentAlignment="Stretch" Margin="0,6">
+                                <ItemsControl.ItemContainerStyle><Style TargetType="ContentPresenter"><Setter Property="MinHeight" Value="80"/></Style></ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="{Binding CoreColumns}"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <controls:ProcessCommandView Grid.Row="2" x:Name="ProcessCenter"/>
                         <WrapPanel Grid.Row="3">
                             <Button Content="{loc:DesktopLabel Layout.ProcessDetails}" Click="ProcessDetailsClicked" Margin="0,10,8,0"/>
                             <Button Content="{loc:DesktopLabel Ui.ProcessesHeading}" Tag="processes" Click="ManagementClicked" Margin="0,10,8,0"/>
@@ -467,6 +491,15 @@
                         </WrapPanel>
                     </Grid>
                     </Border>
+                </TabItem>
+                <TabItem Header="Hardwareübersicht" Tag="HardwareIntelligence" ToolTip="Technische Komponenten, Quellen und Hardwareberichte">
+                    <controls:HardwareIntelligenceView x:Name="HardwareIntelligence"/>
+                </TabItem>
+                <TabItem Header="Systemanalyse" Tag="SystemIntelligence" ToolTip="Zeitverlauf, Vergleich, Diagnose, Beobachtungsregeln und belegte Systembeziehungen">
+                    <controls:SystemIntelligenceView x:Name="SystemIntelligence"/>
+                </TabItem>
+                <TabItem Header="AETHER Guardian" Tag="Guardian" ToolTip="Änderungspläne, Wiederherstellungsarchiv, Zustandsprüfung und belegte Rückwege">
+                    <controls:GuardianView x:Name="Guardian"/>
                 </TabItem>
                 <TabItem Header="{loc:DesktopLabel Module.Sensoren}" Tag="Sensoren" ToolTip="{loc:DesktopLabel Module.SensorsTip}">
                     <Grid>
@@ -484,7 +517,7 @@
                 <TabItem Header="{loc:DesktopLabel Module.Laufwerke}" Tag="Laufwerke" ToolTip="{loc:DesktopLabel Module.DrivesTip}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="Storage Observatory" FontSize="24"/>
+                            <TextBlock Text="Laufwerksübersicht" FontSize="24"/>
                             <Button Content="{loc:DesktopLabel Layout.SmartTests}" Tag="SMART" Click="ControlCenterNavigate" HorizontalAlignment="Left" Margin="0,10,0,0" ToolTip="{loc:DesktopLabel Ui.SmartJump}"/>
                             <TextBlock Text="{loc:DesktopLabel Layout.StorageNotice}" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,18"/>
                             <TextBlock Text="{loc:DesktopLabel Ui.PhysicalDrives}" Foreground="#5DE5D0" Margin="0,0,0,12"/>
@@ -513,9 +546,9 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="{loc:DesktopLabel Inventory.Component}" Binding="{Binding Hardware}" Width="2*"/>
                                 <DataGridTextColumn Header="{loc:DesktopLabel Ui.SeriesColumn}" Binding="{Binding Name}" Width="2*"/>
-                                <DataGridTextColumn Header="MIN" Binding="{Binding MinDisplay}" Width="*"/>
-                                <DataGridTextColumn Header="MAX" Binding="{Binding MaxDisplay}" Width="*"/>
-                                <DataGridTextColumn Header="AVG" Binding="{Binding AvgDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="Minimum" Binding="{Binding MinDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="Maximum" Binding="{Binding MaxDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="Mittelwert" Binding="{Binding AvgDisplay}" Width="*"/>
                                 <DataGridTextColumn Header="{loc:DesktopLabel Ui.PointsColumn}" Binding="{Binding Count}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
@@ -569,7 +602,7 @@
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Cleaner" Tag="Cleaner" ToolTip="{loc:DesktopLabel Module.CleanerTip}">
+                <TabItem Header="{loc:DesktopLabel Navigation.Cleaner}" Tag="Cleaner" ToolTip="{loc:DesktopLabel Module.CleanerTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,0,16">
@@ -607,8 +640,14 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="{loc:DesktopLabel Module.Ereignisse}" Tag="Ereignisse" ToolTip="{loc:DesktopLabel Module.EventsTip}"><Border Style="{StaticResource Panel}"><controls:EventBrowser x:Name="EmbeddedEvents"/></Border></TabItem>
-                <TabItem Header="Superadmin" Tag="Superadmin" ToolTip="{loc:DesktopLabel Module.AdminTip}"><Border Style="{StaticResource Panel}"><controls:AdminWorkbench x:Name="Workbench"/></Border></TabItem>
-                <TabItem Header="Operations" Tag="Operations" ToolTip="{loc:DesktopLabel Module.OperationsTip}"><Border Style="{StaticResource Panel}"><controls:OperationsHub x:Name="Operations"/></Border></TabItem>
+                <TabItem Header="{loc:DesktopLabel Navigation.SystemAdministration}" Tag="Superadmin" ToolTip="{loc:DesktopLabel Module.AdminTip}">
+                    <Border Style="{StaticResource Panel}"><TabControl x:Name="AdministrationAreas">
+                        <TabItem Header="Einzelverwaltung"><controls:AdminWorkbench x:Name="Workbench"/></TabItem>
+                        <TabItem Header="Administrationsplattform"><controls:AdminPlatformView x:Name="AdminPlatform"/></TabItem>
+                    </TabControl></Border>
+                </TabItem>
+                <TabItem Header="AETHER Intelligence" Tag="IntelligenceFabric" ToolTip="Lokale Untersuchung, beleggestützte Planung und persönliche Freigaben"><Border Style="{StaticResource Panel}"><controls:IntelligenceFabricView x:Name="IntelligenceFabric"/></Border></TabItem>
+                <TabItem Header="{loc:DesktopLabel Navigation.Plans}" Tag="Operations" ToolTip="{loc:DesktopLabel Module.OperationsTip}"><Border Style="{StaticResource Panel}"><controls:OperationsHub x:Name="Operations"/></Border></TabItem>
                 <TabItem Header="{loc:DesktopLabel Module.Hilfe}" Tag="Hilfe" ToolTip="{loc:DesktopLabel Module.HelpTip}">
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>

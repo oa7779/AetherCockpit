@@ -1,7 +1,7 @@
 namespace SystemCockpit.Services;
 
 /// <summary>
-/// Browserartiger Navigationsverlauf fuer Ansichten: Besuche werden aufgezeichnet,
+/// Browserartiger Navigationsverlauf für Ansichten: Besuche werden aufgezeichnet,
 /// Zurueck/Vor bewegen sich darin, ein neuer Besuch nach Zurueck verwirft den
 /// Vorwaerts-Zweig. Rein lokale UI-Navigation, keine Persistenz.
 /// </summary>

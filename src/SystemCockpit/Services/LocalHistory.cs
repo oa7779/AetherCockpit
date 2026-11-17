@@ -31,7 +31,7 @@ public sealed class LocalHistory(string directory)
         {
             if (new FileInfo(path) is { Exists: true } file &&
                 file.Length + System.Text.Encoding.UTF8.GetByteCount(line) > MaxFileBytes)
-                throw new IOException("Tageslimit von 16 MiB erreicht. Aufzeichnung ist aus; fuer einen neuen Tag manuell wieder aktivieren.");
+                throw new IOException("Tageslimit von 16 MiB erreicht. Aufzeichnung ist aus; für einen neuen Tag manuell wieder aktivieren.");
             File.AppendAllText(path, line);
             var files = Directory.EnumerateFiles(DirectoryPath, "metrics-*.jsonl")
                 .Select(p => new FileInfo(p)).OrderByDescending(f => f.Name, StringComparer.Ordinal).ToList();

@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace SystemCockpit.Services;
 
-internal sealed class ManagerReportingService(Action<string> statusChanged)
+internal sealed class ManagerReportingService(Action<string> statusChanged) : IDisposable
 {
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromMinutes(2) };
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -18,6 +18,7 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
     private readonly SemaphoreSlim _wake = new(0, 1);
     private CockpitSettings _settings = new();
     private CancellationTokenSource? _activeCycle;
+    private bool _disposed;
 
     public bool HasDeviceToken => File.Exists(TokenPath);
 
@@ -26,30 +27,44 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
         CancellationTokenSource? active;
         lock (_sync)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             _settings = settings;
             active = _activeCycle;
         }
         try { active?.Cancel(); }
         catch (ObjectDisposedException) { }
-        if (_wake.CurrentCount == 0)
-            _wake.Release();
+        lock (_sync)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            if (_wake.CurrentCount == 0) _wake.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_sync)
+        {
+            if (_disposed) return;
+            _wake.Dispose();
+            _disposed = true;
+        }
     }
 
     public async Task<EnrollmentResult> EnrollAsync(string serverUrl, string code, CancellationToken cancellationToken)
     {
         var baseUri = NormalizeServerUrl(serverUrl);
         if (string.IsNullOrWhiteSpace(code) || code.Length > 64)
-            throw new ArgumentException("Ein gueltigen einmaligen Anmeldecode eingeben.", nameof(code));
+            throw new ArgumentException(DesktopUiText.Get("ManagerClient.InvalidCode"), nameof(code));
 
         var version = typeof(ManagerReportingService).Assembly.GetName().Version?.ToString() ?? "unknown";
         using var response = await Http.PostAsJsonAsync(new Uri(baseUri, "api/v1/enroll"),
             new EnrollmentRequest(code.Trim(), Environment.MachineName, version), JsonOptions, cancellationToken);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<EnrollmentResponse>(JsonOptions, cancellationToken)
-            ?? throw new InvalidDataException("Der Server lieferte keine Geraeteanmeldung.");
+            ?? throw new InvalidDataException(DesktopUiText.Get("ManagerClient.EmptyEnrollment"));
         if (result.DeviceId == Guid.Empty || string.IsNullOrWhiteSpace(result.DeviceToken) ||
             result.State != "pending")
-            throw new InvalidDataException("Der Server lieferte eine ungueltige Geraeteanmeldung.");
+            throw new InvalidDataException(DesktopUiText.Get("ManagerClient.InvalidEnrollment"));
 
         await SaveTokenAsync(result.DeviceToken, cancellationToken);
         return new EnrollmentResult(result.DeviceId, result.State);
@@ -78,7 +93,7 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
                     var token = await LoadTokenAsync(cycle.Token);
                     if (token is null)
                     {
-                        statusChanged("Zentralverwaltung: aktiviert, aber dieses Geraet ist noch nicht angemeldet.");
+                        statusChanged(DesktopUiText.Get("ManagerClient.NotEnrolled"));
                     }
                     else
                     {
@@ -86,19 +101,19 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
                         var device = await GetDeviceStatusAsync(baseUri, token, cycle.Token);
                         if (device.State != "approved")
                         {
-                            statusChanged($"Zentralverwaltung: Geraet wartet auf manuelle Freigabe ({device.State}).");
+                            statusChanged(NonApprovedStatus(device.State));
                         }
                         else if (DateTimeOffset.UtcNow < nextReportAt)
                         {
                             retryAfter = Min(StatusInterval, nextReportAt - DateTimeOffset.UtcNow);
-                            statusChanged("Zentralverwaltung: freigegeben; naechster Bericht zur vollen Stundenfrist.");
+                            statusChanged(DesktopUiText.Get("ManagerClient.NextReport"));
                         }
                         else
                         {
                             await SubmitDiagnosticReportAsync(baseUri, token, cycle.Token);
                             nextReportAt = DateTimeOffset.UtcNow.AddHours(1);
                             retryAfter = TimeSpan.FromHours(1);
-                            statusChanged($"Zentralverwaltung: Diagnosebericht gesendet ({DateTimeOffset.Now:HH:mm}).");
+                            statusChanged(DesktopUiText.Format("ManagerClient.ReportSent", DateTimeOffset.Now));
                         }
                     }
                 }
@@ -110,14 +125,14 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
                 catch (OperationCanceledException ex) when (!stoppingToken.IsCancellationRequested)
                 {
                     Trace.TraceError("AETHER Zentralverwaltung: {0}", ex);
-                    statusChanged($"Zentralverwaltung: Anfragezeitlimit erreicht: {ex.Message}");
+                    statusChanged(DesktopUiText.Format("ManagerClient.Timeout", ex.Message));
                 }
                 catch (Exception ex) when (ex is HttpRequestException or IOException or UnauthorizedAccessException or
                     InvalidDataException or JsonException or CryptographicException or InvalidOperationException or
                     TimeoutException or System.ComponentModel.Win32Exception)
                 {
                     Trace.TraceError("AETHER Zentralverwaltung: {0}", ex);
-                    statusChanged($"Zentralverwaltung: Uebertragung/Abfrage fehlgeschlagen: {ex.Message}");
+                    statusChanged(DesktopUiText.Format("ManagerClient.Failure", ex.Message));
                 }
                 finally
                 {
@@ -140,6 +155,13 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
             return _settings;
     }
 
+    internal static string NonApprovedStatus(string? state) => state switch
+    {
+        "pending" => DesktopUiText.Get("ManagerClient.Pending"),
+        "revoked" => DesktopUiText.Get("ManagerClient.Revoked"),
+        _ => DesktopUiText.Format("ManagerClient.UnknownState", state ?? DesktopUiText.Get("ManagerClient.MissingState"))
+    };
+
     private static async Task<DeviceStatus> GetDeviceStatusAsync(Uri baseUri, string token,
         CancellationToken cancellationToken)
     {
@@ -148,7 +170,7 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
         using var response = await Http.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<DeviceStatus>(JsonOptions, cancellationToken)
-            ?? throw new InvalidDataException("Der Server lieferte keinen Geraetestatus.");
+            ?? throw new InvalidDataException(DesktopUiText.Get("ManagerClient.EmptyStatus"));
     }
 
     private static async Task SubmitDiagnosticReportAsync(Uri baseUri, string token,
@@ -172,7 +194,7 @@ internal sealed class ManagerReportingService(Action<string> statusChanged)
             (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) ||
             uri.UserInfo.Length > 0 || uri.Query.Length > 0 || uri.Fragment.Length > 0 ||
             uri.AbsolutePath != "/" || (!uri.IsLoopback && uri.Scheme != Uri.UriSchemeHttps))
-            throw new ArgumentException("Server-URL: HTTPS fuer Netzwerkziele; HTTP nur fuer localhost. URL ohne Pfad oder Zugangsdaten eingeben.");
+            throw new ArgumentException(DesktopUiText.Get("ManagerClient.InvalidUrl"));
         return new Uri(uri.AbsoluteUri.EndsWith('/') ? uri.AbsoluteUri : uri.AbsoluteUri + "/", UriKind.Absolute);
     }
 

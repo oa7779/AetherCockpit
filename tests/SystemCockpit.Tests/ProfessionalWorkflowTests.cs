@@ -71,7 +71,7 @@ internal static class ProfessionalWorkflowTests
         Check(stats.Snapshot().Single(s => s.Name == "Video").Count == 1 &&
             stats.Snapshot().Single(s => s.Name == "Bus").Average == 32, "Statistics coalesce identical duplicates and keep colliding channels separate");
         stats.Add(sample with { Sensors = [sensor, sensor with { Value = 99 }] });
-        Check(stats.Snapshot().Single(s => s.Name == "Video").Count == 1 && stats.Warning.Contains("widerspruechlich"),
+        Check(stats.Snapshot().Single(s => s.Name == "Video").Count == 1 && stats.Warning.Contains("widersprüchlich"),
             "Contradictory samples do not become false averages");
         stats.Reset();
         Check(stats.Snapshot().Count == 0 && stats.Warning.Length == 0, "Statistics reset clears warning and data");
@@ -91,7 +91,7 @@ internal static class ProfessionalWorkflowTests
             var report = HistoryReader.Read(Directory.GetFiles(folder, "metrics-*.jsonl").Single(), CancellationToken.None);
             Check(report.Series.Single(s => s.Label.EndsWith(" / Video")).Points.Count == 1 &&
                 report.Series.Single(s => s.Label.EndsWith(" / Bus")).Points.Single().Value == 32 &&
-                report.Issues.Any(s => s.Contains("widerspruechlich")), "Stored logs use same collision/conflict policy as charts/statistics");
+                report.Issues.Any(s => s.Contains("widersprüchlich")), "Stored logs use same collision/conflict policy as charts/statistics");
             var exe = Path.Combine(folder, "Wireshark.exe");
             var pcap = Path.Combine(folder, "capture with spaces.pcapng");
             File.WriteAllText(exe, "fixture only / never executed");
@@ -209,7 +209,7 @@ internal static class ProfessionalWorkflowTests
             Pump();
             Check(tasks.Results.Items.Cast<CockpitTask>().Any(t => t.Destination == "Pakete"), "Visible task search really filters workflow list");
             tasks.SearchBox.Text = "";
-            tasks.CategoryBox.SelectedItem = "Netzwerk";
+            tasks.CategoryBox.SelectedValue = "Netzwerk";
             Pump();
             Check(tasks.Results.Items.Count >= 3 && tasks.Results.Items.Cast<CockpitTask>().All(t => t.Category == "Netzwerk"),
                 "Visible category selection narrows results");
@@ -217,15 +217,78 @@ internal static class ProfessionalWorkflowTests
             {
                 tasks.Width = size.Width; tasks.Height = size.Height; Pump(); tasks.UpdateLayout();
                 Check(tasks.Results.ActualWidth >= 260 && tasks.Results.ActualHeight > 160 &&
-                    Descendants(tasks).OfType<Button>().Single().IsEnabled, "Task list and action remain usable at supported window sizes");
+                    tasks.OpenButton.IsEnabled, "Task list and action remain usable at supported window sizes");
             }
             tasks.Width = 1040; tasks.Height = 720; Pump();
             if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(tasks, screenshotPrefix + "-arbeitsplatz.png");
             tasks.SearchBox.Text = "zznichtvorhanden";
             Pump();
-            Check(tasks.Results.Items.Count == 0 && !Descendants(tasks).OfType<Button>().Single().IsEnabled, "No-result state disables opening, not a fake default action");
+            Check(tasks.Results.Items.Count == 0 && !tasks.OpenButton.IsEnabled, "No-result state disables opening, not a fake default action");
         }
         finally { tasks.Close(); }
+        DesktopText.Configure("en");
+        try
+        {
+            var englishTasks = new TaskCenterWindow { ShowInTaskbar = false };
+            try
+            {
+                englishTasks.Show(); Pump();
+                Check(englishTasks.Title == "AETHER | Workspace and feature search" &&
+                    System.Windows.Automation.AutomationProperties.GetName(englishTasks.SearchBox) == "Feature search" &&
+                    englishTasks.CategoryBox.SelectedValue as string == "" &&
+                    Equals(englishTasks.OpenButton.Content, "Open area / do not run anything"),
+                    "English workspace chrome and accessibility labels use authored translations");
+                englishTasks.Width = 780; englishTasks.Height = 560; Pump(); englishTasks.UpdateLayout();
+                var resultContainer = (ListBoxItem)englishTasks.Results.ItemContainerGenerator.ContainerFromIndex(0);
+                Check(resultContainer is not null &&
+                    Descendants(resultContainer).OfType<TextBlock>().Any(text =>
+                        text.Text == ((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay &&
+                        text.TextWrapping == TextWrapping.Wrap && text.ActualWidth > 0),
+                    "Workspace result titles wrap at narrow supported window sizes");
+                englishTasks.SearchBox.Text = "troubleshoot windows"; Pump();
+                Check(((CockpitTask)englishTasks.Results.Items[0]).TitleDisplay == "Troubleshoot Windows problems" &&
+                    Descendants(englishTasks).OfType<TextBlock>().Any(text =>
+                        text.Text.Contains("Only then approve an appropriate repair individually", StringComparison.Ordinal)),
+                    "English workflow details retain explicit individual repair approval");
+                englishTasks.SearchBox.Text = "connection problems";
+                Pump();
+                Check(englishTasks.Results.Items.Cast<CockpitTask>().Any(t =>
+                    t.Destination == "Netzwerk" && t.Surface == "Systemkontrolle"),
+                    "English search locates workflows without translating routing identifiers");
+                englishTasks.SearchBox.Text = "";
+                englishTasks.CategoryBox.SelectedValue = "Netzwerk";
+                Pump();
+                Check(englishTasks.Results.Items.Count == 3 &&
+                    englishTasks.Results.Items.Cast<CockpitTask>().All(t => t.CategoryDisplay == "Network"),
+                    "English category filtering preserves invariant category identifiers");
+                englishTasks.CategoryBox.SelectedIndex = 0;
+                Pump();
+                if (screenshotPrefix is not null)
+                    ModuleTests.SaveScreenshot(englishTasks, screenshotPrefix + "-workspace-english.png");
+                englishTasks.SearchBox.Text = "zznichtvorhanden";
+                Pump();
+                Check(englishTasks.Results.Items.Count == 0 &&
+                    Descendants(englishTasks).OfType<TextBlock>().Any(text => text.Text == "No matching feature") &&
+                    !englishTasks.OpenButton.IsEnabled,
+                    "English empty search remains safe and disables opening");
+            }
+            finally { englishTasks.Close(); Pump(); }
+            var events = new SystemCockpit.Controls.EventBrowser();
+            try
+            {
+                ((TextBox)events.FindName("Days")).Text = "31";
+                var controls = (WrapPanel)events.FindName("QueryControls");
+                var readButton = controls.Children.OfType<Button>()
+                    .Single(button => Equals(button.Content, DesktopUiText.Get("Layout.ReadChannel")));
+                readButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Pump();
+                Check(((TextBlock)events.FindName("Status")).Text ==
+                    "Event query failed: Enter days 1..30 and a limit of 1..2000.",
+                    "English event query validation reports failure without reading Windows events");
+            }
+            finally { events.Shutdown(); }
+        }
+        finally { DesktopText.Configure("de"); }
         var model = new CockpitModel();
         var center = new ControlCenterWindow(model) { ShowInTaskbar = false };
         try
@@ -262,8 +325,10 @@ internal static class ProfessionalWorkflowTests
             network.Show(); Pump();
             var grid = Descendants(network).OfType<DataGrid>().Single();
             Check(grid.Items.Count == 2 && !watch.IsCapturing, "Network UI renders synthetic packets without capture/monitoring");
-            var protocol = Descendants(network).OfType<ComboBox>().Single(c => c.ItemsSource == PacketFilter.Protocols);
-            protocol.SelectedItem = "DNS";
+            var protocol = Descendants(network).OfType<ComboBox>().Single(c =>
+                c.SelectedValuePath == "Key" && c.Items.Cast<KeyValuePair<string, string>>()
+                    .Select(item => item.Key).SequenceEqual(PacketFilter.Protocols));
+            protocol.SelectedValue = "DNS";
             Descendants(network).OfType<Button>().Single(b => Equals(b.Content, "Filter anwenden")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             grid.SelectedIndex = 0; Pump();
             if (screenshotPrefix is not null) ModuleTests.SaveScreenshot(network, screenshotPrefix + "-netzwerk.png");
@@ -304,9 +369,9 @@ internal static class ProfessionalWorkflowTests
             {
                 var advanced = (TabControl)modules.FindName("Modules");
                 Check(TaskCatalog.All.Where(t => t.Surface == "Hauptfenster").All(t =>
-                    pages.Items.Cast<TabItem>().Any(p => Equals(p.Header, t.Destination))) &&
+                    pages.Items.Cast<TabItem>().Any(p => Equals(p.Tag, t.Destination))) &&
                     TaskCatalog.All.Where(t => t.Surface == "Systemkontrolle").All(t =>
-                    advanced.Items.Cast<TabItem>().Any(p => Equals(p.Header, t.Destination))),
+                    advanced.Items.Cast<TabItem>().Any(p => Equals(p.Tag, t.Destination))),
                     "Every task route names a real compiled destination");
             }
             finally { modules.Close(); Pump(); }
@@ -316,7 +381,7 @@ internal static class ProfessionalWorkflowTests
             host.Resources.MergedDictionaries.Add(main.Resources);
             try
             {
-                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, "Cleaner"));
+                pages.SelectedItem = pages.Items.Cast<TabItem>().Single(t => Equals(t.Header, "Cache-Bereinigung"));
                 main.Model.CleanupFiles.Clear();
                 main.Model.CleanupFiles.Add(new(@"C:\fixture\visible.tmp", 10, DateTime.UtcNow));
                 main.Model.CleanupFiles.Add(new(@"C:\fixture\hidden.tmp", 20, DateTime.UtcNow) { Selected = true });
@@ -326,12 +391,17 @@ internal static class ProfessionalWorkflowTests
                 foreach (var expander in navigation.Children.OfType<Expander>()) expander.IsExpanded = true;
                 Pump();
                 var navigationButtons = Descendants(navigation).OfType<Button>().Where(b => b.Tag is string).ToArray();
-                Check(navigationButtons.All(button => button.Content is string text &&
-                    new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-                        new Typeface(button.FontFamily, button.FontStyle, button.FontWeight, button.FontStretch),
-                        button.FontSize, Brushes.White, VisualTreeHelper.GetDpi(button).PixelsPerDip).WidthIncludingTrailingWhitespace <=
-                    button.ActualWidth - button.Padding.Left - button.Padding.Right - button.BorderThickness.Left - button.BorderThickness.Right + 1),
-                    "Every primary/quick navigation caption fits its actual sidebar content width without clipping");
+                Check(navigationButtons.All(button =>
+                {
+                    if (button.Content is not string text) return false;
+                    var label = Descendants(button).OfType<TextBlock>().SingleOrDefault(t => t.Text == text);
+                    if (label is null || label.ActualWidth <= 0 || label.TextWrapping != TextWrapping.Wrap) return false;
+                    var measured = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+                        new Typeface(label.FontFamily, label.FontStyle, label.FontWeight, label.FontStretch),
+                        label.FontSize, Brushes.White, VisualTreeHelper.GetDpi(label).PixelsPerDip) { MaxTextWidth = label.ActualWidth };
+                    return label.ActualWidth <= button.ActualWidth - button.Padding.Left - button.Padding.Right + 1 &&
+                        label.ActualHeight + 1 >= measured.Height;
+                }), "Every complete navigation caption wraps within actual sidebar width and receives sufficient text height");
                 var visible = Descendants(host).OfType<Button>().Single(b => Equals(b.Content, "Sichtbare ankreuzen"));
                 visible.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Pump();
                 var status = (TextBlock)main.FindName("CleanupSelectionStatus");

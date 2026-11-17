@@ -1,186 +1,184 @@
-# AETHER / Retro Neon System Control
+# AETHER
 
-AETHER ist eine native Windows-Kommandozentrale für Hardwareüberwachung,
-Diagnose, Wartung und Systemverwaltung im eigenständigen Retro-Neon-Design.
-
-[Impressum](docs/IMPRESSUM.md) ·
-[Datenschutz für Projekt und Support](docs/SECURITY-AND-PRIVACY.md#datenschutz-für-projekt-und-support)
-
-Live-Instrumente, Verlaufskurven und das virtuelle Mainboard zeigen den
-Rechnerzustand. Windows-Assistenten helfen, Befunde einzuordnen und passende
-Reparaturen vorzubereiten. Gadgets und die xBar halten Messwerte auf dem Desktop.
-
-## Aktueller Beta-Stand
-
-**Aktuelle Beta: 0.7.0-beta.38**
-
-**Prüfstatus:** Windows-CI prüft Build, Konsolenassertions und synthetische
-Desktopansichten. Hardwarebetrieb, Installation und Intune-Verteilung sind
-nicht durch diese Tests abgedeckt. Die Pakete sind weiterhin unsigniert.
-
-Beta 38 ergänzt **Windows Modern** als wählbare neutrale Desktopoberfläche.
-Hell und dunkel folgen Windows; das animierte **System-Schema** ersetzt dort
-das Mainframe. In diesem Design ist der AETHER-Bildschirmschoner deaktiviert.
-Retro-Neon und Deutsch bleiben Standard; Englisch ist noch nicht auswählbar.
-Der Designwechsel wird nach der Installation mit einem App-Neustart übernommen.
-
-Retro-Neon verwendet schwarze Nacht- und blaue Tag-Hintergründe in Hauptfenster,
-Mainframe und Bildschirmschoner. Neonfarben und Glow bleiben erhalten.
-Die Funktionen sind nach Aufgaben geordnet, Mainframe-Zeichnung
-und Gerätedetails getrennt. GPU-Lüfter sitzen auf der sichtbaren Kühlerseite;
-Board und Komponenten erhalten stärkeren Glow. Der Tag-/Nachtmodus folgt
-der lokalen Uhrzeit oder einer manuellen Wahl. Die Uhr aktualisiert ihre
-Sekunden unabhängig von Hardwareabfragen. Konsolenassistenten ergänzen Windows-Diagnose
-und kontrollierte Reparaturen. Die separate Zentralverwaltung bietet eine
-HTTPS-Weboberfläche, Geräteüberwachung und feste Remote-Aufträge.
-Der Bildschirmschoner bleibt vollständig ohne Musikfunktion.
-
-[Beta-38-Downloads und SHA256-Prüfsummen](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.38)
-· [Zuletzt laufzeitgeprüfte Beta 36](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.36)
-· [Versionsgeschichte](CHANGELOG.md)
-
-**Codesignierung:** Die kostenlose SignPath-Codesignierung ist beantragt;
-die Entscheidung steht aus. Die aktuellen Pakete sind weiterhin unsigniert.
-[Status und Signaturhinweise](docs/SECURITY-AND-PRIVACY.md#codesignierung).
-
-## Wesentliche Funktionen
-
-- **Beobachten:** CPU-Kerne, Prozesse, RAM, Datenträger, Netzwerk und verfügbare
-  Hardware-Sensoren mit Live-Kurven und einstellbaren Warnschwellen.
-- **Auswerten:** Sensor-Momentaufnahmen, lokale Messaufzeichnung, Statistik,
-  Logvergleich, SMART-Berichte und PresentMon-Framezeiten.
-- **Diagnostizieren:** Windows-Status, Ereignisse, Geräte und Treiber sowie
-  getrennte Assistenten für Systemdateien, Updates und Verbindungen.
-- **Verwalten:** Prozesse, Dienste, Aufgaben, Autostart, Windows-Features,
-  Softwarepakete und ausgewählte Systemeinstellungen.
-- **Warten:** vorbereitete Wartungspläne, Dateivorschau im Cleaner,
-  Wiederherstellungspunkt und Einzelbestätigung vor Änderungen.
-- **Auf dem Desktop nutzen:** Retro-Neon-Oberfläche, Skins, Gadgets, xBar,
-  Tray und optionaler Multi-Monitor-Bildschirmschoner.
-
-Die [Funktionsübersicht](docs/FEATURES.md) beschreibt den vollständigen Umfang.
-
-## Gestaltung
+**Lokales Windows-Systemcockpit für Analyse, Diagnose, Verwaltung und
+beleggebundene KI-Unterstützung.**
 
 ![AETHER-Logo](src/SystemCockpit/Assets/aether-logo.png)
 
-Glasrahmen, LED-Ziffern und abschaltbare Animation prägen die Oberfläche.
-Das anklickbare Mainboard ist schematisch: Leiterbahnen und Lüfter illustrieren
-die Szene, echte Messwerte stehen daneben.
-Windows Modern verwendet neutrale Karten, Segoe UI und dezente Animation
-ohne Neon-Effekte. [Design wechseln](docs/USER-GUIDE.md#windows-modern).
+## Problem und Ziel
 
-### Windows Modern in Beta 38
+Systemzustand, Hardwaremessungen, Diagnose und Verwaltungsaufgaben sind
+häufig auf unterschiedliche Windows-Ansichten verteilt. Dadurch ist schwer
+zu erkennen, welche Daten tatsächlich gemessen, welche nur abgeleitet und
+welche Angaben nicht verfügbar sind.
 
-Aufnahmen aus dem Windows-CI-Smoke-Test mit synthetischen Daten, ohne
-Hardwareinitialisierung. Das Original-Logo bleibt Bestandteil beider Designs.
+AETHER führt diese Informationen in einem lokalen Systemkontext zusammen.
+Das Ziel ist, vom Beobachten über das Verstehen und Diagnostizieren zu einer
+informierten Entscheidung und gegebenenfalls einer kontrollierten Aktion zu
+führen:
 
-![Windows Modern – Dashboard hell](docs/screenshots/beta38/windows-modern-light-dashboard-navigation.png)
+**Beobachten → verstehen → diagnostizieren → entscheiden → kontrolliert handeln.**
 
-![Windows Modern – animiertes System-Schema dunkel](docs/screenshots/beta38/windows-modern-dark-system-schema.png)
+AETHER ordnet verfügbare Messungen und Quellen ein. Es unterscheidet
+gemessene Werte, abgeleitete Aussagen, Modellformulierungen, validierte
+Ergebnisse und nicht verfügbare Daten.
 
-![Windows Modern – Systemkontrolle hell](docs/screenshots/beta38/windows-modern-light-control-center-admin.png)
+## Was AETHER ausmacht
 
-![Windows Modern – xBar dunkel](docs/screenshots/beta38/windows-modern-dark-xbar.png)
+- **Local first:** Die Cockpitansichten lesen lokale Windows- und
+  Hardwarequellen. Der qualifizierte Phi-Pfad führt die Inferenz über den
+  lokalen Ollama-Provider aus.
+- **Evidence before claims:** Modellbehauptungen werden strukturiert und
+  gegen die für die Anfrage verfügbaren Belege geprüft.
+- **Nachvollziehbarkeit:** Aussagen bleiben mit ihren Quellen und
+  Belegreferenzen verbunden. Eine formale Prüfung ist keine allgemeine
+  semantische Wahrheitsgarantie.
+- **Kontrollierte Verwaltung:** Die normale Intelligence-Anfrage führt keine
+  Systemänderung aus. Geführte Verwaltungsabläufe zeigen Ziel und Wirkung
+  und verlangen eine Bestätigung.
+- **Ein Systemcockpit:** Systemübersicht, Hardware, Prozesse, Diagnose,
+  Wartung und Intelligence teilen eine gemeinsame Arbeitsoberfläche.
 
-### Retro-Neon: Schwarz-/Blau-Ansichten
+## AETHER Intelligence
 
-Die Aufnahmen stammen aus dem bestandenen UI-Test der Schwarz-/Blau-Korrektur
-vor dem Beta-37-Versionsbuild. Mainframe und Schoner verwenden synthetische
-Testdaten. Sie sind kein Laufzeitnachweis für die neuen Pakete.
+AETHER Intelligence verbindet lokale Systemmessungen mit dem qualifizierten
+Modellpfad **Phi 4 Mini** (`phi4-mini:3.8b`):
 
-**Mainframe im Tagmodus mit getrennten Gerätedetails**
+**Windows und Hardware → Evidence → kanonische Werte und Claims → lokale
+Phi-Inferenz → strukturierte Antwort → Claim-/Evidence-Validator → Anzeige**
 
-![AETHER-Mainframe im blauen Tagmodus](docs/screenshots/beta37-mainframe-day.png)
+Der Validator prüft unter anderem Claim-Typ, Subjekt, Eigenschaft,
+kanonischen Wert und Evidence-Referenzen. Nicht belegbare oder
+widersprüchliche Claims werden abgelehnt. Fehlende Messwerte bleiben
+nicht verfügbar; sie werden nicht durch plausible Modellformulierungen
+ersetzt. Der normale Frageablauf erteilt dem Modell keine Befugnis,
+Verwaltungsaktionen auszuführen.
 
-**Mainframe im Nachtmodus mit korrigierten GPU-Lüftern**
+Phi wird nach der getrennten Einrichtung, ausdrücklichen Lizenzannahme und
+erfolgreichen Hardware- und Integritätsprüfung automatisch für den
+qualifizierten lokalen Pfad ausgewählt. Danach verwendet AETHER den
+freigegebenen Pfad ohne manuelle Modellwahl für jede Frage (**Zero-Click
+Local AI**). Runtime und Modellgewichte werden nicht während einer Frage
+heruntergeladen und sind nicht Teil des Portable-Pakets.
 
-![AETHER-Mainframe im schwarzen Nachtmodus](docs/screenshots/beta37-mainframe-night.png)
+## Funktionen
 
-**Bildschirmschoner mit Neon-Platine und eigener Sekundenanzeige**
+### Systemübersicht
 
-![AETHER-Bildschirmschoner mit schwarzem Hintergrund und synthetischen Testdaten](docs/screenshots/beta37-saver.png)
+Livewerte für CPU, Arbeitsspeicher, Datenträger und Netzwerk sowie
+Windows-Status und verfügbare Hardwareinformationen. Nicht verfügbare
+Sensoren bleiben als solche gekennzeichnet.
 
-## Installation
+### Prozesse und Leistung
 
-**Setup:** Die x64-Setup-EXE aus dem Release herunterladen, Prüfsumme vergleichen
-und starten. Sie installiert standardmäßig nach
-`C:\Program Files\AETHER System Control`. Desktop-Verknüpfung,
-Anmeldestart und Bildschirmschoner sind wählbar.
+Prozessübersicht, Leistungsdaten und nachvollziehbare Beziehungen zu
+Windows- und Hardwarequellen. Prozessaktionen zeigen ihr Ziel und
+verlangen eine bewusste Auswahl.
 
-**Portable:** Das ZIP vollständig entpacken und `SystemCockpit.exe` starten.
-Alle Dateien und Unterordner zusammen behalten. Die .NET-Laufzeit ist enthalten;
-eine einzelne EXE reicht nicht.
+### Hardware
 
-Updates, Deinstallation und Verteilungsparameter stehen in der
-[Installationsanleitung](docs/INSTALLATION.md).
+Hardwareinventar und Sensoransichten mit Quellen- und
+Verfügbarkeitsangaben. Grenzwerte werden nicht als Messwerte ausgegeben.
 
-## Rechte und Daten
+### Diagnose und Wartung
 
-Das Cockpit startet mit Windows-UAC und kann für Sensorzugriff einen lokalen
-Low-Level-Treiber laden. Daten liegen unter `%LOCALAPPDATA%\AetherCockpit`
-des ausführenden Kontos.
+Windows-Status, Ereignisse und geführte Prüfungen. Änderungen werden von
+reinen Beobachtungen getrennt; Verwaltungsabläufe zeigen Vorschau,
+Bestätigung und Nachprüfung.
 
-Geführte Änderungen verlangen eine Freigabe. **Die freie Administratorkonsole
-führt eingegebene Befehle dagegen mit Enter direkt aus.** Vor Reparaturen
-wichtige Daten sichern. Die Deinstallation entfernt auch die AETHER-Daten des
-ausführenden Kontos.
+### Verwaltung
 
-## Einzelplatz und Clientmodus
+Ausgewählte Windows-Verwaltungsfunktionen für Prozesse, Dienste, Aufgaben,
+Netzwerk und Wartung. Verfügbarkeit und Rücknahme hängen von der jeweiligen
+Funktion und den Windows-Rechten ab. Die freie Administratorkonsole führt
+eingegebene Befehle unmittelbar aus.
 
-Im Standardmodus **Einzelplatz** nimmt AETHER keinen Kontakt zum Verwaltungsserver
-auf. Der optionale **Server-Clientmodus** überträgt Diagnoseberichte erst nach
-Anmeldung, manueller Gerätefreigabe und gesondertem Übertragungs-Opt-in.
-Der Server ist ein separates Quellprojekt, nicht Teil des Cockpit-Setups.
+### AETHER Guardian
 
-Ein optionaler, gesondert freigegebener Windows-Clientdienst überwacht auch
-bei geschlossenem Cockpit. Die Webverwaltung zeigt Berichte und Aufträge;
-Systemänderungen brauchen lokale und zentrale Freigaben. Ein opt-in-gesteuerter
-DNS-Assistent kann bei passendem Befund den DNS-Cache leeren.
-Details: [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md).
+Guardian befindet sich in Entwicklung und ist keine freigegebene
+Produktionsfunktion.
 
-## Grenzen der Beta
+## Gestaltung
 
-- Sensorumfang und Windows-Abfragen hängen von Hardware, Treibern, Edition
-  und Sicherheitskonfiguration ab. Nicht verfügbare Werte bleiben gekennzeichnet;
-  Temperaturgrenzen sind keine Messwerte.
-- Das Diagnoseinventar prüft nicht die Funktionsfähigkeit jeder Anwendung.
-  Hintergrunddiagnose ist standardmäßig aus. Automatische Reparatur ist auf
-  den freigegebenen DNS-Cache-Assistenten begrenzt; Updates und Treiberinstallation
-  werden nicht unbeaufsichtigt ausgeführt.
-- Mitschnitte brauchen separat installiertes Npcap. Die begrenzte Paketansicht
-  entschlüsselt kein TLS und liefert keinen umfassenden Angriffsschutz.
-- Die x64-Beta ist nicht signiert. SmartScreen kann warnen. Windows 11 mit
-  grafischem Desktop ist die Zielumgebung; eine allgemeine Freigabe jeder
-  Hardware- und Windows-Build-Kombination liegt nicht vor.
+AETHER verwendet ein eigenständiges Retro-Neon-Design mit dunkler
+Cockpitoberfläche, Cyan-, Magenta- und Grünakzenten sowie technischer
+Instrumentenästhetik. Die Oberfläche ordnet dichte Informationen nach
+Aufgaben; Animationen lassen sich abschalten. Die Darstellung soll
+Funktionen unterstützen, nicht Messwerte oder Grenzen verdecken.
 
-## Drittanbieter
+## Screenshots
 
-LibreHardwareMonitor, smartmontools und PresentMon behalten ihre eigenen
-[Lizenzen und Herkunftshinweise](THIRD-PARTY-NOTICES.md).
-Npcap wird separat installiert; das Setup kann seine offizielle Downloadseite öffnen.
-Optionale Microsoft-Werkzeuge werden nur bei vorhandener Installation geöffnet;
-Downloads und Lizenzannahme bleiben beim Administrator.
+Eine Galerie mit geprüften aktuellen Produktbildern kann hier ergänzt
+werden. Derzeit werden keine historischen oder synthetischen Aufnahmen als
+Beta-53-Ansichten dargestellt.
+
+## Lokale KI
+
+Die lokale KI-Einrichtung ist ein separater, bestätigter Setup-Ablauf.
+Er prüft die Systemfähigkeit, zeigt die Modelllizenz an und verlangt deren
+ausdrückliche Annahme. Der normale Frageablauf lädt weder Runtime noch
+Modellgewichte herunter. Die einzelnen Schritte und Grenzen stehen in der
+[Anleitung zur lokalen Modellinstallation](docs/INTELLIGENCE-MODEL-INSTALLATION.md).
+
+## Sicherheit und Datenschutz
+
+Der qualifizierte Phi-Pfad nutzt den lokalen Ollama-Provider; er benötigt
+keine Cloud-Inferenz. Das optionale Client-/Serverangebot ist ein davon
+getrennter Bedienablauf mit eigener Anmeldung, Gerätefreigabe und
+Übertragungszustimmung. Berichte, Diagnosen und Screenshots können
+Systemdetails enthalten; Inhalte vor einer Weitergabe prüfen.
+
+Weitere Einzelheiten stehen unter
+[Sicherheit und Datenschutz](docs/SECURITY-AND-PRIVACY.md).
+
+## Systemvoraussetzungen
+
+- Windows x64 mit grafischem Desktop; Windows 11 ist die Zielumgebung.
+- Das Portable-Paket enthält die benötigte .NET-Laufzeit.
+- Hardware- und Sensorabdeckung hängen von Gerät, Treiber und
+  Windows-Konfiguration ab.
+- Die lokale Phi-Funktion erfordert den getrennten Setup-Ablauf und ein
+  geeignetes, ausdrücklich freigegebenes System.
+
+## Installation und Download
+
+Beta 53 ist ein lokaler Releasekandidat und noch nicht veröffentlicht.
+Vorgesehen ist ausschließlich das Portable-Paket
+`AETHER-0.7.0-beta.53-Portable-win-x64.zip`. Ein öffentlicher Downloadlink
+erscheint erst nach Freigabe auf der GitHub-Release-Seite; derzeit gibt es
+keinen Beta-53-Download. Ein Installer ist nicht freigegeben.
+
+Das Portable-ZIP muss vollständig entpackt werden; DLLs, Laufzeit und
+Begleitdateien bleiben zusammen. Vor einem Start Herkunft und SHA-256-
+Prüfsumme prüfen. Das Paket ist unsigniert; Schutzfunktionen wegen einer
+Warnung nicht deaktivieren.
 
 ## Dokumentation
 
 | Thema | Anleitung |
 |---|---|
-| Start, Update und Entfernung | [Installation](docs/INSTALLATION.md) |
-| Oberfläche und Arbeitsabläufe | [Benutzerhandbuch](docs/USER-GUIDE.md) |
 | Produktumfang | [Funktionen](docs/FEATURES.md) |
-| Sensoren, SMART und Messdaten | [Hardware und Sensoren](docs/HARDWARE-SENSORS.md) |
-| Windows-Verwaltung und Wartung | [System Control](docs/SYSTEM-CONTROL.md) |
-| Verbindungen und Mitschnitte | [Netzwerk](docs/NETWORK.md) |
-| Rechte und Datenverarbeitung | [Sicherheit und Datenschutz](docs/SECURITY-AND-PRIVACY.md) |
-| Server und Client | [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md) |
-| Softwareverteilung | [Intune-Deployment](docs/INTUNE-DEPLOYMENT.md) |
-| Quellcode und Paketierung | [Entwicklung](docs/DEVELOPMENT.md) |
-| Prüfläufe | [Tests](docs/TESTING.md) |
-| Rückmeldungen zur Beta | [Betatester-Anleitung](BETA-TESTANLEITUNG.md) |
+| Bedienung | [Benutzerhandbuch](docs/USER-GUIDE.md) |
+| Installation und Updates | [Portable-Installation](docs/INSTALLATION.md) |
+| Hardware und Sensoren | [Messwerte und Quellen](docs/HARDWARE-SENSORS.md) |
+| AETHER Intelligence | [Architektur](docs/INTELLIGENCE-ARCHITECTURE.md) |
+| Modellpfad | [Lokale Modellinstallation](docs/INTELLIGENCE-MODEL-INSTALLATION.md) |
+| Sicherheit und Datenschutz | [Sicherheitsgrenzen](docs/SECURITY-AND-PRIVACY.md) |
+| Drittanbieter | [Lizenzen und Herkunft](THIRD-PARTY-NOTICES.md) |
+| Versionsgeschichte | [Changelog](CHANGELOG.md) |
 
-## Lizenz und Autor
+## Beta-Status
 
-Entwickelt von **Olaf Weins**. Copyright © 2026 Olaf Weins.
-AETHER-eigener Quellcode und Dokumentation stehen unter der [MIT-Lizenz](LICENSE).
-Drittanbieter behalten ihre eigenen Rechte und Lizenzbedingungen.
+AETHER 0.7.0 Beta 53 ist eine Vorabversion. Der manuelle Startup- und
+Branding-Smoke-Test des lokalen Kandidaten ist bestanden; der qualifizierte
+Portable-Realtest mit lokalem Phi, erfolgreicher Validatorprüfung und ohne
+Fallback bleibt belegt. Screenshots sind in diesem Sprint bewusst
+zurückgestellt. Die lokale Paketprüfung und öffentliche Freigabe erfolgen
+getrennt; ein öffentlicher Download ist noch nicht verfügbar. Der Installer
+bleibt zurückgehalten.
+
+## Lizenz
+
+AETHER-eigener Quellcode und Dokumentation stehen unter der
+[MIT-Lizenz](LICENSE). Drittanbieter behalten ihre eigenen Rechte und
+Lizenzbedingungen.

@@ -182,7 +182,7 @@ internal static class DesktopLayer
     public static IntPtr Find()
     {
         var progman = FindWindow("Progman", null);
-        if (progman == IntPtr.Zero) throw new InvalidOperationException("Windows-Desktop (Explorer) nicht verfuegbar.");
+        if (progman == IntPtr.Zero) throw new InvalidOperationException("Windows-Desktop (Explorer) nicht verfügbar.");
         if (SendMessageTimeout(progman, 0x052C, IntPtr.Zero, IntPtr.Zero, 2, 1000, out _) == IntPtr.Zero)
             throw new Win32Exception(Marshal.GetLastWin32Error());
         var childHost = FindWindowEx(progman, IntPtr.Zero, "WorkerW", null);

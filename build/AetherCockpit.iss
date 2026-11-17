@@ -1,5 +1,7 @@
-#define AppVersion "0.7.0-beta.38"
-#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.38-win-x64"
+#define AppVersion "0.7.0-beta.53"
+#ifndef PublishDir
+#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.53-win-x64"
+#endif
 
 #ifdef SetupUninstallValidation
 #ifndef SetupValidation
@@ -55,8 +57,8 @@ PrivilegesRequired=lowest
 #else
 PrivilegesRequired=admin
 #endif
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\dist
 #ifdef SetupValidation
 OutputBaseFilename=AetherSetupValidation
@@ -65,17 +67,20 @@ OutputBaseFilename=AetherCockpit-Setup-{#AppVersion}-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
-VersionInfoVersion=0.7.0.38
-VersionInfoProductVersion=0.7.0.38
+VersionInfoVersion=0.7.0.53
+VersionInfoProductVersion=0.7.0.53
 WizardStyle=modern
 Compression=lzma2/ultra64
 SolidCompression=yes
 
 [Tasks]
-Name: "desktopicon"; Description: "Desktop-Verknuepfung erstellen"; GroupDescription: "Zusaetzliche Verknuepfungen:"; Flags: unchecked
-Name: "autostart"; Description: "Gadgets und Tray bei Anmeldung starten (erhoehte Aufgabe fuer dieses Administratorkonto)"; GroupDescription: "Autostart:"
+Name: "desktopicon"; Description: "Desktop-Verknüpfung erstellen"; GroupDescription: "Zusätzliche Verknüpfungen:"; Flags: unchecked
+Name: "autostart"; Description: "Gadgets und Tray bei Anmeldung starten (Aufgabe mit erhöhten Rechten für dieses Administratorkonto)"; GroupDescription: "Autostart:"
 Name: "screensaver"; Description: "AETHER Mainboard-Bildschirmschoner (.scr) mitinstallieren (nicht automatisch aktivieren)"; GroupDescription: "Optional:"; Flags: unchecked
 Name: "managedclient"; Description: "Optionalen Zentralverwaltungsdienst bereitstellen (Einrichtung und Freigaben danach separat)"; GroupDescription: "Optional:"; Flags: unchecked
+#ifndef SetupValidation
+Name: "localai"; Description: "Lokale KI nach Setup prüfen und einrichten, sofern verfügbar"; GroupDescription: "Optional:"
+#endif
 
 [Files]
 #ifndef SetupValidation
@@ -101,9 +106,10 @@ Source: "Uninstall-Aether.ps1"; Flags: dontcopy
 
 [Icons]
 #ifndef SetupValidation
-Name: "{autoprograms}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"
+Name: "{autoprograms}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"; IconFilename: "{app}\SystemCockpit.exe"; IconIndex: 0; AppUserModelID: "AETHER.SystemControl"
+Name: "{autoprograms}\AETHER Lokale KI einrichten"; Filename: "{app}\AetherLocalAiSetup\AetherLocalAiSetup.exe"
 Name: "{autoprograms}\AETHER Zentralverwaltung - Clientdienst einrichten"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoLogo -NoProfile -ExecutionPolicy Bypass -File ""{app}\Configure-ManagedClient.ps1"""; Tasks: managedclient
-Name: "{autodesktop}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"; Tasks: desktopicon
+Name: "{autodesktop}\AETHER System Control"; Filename: "{app}\SystemCockpit.exe"; IconFilename: "{app}\SystemCockpit.exe"; IconIndex: 0; Tasks: desktopicon; AppUserModelID: "AETHER.SystemControl"
 Name: "{autoprograms}\AETHER Bildschirmschoner - Einstellungen"; Filename: "{app}\AetherMainboard.scr"; Parameters: "/c"; Tasks: screensaver
 Name: "{autoprograms}\AETHER Bildschirmschoner - Datei anzeigen"; Filename: "{sys}\explorer.exe"; Parameters: "/select,""{app}\AetherMainboard.scr"""; Tasks: screensaver
 #endif
@@ -115,8 +121,9 @@ Root: HKLM64; Subkey: "Software\AetherCockpit"; ValueType: string; ValueName: "I
 
 [Run]
 #ifndef SetupValidation
-Filename: "https://npcap.com/#download"; Description: "Offizielle Npcap-Downloadseite oeffnen / separat installieren"; StatusMsg: "Offizielle Npcap-Downloadseite wird geoeffnet ..."; Flags: postinstall shellexec skipifsilent unchecked; Check: NpcapDownloadAvailable
-Filename: "{app}\SystemCockpit.exe"; Description: "AETHER jetzt starten / EULA beim ersten Start bestaetigen"; Flags: postinstall nowait skipifsilent runascurrentuser
+Filename: "https://npcap.com/#download"; Description: "Offizielle Npcap-Downloadseite öffnen / separat installieren"; StatusMsg: "Offizielle Npcap-Downloadseite wird geöffnet ..."; Flags: postinstall shellexec skipifsilent unchecked; Check: NpcapDownloadAvailable
+Filename: "{app}\AetherLocalAiSetup\AetherLocalAiSetup.exe"; Description: "Lokale KI vor dem ersten AETHER-Start prüfen und einrichten"; Flags: postinstall nowait skipifsilent runascurrentuser; Tasks: localai
+Filename: "{app}\SystemCockpit.exe"; Description: "AETHER jetzt starten / EULA beim ersten Start bestätigen"; Flags: postinstall nowait skipifsilent runascurrentuser
 #endif
 
 [Code]
@@ -126,6 +133,7 @@ var
   AdapterNames: TStringList;
   InstalledPath, InstalledVersion, RecoveryApprovedPath: String;
   ManagedClientWasRunning: Boolean;
+  RemoveLocalAiConfiguration, RemoveLocalAiWeights: Boolean;
 
 #ifdef SetupValidation
 procedure VerifySetup; forward;
@@ -203,10 +211,10 @@ begin
   SetForegroundWindow(WizardForm.Handle);
   DetectInstallation;
   UpgradePage := CreateInputOptionPage(wpWelcome, 'Installation / Update',
-    'Vorhandene AETHER-Installation pruefen',
+    'Vorhandene AETHER-Installation prüfen',
     'Bei einem Update werden Programmdateien im bisherigen Ordner ersetzt. Benutzerdaten bleiben erhalten. ' +
-    'AETHER vorher im Tray vollstaendig beenden; nicht zuvor deinstallieren.', False, False);
-  UpgradePage.Add('Desktop-/Diagramm-/Autostart-Konfiguration neu festlegen (sonst unveraendert behalten)');
+    'AETHER vorher im Infobereich vollständig beenden; nicht zuvor deinstallieren.', False, False);
+  UpgradePage.Add('Desktop-, Diagramm- und Autostarteinstellungen neu festlegen (andernfalls unverändert lassen)');
 #ifdef SetupValidation
   UpgradePage.Values[0] := ExpandConstant('{param:TestReconfigure|0}') = '1';
 #endif
@@ -216,29 +224,29 @@ begin
     UpgradePage.Caption := 'Vorhandene Installation: ' + InstalledPath;
     WizardForm.WelcomeLabel2.Caption := 'AETHER ' + InstalledVersion + ' ist installiert in:' + #13#10 +
       InstalledPath + #13#10#13#10 + 'Dieses Setup aktualisiert auf {#AppVersion}, ohne vorherige Deinstallation. ' +
-      'Ihre Einstellungen, Logs und Aufzeichnungen bleiben erhalten.';
+      'Ihre Einstellungen, Protokolle und Aufzeichnungen bleiben erhalten.';
   end;
   DiagramPage := CreateInputOptionPage(wpSelectTasks, 'Desktop-Parameter',
-    'Welche Diagramme sollen angezeigt werden?', 'Spaeter in AETHER unter Einstellungen aenderbar.', False, False);
+    'Welche Diagramme sollen angezeigt werden?',     'Später in AETHER unter Einstellungen änderbar.', False, False);
   DiagramPage.Add('CPU'); DiagramPage.Add('RAM'); DiagramPage.Add('GPU');
   DiagramPage.Add('CPU-/GPU-/SSD-Temperaturen'); DiagramPage.Add('Netzwerk Download/Upload');
   DiagramPage.Add('Laufwerksbelegung als Torten');
   for Count := 0 to 5 do DiagramPage.Values[Count] := True;
   DesktopPage := CreateInputOptionPage(DiagramPage.ID, 'Gadgets und Autostart',
-    'Desktop-Gadgets bleiben unabhaengig vom Hauptfenster aktiv.',
-    'Die erhoehte Aufgabe startet bei Anmeldung Gadgets und Tray, nicht das Hauptfenster. ' +
-    'Sie gilt fuer dieses Administratorkonto: ' + GetUserNameString + '. ' +
-    'Zum Beenden das Symbol bei der Uhr verwenden. Beim ersten manuellen Start EULA bestaetigen.', False, False);
+    'Desktop-Gadgets bleiben unabhängig vom Hauptfenster aktiv.',
+    'Die Aufgabe mit erhöhten Rechten startet bei der Anmeldung die Desktop-Gadgets und das Symbol im Infobereich, nicht das Hauptfenster. ' +
+    'Sie gilt für dieses Administratorkonto: ' + GetUserNameString + '. ' +
+    'Zum Beenden das Symbol im Infobereich verwenden. Beim ersten manuellen Start die Endbenutzer-Lizenzvereinbarung (EULA) bestätigen.', False, False);
   DesktopPage.Add('Desktop-Gadgets aktivieren'); DesktopPage.Values[0] := True;
-  DesktopPage.Add('Ich genehmige ausdruecklich die erhoehte Autostart-Aufgabe fuer dieses Konto.');
+  DesktopPage.Add('Ich stimme der Einrichtung der Autostart-Aufgabe mit erhöhten Rechten für dieses Konto ausdrücklich zu.');
   CapturePage := CreateInputOptionPage(DesktopPage.ID, 'Optionaler Npcap-Mitschnitt',
-    'Npcap wird NICHT mitgeliefert. Bei ausdruecklicher Auswahl kann Setup nach der Installation die offizielle Downloadseite oeffnen; Download und Installation erfolgen durch Sie.',
+    'Npcap wird NICHT mitgeliefert. Bei ausdrücklicher Auswahl kann Setup nach der Installation die offizielle Downloadseite öffnen; Download und Installation erfolgen durch Sie.',
     'Nur eigene/berechtigte Schnittstelle. Maximal 128 Bytes/Paket, 100 MB oder 15 Minuten, ' +
-    'ein Mitschnitt je Anmeldung. Lokale Dateien fuer 7 Tage, Gesamtbestand ca. 500 MB begrenzt. ' +
+    'ein Mitschnitt je Anmeldung. Lokale Dateien für 7 Tage, Gesamtbestand ca. 500 MB begrenzt. ' +
     'Auch Paketkoepfe koennen vertrauliche Inhalte enthalten. Keine Cloud, Entschluesselung oder Blockierung.', False, False);
-  CapturePage.Add('Netzwerkmitschnitt gewuenscht / Npcap-Downloadseite nach Setup anbieten');
+  CapturePage.Add('Netzwerkmitschnitt gewünscht / Npcap-Downloadseite nach Setup anbieten');
   CapturePage.Add('Automatischen Mitschnitt bei Anmeldung aktivieren');
-  CapturePage.Add('Ich genehmige diesen Mitschnitt auch fuer zukuenftige Anmeldungen bis zur Deaktivierung.');
+  CapturePage.Add('Ich genehmige diesen Mitschnitt auch für zukünftige Anmeldungen bis zur Deaktivierung.');
   CaptureAdapter := TNewComboBox.Create(WizardForm);
   CapturePage.CheckListBox.Height := ScaleY(70);
   CaptureAdapter.Parent := CapturePage.Surface;
@@ -299,7 +307,7 @@ begin
       ExpandConstant('{tmp}\Uninstall-Aether.ps1') + '" -InspectRecoveryDirectory -InstallDirectory "' + Directory + '"';
     if not ExecAndCaptureOutput(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Parameters,
       '', SW_HIDE, ewWaitUntilTerminated, Code, Output) then begin
-      Result := 'Der vorhandene Ordner konnte nicht sicher geprueft werden.';
+      Result := 'Der vorhandene Ordner konnte nicht sicher geprüft werden.';
       Exit;
     end;
     for Index := 0 to GetArrayLength(Output.StdOut) - 1 do Log(Output.StdOut[Index]);
@@ -307,7 +315,7 @@ begin
     if Output.Error or (Code <> 0) then begin
       Result := 'Eine Neuinstallation braucht einen leeren, eigenen AETHER-Ordner. ' +
         'Der vorhandene Ordner wurde nicht als sicherer AETHER-Restordner erkannt (Details im Setup-Log). ' +
-        'Fremde Dateien zuerst pruefen oder einen anderen leeren Ordner waehlen.';
+        'Fremde Dateien zuerst prüfen oder einen anderen leeren Ordner wählen.';
       Exit;
     end;
     if CompareText(RecoveryApprovedPath, Directory) <> 0 then begin
@@ -319,21 +327,21 @@ begin
         // Silent gilt die Wiederherstellung nur mit ausdruecklichem /RecoveryConsent=1.
         Approved := ExpandConstant('{param:RecoveryConsent|0}') = '1';
         if Approved then
-          Log('AETHER SILENT RECOVERY CONSENT: per Kommandozeile erteilt fuer ' + Directory);
+          Log('AETHER SILENT RECOVERY CONSENT: per Kommandozeile erteilt für ' + Directory);
       end
       else
         Approved := MsgBox('Unvollstaendige AETHER-Installation wiederherstellen?' + #13#10#13#10 +
           Directory + #13#10#13#10 +
-          'AETHER-Programmdateien wurden erkannt, aber kein vollstaendiger Installationseintrag. ' +
-          'AETHER vorher im Tray vollstaendig beenden. Dieses Setup ersetzt Programmdateien und richtet ' +
-          'den Uninstaller neu ein. Kontoeinstellungen und andere vorhandene Dateien werden jetzt nicht geloescht. ' +
-          'Ihre hier gewaehlte Setup-Konfiguration wird angewendet.' + #13#10#13#10 +
-          'Wichtig: Bei einer spaeteren bestaetigten Deinstallation werden der GESAMTE Zielordner und ' +
-          'die AETHER-Kontodaten entfernt. Nur fortfahren, wenn dieser Ordner ausschliesslich fuer AETHER bestimmt ist.',
+          'AETHER-Programmdateien wurden erkannt, aber kein vollständiger Installationseintrag. ' +
+          'AETHER vorher im Infobereich vollständig beenden. Dieses Setup ersetzt Programmdateien und richtet ' +
+          'das Deinstallationsprogramm neu ein. Kontoeinstellungen und andere vorhandene Dateien werden jetzt nicht gelöscht. ' +
+          'Ihre hier gewählte Setup-Konfiguration wird angewendet.' + #13#10#13#10 +
+          'Wichtig: Bei einer späteren bestätigten Deinstallation werden der GESAMTE Zielordner und ' +
+          'die AETHER-Kontodaten entfernt. Nur fortfahren, wenn dieser Ordner ausschließlich für AETHER bestimmt ist.',
           mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES;
 #endif
       if not Approved then begin
-        Result := 'Wiederherstellung nicht bestaetigt. Es wurden keine Programmdateien oder Nutzerdaten geaendert.';
+        Result := 'Wiederherstellung nicht bestätigt. Es wurden keine Programmdateien oder Nutzerdaten geändert.';
         Exit;
       end;
       RecoveryApprovedPath := Directory;
@@ -342,17 +350,17 @@ begin
   end;
   if (InstalledPath <> '') and
     (CompareText(RemoveBackslashUnlessRoot(ExpandConstant('{app}')), RemoveBackslashUnlessRoot(InstalledPath)) <> 0) then begin
-    Result := 'Ein Update muss im erkannten Installationsordner ausgefuehrt werden: ' + InstalledPath;
+    Result := 'Ein Update muss im erkannten Installationsordner ausgeführt werden: ' + InstalledPath;
     Exit;
   end;
   if PreserveInstalledConfiguration then Exit;
   if WizardIsTaskSelected('autostart') and not AutostartConsentGiven then begin
     if WizardSilent then
-      // Silent-Installation bricht nicht ab: Die erhoehte Aufgabe wird ohne
+      // Silent-Installation bricht nicht ab: Die Aufgabe mit erhöhten Rechten wird ohne
       // ausdrueckliche Zustimmung schlicht nicht eingerichtet.
       Log('AETHER SILENT AUTOSTART SKIPPED: keine ausdrueckliche Zustimmung (/AutostartConsent=1 fehlt); Aufgabe wird nicht eingerichtet.')
     else
-      Result := 'Keine ausdrueckliche Zustimmung zur erhoehten Autostart-Aufgabe.';
+      Result := 'Keine ausdrückliche Zustimmung zur Autostart-Aufgabe mit erhöhten Rechten.';
   end;
   if CapturePage.Values[1] and not CapturePage.Values[2] then
     Result := 'Keine ausdrueckliche Zustimmung zum automatischen Mitschnitt.';
@@ -370,7 +378,7 @@ begin
   Result := True;
   if PreserveInstalledConfiguration then Exit;
   if not WizardSilent and (CurPageID = DesktopPage.ID) and WizardIsTaskSelected('autostart') and not DesktopPage.Values[1] then begin
-    MsgBox('Autostart benoetigt Ihre ausdrueckliche Zustimmung. Alternativ die Autostart-Aufgabe abwaehlen.', mbError, MB_OK);
+    MsgBox('Die Autostart-Aufgabe benötigt Ihre ausdrückliche Zustimmung. Alternativ können Sie die Autostart-Aufgabe abwählen.', mbError, MB_OK);
     Result := False;
   end;
   if (CurPageID = CapturePage.ID) and CapturePage.Values[1] then begin
@@ -461,7 +469,7 @@ begin
         Exit;
       end;
     end;
-    Log('Keine bestehende AETHER-Autostart-Aufgabe fuer dieses Konto.');
+    Log('Keine bestehende AETHER-Autostart-Aufgabe für dieses Konto.');
     Exit;
   end;
   User := GetEnv('USERDOMAIN') + '\' + GetUserNameString;
@@ -603,7 +611,7 @@ begin
       ManageClient('Start');
     except
       Log('AETHER client service restart failed after interrupted installation: ' + GetExceptionMessage);
-      MsgBox('Der zuvor laufende AETHER-Clientdienst muss nach dem abgebrochenen Setup in der Windows-Diensteverwaltung geprueft werden.',
+      MsgBox('Der zuvor laufende AETHER-Clientdienst muss nach dem abgebrochenen Setup in der Windows-Diensteverwaltung geprüft werden.',
         mbError, MB_OK);
     end;
   end;
@@ -633,6 +641,8 @@ begin
       '" -ValidationRoot "' + ExpandConstant('{app}\..') + '"';
 #else
     Parameters := Parameters + ' -DataDirectory "' + ExpandConstant('{localappdata}\AetherCockpit') + '"';
+    if RemoveLocalAiConfiguration then Parameters := Parameters + ' -RemoveLocalAiConfiguration';
+    if RemoveLocalAiWeights then Parameters := Parameters + ' -RemoveLocalAiWeights';
 #endif
     if not ExecAndCaptureOutput(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Parameters,
       '', SW_HIDE, ewWaitUntilTerminated, ResultCode, Output) then
@@ -644,25 +654,35 @@ begin
       ErrorText := ErrorText + Output.StdErr[Index] + #13#10;
     end;
     if Output.Error or (ResultCode <> 0) then
-      RaiseException('AETHER-Prozesse oder Nutzerdaten konnten nicht vollstaendig entfernt werden (Exit ' +
+      RaiseException('AETHER-Prozesse oder Nutzerdaten konnten nicht vollständig entfernt werden (Exit ' +
         IntToStr(ResultCode) + '). ' + ErrorText);
   end;
 end;
 
 function InitializeUninstall: Boolean;
 begin
-  // Silent (/SILENT oder /VERYSILENT) gilt die Kommandozeile des Administrators
-  // als ausdrueckliche Bestaetigung; interaktiv bleibt die Abfrage bestehen.
+  RemoveLocalAiConfiguration := False;
+  RemoveLocalAiWeights := False;
   Result := UninstallSilent;
-  if Result then
-    Log('AETHER SILENT UNINSTALL: Bestaetigung per Silent-Kommandozeile erteilt; Installationsordner und AETHER-Kontodaten werden entfernt.')
-  else
-    Result := MsgBox('AETHER vollstaendig entfernen?' + #13#10#13#10 +
-      'Laufende AETHER-App, Gadgets, Tray und Bildschirmschoner dieser Installation werden beendet. ' +
-      'Installationsordner sowie Einstellungen, Logs, Aufzeichnungen und Sicherungen dieses Windows-Kontos werden geloescht. ' +
+  if Result then begin
+    Log('AETHER SILENT UNINSTALL: Installationsordner und AETHER-Kontodaten werden entfernt; lokale KI-Konfiguration und Modellgewichte bleiben erhalten.');
+  end else begin
+    Result := MsgBox('AETHER vollständig entfernen?' + #13#10#13#10 +
+      'Laufende AETHER-App, Gadgets, Infobereich-Symbol und Bildschirmschoner dieser Installation werden beendet. ' +
+      'Installationsordner sowie Einstellungen, Protokolle, Aufzeichnungen und Sicherungen dieses Windows-Kontos werden gelöscht. ' +
       'Ein zugehoeriger Zentralverwaltungsdienst wird entfernt; seine geschuetzten ProgramData-Kontodaten bleiben erhalten. ' +
-      'Externe Dateien und andere portable Versionen bleiben erhalten.',
+      'Lokale KI-Konfiguration und Modellgewichte werden in den folgenden getrennten Schritten behandelt. Externe Dateien und andere portable Versionen bleiben erhalten.',
       mbConfirmation, MB_YESNO) = IDYES;
+    if Result then begin
+      RemoveLocalAiConfiguration := MsgBox('Auch die lokale KI-Konfiguration entfernen?' + #13#10#13#10 +
+        'Dabei werden AETHER-Modellkatalog und verwaltete Umgebungsvariablen entfernt. Modellgewichte bleiben zunächst erhalten.',
+        mbConfirmation, MB_YESNO) = IDYES;
+      if RemoveLocalAiConfiguration then
+        RemoveLocalAiWeights := MsgBox('Die AETHER-Modellgewichte ebenfalls unwiderruflich löschen?' + #13#10#13#10 +
+          'Diese Dateien können mehrere Gigabyte groß sein. Bei Nein bleiben sie auf dem Datenträger.',
+          mbConfirmation, MB_YESNO) = IDYES;
+    end;
+  end;
 end;
 
 #ifdef SetupValidation

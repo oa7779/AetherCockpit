@@ -117,8 +117,13 @@ internal static class ManagerEndpoints
             result.Value.Device.Id, result.Value.Device.State, result.Value.Token));
     }
 
-    private static async Task<EnrollmentCodeResponse> CreateEnrollmentCodeAsync(IManagerStore store,
-        CancellationToken cancellationToken) => await store.CreateEnrollmentCodeAsync(cancellationToken);
+    private static async Task<EnrollmentCodeResponse> CreateEnrollmentCodeAsync(IManagerStore store, IAccountService accounts,
+        HttpContext context, CancellationToken cancellationToken)
+    {
+        var code = await store.CreateEnrollmentCodeAsync(cancellationToken);
+        await accounts.RecordAdministrativeEventAsync(AdminTokenFilter.Actor(context), "Single-use device enrollment code created", cancellationToken);
+        return code;
+    }
 
     private static async Task<IResult> GetDeviceStatusAsync(HttpRequest request, IManagerStore store,
         CancellationToken cancellationToken)

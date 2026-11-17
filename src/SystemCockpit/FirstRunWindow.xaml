@@ -25,7 +25,7 @@
             <TextBlock x:Name="StepLabel" Text="{loc:DesktopLabel FirstRun.StepIntro}" Foreground="#24FFE3" FontFamily="Consolas" Margin="0,4,0,14"/>
         </StackPanel>
 
-        <!-- Schritt 1: Einfuehrung / Funktionsuebersicht -->
+        <!-- Schritt 1: Einführung / Funktionsübersicht -->
         <ScrollViewer x:Name="StepIntro" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="{loc:DesktopLabel FirstRun.Introduction}"

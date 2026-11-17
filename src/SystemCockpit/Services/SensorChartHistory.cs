@@ -12,7 +12,7 @@ public sealed class SensorChartSeries : Observable
 {
     private readonly Action _changed;
     private bool _selected = true, _matches = true;
-    private string _current = "Nicht verfuegbar";
+    private string _current = "Nicht verfügbar";
     internal int AbsentSamples { get; set; }
     public SensorReading Sensor { get; }
     public string Name => Sensor.Name;
@@ -36,7 +36,7 @@ public sealed class SensorChartSeries : Observable
         var value = sensor?.Value is { } number && double.IsFinite(number) ? number : (double?)null;
         _points.Add(new(time, value));
         if (_points.Count > SensorChartHistory.Capacity) _points.RemoveAt(0);
-        Current = value is { } v ? $"{v:0.##} {Sensor.Unit}" : "Nicht verfuegbar";
+        Current = value is { } v ? $"{v:0.##} {Sensor.Unit}" : "Nicht verfügbar";
         AbsentSamples = sensor is null ? AbsentSamples + 1 : 0;
     }
 
@@ -77,7 +77,7 @@ public sealed class SensorChartHistory : Observable
     private string _warning = "";
     public string Warning { get => _warning; private set => Set(ref _warning, value); }
     public string EmptyText => View.IsEmpty
-        ? "Keine passenden Messkanaele. Sensorzugriff im Cockpit aktivieren oder Filter aendern. Grenzwerte stehen nur in der Detailmatrix."
+        ? "Keine passenden Messkanäle. Sensorzugriff im Cockpit aktivieren oder Filter ändern. Grenzwerte stehen nur in der Detailmatrix."
         : "";
 
     public SensorChartHistory()

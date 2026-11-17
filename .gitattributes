@@ -1,0 +1,6 @@
+* text=auto eol=crlf
+
+# Preserve historical records and the third-party license byte-for-byte.
+docs/MILESTONE-0-CLOSURE-REPORT.md -text
+docs/RC-SOURCE-READING-MANIFEST.md -text
+tools/PresentMon-LICENSE.txt -text

@@ -27,17 +27,17 @@ public static partial class PackageCenter
     {
         if (!Path.IsPathFullyQualified(executable) || !File.Exists(executable) ||
             !new[] { "UniGetUI.exe", "WingetUI.exe" }.Contains(Path.GetFileName(executable), StringComparer.OrdinalIgnoreCase))
-            throw new ArgumentException("Vorhandene, vertrauenswuerdige UniGetUI.exe oder WingetUI.exe auswaehlen.");
+            throw new ArgumentException("Vorhandene, vertrauenswürdige UniGetUI.exe oder WingetUI.exe auswählen.");
         return new ProcessStartInfo { FileName = executable, UseShellExecute = false };
     }
 
     public static string TargetCommandScript(string verb, WingetRow row)
     {
         if (verb is not ("install" or "upgrade" or "uninstall" or "show") || !row.Actionable)
-            throw new ArgumentException("Exakte, vollstaendige Paket-ID und bekannte Aktion erforderlich.");
+            throw new ArgumentException("Exakte, vollständige Paket-ID und bekannte Aktion erforderlich.");
         var source = row.Source.Length == 0 ? "" : ValidSource(row.Source)
             ? " --source " + AdminManagement.Quote(row.Source)
-            : throw new ArgumentException("Paketquelle ist unvollstaendig oder nicht eindeutig lesbar.");
+            : throw new ArgumentException("Paketquelle ist unvollständig oder nicht eindeutig lesbar.");
         var agreements = verb is "install" or "upgrade" ? " --silent --accept-package-agreements --accept-source-agreements"
             : verb == "uninstall" ? " --accept-source-agreements" : "";
         return "$winget=Get-Command winget.exe -CommandType Application -ErrorAction Stop; " +
@@ -50,14 +50,14 @@ public static partial class PackageCenter
         ValidateBundle(bundle);
         var json = JsonSerializer.Serialize(bundle, BundleOptions);
         if (Encoding.UTF8.GetByteCount(json) > MaxBundleBytes)
-            throw new InvalidDataException("Paketliste groesser als 128 KiB.");
+            throw new InvalidDataException("Paketliste größer als 128 KiB.");
         return json;
     }
 
     public static PackageBundle ParseBundle(string json)
     {
         if (Encoding.UTF8.GetByteCount(json) > MaxBundleBytes)
-            throw new InvalidDataException("Paketliste groesser als 128 KiB.");
+            throw new InvalidDataException("Paketliste größer als 128 KiB.");
         using (var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = 8 }))
             RejectDuplicateProperties(document.RootElement);
         var bundle = JsonSerializer.Deserialize<PackageBundle>(json, BundleOptions)
@@ -71,7 +71,7 @@ public static partial class PackageCenter
         using var reader = new StreamReader(path, new UTF8Encoding(false, true), detectEncodingFromByteOrderMarks: false);
         var buffer = new char[MaxBundleBytes + 1];
         var length = reader.ReadBlock(buffer, 0, buffer.Length);
-        if (length > MaxBundleBytes) throw new InvalidDataException("Paketliste groesser als 128 KiB.");
+        if (length > MaxBundleBytes) throw new InvalidDataException("Paketliste größer als 128 KiB.");
         return ParseBundle(new string(buffer, 0, length));
     }
 
@@ -100,6 +100,6 @@ public static partial class PackageCenter
                 item.Source is null || !ValidSource(item.Source) ||
                 item.Name is null || item.Name.Length > 200 || item.Name.Any(char.IsControl) ||
                 item.Version is null || item.Version.Length > 100 || item.Version.Any(char.IsControl))
-                throw new InvalidDataException("Paketliste enthaelt doppelte/ungueltige IDs, fehlende Quellen oder ungueltige Metadaten.");
+                throw new InvalidDataException("Paketliste enthält doppelte/ungültige IDs, fehlende Quellen oder ungültige Metadaten.");
     }
 }

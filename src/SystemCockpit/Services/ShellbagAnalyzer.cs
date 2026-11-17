@@ -11,7 +11,7 @@ public sealed record ShellbagEntry(string Name, string Kind, string KeyPath, str
 }
 
 /// <summary>
-/// Liest Windows-Shellbag-Eintraege (BagMRU) ausschliesslich lesend aus HKCU.
+/// Liest Windows-Shellbag-Einträge (BagMRU) ausschließlich lesend aus HKCU.
 /// Die Namensdekodierung ist Best Effort: nicht dekodierbare Elemente werden
 /// ausdruecklich als unbekannt gemeldet, niemals erfunden. Es gibt bewusst
 /// keine Loesch- oder Schreibfunktion.
@@ -78,7 +78,7 @@ public static class ShellbagAnalyzer
     }
 
     // BEEF0004-Erweiterungsblock: UTF-16-Langname ab Blockversion 7 bei Offset 46.
-    // Aeltere Versionen werden nicht geraten, sondern fallen auf den Kurznamen zurueck.
+    // Ältere Versionen werden nicht geraten, sondern fallen auf den Kurznamen zurück.
     private static string? ReadExtensionLongName(byte[] data)
     {
         for (var i = 4; i + 4 <= data.Length; i++)

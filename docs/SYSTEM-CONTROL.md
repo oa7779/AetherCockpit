@@ -2,7 +2,7 @@
 
 ## Geführter Ablauf
 
-In **Superadmin** zuerst Status lesen, Zielzeile und Aktion wählen, Vorschau
+In **Systemverwaltung** zuerst Status lesen, Zielzeile und Aktion wählen, Vorschau
 prüfen und die Änderung bestätigen. Vor dem Anwenden liest AETHER die
 Zielidentität und den relevanten Zustand erneut. Nach der Aktion wird
 der Status aktualisiert.
@@ -18,10 +18,10 @@ Die Prozessansicht zeigt Last, Working Set, Threads, Handles und I/O.
 Details verwenden PID plus Startzeit; geschützte oder beendete Prozesse
 können unlesbar bleiben.
 
-Superadmin verwaltet Prozesspriorität/-beenden, Dienstzustand und Starttyp
-sowie Aktivierung und Ausführung geplanter Aufgaben. Eine Prioritätsänderung,
-ein Dienststarttyp oder Aufgaben-Aktivierungszustand kann unterstützt
-zurückgenommen werden; ein beendeter Prozess und bereits ausgelöste
+Die Systemverwaltung verwaltet Prozesspriorität und das Beenden von Prozessen,
+Dienstzustand und Starttyp sowie Aktivierung und Ausführung geplanter Aufgaben.
+Eine Prioritätsänderung, ein Dienststarttyp oder Aufgaben-Aktivierungszustand
+kann unterstützt zurückgenommen werden; ein beendeter Prozess und bereits ausgelöste
 Dienst-/Aufgabenwirkungen nicht.
 
 ## Autostart und Einstellungen
@@ -141,6 +141,8 @@ gibt Systemänderungen nicht frei.
 | Netzwerk | Adapter, DNS, Verbindungskonfiguration, Resolverprüfung und bestätigtes Cacheleeren |
 | Überwachung | Ereignisse, Dienste, Aufgaben, Prozesse/Leistungsdaten, Firewallstatus und vorhandene ETW-Sitzungen |
 | Schutz und Energie | Defender-Status und Windows-Energiedaten |
+| Wiederherstellung | WinRE-Status, lokale Wiederherstellungspunkte, Windows-Recovery-Einstellungen und Updateprotokoll |
+| Deployment | Windows-Edition, Features, Capabilities, provisionierte Apps, Treiber und lokale Images; optionale Komponentenaktivierung und Treibersicherung |
 
 Ausgabe und Abbruch bleiben in der Konsole sichtbar. Die gemeinsame Ausführung
 begrenzt normale Ausgaben auf 65.536 Zeichen und läuft höchstens 30 Minuten.
@@ -154,6 +156,22 @@ Nicht jede Windows-Edition oder Version liefert dieselben Werkzeuge.
 Windows 11 ab 24H2 wird deshalb über tatsächliche Verfügbarkeit geprüft,
 nicht über eine erfundene vollständige Werkzeugliste.
 
+Der Befehlskatalog ergänzt die geführten Assistenten um lesende
+Wiederherstellungs- und Deploymentabfragen. Ein Wiederherstellungspunkt kann
+über die PowerShell-Konsole angefordert werden; Computerschutz und Windows-
+Grenzen gelten weiter. Die Recovery-Einstellungen öffnen Microsofts eigenen
+Windows-Ablauf. Ein Zurücksetzen oder Cloud-Download wird nicht im Hintergrund
+gestartet und kann Apps oder persönliche Daten entfernen. Vorher sichern und
+die Windows-Bildschirme vollständig prüfen.
+
+Deployment-Befehle inventarisieren Features, Capabilities, Treiber und WIM-
+Images oder aktivieren explizit ausgewählte Komponenten. Image-Anwendung,
+Partitionierung und Betriebssystemverteilung bleiben bewusste Administrator-
+abläufe; AETHER startet keinen unbeaufsichtigten Reset, keine Installation
+von ADK-Komponenten und keinen Flotten-Rollout. Intune-Paketierung und
+Verteilung sind getrennte Schritte, siehe
+[Intune-Deployment](INTUNE-DEPLOYMENT.md).
+
 Treiberangebote und installierte Versionen getrennt vergleichen. Neue Treiber
 gezielt über Windows Update oder den Gerätehersteller auswählen; das Treiberdatum
 allein beweist keinen Upgradebedarf. Die vorhandene identitätsgebundene
@@ -161,10 +179,11 @@ Windows-Updateinstallation und WinGet-Abläufe bleiben separat bestätigt.
 
 ## Wartungspläne
 
-Operations enthält 17 Kategorien: Inventar, Ereignisse, Autostart/Dienste/Aufgaben,
-Komponentenanalyse, NTFS-Onlinescan, DISM-Reparatur, SFC, Cleaner,
-Komponentenbereinigung, Laufwerksoptimierung, Defender-Signaturen,
-Schnell-/Vollscan, Windows-Updatesuche/-installation und WinGet-Angebot/-updates.
+„Wartungspläne & Diagnose“ enthält 17 Kategorien: Inventar,
+Ereignisse, Autostart/Dienste/Aufgaben, Komponentenanalyse, NTFS-Onlinescan,
+DISM-Reparatur, SFC, Cache-Bereinigung, Komponentenbereinigung,
+Laufwerksoptimierung, Defender-Signaturen, Schnell-/Vollscan,
+Windows-Updatesuche/-installation und WinGet-Angebot/-updates.
 
 Vier Planvorlagen sind verfügbar; **Nur Diagnose** ist Standard.
 Planvorschau startet nichts. Den Lauf bestätigen und jeden Änderungsschritt
@@ -213,14 +232,14 @@ wird nicht als aktuelle GPU-Bewertung ausgegeben.
 `WinSAT.exe formal` startet nur nach Last-/Dateischreibfreigabe.
 Es ist ein Benchmark, kein Bestandteil der Hintergrunddiagnose.
 
-## Cleaner und große Dateien
+## Cache-Bereinigung und große Dateien
 
 **Große Dateien finden** scannt einen gewählten Ordner lesend:
 höchstens 100.000 Einträge, 32 Ebenen und 1000 größte Treffer.
 Links/Junctions werden nicht verfolgt; Fehler und Limits stehen im Ergebnis.
 CSV enthält Pfade. **Im Explorer markieren** öffnet nicht die Datei.
 
-Der Cleaner verwendet feste Temp-, Browser-, App-, CrashDump- und
+Die Cache-Bereinigung verwendet feste Temp-, Browser-, App-, CrashDump- und
 WER-Cachekategorien. Prefetch braucht eine separate Freigabe.
 Nicht vorhandene Kategorien liefern keine erfundenen Pfade.
 Cookies, Lesezeichen, Profileinstellungen, Downloads, Spiele und
@@ -295,8 +314,9 @@ Unter `%LOCALAPPDATA%\AetherCockpit`:
 - **Aufträge:** höchstens 200 Einträge im RAM der Systemkontrollfenstersitzung;
   kein globaler Scheduler. Freie Befehle und sensible Anzeigen sind ausgenommen.
 
-Operations zeigt bis zu einer Million Live-Ausgabezeichen; die Berichtsausgabe
-läuft darüber hinaus weiter. Schreibfehler stoppen Folgewartung, ohne
-die Ausgabe eines laufenden Prozesses zu blockieren.
+Die Ansicht „Wartungspläne & Diagnose“ zeigt bis zu einer Million
+Live-Ausgabezeichen; die Berichtsausgabe läuft darüber hinaus weiter.
+Schreibfehler stoppen Folgewartung, ohne die Ausgabe eines laufenden Prozesses
+zu blockieren.
 Berichte enthalten möglicherweise Geräte, Benutzerpfade und Ereignisse.
 [Sicherheit und Datenschutz](SECURITY-AND-PRIVACY.md).

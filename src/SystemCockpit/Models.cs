@@ -35,6 +35,12 @@ public sealed class MetricCard(string title, string unit, string accent) : Obser
 public sealed record SensorReading(string Id, string Hardware, string Name, string Type,
     double? Value, string Unit)
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? ProviderDeviceId { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? ProviderParentId { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? PnpDeviceId { get; init; }
     public string Display => Value is { } value && double.IsFinite(value)
         ? $"{value:0.##} {Unit}" + (Services.SensorSemantics.IsTemperatureLimit(this) ? Services.DesktopUiText.Get("Sensor.TemperatureLimitSuffix") : "")
         : Services.DesktopUiText.Get("Common.Unavailable");

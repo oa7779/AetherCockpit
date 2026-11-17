@@ -1,0 +1,81 @@
+<UserControl x:Class="SystemCockpit.Controls.AdminPlatformView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Background="{DynamicResource SceneBackdrop}" Foreground="{DynamicResource ModernTextPrimary}">
+ <UserControl.Resources>
+  <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource ModernTextPrimary}"/><Setter Property="TextWrapping" Value="Wrap"/><Setter Property="Margin" Value="4"/></Style>
+  <Style TargetType="Button" BasedOn="{StaticResource NeonButton}"><Setter Property="Padding" Value="8,5"/><Setter Property="Margin" Value="3"/></Style>
+  <Style TargetType="TextBox" BasedOn="{StaticResource NeonTextBox}"><Setter Property="Padding" Value="5"/><Setter Property="Margin" Value="3"/></Style>
+  <Style TargetType="DataGrid" BasedOn="{StaticResource NeonDataGrid}"/>
+ </UserControl.Resources>
+ <Grid Margin="6">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Border Style="{StaticResource WorkbenchPanel}" Margin="0,0,0,8"><StackPanel>
+   <TextBlock Text="ADMINISTRATIONSPLATTFORM" FontSize="20" FontFamily="Consolas" Foreground="{DynamicResource ModernAccent}"/>
+   <TextBlock Text="Lokaler Arbeitsbereich · explizite Ziele und Gruppen · persönliche Freigaben"/>
+   <TextBlock Text="Geführte lokale Aufträge und ausdrücklich simulierte Mehrzielabläufe. Keine automatische Netzwerkverbindung oder zusätzliche Rechteerhöhung." Foreground="{DynamicResource ModernTextSecondary}"/>
+   <WrapPanel x:Name="SetupPanel">
+    <Button Content="Arbeitsbereich laden" Click="LoadClicked"/>
+    <TextBlock Text="Simulationsziele:" VerticalAlignment="Center"/><TextBox x:Name="SimulationCount" Text="10" Width="65" AutomationProperties.Name="Anzahl Simulationsziele"/>
+    <Button Content="Simulation ergänzen" Click="SimulationClicked"/>
+    <Button Content="CSV / JSON importieren" Click="ImportClicked"/>
+    <Button Content="Auswahl als Gruppe" Click="GroupClicked"/>
+   </WrapPanel>
+  </StackPanel></Border>
+  <Border Grid.Row="1" Style="{StaticResource WorkbenchPanel}" Margin="0,0,0,8"><StackPanel>
+   <WrapPanel x:Name="PlanPanel">
+    <TextBlock Text="Ziele:"/><ComboBox x:Name="Groups" Width="170" DisplayMemberPath="Name" AutomationProperties.Name="Zielgruppe"/>
+    <TextBlock Text="Assistent:"/><ComboBox x:Name="Actions" Width="275" DisplayMemberPath="Name" AutomationProperties.Name="Geführter Auftragsablauf"/>
+    <TextBlock Text="Parallel:"/><TextBox x:Name="Workers" Text="4" Width="42" AutomationProperties.Name="Maximale parallele Ziele"/>
+    <TextBlock Text="Welle:"/><TextBox x:Name="Wave" Text="25" Width="42" AutomationProperties.Name="Wellengröße"/>
+    <TextBlock Text="Canary:"/><TextBox x:Name="Canary" Text="1" Width="42" AutomationProperties.Name="Canaryziele"/>
+    <TextBlock Text="Fehlerbudget:"/><TextBox x:Name="Failures" Text="0" Width="42" AutomationProperties.Name="Kumulatives Fehlerbudget"/>
+   </WrapPanel>
+   <WrapPanel x:Name="ActionPanel">
+    <Button Content="1 · Vorschau" Click="PreviewClicked"/><Button Content="2 · Freigeben" Click="ApproveClicked"/>
+    <Button Content="3 · Ausführen / fortsetzen" Click="RunClicked"/><Button Content="Freigabe widerrufen" Click="RevokeClicked"/>
+    <Button Content="Nachprüfen" Click="ReconcileClicked"/><Button Content="Eigene Marke zurücknehmen" Click="RollbackClicked"/>
+   </WrapPanel>
+   <WrapPanel><Button x:Name="PauseButton" Content="Nach Welle pausieren" Click="PauseClicked" IsEnabled="False"/><Button x:Name="CancelButton" Content="Abbrechen" Click="CancelClicked" IsEnabled="False"/></WrapPanel>
+  </StackPanel></Border>
+  <TabControl Grid.Row="2" x:Name="Areas">
+   <TabItem Header="Geräte">
+    <Grid><DataGrid x:Name="Targets" SelectionMode="Extended" SelectionUnit="FullRow">
+     <DataGrid.Columns>
+      <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/><DataGridTextColumn Header="Ziel" Binding="{Binding Host}" Width="2*"/>
+      <DataGridTextColumn Header="Quelle / Transport" Binding="{Binding Transport}" Width="2*"/><DataGridTextColumn Header="Bestand" Binding="{Binding Evidence}" Width="3*"/>
+     </DataGrid.Columns>
+    </DataGrid>
+     <TextBlock Text="Noch keine Ziele geladen. Arbeitsbereich bewusst laden oder explizite Simulationsziele ergänzen."
+                HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Foreground="{DynamicResource ModernTextSecondary}" IsHitTestVisible="False">
+      <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Setter Property="TextWrapping" Value="Wrap"/>
+       <Style.Triggers><DataTrigger Binding="{Binding Items.Count, ElementName=Targets}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+      </Style></TextBlock.Style>
+     </TextBlock>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Aufträge / Freigaben"><DataGrid x:Name="Jobs" SelectionChanged="JobChanged" SelectionMode="Single">
+    <DataGrid.Columns><DataGridTextColumn Header="Erstellt" Binding="{Binding Created}" Width="*"/><DataGridTextColumn Header="Aktion" Binding="{Binding Name}" Width="2*"/><DataGridTextColumn Header="Status" Binding="{Binding State}" Width="*"/><DataGridTextColumn Header="Ziele" Binding="{Binding Count}" Width="*"/></DataGrid.Columns>
+   </DataGrid></TabItem>
+   <TabItem Header="Vorschau / Ergebnisse"><TextBox x:Name="Details" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Eingefrorene Vorschau und Zielergebnisse"/></TabItem>
+   <TabItem Header="Aktionen / Runbooks"><TextBox x:Name="Catalog" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Qualifizierte Aktionsverträge und Runbooks"/></TabItem>
+   <TabItem Header="Topologie / Sollzustand"><DockPanel>
+    <WrapPanel DockPanel.Dock="Top"><TextBlock Text="Gewünschter Mindestfreiplatz in GiB:"/><TextBox x:Name="MinimumSpace" Text="5" Width="65" AutomationProperties.Name="Gewünschter Mindestfreiplatz"/><Button Content="Bestand bewerten" Click="EvaluateClicked"/></WrapPanel>
+    <TextBox x:Name="Topology" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Belegte Beziehungen und Sollzustand"/>
+   </DockPanel></TabItem>
+   <TabItem Header="Berichte / Audit"><StackPanel>
+    <TextBlock Text="JSON enthält Ergebnis und Auditkette; CSV eine Zielübersicht; HTML eine druckbare lokale Ansicht. Standardmäßig ohne freigegebene Ziel- oder Kontonamen. Die lokale Hashkette ist kein unabhängiger Revisionsnachweis."/>
+    <CheckBox x:Name="SensitiveConsent" Content="Sensible Namen und freigabefähige Quelldaten ausdrücklich einschließen" Foreground="{DynamicResource ModernTextPrimary}" Margin="6"/>
+    <WrapPanel><Button Content="JSON speichern" Tag="json" Click="ExportClicked"/><Button Content="CSV speichern" Tag="csv" Click="ExportClicked"/><Button Content="HTML speichern" Tag="html" Click="ExportClicked"/></WrapPanel>
+   </StackPanel></TabItem>
+   <TabItem Header="Integrationen"><DockPanel>
+    <Button DockPanel.Dock="Top" Content="Erweiterungsmanifest nur prüfen" Click="ManifestClicked"/>
+    <TextBox x:Name="Integrations" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="Verbindungsfähigkeiten und nicht konfigurierte Integrationen"/>
+   </DockPanel></TabItem>
+   <TabItem Header="Hilfe"><ScrollViewer VerticalScrollBarVisibility="Auto"><TextBlock x:Name="HelpText"/></ScrollViewer></TabItem>
+  </TabControl>
+  <Border Grid.Row="3" Style="{StaticResource StatusPanel}" Margin="0,8,0,0">
+   <TextBlock x:Name="Status" Text="Bereit. Arbeitsbereich bewusst laden; es läuft keine Hintergrundinventur." Foreground="{DynamicResource ModernAccent}"/>
+  </Border>
+ </Grid>
+</UserControl>

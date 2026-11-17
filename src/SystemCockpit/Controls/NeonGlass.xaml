@@ -37,4 +37,13 @@
     <SolidColorBrush x:Key="ModernHover" Color="#242047"/>
     <SolidColorBrush x:Key="ModernPositive" Color="#39FF68"/>
     <SolidColorBrush x:Key="ModernWarning" Color="#FFCE54"/>
+    <SolidColorBrush x:Key="NeonFrameNormal" Color="#24FFE3"/>
+    <SolidColorBrush x:Key="NeonFrameActive" Color="#43FFF1"/>
+    <SolidColorBrush x:Key="NeonFrameAnalysis" Color="#82E9FF"/>
+    <SolidColorBrush x:Key="NeonFrameNotice" Color="#FFCE54"/>
+    <SolidColorBrush x:Key="NeonFrameError" Color="#FF576E"/>
+    <SolidColorBrush x:Key="NeonFrameAdmin" Color="#D45CFF"/>
+    <SolidColorBrush x:Key="NeonFrameOffline" Color="#788A9D"/>
+    <SolidColorBrush x:Key="NeonFrameDisabled" Color="#667582"/>
+    <SolidColorBrush x:Key="NeonFrameUnknown" Color="#A2ADBA"/>
 </ResourceDictionary>

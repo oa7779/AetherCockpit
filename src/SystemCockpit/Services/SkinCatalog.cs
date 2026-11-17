@@ -39,6 +39,7 @@ public static class SkinCatalog
 
     private static readonly List<ResourceDictionary> _active = [];
     private static string _activeId = "retro-neon";
+    internal static event EventHandler? ThemeChanged;
 
     public static void Apply(Application application, string id, bool? isLight = null)
     {
@@ -64,6 +65,7 @@ public static class SkinCatalog
             _active.Add(dictionary);
         }
         _activeId = id;
+        ThemeChanged?.Invoke(null, EventArgs.Empty);
         ModernWindowAppearance.RefreshCharts(application);
     }
 

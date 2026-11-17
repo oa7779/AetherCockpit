@@ -1,6 +1,6 @@
-function Assert-PrivilegedItem([string]$Path) {
+﻿function Assert-PrivilegedItem([string]$Path) {
     $item = Get-Item -LiteralPath $Path -Force
-    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Dienstpfad darf keine Verknuepfung enthalten: $Path" }
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Dienstpfad darf keine Verknüpfung enthalten: $Path" }
     $trustedInstaller = ([Security.Principal.NTAccount]'NT SERVICE\TrustedInstaller').Translate([Security.Principal.SecurityIdentifier]).Value
     $privileged = @('S-1-5-18','S-1-5-32-544',$trustedInstaller)
     $write = [Security.AccessControl.FileSystemRights]::Write -bor

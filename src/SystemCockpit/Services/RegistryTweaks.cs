@@ -21,11 +21,11 @@ public sealed class RegistryTweaks(string backupPath)
     [
         new("extensions", "Dateiendungen anzeigen", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HideFileExt", 0, 1, "Explorer; neue Fenster/Explorer-Neustart erforderlich."),
         new("hidden", "Versteckte Dateien anzeigen", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "Hidden", 1, 2, "Explorer; keine Berechtigungsumgehung."),
-        new("system-files", "Geschuetzte Systemdateien anzeigen", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowSuperHidden", 1, 0, "Sensible Dateien werden sichtbar; Anzeige ist keine Loeschfreigabe."),
+        new("system-files", "Geschützte Systemdateien anzeigen", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ShowSuperHidden", 1, 0, "Sensible Dateien werden sichtbar; Anzeige ist keine Löschfreigabe."),
         new("taskbar", "Taskleistenanimationen", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarAnimations", 1, 0, "Explorer-Neustart/Abmeldung kann erforderlich sein."),
         new("ads", "Windows-Werbe-ID deaktivieren", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo", "Enabled", 0, 1, "Nur Werbe-ID, keine komplette Tracking-Sperre."),
-        new("suggestions", "Vorgeschlagene Inhalte deaktivieren", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338389Enabled", 0, 1, "Versionsabhaengige Windows-Vorschlaege; keine globale Netzsperre."),
-        new("tailored", "Personalisierte Diagnose-Erlebnisse deaktivieren", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Privacy", "TailoredExperiencesWithDiagnosticDataEnabled", 0, 1, "Nutzung von Diagnosedaten fuer personalisierte Empfehlungen."),
+        new("suggestions", "Vorgeschlagene Inhalte deaktivieren", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338389Enabled", 0, 1, "Versionsabhängige Windows-Vorschlaege; keine globale Netzsperre."),
+        new("tailored", "Personalisierte Diagnose-Erlebnisse deaktivieren", RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Privacy", "TailoredExperiencesWithDiagnosticDataEnabled", 0, 1, "Nutzung von Diagnosedaten für personalisierte Empfehlungen."),
         new("telemetry", "Optionale Diagnosedaten begrenzen", RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\DataCollection", "AllowTelemetry", 1, 3, "AN = erforderliche Daten (1), AUS = optionale Daten (3). Edition/verwaltete Richtlinien bestimmen die Wirkung; nicht Telemetrie komplett AUS.")
     ];
 
@@ -45,20 +45,20 @@ public sealed class RegistryTweaks(string backupPath)
     {
         if (!Catalog.Contains(tweak)) throw new ArgumentException("Unbekannte Einstellung.");
         SystemActions.RequireAdmin();
-        if (ReadValue(tweak) != expected) throw new InvalidOperationException("Konfiguration hat sich geaendert. Status neu lesen.");
+        if (ReadValue(tweak) != expected) throw new InvalidOperationException("Konfiguration hat sich geändert. Status neu lesen.");
         var target = enabled ? tweak.OnValue : tweak.OffValue;
         var backups = Load();
         var old = backups.SingleOrDefault(b => b.Id == tweak.Id);
         if (old is not null && !Matches(old, expected))
-            throw new InvalidOperationException("Gesicherte Einstellung extern geaendert. Wiederherstellung/Status zuerst pruefen.");
+            throw new InvalidOperationException("Gesicherte Einstellung extern geändert. Wiederherstellung/Status zuerst prüfen.");
         backups.RemoveAll(b => b.Id == tweak.Id);
         backups.Add(PrepareBackup(tweak.Id, old, expected, target));
         ActionJournal.Append("registry-setting-start", new { tweak.Id, target });
         Save(backups);
         using var hive = RegistryKey.OpenBaseKey(tweak.Hive, RegistryView.Registry64);
-        using var key = hive.CreateSubKey(tweak.Key, true) ?? throw new IOException("Registry-Schluessel nicht erzeugbar.");
+        using var key = hive.CreateSubKey(tweak.Key, true) ?? throw new IOException("Registry-Schlüssel nicht erzeugbar.");
         key.SetValue(tweak.Value, target, RegistryValueKind.DWord);
-        if (ReadValue(tweak) != target) throw new IOException("Registry-Aenderung konnte nicht verifiziert werden.");
+        if (ReadValue(tweak) != target) throw new IOException("Registry-Änderung konnte nicht verifiziert werden.");
         backups[^1] = backups[^1] with { Applied = target, Pending = null };
         Save(backups);
         ActionJournal.Append("registry-setting-complete", new { tweak.Id, target });
@@ -69,15 +69,15 @@ public sealed class RegistryTweaks(string backupPath)
         if (!Catalog.Contains(tweak)) throw new ArgumentException("Unbekannte Einstellung.");
         SystemActions.RequireAdmin();
         var backups = Load();
-        var backup = backups.SingleOrDefault(b => b.Id == tweak.Id) ?? throw new InvalidOperationException("Keine AETHER-Sicherung fuer diese Einstellung.");
+        var backup = backups.SingleOrDefault(b => b.Id == tweak.Id) ?? throw new InvalidOperationException("Keine AETHER-Sicherung für diese Einstellung.");
         if (!Matches(backup, ReadValue(tweak)))
-            throw new InvalidOperationException("Aktueller Wert stimmt nicht mit AETHER-Aenderung ueberein. Externe Aenderung wird nicht ueberschrieben.");
+            throw new InvalidOperationException("Aktueller Wert stimmt nicht mit AETHER-Änderung überein. Externe Änderung wird nicht überschrieben.");
         ActionJournal.Append("registry-restore-start", new { tweak.Id });
         using var hive = RegistryKey.OpenBaseKey(tweak.Hive, RegistryView.Registry64);
         using var key = hive.OpenSubKey(tweak.Key, true);
         if (backup.Before is { } before)
         {
-            if (key is null) throw new IOException("Registry-Schluessel nicht vorhanden.");
+            if (key is null) throw new IOException("Registry-Schlüssel nicht vorhanden.");
             key.SetValue(tweak.Value, before, RegistryValueKind.DWord);
         }
         else key?.DeleteValue(tweak.Value, false);
@@ -99,7 +99,7 @@ public sealed class RegistryTweaks(string backupPath)
             throw new InvalidDataException("Leere Registry-Sicherung.");
         if (backups.Any(b => b is null || !Catalog.Any(t => t.Id == b.Id)) ||
             backups.Select(b => b.Id).Distinct().Count() != backups.Count)
-            throw new InvalidDataException("Ungueltige oder doppelte Registry-Sicherungen; keine Aenderung.");
+            throw new InvalidDataException("Ungültige oder doppelte Registry-Sicherungen; keine Änderung.");
         return backups;
     }
     private void Save(List<TweakBackup> backups)

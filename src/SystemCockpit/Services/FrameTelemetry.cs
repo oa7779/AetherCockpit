@@ -22,9 +22,9 @@ public static class FrameTelemetry
     {
         if (string.IsNullOrWhiteSpace(processName) || processName.Length > 260 ||
             Path.GetFileName(processName) != processName || !processName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Exakten Prozessnamen ohne Pfad eingeben, z.B. Spiel.exe.");
-        if (seconds is < 5 or > 600) throw new ArgumentException("Capture-Dauer 5 bis 600 Sekunden.");
-        if (!Path.IsPathFullyQualified(output)) throw new ArgumentException("Absoluter CSV-Pfad erforderlich.");
+            throw new ArgumentException(DesktopUiText.Get("Frame.InvalidProcess"));
+        if (seconds is < 5 or > 600) throw new ArgumentException(DesktopUiText.Get("Frame.InvalidDuration"));
+        if (!Path.IsPathFullyQualified(output)) throw new ArgumentException(DesktopUiText.Get("Frame.AbsolutePath"));
         return ["--process_name", processName, "--timed", seconds.ToString(CultureInfo.InvariantCulture),
             "--terminate_after_timed", "--output_file", output, "--session_name", session, "--no_console_stats",
             "--v2_metrics", "--no_track_input"];
@@ -32,29 +32,29 @@ public static class FrameTelemetry
 
     public static IReadOnlyList<FrameSummary> Read(string path)
     {
-        if (new FileInfo(path).Length > 64 * 1024 * 1024) throw new InvalidDataException("Frame-CSV groesser als 64 MiB.");
+        if (new FileInfo(path).Length > 64 * 1024 * 1024) throw new InvalidDataException(DesktopUiText.Get("Frame.TooLarge"));
         using var parser = new TextFieldParser(path) { TextFieldType = FieldType.Delimited, HasFieldsEnclosedInQuotes = true };
         parser.SetDelimiters(",");
-        var headers = parser.ReadFields() ?? throw new InvalidDataException("Frame-CSV ist leer.");
+        var headers = parser.ReadFields() ?? throw new InvalidDataException(DesktopUiText.Get("Frame.Empty"));
         int Index(params string[] names) => Array.FindIndex(headers, h => names.Contains(h, StringComparer.OrdinalIgnoreCase));
         var frameIndex = Index("CPUFrameTime", "FrameTime", "MsBetweenPresents", "msBetweenPresents");
         var processIndex = Index("Application", "ProcessName");
         var swapIndex = Index("SwapChainAddress");
-        if (frameIndex < 0 || processIndex < 0) throw new InvalidDataException("PresentMon-Framezeit-/Application-Spalten fehlen.");
+        if (frameIndex < 0 || processIndex < 0) throw new InvalidDataException(DesktopUiText.Get("Frame.MissingColumns"));
         var groups = new Dictionary<(string Process, string Swapchain), List<double>>();
         var count = 0;
         while (!parser.EndOfData)
         {
-            if (++count > 1_000_000) throw new InvalidDataException("Mehr als 1 Million Frames.");
-            var row = parser.ReadFields() ?? throw new InvalidDataException("Ungueltige CSV-Zeile.");
-            if (row.Length != headers.Length) throw new InvalidDataException($"CSV-Spaltenanzahl Zeile {count + 1} ungueltig.");
+            if (++count > 1_000_000) throw new InvalidDataException(DesktopUiText.Get("Frame.TooManyFrames"));
+            var row = parser.ReadFields() ?? throw new InvalidDataException(DesktopUiText.Get("Frame.InvalidRow"));
+            if (row.Length != headers.Length) throw new InvalidDataException(DesktopUiText.Format("Frame.InvalidColumnCount", count + 1));
             if (!double.TryParse(row[frameIndex], NumberStyles.Float, CultureInfo.InvariantCulture, out var ms) ||
-                !double.IsFinite(ms) || ms < 0) throw new InvalidDataException($"Ungueltige Framezeit Zeile {count + 1}.");
+                !double.IsFinite(ms) || ms < 0) throw new InvalidDataException(DesktopUiText.Format("Frame.InvalidTime", count + 1));
             if (ms == 0) continue;
-            var key = (row[processIndex], swapIndex >= 0 ? row[swapIndex] : "nicht gemeldet");
+            var key = (row[processIndex], swapIndex >= 0 ? row[swapIndex] : DesktopUiText.Get("Frame.NotReported"));
             if (!groups.TryGetValue(key, out var values))
             {
-                if (groups.Count >= 256) throw new InvalidDataException("Mehr als 256 Swapchains.");
+                if (groups.Count >= 256) throw new InvalidDataException(DesktopUiText.Get("Frame.TooManySwapchains"));
                 groups[key] = values = [];
             }
             values.Add(ms);

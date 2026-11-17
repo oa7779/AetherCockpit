@@ -11,7 +11,7 @@ public static class Sparkline
         var points = new PointCollection();
         for (var i = 0; i < values.Count; i++)
         {
-            if (!double.IsFinite(values[i])) throw new ArgumentException("Verlauf enthaelt ungueltige Werte.", nameof(values));
+            if (!double.IsFinite(values[i])) throw new ArgumentException("Verlauf enthält ungültige Werte.", nameof(values));
             points.Add(new Point(values.Count == 1 ? width : i * width / (values.Count - 1),
                 height * (1 - Math.Clamp(values[i] / scale, 0, 1))));
         }
