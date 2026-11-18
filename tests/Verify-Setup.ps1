@@ -10,7 +10,11 @@ if ($setupText -notmatch 'Source: "\{#PublishDir\}\\Aether\.scr"; DestDir: "\{sy
     $setupText -notmatch 'Root: HKLM64; Subkey: "Software\\AetherCockpit"; ValueType: string; ValueName: "InstallPath"; ValueData: "\{app\}"; Tasks: screensaver; Flags: uninsdeletevalue uninsdeletekeyifempty') {
     throw 'Discoverable Windows SCR must be opt-in, installation-bound and removed on uninstall.'
 }
+if ($setupText -notmatch '\[Languages\]\r?\nName: "german"; MessagesFile: "compiler:Languages\\German\.isl"') {
+    throw 'Installer standard pages must use the bundled German Inno Setup language resource.'
+}
 Write-Output 'PASS: production SCR discovery file and matching uninstallable HKLM64 path are both gated by screensaver consent.'
+Write-Output 'PASS: all standard Inno Setup pages are configured to use German messages.'
 $launch = Get-Content -LiteralPath $source |
     Where-Object { $_ -match '^Filename: "\{app\}\\SystemCockpit\.exe"; Description:' }
 if (@($launch).Count -ne 1 -or $launch -notmatch '\brunascurrentuser\b') {

@@ -79,6 +79,9 @@ WizardSmallImageFileDynamicDark=aether-installer-small.bmp
 Compression=lzma2/ultra64
 SolidCompression=yes
 
+[Languages]
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
+
 [Tasks]
 Name: "desktopicon"; Description: "Desktop-Verknüpfung erstellen"; GroupDescription: "Zusätzliche Verknüpfungen:"; Flags: unchecked
 Name: "autostart"; Description: "Gadgets und Tray bei Anmeldung starten (Aufgabe mit erhöhten Rechten für dieses Administratorkonto)"; GroupDescription: "Autostart:"
