@@ -41,7 +41,7 @@ Informationen von Windows oder Hardware, daraus abgeleiteten
 Zusammenhängen, sprachlicher Einordnung und tatsächlich ausgeführten
 Änderungen.
 
-![AETHER beim Systemstart](docs/images/01-aether-neon-wave-boot.png)
+![AETHER beim Systemstart](docs/images/00-neon-wave-boot.png)
 
 *AETHER beim lokalen Systemstart im Retro-Neon-Modus.*
 
@@ -77,6 +77,11 @@ Geräten, Treibern, Diensten, Aufgaben, Autostart, Netzwerk, Systemzustand
 und ausgewählten Windows-Komponenten. Ereignisse und Inventardaten sind
 Hinweise, aber keine vollständige Ursachendiagnose für sich.
 
+![Mainboard- und Hardwareansicht](docs/images/03-mainboard.png)
+
+*Mainboard- und Hardwareansicht im AETHER Cockpit. Demonstration mit
+synthetischen Testdaten.*
+
 ### Verwaltung und Wartung
 
 AETHER bietet geführte Abläufe für ausgewählte Prozesse, Dienste, Aufgaben,
@@ -109,6 +114,11 @@ Der Ablauf ist dafür bewusst getrennt:
 
 *AETHER Intelligence mit Modellstatus, technischen Daten und
 Validierungsbereich.*
+
+![Technische Findings und Validierungsstatus](docs/images/07-intelligence-evidence.png)
+
+*Technischer Detailbereich von AETHER Intelligence mit Findings,
+Modellstatus und Prüfinformationen.*
 
 Der qualifizierte Modellpfad in Beta 53 ist **Phi 4 Mini**
 (`phi4-mini:3.8b`). Die Verarbeitung erfolgt lokal über Ollama. AETHER
@@ -158,6 +168,11 @@ wo dies technisch und wirtschaftlich sinnvoll ist. Eine kostenpflichtige
 Cloud-Infrastruktur ist keine Voraussetzung und wird nicht automatisch
 eingerichtet.
 
+![AETHER Server](docs/images/08-aether-server-demo.png)
+
+*AETHER Server mit synthetischen Testgeräten zur Demonstration der zentralen
+Verwaltungsansicht.*
+
 ## Warum AETHER so aussieht
 
 Ich wollte kein weiteres graues Verwaltungsprogramm bauen.
@@ -176,6 +191,11 @@ Daneben gibt es eine zurückhaltendere Windows-Modern-Darstellung für
 Anwender, die lieber neutrale Fenster und Diagramme verwenden. Animationen
 lassen sich abschalten.
 
+![AETHER Guardian](docs/images/06-guardian.png)
+
+*Guardian-Arbeitsbereich der AETHER-Oberfläche. Darstellung mit synthetischen
+Testdaten; Guardian bleibt in Entwicklung.*
+
 ## AETHER Local AI Setup
 
 Der Hauptinstaller enthält den separaten Assistenten **AETHER Local AI
@@ -190,6 +210,10 @@ Modellbezug ungefragt. Vorhandene qualifizierte lokale Daten können
 wiederverwendet werden.
 
 Modellgewichte und Ollama-Runtime sind nicht Teil der GitHub-Programmpakete.
+
+![AETHER Local AI Setup](docs/images/05-local-ai-setup.png)
+
+*AETHER Local AI Setup für den qualifizierten lokalen Phi-4-Mini-Pfad.*
 
 ## AETHER 0.7.0 Beta 53
 

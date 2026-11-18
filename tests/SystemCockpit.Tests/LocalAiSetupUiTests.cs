@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Resources;
 using System.Windows;
@@ -8,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 internal static class LocalAiSetupUiTests
 {
-    public static int Run()
+    public static int Run(string? screenshotPath = null)
     {
         var assertions = 0;
         void Check(bool valid, string message)
@@ -101,6 +102,21 @@ internal static class LocalAiSetupUiTests
                         window.MinWidth >= 760,
                         $"Status content must remain stretchable and readable at {scale:P0}");
                 }
+                if (screenshotPath is not null)
+                {
+                    window.Width = 1100;
+                    window.Height = 820;
+                    window.Show();
+                    var loaded = Stopwatch.StartNew();
+                    while (((TextBlock)window.FindName("CapabilityLabel")).Text == "System wird geprüft" &&
+                        loaded.Elapsed < TimeSpan.FromSeconds(8))
+                    {
+                        System.Windows.Threading.Dispatcher.CurrentDispatcher.Invoke(
+                            () => { }, System.Windows.Threading.DispatcherPriority.Background);
+                        Thread.Sleep(50);
+                    }
+                    ModuleTests.SaveScreenshot(window, screenshotPath);
+                }
             }
             finally
             {
@@ -110,7 +126,16 @@ internal static class LocalAiSetupUiTests
         finally
         {
             Environment.CurrentDirectory = originalDirectory;
-            if (Directory.Exists(isolated)) Directory.Delete(isolated, true);
+            for (var attempt = 0; Directory.Exists(isolated) && attempt < 3; attempt++)
+            {
+                try { Directory.Delete(isolated, true); }
+                catch (IOException) when (attempt < 2)
+                {
+                    System.Windows.Threading.Dispatcher.CurrentDispatcher.Invoke(
+                        () => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                    Thread.Sleep(50);
+                }
+            }
         }
 
         return assertions;

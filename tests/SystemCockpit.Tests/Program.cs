@@ -305,7 +305,9 @@ internal static class Program
             {
                 var index = Array.IndexOf(args, "--branding-screenshot-prefix");
                 _assertions += BootTests.BrandingUi(index >= 0 && index + 1 < args.Length ? args[index + 1] : null);
-                _assertions += LocalAiSetupUiTests.Run();
+                var setupScreenshotIndex = Array.IndexOf(args, "--local-ai-setup-screenshot");
+                _assertions += LocalAiSetupUiTests.Run(setupScreenshotIndex >= 0 && setupScreenshotIndex + 1 < args.Length
+                    ? args[setupScreenshotIndex + 1] : null);
             }
             if (args.Contains("--interface-ui"))
             {
