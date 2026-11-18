@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -78,7 +80,12 @@ internal static class LocalAiSetupTests
         public Task StartManagedServerAsync(CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            Runtime = Runtime with { ListenerAvailable = true, StoreConfigurationVerified = true };
+            Runtime = Runtime with
+            {
+                ApiCompatible = true,
+                ListenerAvailable = true,
+                StoreConfigurationVerified = true
+            };
             return Task.CompletedTask;
         }
 
@@ -206,6 +213,28 @@ internal static class LocalAiSetupTests
         var baseHardware = new AetherSetupHardware(new Version(10, 0, 22631), true, "CPU fixture",
             8, 16, 1000, 500, ImmutableArray<AetherSetupGpu>.Empty, 1000);
 
+        using (var foreignOllama = new TcpListener(IPAddress.Loopback, 0))
+        {
+            foreignOllama.Start();
+            var foreignEndpoint = new Uri(
+                $"http://127.0.0.1:{((IPEndPoint)foreignOllama.LocalEndpoint).Port}/");
+            var previousModels = Environment.GetEnvironmentVariable(
+                AetherLocalAiStoreContract.EnvironmentVariable, EnvironmentVariableTarget.User);
+            var previousHost = Environment.GetEnvironmentVariable(
+                AetherLocalAiStoreContract.HostEnvironmentVariable, EnvironmentVariableTarget.User);
+            var operations = new AetherLocalAiSetup.OllamaSetupOperations(foreignEndpoint);
+            var status = operations.InspectRuntimeAsync(phi, CancellationToken.None).GetAwaiter().GetResult();
+            Check(status.UserOllamaListenerPreserved && !status.ListenerAvailable &&
+                operations.ManagedEndpoint != foreignEndpoint && operations.ManagedEndpoint.Host == foreignEndpoint.Host,
+                "The occupied user Ollama endpoint was not isolated from the AETHER setup server.");
+            Check(!foreignOllama.Pending() &&
+                Environment.GetEnvironmentVariable(AetherLocalAiStoreContract.EnvironmentVariable,
+                    EnvironmentVariableTarget.User) == previousModels &&
+                Environment.GetEnvironmentVariable(AetherLocalAiStoreContract.HostEnvironmentVariable,
+                    EnvironmentVariableTarget.User) == previousHost,
+                "Setup inspection contacted or reconfigured a foreign Ollama listener.");
+        }
+
         var ready = AetherSetupCapabilityGate.Evaluate(fixtureCatalog, baseHardware);
         Check(ready.Capability == AetherLocalAiCapability.LocalAiReady && ready.CanInstall &&
             ready.ModelId == eligible.ModelId && ready.Label == "Lokale KI bereit",
@@ -324,7 +353,7 @@ internal static class LocalAiSetupTests
         Check(missingRuntime.Installations == 1 && missingRuntime.Configurations == 1 &&
             missingRuntime.Pulls == 1 &&
             missingRuntime.Verifications == 1 && missingRuntime.HealthChecks == 1 &&
-            missingRuntime.PersistedCatalogs == 1,
+            missingRuntime.PersistedCatalogs == 1 && missingRuntime.ServerStops == 1,
             "Missing-Ollama bootstrap did not install, verify, health-check, and persist in order.");
 
         var existingModel = new SetupOperations
@@ -403,6 +432,18 @@ internal static class LocalAiSetupTests
             .GetAwaiter().GetResult();
         Check(storeConfiguration.Configurations == 1 && storeConfiguration.Pulls == 1,
             "Explicit AETHER store configuration did not route the model into the managed store.");
+
+        var foreignListenerCoexistence = new SetupOperations
+        {
+            Runtime = new(true, true, false, "fixture", @"C:\fixture\ollama.exe", true, false, false,
+                @"C:\Users\fixture\.ollama\models", false, false, false, true)
+        };
+        new AetherLocalAiSetupWorkflow(foreignListenerCoexistence).RunAsync(fixtureCatalog, eligible, baseHardware,
+            licenseAccepted: true, allowManagedStoreConfiguration: true, null, CancellationToken.None)
+            .GetAwaiter().GetResult();
+        Check(foreignListenerCoexistence.Configurations == 1 && foreignListenerCoexistence.Pulls == 1 &&
+            foreignListenerCoexistence.PersistedCatalogs == 1 && foreignListenerCoexistence.ServerStops == 1,
+            "A preserved user Ollama listener blocked or was treated as the AETHER-managed server.");
 
         var canceledDownload = new SetupOperations { CancelPull = true };
         try

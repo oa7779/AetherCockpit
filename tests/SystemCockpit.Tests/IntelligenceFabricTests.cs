@@ -1376,6 +1376,13 @@ internal static class IntelligenceFabricTests
                     {
                         startedEndpoint = realRuntime.EnsureAvailableAsync(runtimeProvider, model, runtimeDiagnostics,
                             CancellationToken.None).GetAwaiter().GetResult();
+                        var runtimeLease = Path.Combine(runtimeRoot, AetherLocalAiStoreContract.RuntimeLeaseFileName);
+                        using var lease = JsonDocument.Parse(File.ReadAllText(runtimeLease));
+                        Check(lease.RootElement.GetProperty("processId").GetInt32() ==
+                                runtimeDiagnostics.RuntimeProcessId &&
+                            lease.RootElement.GetProperty("endpoint").GetString() == startedEndpoint.ToString() &&
+                            lease.RootElement.GetProperty("modelStorePath").GetString() == runtimeModels,
+                            "Owned Ollama process did not persist a matching uninstall lease");
                         Check(runtimeDiagnostics.RuntimeStartedByAether == true && runtimeDiagnostics.EndpointReachable == true &&
                             runtimeDiagnostics.RuntimeHost == startedEndpoint.Authority &&
                             runtimeDiagnostics.RuntimeModelStorePath == runtimeModels &&
@@ -1384,8 +1391,9 @@ internal static class IntelligenceFabricTests
                     }
                     finally { LocalOllamaRuntime.StopOwnedAsync().GetAwaiter().GetResult(); }
                     Check(startedEndpoint is not null && runtimeDiagnostics.RuntimeProcessId is { } ownPid &&
+                        !File.Exists(Path.Combine(runtimeRoot, AetherLocalAiStoreContract.RuntimeLeaseFileName)) &&
                         !LocalOllamaRuntime.IsListenerOwnedBy(startedEndpoint.Port, ownPid),
-                        "Owned Ollama fixture listener was not stopped");
+                        "Owned Ollama fixture listener or runtime lease was not stopped");
                     using var foreign = new TcpListener(IPAddress.Loopback, 0);
                     foreign.Start();
                     var foreignPort = ((IPEndPoint)foreign.LocalEndpoint).Port;

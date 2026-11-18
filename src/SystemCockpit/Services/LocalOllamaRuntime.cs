@@ -52,14 +52,21 @@ internal sealed class LocalOllamaRuntime
         await Gate.WaitAsync(token).ConfigureAwait(false);
         try
         {
-            if (endpoint is null || endpoint != _endpoint && endpoint != _ownedEndpoint)
-                throw new LocalOllamaRuntimeException("EndpointUnavailable", "Der Ollama-Endpunkt entspricht nicht dem AETHER-Storevertrag.");
+            if (endpoint is null)
+                throw new LocalOllamaRuntimeException("EndpointUnavailable", "Der Ollama-Endpunkt fehlt.");
+            if (endpoint != _endpoint && endpoint != _ownedEndpoint)
+            {
+                try { CompatibleInferenceProvider.ValidateEndpoint(endpoint, false); }
+                catch (ArgumentException ex)
+                { throw new LocalOllamaRuntimeException("EndpointUnavailable", "Der AETHER-Ollama-Endpunkt ist kein sicherer Loopback-Endpunkt.", ex); }
+            }
             try { ValidateOwnedStore(model); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or
                 KeyNotFoundException or InvalidOperationException or ArgumentException)
             { throw new LocalOllamaRuntimeException("RuntimeUnavailable", "Der AETHER-Store-Herkunftsnachweis ist ungültig oder nicht lesbar.", ex); }
             if (_ownedServer is { HasExited: true })
             {
+                RemoveRuntimeLease(_ownedStore);
                 _ownedServer.Dispose();
                 _ownedServer = null;
                 _ownedEndpoint = null;
@@ -82,7 +89,7 @@ internal sealed class LocalOllamaRuntime
                 return _ownedEndpoint;
             }
 
-            var selectedEndpoint = HasListener(_endpoint.Port) ? FreeLoopbackEndpoint() : _endpoint;
+            var selectedEndpoint = HasListener(endpoint.Port) ? FreeLoopbackEndpoint() : endpoint;
             using var selectedProvider = new CompatibleInferenceProvider(provider.Info.Id, FabricProviderKind.Ollama, selectedEndpoint,
                 runtimePolicy: provider.RuntimePolicy);
             diagnostics?.Update(d => { d.EndpointReachable = false; d.OllamaEndpoint = selectedEndpoint.ToString(); });
@@ -125,6 +132,7 @@ internal sealed class LocalOllamaRuntime
                     if (IsListenerOwnedBy(selectedEndpoint.Port, process.Id) && await ApiReachableAsync(selectedProvider, timeout.Token).ConfigureAwait(false))
                     {
                         EnsureLoopbackOnly(selectedEndpoint.Port);
+                        WriteRuntimeLease(process, selectedEndpoint);
                         _ownedServer = process;
                         _ownedEndpoint = selectedEndpoint;
                         _ownedStore = _modelStore;
@@ -159,6 +167,7 @@ internal sealed class LocalOllamaRuntime
         try
         {
             var process = _ownedServer;
+            var storePath = _ownedStore;
             _ownedServer = null;
             _ownedEndpoint = null;
             _ownedStore = null;
@@ -169,7 +178,11 @@ internal sealed class LocalOllamaRuntime
                 if (!process.HasExited) process.Kill(entireProcessTree: true);
                 await process.WaitForExitAsync().ConfigureAwait(false);
             }
-            finally { process.Dispose(); }
+            finally
+            {
+                process.Dispose();
+                RemoveRuntimeLease(storePath);
+            }
         }
         finally { Gate.Release(); }
     }
@@ -183,6 +196,51 @@ internal sealed class LocalOllamaRuntime
         catch (InvalidDataException) { return false; }
         catch (JsonException) { return false; }
         catch (OperationCanceledException) when (!token.IsCancellationRequested) { return false; }
+    }
+
+    private void WriteRuntimeLease(Process process, Uri endpoint)
+    {
+        var path = Path.Combine(_root, AetherLocalAiStoreContract.RuntimeLeaseFileName);
+        Directory.CreateDirectory(_root);
+        var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None,
+                       4096, FileOptions.WriteThrough))
+            {
+                JsonSerializer.Serialize(stream, new
+                {
+                    schema = 1,
+                    processId = process.Id,
+                    processStartTimeUtcTicks = process.StartTime.ToUniversalTime().Ticks,
+                    executablePath = process.MainModule?.FileName,
+                    endpoint = endpoint.ToString(),
+                    modelStorePath = _modelStore
+                }, FabricJson.Options);
+                stream.Flush(flushToDisk: true);
+            }
+            File.Move(temporary, path, overwrite: true);
+        }
+        finally
+        {
+            if (File.Exists(temporary)) File.Delete(temporary);
+        }
+    }
+
+    private static void RemoveRuntimeLease(string? storePath)
+    {
+        if (storePath is null) return;
+        var root = Path.GetDirectoryName(storePath) ??
+            throw new InvalidDataException("AETHER-Laufzeit-Verzeichnis konnte nicht bestimmt werden.");
+        var path = Path.Combine(root, AetherLocalAiStoreContract.RuntimeLeaseFileName);
+        try
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Trace.TraceWarning("AETHER Ollama-Runtime-Lease konnte nicht entfernt werden: {0}", ex.Message);
+        }
     }
 
     private static bool HasListener(int port) =>

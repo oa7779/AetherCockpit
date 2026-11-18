@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AetherOperations.Shared\AetherOperations.Shared.csproj" />
+    <InternalsVisibleTo Include="SystemCockpit.Tests" />
     <Resource Include="..\SystemCockpit\Assets\aether-logo.png"
               Link="Assets\aether-logo.png"
               LogicalName="Assets\aether-logo.png" />

@@ -35,6 +35,8 @@ begin
   end;
   if Pos('"CaptureAtLogon":false', Value) = 0 then
     RaiseException('Profile did not preserve the no-capture default.');
+  if CapturePage.Values[0] or CapturePage.Values[1] or CapturePage.Values[2] then
+    RaiseException('Capture controls were not initialized to an explicit no-capture default.');
   if Copy(Value, 1, 7) <> '{"Id":"' then
     RaiseException('Setup profile ID is missing.');
   for Index := 8 to 21 do

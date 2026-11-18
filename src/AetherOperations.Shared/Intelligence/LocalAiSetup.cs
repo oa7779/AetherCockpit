@@ -98,6 +98,7 @@ public static class AetherLocalAiStoreContract
     public const string EnvironmentVariable = "OLLAMA_MODELS";
     public const string HostEnvironmentVariable = "OLLAMA_HOST";
     public const string OwnershipFileName = "aether-store.json";
+    public const string RuntimeLeaseFileName = "aether-ollama-runtime.json";
     public const int AcceptanceTestPort = 11435;
     private const string AcceptanceProfileFileName = "aether-localai-acceptance.json";
     private static readonly Lazy<string?> AcceptanceProfileLocation = new(FindAcceptanceProfilePath);
@@ -623,7 +624,8 @@ public sealed record AetherOllamaRuntimeStatus(
     string? ModelStorePath,
     bool ModelStoreOwned,
     bool ModelPresent,
-    bool ModelOwned = false);
+    bool ModelOwned = false,
+    bool UserOllamaListenerPreserved = false);
 
 public sealed record AetherModelVerification(string ManifestDigest, ImmutableArray<string> LayerDigests);
 
@@ -782,6 +784,8 @@ public sealed class AetherLocalAiSetupWorkflow(IAetherLocalAiSetupOperations ope
             }
             throw;
         }
+        if (managedServerStarted)
+            await operations.StopManagedServerAsync().ConfigureAwait(false);
     }
 }
 

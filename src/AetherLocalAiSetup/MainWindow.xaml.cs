@@ -33,7 +33,8 @@ public partial class MainWindow : Window
             .FirstOrDefault() ?? "0.7.0 Beta 53");
         ModelStorePathText.Text = AetherLocalAiStoreContract.ModelStorePath;
         StoreConfigurationAccepted.Content =
-            $"Ich bestätige die Konfiguration des AETHER-Modellstores und des Loopback-Endpunkts {AetherLocalAiStoreContract.Host}. Vorhandene Fremdmodelle bleiben unberührt.";
+            "Ich bestätige die Konfiguration des AETHER-Modellstores. " +
+            "Eine vorhandene Benutzer-Ollama-Installation, ihr Listener, ihre Modellumgebung und Fremdmodelle bleiben unverändert.";
         Loaded += Window_Loaded;
         Closed += (_, _) =>
         {
@@ -141,6 +142,8 @@ public partial class MainWindow : Window
         var listener = !runtime.ListenerAvailable ? "kein Listener" :
             runtime.LoopbackOnly ? "nur Loopback" : "Listener außerhalb des Loopbacks";
         var store = runtime.ModelStorePath ?? "nicht ermittelbar";
+        if (runtime.UserOllamaListenerPreserved)
+            listener += " · vorhandene Benutzer-Instanz bleibt unverändert";
         var modelStatus = runtime.ModelPresent
             ? runtime.ModelOwned
                 ? $"freigegebenes {model.DisplayName} im AETHER-Store vorhanden"

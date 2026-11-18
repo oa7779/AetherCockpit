@@ -69,7 +69,13 @@ SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
 VersionInfoVersion=0.7.0.53
 VersionInfoProductVersion=0.7.0.53
-WizardStyle=modern
+WizardStyle=modern dynamic
+WizardBackColor=#0B0817
+WizardBackColorDynamicDark=#090717
+WizardImageFile=aether-installer-welcome.bmp
+WizardSmallImageFile=aether-installer-small.bmp
+WizardImageFileDynamicDark=aether-installer-welcome.bmp
+WizardSmallImageFileDynamicDark=aether-installer-small.bmp
 Compression=lzma2/ultra64
 SolidCompression=yes
 
@@ -83,6 +89,8 @@ Name: "localai"; Description: "Lokale KI nach Setup prüfen und einrichten, sofe
 #endif
 
 [Files]
+Source: "aether-installer-welcome.bmp"; Flags: dontcopy noencryption
+Source: "aether-installer-small.bmp"; Flags: dontcopy noencryption
 #ifndef SetupValidation
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Excludes: "Aether.scr,AetherMainboard.scr,AetherScreensaver.*,ManagedClient\*"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#PublishDir}\ManagedClient\*"; DestDir: "{app}\ManagedClient"; Tasks: managedclient; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -133,7 +141,7 @@ var
   AdapterNames: TStringList;
   InstalledPath, InstalledVersion, RecoveryApprovedPath: String;
   ManagedClientWasRunning: Boolean;
-  RemoveLocalAiConfiguration, RemoveLocalAiWeights: Boolean;
+  RemoveLocalAiConfiguration, RemoveLocalAiWeights, LocalAiDataRetained: Boolean;
 
 #ifdef SetupValidation
 procedure VerifySetup; forward;
@@ -209,6 +217,19 @@ var
   Count: Integer;
 begin
   SetForegroundWindow(WizardForm.Handle);
+  ExtractTemporaryFile('aether-installer-welcome.bmp');
+  ExtractTemporaryFile('aether-installer-small.bmp');
+  WizardForm.WizardBitmapImage.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-welcome.bmp'));
+  WizardForm.WizardBitmapImage2.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-welcome.bmp'));
+  WizardForm.WizardSmallBitmapImage.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-small.bmp'));
+  WizardForm.WelcomeLabel1.Caption := 'AETHER 0.7.0 Beta 53';
+  WizardForm.WelcomeLabel1.Font.Color := $00E854D4;
+  if (InstalledPath = '') then
+    WizardForm.WelcomeLabel2.Caption :=
+      'Windows System Cockpit' + #13#10#13#10 +
+      'Dieses Setup installiert das AETHER-Cockpit mit Portable-Komponenten, ' +
+      'optionaler zentraler Verwaltung und dem vorhandenen Local AI Setup-Assistenten.' + #13#10#13#10 +
+      'Modellgewichte werden nicht mitgeliefert. AETHER bleibt ohne lokale KI vollständig nutzbar.';
   DetectInstallation;
   UpgradePage := CreateInputOptionPage(wpWelcome, 'Installation / Update',
     'Vorhandene AETHER-Installation prüfen',
@@ -226,6 +247,7 @@ begin
       InstalledPath + #13#10#13#10 + 'Dieses Setup aktualisiert auf {#AppVersion}, ohne vorherige Deinstallation. ' +
       'Ihre Einstellungen, Protokolle und Aufzeichnungen bleiben erhalten.';
   end;
+
   DiagramPage := CreateInputOptionPage(wpSelectTasks, 'Desktop-Parameter',
     'Welche Diagramme sollen angezeigt werden?',     'Später in AETHER unter Einstellungen änderbar.', False, False);
   DiagramPage.Add('CPU'); DiagramPage.Add('RAM'); DiagramPage.Add('GPU');
@@ -247,6 +269,7 @@ begin
   CapturePage.Add('Netzwerkmitschnitt gewünscht / Npcap-Downloadseite nach Setup anbieten');
   CapturePage.Add('Automatischen Mitschnitt bei Anmeldung aktivieren');
   CapturePage.Add('Ich genehmige diesen Mitschnitt auch für zukünftige Anmeldungen bis zur Deaktivierung.');
+  for Count := 0 to 2 do CapturePage.Values[Count] := False;
   CaptureAdapter := TNewComboBox.Create(WizardForm);
   CapturePage.CheckListBox.Height := ScaleY(70);
   CaptureAdapter.Parent := CapturePage.Surface;
@@ -274,6 +297,17 @@ begin
 #ifdef SetupValidation
   DesktopPage.Values[1] := ExpandConstant('{param:TestPageConsent|1}') = '1';
 #endif
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if CurPageID = wpFinished then begin
+    WizardForm.FinishedHeadingLabel.Caption := 'AETHER wurde installiert.';
+    WizardForm.FinishedLabel.Caption :=
+      'Die Installation ist abgeschlossen. AETHER kann jetzt gestartet werden.' + #13#10 +
+      'Der optionale Assistent für die lokale Phi-4-Mini-Einrichtung bleibt über das Startmenü erreichbar.';
+    WizardForm.FinishedHeadingLabel.Font.Color := $00E854D4;
+  end;
 end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
@@ -620,7 +654,7 @@ end;
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   ResultCode, Index: Integer;
-  Parameters, ScriptPath, ErrorText: String;
+  Parameters, ScriptPath: String;
   Output: TExecOutput;
 begin
   if CurUninstallStep = usUninstall then begin
@@ -639,6 +673,12 @@ begin
 #ifdef SetupUninstallValidation
     Parameters := Parameters + ' -DataDirectory "' + ExpandConstant('{app}\..\data') +
       '" -ValidationRoot "' + ExpandConstant('{app}\..') + '"';
+    if ExpandConstant('{param:TestLocalAiDirectory}') <> '' then
+      Parameters := Parameters + ' -LocalAiDirectory "' + ExpandConstant('{param:TestLocalAiDirectory}') + '"';
+    if ExpandConstant('{param:TestRemoveLocalAiConfiguration|0}') = '1' then
+      Parameters := Parameters + ' -RemoveLocalAiConfiguration';
+    if ExpandConstant('{param:TestRemoveLocalAiWeights|0}') = '1' then
+      Parameters := Parameters + ' -RemoveLocalAiWeights';
 #else
     Parameters := Parameters + ' -DataDirectory "' + ExpandConstant('{localappdata}\AetherCockpit') + '"';
     if RemoveLocalAiConfiguration then Parameters := Parameters + ' -RemoveLocalAiConfiguration';
@@ -647,22 +687,35 @@ begin
     if not ExecAndCaptureOutput(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Parameters,
       '', SW_HIDE, ewWaitUntilTerminated, ResultCode, Output) then
       RaiseException('AETHER konnte die Deinstallationshilfe nicht starten.');
-    ErrorText := '';
-    for Index := 0 to GetArrayLength(Output.StdOut) - 1 do Log(Output.StdOut[Index]);
+    LocalAiDataRetained := False;
+    for Index := 0 to GetArrayLength(Output.StdOut) - 1 do begin
+      Log(Output.StdOut[Index]);
+      if Pos('AETHER MODEL DATA RETAINED', Output.StdOut[Index]) > 0 then
+        LocalAiDataRetained := True;
+    end;
     for Index := 0 to GetArrayLength(Output.StdErr) - 1 do begin
       Log(Output.StdErr[Index]);
-      ErrorText := ErrorText + Output.StdErr[Index] + #13#10;
     end;
     if Output.Error or (ResultCode <> 0) then
-      RaiseException('AETHER-Prozesse oder Nutzerdaten konnten nicht vollständig entfernt werden (Exit ' +
-        IntToStr(ResultCode) + '). ' + ErrorText);
+      RaiseException('AETHER wurde nicht vollständig deinstalliert. Technische Details stehen im AETHER-Deinstallationsprotokoll. Exitcode: ' +
+        IntToStr(ResultCode) + '.');
   end;
+  if (CurUninstallStep = usDone) and LocalAiDataRetained and not UninstallSilent then
+    MsgBox('AETHER wurde deinstalliert.' + #13#10#13#10 +
+      'Vorhandene lokale Modelldateien wurden nicht gelöscht, weil ihre Herkunft nicht eindeutig AETHER zugeordnet werden konnte. ' +
+      'Vorhandene Ollama-Installationen und andere lokale Modelle wurden dadurch nicht verändert.',
+      mbInformation, MB_OK);
 end;
 
 function InitializeUninstall: Boolean;
 begin
   RemoveLocalAiConfiguration := False;
   RemoveLocalAiWeights := False;
+  LocalAiDataRetained := False;
+#ifdef SetupUninstallValidation
+  RemoveLocalAiConfiguration := ExpandConstant('{param:TestRemoveLocalAiConfiguration|0}') = '1';
+  RemoveLocalAiWeights := ExpandConstant('{param:TestRemoveLocalAiWeights|0}') = '1';
+#endif
   Result := UninstallSilent;
   if Result then begin
     Log('AETHER SILENT UNINSTALL: Installationsordner und AETHER-Kontodaten werden entfernt; lokale KI-Konfiguration und Modellgewichte bleiben erhalten.');

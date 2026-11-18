@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -18,8 +20,9 @@ namespace AetherLocalAiSetup;
 internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
 {
     private static readonly Uri InstallerUri = new("https://ollama.com/download/OllamaSetup.exe");
-    private static Uri ApiBase => new("http://" + AetherLocalAiStoreContract.Host + "/");
-    private static int ApiPort => ApiBase.Port;
+    private readonly Uri _defaultApiBase;
+    private Uri _apiBase;
+    private bool _apiEndpointSelected;
     private static Version MinimumOllamaVersion(AetherProductModel model) =>
         Version.Parse(model.MinimumOllamaVersion ?? "0.5.13");
     private static readonly HttpClient Http = new(new SocketsHttpHandler
@@ -31,18 +34,35 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
     }) { Timeout = Timeout.InfiniteTimeSpan };
     private Process? _managedServer;
 
+    public OllamaSetupOperations() : this(new Uri("http://" + AetherLocalAiStoreContract.Host + "/"))
+    {
+    }
+
+    internal OllamaSetupOperations(Uri defaultApiBase)
+    {
+        CompatibleInferenceProvider.ValidateEndpoint(defaultApiBase, false);
+        _defaultApiBase = defaultApiBase;
+        _apiBase = _defaultApiBase;
+    }
+
+    internal Uri ManagedEndpoint => _apiBase;
+
     public async Task<AetherOllamaRuntimeStatus> InspectRuntimeAsync(AetherProductModel model, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(model);
+        var defaultListenerPreserved = _managedServer is not { HasExited: false } &&
+            IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
+                .Any(endpoint => endpoint.Port == _defaultApiBase.Port);
+        SelectManagedEndpoint();
         var executable = AetherOllamaExecutable.Find();
         if (executable is null)
             return new(false, false, false, null, null, true, false, false,
-                GetConfiguredModelStorePath(), false, false);
+                GetConfiguredModelStorePath(), false, false, false, defaultListenerPreserved);
 
         var signature = await AetherOllamaExecutable.ReadSignatureAsync(executable, token).ConfigureAwait(false);
         var version = await ReadVersionAsync(executable, token).ConfigureAwait(false);
         var listeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
-            .Where(endpoint => endpoint.Port == ApiPort).ToArray();
+            .Where(endpoint => endpoint.Port == _apiBase.Port).ToArray();
         var listenerAvailable = listeners.Length > 0;
         var loopbackOnly = listeners.All(endpoint => IPAddress.IsLoopback(endpoint.Address));
         var apiCompatible = false;
@@ -51,7 +71,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
         {
             try
             {
-                using var versionResponse = await Http.GetAsync(new Uri(ApiBase, "api/version"), token).ConfigureAwait(false);
+                using var versionResponse = await Http.GetAsync(new Uri(_apiBase, "api/version"), token).ConfigureAwait(false);
                 if (versionResponse.IsSuccessStatusCode)
                 {
                     using var versionDocument = await JsonDocument.ParseAsync(
@@ -64,7 +84,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
                 }
                 if (apiCompatible)
                 {
-                    using var tagsResponse = await Http.GetAsync(new Uri(ApiBase, "api/tags"), token).ConfigureAwait(false);
+                    using var tagsResponse = await Http.GetAsync(new Uri(_apiBase, "api/tags"), token).ConfigureAwait(false);
                     if (tagsResponse.IsSuccessStatusCode)
                     {
                         using var tags = await JsonDocument.ParseAsync(
@@ -95,10 +115,12 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
                 entry.Digest.Equals(expectedDigest, StringComparison.OrdinalIgnoreCase));
 
         // A running process may have inherited a different environment than this user's current configuration.
-        var storeVerified = storeOwned &&
-            (!listenerAvailable || _managedServer is { HasExited: false });
+        var listenerOwned = _managedServer is { HasExited: false } managed &&
+            IsListenerOwnedBy(_apiBase.Port, managed.Id);
+        var storeVerified = storeOwned && (!listenerAvailable || listenerOwned);
         return new(true, signature.Valid, apiCompatible, version, executable, loopbackOnly,
-            listenerAvailable, storeVerified, storePath, storeOwned, modelPresent, modelOwned);
+            listenerAvailable, storeVerified, storePath, storeOwned, modelPresent, modelOwned,
+            defaultListenerPreserved);
     }
 
     public Task<AetherModelVerification> RecoverAcceptanceStoreOwnershipAsync(
@@ -182,6 +204,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
     public Task ConfigureManagedStoreAsync(CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
+        SelectManagedEndpoint();
         var root = AetherLocalAiStoreContract.RootPath;
         var models = AetherLocalAiStoreContract.ModelStorePath;
         EnsureNoReparsePoints(models);
@@ -199,21 +222,16 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             AetherLocalAiStoreContract.IsAcceptanceMode ? null :
                 Environment.GetEnvironmentVariable(AetherLocalAiStoreContract.HostEnvironmentVariable, EnvironmentVariableTarget.User));
         WriteJsonAtomically(Path.Combine(root, AetherLocalAiStoreContract.OwnershipFileName), document);
-        if (!AetherLocalAiStoreContract.IsAcceptanceMode)
-        {
-            Environment.SetEnvironmentVariable(AetherLocalAiStoreContract.EnvironmentVariable, models, EnvironmentVariableTarget.User);
-            Environment.SetEnvironmentVariable(AetherLocalAiStoreContract.HostEnvironmentVariable,
-                AetherLocalAiStoreContract.Host, EnvironmentVariableTarget.User);
-        }
         Environment.SetEnvironmentVariable(AetherLocalAiStoreContract.EnvironmentVariable, models, EnvironmentVariableTarget.Process);
         Environment.SetEnvironmentVariable(AetherLocalAiStoreContract.HostEnvironmentVariable,
-            AetherLocalAiStoreContract.Host, EnvironmentVariableTarget.Process);
+            _apiBase.Authority, EnvironmentVariableTarget.Process);
         return Task.CompletedTask;
     }
 
     public async Task StartManagedServerAsync(CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
+        SelectManagedEndpoint();
         if (_managedServer is { HasExited: false })
             return;
         var executable = AetherOllamaExecutable.Find() ??
@@ -227,7 +245,9 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             WorkingDirectory = Path.GetDirectoryName(executable)!
         };
         startInfo.Environment[AetherLocalAiStoreContract.EnvironmentVariable] = AetherLocalAiStoreContract.ModelStorePath;
-        startInfo.Environment[AetherLocalAiStoreContract.HostEnvironmentVariable] = AetherLocalAiStoreContract.Host;
+        startInfo.Environment[AetherLocalAiStoreContract.HostEnvironmentVariable] = _apiBase.Authority;
+        startInfo.Environment["OLLAMA_NO_CLOUD"] = "1";
+        startInfo.Environment["OLLAMA_NOPRUNE"] = "1";
         var process = Process.Start(startInfo) ??
             throw new Win32Exception("Der verwaltete Ollama-Server konnte nicht gestartet werden.");
         _managedServer = process;
@@ -241,12 +261,13 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
                 if (process.HasExited)
                     throw new InvalidOperationException($"Der verwaltete Ollama-Server wurde mit Exitcode {process.ExitCode} beendet.");
                 var listeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
-                    .Where(endpoint => endpoint.Port == ApiPort).ToArray();
-                if (listeners.Length > 0 && listeners.All(endpoint => IPAddress.IsLoopback(endpoint.Address)))
+                    .Where(endpoint => endpoint.Port == _apiBase.Port).ToArray();
+                if (listeners.Length > 0 && listeners.All(endpoint => IPAddress.IsLoopback(endpoint.Address)) &&
+                    IsListenerOwnedBy(_apiBase.Port, process.Id))
                 {
                     try
                     {
-                        using var response = await Http.GetAsync(new Uri(ApiBase, "api/version"), timeout.Token).ConfigureAwait(false);
+                        using var response = await Http.GetAsync(new Uri(_apiBase, "api/version"), timeout.Token).ConfigureAwait(false);
                         if (response.IsSuccessStatusCode) return;
                     }
                     catch (HttpRequestException) { }
@@ -294,7 +315,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
         IProgress<AetherLocalAiSetupProgress>? progress, CancellationToken token)
     {
         EnsureApprovedModel(model);
-        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(ApiBase, "api/pull"))
+        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(_apiBase, "api/pull"))
         {
             Content = JsonContent.Create(new { name = model.ModelId, stream = true })
         };
@@ -322,7 +343,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
     public async Task<AetherModelVerification> VerifyModelAsync(AetherProductModel model, CancellationToken token)
     {
         EnsureApprovedModel(model);
-        using var response = await Http.GetAsync(new Uri(ApiBase, "api/tags"), token).ConfigureAwait(false);
+        using var response = await Http.GetAsync(new Uri(_apiBase, "api/tags"), token).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         using var tags = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false),
             cancellationToken: token).ConfigureAwait(false);
@@ -376,7 +397,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
     public async Task<bool> RunFixedHealthCheckAsync(AetherProductModel model, CancellationToken token)
     {
         EnsureApprovedModel(model);
-        using var response = await Http.PostAsJsonAsync(new Uri(ApiBase, "api/generate"), new
+        using var response = await Http.PostAsJsonAsync(new Uri(_apiBase, "api/generate"), new
         {
             model = model.ModelId,
             prompt = "Gib ausschließlich das JSON-Objekt {\"status\":\"ready\"} zurück.",
@@ -430,7 +451,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             AutomaticSelectionPriority = model.AutomaticSelectionPriority,
             FallbackModelId = model.FallbackModelId
         };
-        var entry = new AetherModelCatalogEntry(runtimeModel, FabricProviderKind.Ollama, ApiBase,
+        var entry = new AetherModelCatalogEntry(runtimeModel, FabricProviderKind.Ollama, _apiBase,
             AetherLocalAiStoreContract.ModelStorePath, true);
         var catalogPath = AetherModelCatalog.DefaultPath;
         var existing = File.Exists(catalogPath)
@@ -540,6 +561,82 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             EnvironmentVariableTarget.Process) ??
             Environment.GetEnvironmentVariable(AetherLocalAiStoreContract.EnvironmentVariable, EnvironmentVariableTarget.User);
         return configured ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ollama", "models");
+    }
+
+    private void SelectManagedEndpoint()
+    {
+        if (_apiEndpointSelected) return;
+        _apiEndpointSelected = true;
+        var defaultBusy = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
+            .Any(endpoint => endpoint.Port == _defaultApiBase.Port);
+        if (defaultBusy) _apiBase = FindFreeLoopbackEndpoint();
+    }
+
+    private Uri FindFreeLoopbackEndpoint()
+    {
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            using var listener = new TcpListener(IPAddress.Loopback, 0);
+            try
+            {
+                listener.Start();
+                var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+                if (port != AetherLocalAiStoreContract.AcceptanceTestPort)
+                    return new Uri($"http://127.0.0.1:{port}/");
+            }
+            finally
+            {
+                listener.Stop();
+            }
+        }
+        throw new IOException("Kein freier AETHER-Ollama-Loopback-Endpunkt außerhalb des Acceptance-Ports verfügbar.");
+    }
+
+    private static bool IsListenerOwnedBy(int port, int processId)
+    {
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            var size = 0;
+            var result = GetExtendedTcpTable(IntPtr.Zero, ref size, false, 2, 5, 0);
+            if (result != 122) throw new Win32Exception((int)result);
+            var buffer = Marshal.AllocHGlobal(size);
+            try
+            {
+                result = GetExtendedTcpTable(buffer, ref size, false, 2, 5, 0);
+                if (result == 122) continue;
+                if (result != 0) throw new Win32Exception((int)result);
+                var count = Marshal.ReadInt32(buffer);
+                var rowSize = Marshal.SizeOf<TcpRow>();
+                for (var index = 0; index < count; index++)
+                {
+                    var row = Marshal.PtrToStructure<TcpRow>(IntPtr.Add(buffer, 4 + index * rowSize));
+                    if (row.State == 2 && (ushort)IPAddress.NetworkToHostOrder((short)row.LocalPort) == port &&
+                        row.ProcessId == processId)
+                        return true;
+                }
+                return false;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+        throw new Win32Exception(122, "Die TCP-Prozesszuordnung änderte sich während der Prüfung.");
+    }
+
+    [DllImport("iphlpapi.dll", SetLastError = true)]
+    private static extern int GetExtendedTcpTable(IntPtr tcpTable, ref int size, bool order, int ipVersion,
+        int tableClass, int reserved);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TcpRow
+    {
+        public uint State;
+        public uint LocalAddress;
+        public uint LocalPort;
+        public uint RemoteAddress;
+        public uint RemotePort;
+        public uint ProcessId;
     }
 
     private static StoreOwnership? ReadOwnership()
