@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-AETHER Beta 53 ist eine Vorabversion. Diese Anleitung beschreibt einen
+AETHER Beta 54 ist eine Vorabversion. Diese Anleitung beschreibt einen
 risikoarmen
 Bedienungsrundgang, keine Aufforderung zu produktiven Änderungen.
 
@@ -14,7 +14,7 @@ Bedienungsrundgang, keine Aufforderung zu produktiven Änderungen.
 - Vor Änderungen wichtige Daten sichern und nur die Funktion testen, deren
   Wirkung verstanden wurde.
 
-Portable, Setup und Server sind getrennte Programmpakete. Modellgewichte
+Portable, Setup und Server sind getrennte Programmpakete. Modelldateien
 sind in keinem davon enthalten. Die optionale lokale Modellinstallation ist
 ein separater Zustimmungsablauf.
 

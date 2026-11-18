@@ -1,6 +1,6 @@
 # Installation
 
-AETHER Beta 53 wird als vollständiges Portable-Verzeichnis, als
+AETHER Beta 54 wird als vollständiges Portable-Verzeichnis, als
 Windows-Installer und mit einer getrennten Server-Komponente bereitgestellt.
 
 ## Voraussetzungen
@@ -22,7 +22,7 @@ erforderlich.
    Die Datei kann zum Beispiel so geprüft werden:
 
    ```powershell
-   Get-FileHash .\AETHER-0.7.0-beta.53-Portable-win-x64.zip -Algorithm SHA256
+   Get-FileHash .\AETHER-0.7.0-beta.54-Portable-win-x64.zip -Algorithm SHA256
    ```
 
 3. Das vollständige ZIP in einen eigenen Ordner entpacken. Keine einzelne
@@ -30,14 +30,14 @@ erforderlich.
 4. `SystemCockpit.exe` starten. Windows kann für einzelne Funktionen eine
    erhöhte Ausführung anfordern.
 
-Die Beta-53-Datei ist unsigniert. Eine Sicherheitswarnung nicht umgehen und
+Die Beta-54-Datei ist unsigniert. Eine Sicherheitswarnung nicht umgehen und
 keinen Schutz deaktivieren. Bei einer Warnung die Bezugsquelle und
 Prüfsumme kontrollieren.
 
 ## Setup-Installer
 
 Den Windows-Installer
-`AETHER-0.7.0-beta.53-Setup-win-x64.exe` aus den offiziellen Release-Assets
+`AETHER-0.7.0-beta.54-Setup-win-x64.exe` aus den offiziellen Release-Assets
 laden, die Prüfsumme vergleichen und den Dialogen folgen. Das Setup erkennt
 eine bestehende AETHER-Installation und aktualisiert sie im vorhandenen
 Vertrag. Nach erfolgreicher Hauptinstallation kann **Lokale KI für AETHER
@@ -47,7 +47,7 @@ das Startmenü erneut erreichbar.
 
 ## Separater Server
 
-`AETHER-0.7.0-beta.53-Server-win-x64.zip` enthält die optionale
+`AETHER-0.7.0-beta.54-Server-win-x64.zip` enthält die optionale
 Management-Komponente. Das Archiv vollständig entpacken und die
 mitgelieferte Serverdokumentation lesen, bevor eine Dienstinstallation oder
 Netzwerkkonfiguration vorgenommen wird. Der Server ist für den normalen
@@ -58,7 +58,7 @@ lokalen Einzelplatzbetrieb nicht erforderlich.
 Die Modellinstallation wird über den mitgelieferten AETHER-Assistenten
 gestartet. Der Ablauf prüft die Systemfähigkeit, zeigt die Lizenz an und
 benötigt deren ausdrückliche Annahme, bevor Runtime oder Modell eingerichtet
-werden. Modellgewichte sind nicht Teil der Programmpakete. Einzelheiten stehen in der
+werden. Modelldateien sind nicht Teil der Programmpakete. Einzelheiten stehen in der
 [Anleitung zur lokalen Modellinstallation](INTELLIGENCE-MODEL-INSTALLATION.md).
 
 ## Aktualisieren
@@ -71,12 +71,12 @@ Alte Programmdateien nicht in den neuen Ordner mischen.
 ## Entfernen
 
 AETHER schließen und den entpackten Programmordner entfernen. Gesondert
-gespeicherte Nutzerdaten oder lokale Modellgewichte werden dadurch nicht
+gespeicherte Nutzerdaten oder lokale Modelldateien werden dadurch nicht
 zwangsläufig entfernt. Vor einer manuellen Bereinigung benötigte Daten
 sichern und die betroffenen Verzeichnisse in AETHER beziehungsweise den
 Windows-Benutzerdaten prüfen.
 
 ## Status
 
-Beta 53 ist eine Vorabversion. Screenshots aktueller Paketstände sind in
-dieser Fassung bewusst noch nicht enthalten.
+Beta 54 ist eine Vorabversion. Aktuelle Produktbilder stehen in der
+[README](../README.md).

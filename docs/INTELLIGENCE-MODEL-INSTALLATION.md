@@ -1,7 +1,7 @@
 # Lokale Modellinstallation
 
 AETHER richtet das qualifizierte lokale Modell getrennt von den
-Cockpitansichten ein. Normale Fragen laden keine Runtime oder Modellgewichte
+Cockpitansichten ein. Normale Fragen laden keine Runtime oder Modelldateien
 herunter.
 
 ## Qualifiziertes Modell
@@ -9,13 +9,13 @@ herunter.
 - Modell: Phi 4 Mini, `phi4-mini:3.8b`
 - Inferenz: lokaler Ollama-Provider
 - Freigabe: ausschließlich nach Systemfähigkeits- und Integritätsprüfung
-- Modellgewichte: separat gespeicherte lokale Dateien, nicht in Portable,
+- Modelldateien: separat gespeicherte lokale Dateien, nicht in Portable,
   Setup oder Serverpaket enthalten
 
-Andere Modelle sind für Beta 53 weder auswählbar noch freigegeben. Nemotron
+Andere Modelle sind für Beta 54 weder auswählbar noch freigegeben. Nemotron
 3 Nano 4B bleibt technisch abgelehnt; Nemotron 3 Nano 30B besitzt keinen
 vollständigen Hardware-Qualifikationsnachweis. Beide sind nicht Bestandteil
-der Beta-53-Modellauswahl.
+der Beta-54-Modellauswahl.
 
 ## Einrichtung
 
@@ -50,7 +50,7 @@ Bedienabläufe und Bestätigungen.
 
 ## Modellstatus und Daten
 
-Runtime und Gewichte werden lokal verwaltet und gehören nicht zum
+Runtime und Modelldateien werden lokal verwaltet und gehören nicht zum
 Programmpaket. Während des gesonderten Setup-Ablaufs wird
 der Modellbezug angezeigt. Der normale Frageablauf verwendet den lokalen
 Provider; ein Cloud-Fallback gehört nicht zum qualifizierten Pfad.

@@ -30,7 +30,7 @@ public partial class MainWindow : Window
             System.Reflection.AssemblyInformationalVersionAttribute), false)
             .Cast<System.Reflection.AssemblyInformationalVersionAttribute>()
             .Select(attribute => attribute.InformationalVersion.Split('+')[0])
-            .FirstOrDefault() ?? "0.7.0 Beta 53");
+            .FirstOrDefault() ?? "0.7.0 Beta 54");
         ModelStorePathText.Text = AetherLocalAiStoreContract.ModelStorePath;
         StoreConfigurationAccepted.Content =
             "Ich bestätige die Konfiguration des AETHER-Modellstores. " +

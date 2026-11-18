@@ -4,344 +4,290 @@
 
 **Eine Windows-Kommandozentrale für den eigenen Rechner.**
 
-Windows bringt für fast jedes technische Thema ein eigenes Werkzeug mit:
+Meine Ausgangsfrage war ziemlich einfach:
+
+Warum brauche ich unter Windows so viele unterschiedliche Programme und
+Verwaltungsoberflächen, um zu verstehen, was auf meinem eigenen Rechner
+passiert?
+
 Task-Manager, Geräte-Manager, Ereignisanzeige, Dienste, Aufgabenplanung,
-Systeminformationen, PowerShell, Netzwerkdiagnose, Hardware-Monitoring
-und Programme des jeweiligen Hardwareherstellers.
+Systeminformationen, PowerShell, Herstellerprogramme und verschiedene
+Hardwarewerkzeuge zeigen jeweils nur einen Teil des Ganzen.
 
-Die Informationen gehören technisch oft zusammen, liegen aber in mehreren
-Anwendungen und Oberflächen verteilt. AETHER soll sie in einem gemeinsamen
-Ausgangspunkt zusammenführen. Es ersetzt nicht jedes vorhandene
-Windows-Werkzeug und macht aus unbekannten Messwerten keine sicheren
-Aussagen.
+AETHER ist mein Versuch, daraus ein zusammenhängendes Cockpit zu machen.
+Nicht jedes vorhandene Windows-Werkzeug ersetzen, sondern einen
+gemeinsamen Ausgangspunkt schaffen.
 
-![AETHER-Systemübersicht](docs/images/02-system-overview.png)
+![AETHER-Systemübersicht im Windows-Modern-Modus](docs/images/01-cockpit-modern-dark.png)
 
-*Die Systemübersicht von AETHER 0.7.0 Beta 53.*
+*AETHER Cockpit mit Navigation, Hardwarezustand und Verwaltungsbereichen.
+Die Aufnahme stammt aus dem Beta-54-Prüfstand.*
 
-## Die Idee hinter AETHER
+## Wie AETHER entstanden ist
 
-Bei einem Problem mit meinem Rechner möchte ich nicht zuerst überlegen
-müssen, welches Windows-Werkzeug oder welches Herstellerprogramm ich jetzt
-öffnen sollte. Ich möchte einen gemeinsamen Ausgangspunkt haben:
+AETHER begann als Idee für ein Hardware- und Windows-Systemcockpit. Ich
+wollte aktuelle Hardware sehen, Temperaturen und Last verstehen, Prozesse
+einordnen, Windows-Zustände erkennen und Diagnose nicht über zehn
+Programme verteilen.
 
-**Beobachten → Zusammenhänge erkennen → Ursache finden → Maßnahme auswählen
-→ kontrolliert handeln**
+Aus der Idee wurde mit der Zeit deutlich mehr. Nicht, weil von Anfang an
+ein großer Masterplan existierte, sondern weil sich bei jeder neuen
+Funktion dieselbe Frage stellte:
 
-AETHER soll nicht nur Messwerte anzeigen. Es soll helfen zu sehen, welche
-Informationen zusammengehören, was tatsächlich gemessen wurde und wo eine
-weitere Prüfung sinnvoll ist.
+**Warum liegt diese Information eigentlich wieder in einem anderen
+Windows-Werkzeug?**
 
-Der wichtige Grundsatz lautet:
-
-**Erst messen, dann bewerten.**
-
-AETHER unterscheidet soweit technisch möglich zwischen gemessenen Daten,
-Informationen von Windows oder Hardware, daraus abgeleiteten
-Zusammenhängen, sprachlicher Einordnung und tatsächlich ausgeführten
-Änderungen.
-
-## Was AETHER heute kann
-
-### Systemübersicht
-
-Die Systemübersicht zeigt verfügbare Livewerte und Verläufe zu CPU,
-Arbeitsspeicher, GPU, Datenträgern und Netzwerk. Dazu kommen ein
-Windows-Status und ausgewählte Hardware-Sensoren. Nicht verfügbare Daten
-bleiben als nicht verfügbar gekennzeichnet.
-
-### Hardware
-
-Hardwareansichten ordnen Informationen zu CPU, GPU, Arbeitsspeicher,
-Mainboard, Datenträgern, Geräten und verfügbaren Sensoren. Dazu gehören
-soweit vorhanden SMART- und NVMe-Befunde. Nicht jede Hardware liefert
-dieselben Daten; Temperaturgrenzen und andere Herstellergrenzen sind keine
-Messwerte.
-
-### Prozesse und Leistung
-
-AETHER zeigt Prozesse mit Leistungsinformationen und begrenzter Historie.
-Ziel ist nicht nur zu sehen, dass Last entsteht, sondern die auffällige
-Situation mit Windows-Diensten, Aufgaben, Verbindungen und
-Hardwareinformationen einzuordnen. Eine Prozess-I/O-Zahl ist dabei kein
-Beweis für physische Datenträgeraktivität.
-
-### Windows-Diagnose
-
-Vorhandene Diagnosebereiche befassen sich unter anderem mit Ereignissen,
-Geräten, Treibern, Diensten, Aufgaben, Autostart, Netzwerk, Systemzustand
-und ausgewählten Windows-Komponenten. Ereignisse und Inventardaten sind
-Hinweise, aber keine vollständige Ursachendiagnose für sich.
-
-### Verwaltung und Wartung
-
-AETHER bietet geführte Abläufe für ausgewählte Prozesse, Dienste, Aufgaben,
-Netzwerkeinstellungen und Windows-Funktionen. Vor einer unterstützten
-Änderung werden Ziel und erwartete Wirkung angezeigt; anschließend ist
-eine bewusste Bestätigung erforderlich.
-
-Analyse und Änderung bleiben getrennt. AETHER führt aufgrund einer
-Diagnose nicht ungefragt Änderungen am System aus. Nicht jede Aktion kann
-zurückgenommen werden; Windows-Rechte und Richtlinien gelten weiter.
-
-## AETHER Intelligence
-
-AETHER besitzt eine lokale Assistenzfunktion. Der interessante Teil ist
-nicht, dass ein Sprachmodell eingebaut wurde. Der wichtige Punkt ist:
-
-**AETHER soll dem Modell nicht blind glauben.**
-
-Der Ablauf ist dafür bewusst getrennt:
-
-1. AETHER liest reale Windows- und Hardwareinformationen.
-2. Relevante Daten werden als technische Belege aufbereitet.
-3. Das lokale Modell erhält nur den für die Aufgabe benötigten Kontext.
-4. Das Modell formuliert eine strukturierte Antwort.
-5. AETHER prüft technische Aussagen gegen die vorhandenen Daten.
-6. Nicht belegbare oder widersprüchliche Aussagen werden nicht einfach als
-   Tatsache angezeigt.
-
-![AETHER Intelligence](docs/images/04-aether-intelligence.png)
-
-*AETHER Intelligence mit Modellstatus, technischen Daten und
-Validierungsbereich.*
-
-![Technische Findings und Validierungsstatus](docs/images/07-intelligence-evidence.png)
-
-*Technischer Detailbereich von AETHER Intelligence mit Findings,
-Modellstatus und Prüfinformationen.*
-
-Der qualifizierte Modellpfad in Beta 53 ist **Phi 4 Mini**
-(`phi4-mini:3.8b`). Die Verarbeitung erfolgt lokal über Ollama. AETHER
-prüft dabei Claims, kanonische Werte und Belegreferenzen; eine solche
-Prüfung ist keine allgemeine semantische Wahrheitsgarantie.
-
-AETHER selbst funktioniert auch ohne eingerichtetes Sprachmodell. Die
-normale Nutzung lädt weder die Ollama-Runtime noch Modellgewichte herunter.
-
-### Warum lokale KI?
-
-Ein Windows-PC liefert viele technische Informationen. Ein erfahrener
-Benutzer kann diese selbst zusammensetzen, muss dafür aber häufig mehrere
-Quellen durchsuchen. Das lokale Modell soll dabei helfen, vorhandene
-Informationen verständlich zusammenzufassen und einzuordnen.
-
-**Das Sprachmodell ist Helfer und Dolmetscher, nicht die Messstelle.**
-
-### Phi und Nemotron in Beta 53
-
-**Phi 4 Mini** ist der qualifizierte Standardpfad und tatsächlich für den
-lokalen automatischen Einsatz freigegeben.
-
-**Nemotron 3 Nano 4B** ist nicht Bestandteil des freigegebenen
-Beta-53-Modellpfads und im Setup nicht auswählbar. Die Variante wurde
-technisch untersucht, hat aber die vollständige Produktqualifikation nicht
-bestanden. **Nemotron 3 Nano 30B** bleibt ein möglicher Kandidat für eine
-spätere Hardware- und Infrastrukturprüfung.
-
-AETHER nimmt Modelle erst in den Produktpfad auf, wenn Identität, Lizenz,
-Digest, Hardwarebedarf, Ausgabe und bestehende Validierungsverträge
-zusammenpassen.
-
-## Local first und Client first
-
-AETHER ist zuerst ein Programm für den lokalen Windows-PC. Ein einzelner
-Rechner bleibt ohne Server vollständig benutzbar. Der lokale Client hat
-Vorrang.
-
-Der separate Server ergänzt AETHER für zentrale Verwaltungs- und
-Managementszenarien mit mehreren Rechnern. Er ist keine Voraussetzung für
-den Einzelplatzbetrieb. In Beta 53 führt der Server keine lokale oder
-serverseitige Modellinferenz aus.
-
-Langfristig kann der Server zusätzliche Aufgaben übernehmen, aber nur dort,
-wo dies technisch und wirtschaftlich sinnvoll ist. Eine kostenpflichtige
-Cloud-Infrastruktur ist keine Voraussetzung und wird nicht automatisch
-eingerichtet.
+AETHER ist an dieser Frage gewachsen.
 
 ## Warum AETHER so aussieht
 
 Meine Vorstellung davon, wie ein Computer aussehen und funktionieren
-sollte, ist nicht 2026 entstanden. Sie stammt aus den 80ern und 90ern. Ich
-bin mit dieser Computerwelt groß geworden und habe die Entwicklung vom
-klassischen PC über DOS, Windows 3.x und Windows 95 bis zum heutigen
-Windows selbst miterlebt.
+sollte, ist nicht in den letzten Jahren entstanden. Sie kommt aus den 80ern
+und 90ern.
 
-Damals bedeutete ein Computer häufig: ausprobieren, konfigurieren,
-Bootdisketten bauen, Treiber suchen, Steckkarten wechseln, Jumper setzen,
-Kabel ändern, Hardware aufrüsten, Fehler suchen, Dinge zerlegen, wieder
-zusammensetzen und vor allem verstehen, warum etwas funktioniert oder
-eben nicht. Wenn etwas nicht lief, gab es selten einen Assistenten, der das
-Problem einfach erledigte. Man musste sich mit dem Rechner beschäftigen.
+Ich bin mit dieser PC-Welt groß geworden. 386er, DOS, Windows 3.x,
+Windows 95, Bootdisketten, Steckkarten, Jumper, Treiber, Kabel, Aufrüsten,
+Fehler suchen und Systeme neu aufsetzen gehörten dazu. Wenn etwas nicht
+funktionierte, konnte man selten einfach auf einen Knopf drücken. Man
+musste verstehen, was der Rechner macht.
 
-Genau das hat meinen Umgang mit Technik geprägt. Ich möchte nicht nur
-wissen, dass etwas funktioniert. Ich möchte verstehen, wie die einzelnen
-Komponenten zusammenspielen und warum ein System einen bestimmten Zustand
-erreicht.
+Genau das hat mich geprägt. Ich will bis heute nicht nur wissen, dass
+etwas funktioniert. Ich will verstehen, warum.
 
-Filme, Spiele und Computerzeitschriften dieser Zeit zeigten eine andere
-Zukunft des Computers: dunkle Kommandozentralen, leuchtende Anzeigen,
-technische Instrumente, Raster und Statusanzeigen. Systeme sollten ihren
-eigenen Zustand sichtbar machen und Zusammenhänge verständlich darstellen.
-Diese Vorstellung hat das AETHER-Design geprägt.
+Gleichzeitig zeigten Filme, Spiele und Computerzeitschriften damals eine
+bestimmte Vorstellung vom Computer der Zukunft: dunkle Kommandozentralen,
+leuchtende Anzeigen, technische Instrumente, Raster, Statusanzeigen und
+Systeme, die ihren eigenen Zustand sichtbar machen.
 
-### Retro-Neon
+Das Retro-Neon-Design, das Mainboard und die Instrumente sind deshalb
+keine nachträglich aufgesetzte Dekoration. Sie verbinden die Computerwelt,
+mit der für mich alles angefangen hat, mit der Zukunft, die ich mir damals
+vorgestellt habe.
 
-AETHER verwendet dunkle Flächen, Cyan, Magenta und Grün für positive
-Zustände sowie technische Instrumente mit Mainboard- und Cockpit-Anmutung.
-Das Retro-Neon-Design ist keine aufgesetzte Retro-Dekoration. Mainboard,
-Instrumente, Neonfarben und technische Anzeigen verbinden für mich zwei
-Dinge:
+**Im Grunde baue ich mit AETHER ein Stück der PC-Zukunft, die ich mir in
+den 90ern gewünscht hätte.**
 
-**die Computerwelt, mit der für mich alles angefangen hat**
+![Retro-Neon Mainboard, Tag](docs/images/09-mainboard-day.png)
 
-und
+*AETHER-Mainboard mit synthetischen Testdaten zur Darstellung der
+Hardwareoberfläche.*
 
-**die Vorstellung davon, was ein Rechner irgendwann einmal können sollte.**
+## Was AETHER heute ist
 
-Die Technik ist heute weit genug, einen Teil dieser damaligen Vorstellung
-umzusetzen. AETHER ist deshalb kein nostalgisches Museum und keine reine
-Retro-Spielerei, sondern moderne Technik mit der technischen Neugier und
-der Zukunftsvorstellung, mit der für mich alles angefangen hat.
+AETHER ist inzwischen deutlich mehr als ein Hardwaremonitor. Die
+vorhandenen Bereiche bringen Informationen aus Windows und der Hardware
+in einer gemeinsamen Oberfläche zusammen.
 
-![Mainboard- und Hardwareansicht](docs/images/03-mainboard.png)
+### System und Hardware
 
-*Mainboard- und Hardwareansicht im AETHER Cockpit. Demonstration mit
-synthetischen Testdaten.*
+- Systemübersicht mit verfügbaren CPU-, RAM-, GPU-, Datenträger- und
+  Netzwerkwerten
+- Mainboard- und Hardwareansichten
+- CPU, GPU, Speicher, Datenträger und vorhandene Sensoren
+- Prozesse und ausgewählte Leistungszusammenhänge
+- SMART- und NVMe-Befunde, soweit vom System verfügbar
 
-Seit meinen ersten Rechnern habe ich vor neuer Technik Respekt, aber ich
-bin nie davor zurückgeschreckt, sie auseinanderzunehmen, zu verändern, zu
-testen oder neu aufzubauen, wenn ich verstehen wollte, wie etwas
-funktioniert. AETHER trägt genau diese Haltung in sich.
+Nicht jede Hardware liefert dieselben Daten. Fehlende Sensoren bleiben
+nicht verfügbar; Herstellergrenzen und Temperaturgrenzen sind keine
+Messwerte.
 
-**Im Grunde baue ich mit AETHER ein Stück der PC-Zukunft, die ich mir in den
-90ern gewünscht hätte.**
+### Windows-Diagnose und Verwaltung
 
-### Windows Modern
+- Ereignisse, Geräte, Treiber, Dienste und Aufgaben
+- Autostart und ausgewählte Netzwerkzustände
+- Systemzustand und technische Hinweise
+- geführte Abläufe für vorhandene Verwaltungsaufgaben
+- historische Zustände und ausgewählte Baselines
+- Guardian als Entwicklungsbereich zur Beurteilung von Änderungen und
+  Systemabweichungen
 
-Daneben gibt es eine zurückhaltendere Windows-Modern-Darstellung für
-Anwender, die lieber neutrale Fenster und Diagramme verwenden. Animationen
-lassen sich abschalten.
+Analyse und Änderung bleiben getrennt. AETHER ändert Windows nicht ungefragt.
+Vor unterstützten Änderungen zeigt es Ziel und erwartete Wirkung.
+
+![Guardian](docs/images/06-guardian.png)
+
+*Guardian mit synthetischen Testdaten zur Demonstration der Oberfläche.
+Guardian befindet sich weiterhin in Entwicklung.*
+
+![AETHER zentrale Systemverwaltung](docs/images/17-client-admin.png)
+
+*Zentrale Systemverwaltung und geführte Berechtigungsansicht. Aufnahme
+aus dem reproduzierbaren UI-Test.*
+
+![AETHER Diagnoseeinstellungen](docs/images/18-client-diagnostics.png)
+
+*Warn-, Sensor- und Diagnoseeinstellungen. Aufnahme aus dem
+reproduzierbaren UI-Test.*
+
+![AETHER Netzwerkansicht](docs/images/19-network.png)
+
+*Netzwerk- und Mitschnittansicht mit synthetischen Daten und sichtbaren
+Bestätigungsschranken.*
+
+## Zwei Darstellungsarten
+
+Retro-Neon bleibt die sichtbare AETHER-Signatur. Daneben gibt es eine
+zurückhaltendere Windows-Modern-Darstellung.
+
+![AETHER Cockpit, Windows Modern hell](docs/images/02-cockpit-modern-light.png)
+
+*Windows Modern hell mit denselben Aufgabenbereichen und verständlicher
+Statusdarstellung.*
+
+![Retro-Neon Mainboard, Nacht](docs/images/10-mainboard-night.png)
+
+*AETHER-Mainboard in der Retro-Neon-Nachtdarstellung. Die Werte sind
+synthetische Testdaten.*
+
+## Lokale Assistenz
+
+AETHER besitzt auch eine lokale Assistenzfunktion.
+
+Windows und die Hardware liefern die eigentlichen Daten. Phi 4 Mini hilft
+dabei, diese Daten verständlich zusammenzufassen und technische
+Zusammenhänge zu erklären. AETHER prüft die Aussagen anschließend wieder
+anhand der vorhandenen Systemdaten.
+
+**AETHER misst. Das Modell hilft beim Einordnen.**
+
+![AETHER Intelligence](docs/images/04-aether-intelligence.png)
+
+*AETHER Intelligence mit lokalem Modellstatus, technischem Kontext und
+Systeminformationen.*
+
+![Technische Prüfung von AETHER Intelligence](docs/images/07-intelligence-evidence.png)
+
+*Technische Belege, geprüfte Aussagen und Validierungsbereich von AETHER
+Intelligence.*
+
+### Phi und Nemotron
+
+Phi 4 Mini ist für Beta 54 der geprüfte lokale Modellpfad. Nemotron wurde
+untersucht, aber nicht für den automatischen Beta-54-Pfad freigegeben.
 
 ## AETHER Local AI Setup
 
-Der Hauptinstaller enthält den separaten Assistenten **AETHER Local AI
-Setup**. Er gehört optisch zur AETHER-Produktfamilie, verwendet das
-Neon-Design mit Logo und Wortmarke und besitzt einen definierten,
-verschiebbaren Header.
+AETHER bringt einen eigenen Einrichtungsassistenten für die lokale
+Assistenz mit. Er prüft:
 
-Der Assistent prüft System, Hardware und vorhandene Runtime, zeigt die
-Modelllizenz und benötigt eine ausdrückliche Annahme. Er richtet den
-unterstützten Phi-4-Mini-Pfad kontrolliert ein und startet keinen
-Modellbezug ungefragt. Vorhandene qualifizierte lokale Daten können
-wiederverwendet werden.
+- Hardware
+- vorhandene Ollama-Umgebung
+- AETHER-Modellspeicher
+- Phi 4 Mini
+- erforderliche Dateien
 
-Modellgewichte und Ollama-Runtime sind nicht Teil der GitHub-Programmpakete.
+Eine vorhandene Benutzer-Ollama-Installation bleibt unangetastet. AETHER
+verwendet für seinen eigenen Modellbetrieb einen getrennten Zustand.
 
 ![AETHER Local AI Setup](docs/images/05-local-ai-setup.png)
 
-*AETHER Local AI Setup für den qualifizierten lokalen Phi-4-Mini-Pfad.*
+*AETHER Local AI Setup für den qualifizierten Phi-4-Mini-Pfad.*
 
-![AETHER Guardian](docs/images/06-guardian.png)
+Die Programmpakete enthalten keine Modelldateien. Die normale AETHER-Nutzung
+lädt weder Ollama noch Phi 4 Mini im Hintergrund herunter.
 
-*Guardian-Arbeitsbereich der AETHER-Oberfläche. Darstellung mit synthetischen
-Testdaten; Guardian bleibt in Entwicklung.*
+## Eigener Installationsauftritt
 
-![AETHER Server](docs/images/08-aether-server-demo.png)
+Der Hauptinstaller und der Uninstaller verwenden das AETHER-Neon-Design
+und deutsche Standardseiten.
 
-*AETHER Server mit synthetischen Testgeräten zur Demonstration der zentralen
-Verwaltungsansicht.*
+![AETHER Installer – Willkommen](docs/images/13-installer-welcome.png)
 
-## AETHER 0.7.0 Beta 53
+*Willkommensseite des Beta-54-Installers.*
 
-Beta 53 ist die aktuelle Vorabversion. Ihr Schwerpunkt liegt auf dem
-zusammenhängenden Local-AI-Setup, dem qualifizierten Phi-4-Mini-Pfad, der
-Prüfung von Modellantworten gegen vorhandene Systemdaten sowie dem
-vollständigen Windows-Installer.
+## Optionaler AETHER Server
 
-Bereitgestellt werden:
+AETHER Server ist die optionale Erweiterung für mehrere Rechner. Der
+einzelne Client funktioniert vollständig ohne Server.
 
-- die vollständige Portable-Version,
-- das Windows-Setup mit integriertem AETHER Local AI Setup,
-- die separate Serverversion für optionale Managementszenarien,
-- ein konsistentes AETHER-Branding.
+Der Server ist für eine Geräteübersicht, zentrale Zustände und vorhandene
+Verwaltungsfunktionen gedacht. In Beta 54 führt er keine serverseitige
+Modellinferenz aus.
 
-Hardware- und Sensorabdeckung hängen vom jeweiligen Gerät, Treiber und
-Windows-System ab. Die Builds sind unsigniert.
+![AETHER Server – Flottenübersicht](docs/images/11-server-fleet.png)
+
+*AETHER Server mit synthetischen Testgeräten zur Demonstration der
+zentralen Verwaltung.*
+
+![AETHER Server – Gerätedetails](docs/images/12-server-device.png)
+
+*AETHER Server mit synthetischen Testgeräten zur Darstellung von
+Gerätedetails und zugehörigen Zuständen.*
+
+## Wohin AETHER gehen soll
+
+Langfristig möchte ich, dass AETHER immer weniger einzelne Informationen
+zeigt und immer besser verständlich macht, wie diese Informationen
+zusammenhängen.
+
+Ein Windows-Ereignis allein sagt oft wenig. Ein Prozess, eine Temperatur
+oder ein Treiberzustand ebenfalls. Interessant wird es, wenn sichtbar wird:
+
+- was gleichzeitig passiert ist
+- was sich vorher verändert hat
+- was vom normalen Zustand abweicht
+- was wahrscheinlich zusammenhängt
+
+Genau darin soll AETHER weiter wachsen. Ziele sind bessere zeitliche
+Zusammenhänge, Hardware- und Softwarehistorie, Baselines, relevante
+Abweichungen, nachvollziehbare Ursachenketten, kontrollierte
+Reparaturabläufe und die bessere Verwaltung mehrerer Systeme.
+
+Neue lokale Modelle kommen nur dann hinzu, wenn sie zuverlässig genug für
+einen klaren Produktpfad sind. Funktionen, die nur Ziel sind, werden nicht
+als bereits fertig dargestellt.
+
+AETHER soll den Rechner nicht ungefragt übernehmen. Es soll beobachten,
+zusammenführen, erklären und Möglichkeiten anbieten. Ändern darf es erst
+nach einer bewussten Entscheidung.
+
+Wenn AETHER sein Ziel erreicht, soll bei einem Problem nicht mehr die erste
+Frage sein: „Welches Windows-Werkzeug brauche ich dafür?“
+
+Der erste Weg soll ins AETHER Cockpit führen, um beantworten zu können:
+
+- Was passiert?
+- Seit wann?
+- Was hat sich verändert?
+- Was hängt wahrscheinlich zusammen?
+- Was ist tatsächlich belegt?
+- Welche Möglichkeiten habe ich?
+
+**Genau dafür baue ich AETHER.**
+
+## AETHER 0.7.0 Beta 54
+
+Beta 54 ist der aktuelle öffentliche AETHER-Stand. Er friert den real
+bestandenen Installations-, Local-AI- und Deinstallationsweg ein und
+ergänzt ihn um den aktuellen visuellen GitHub-Auftritt.
+
+Die Builds sind unsigniert. Hardware- und Sensorabdeckung hängen vom
+jeweiligen Gerät, Treiber und Windows-System ab.
 
 ## Download
 
 ### Setup
 
-Für die normale Installation:
-
-[AETHER-0.7.0-beta.53-Setup-win-x64.exe](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Setup-win-x64.exe)
-
-Das Setup enthält den Assistenten **AETHER Local AI Setup**.
+[AETHER-0.7.0-beta.54-Setup-win-x64.exe](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Setup-win-x64.exe)
 
 ### Portable
 
-Zum direkten Entpacken und Starten:
-
-[AETHER-0.7.0-beta.53-Portable-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Portable-win-x64.zip)
+[AETHER-0.7.0-beta.54-Portable-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Portable-win-x64.zip)
 
 Das Archiv vollständig in einen eigenen Ordner entpacken. DLLs, Runtime
 und Begleitdateien bleiben zusammen.
 
 ### Server
 
-Nur für zentrale Verwaltungsfunktionen:
-
-[AETHER-0.7.0-beta.53-Server-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Server-win-x64.zip)
+[AETHER-0.7.0-beta.54-Server-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Server-win-x64.zip)
 
 Der Server ist für den Betrieb eines einzelnen PCs nicht erforderlich.
 
-Prüfsummen und weitere Dateien:
+- [Beta-54-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.54)
+- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/SHA256SUMS.txt)
 
-- [Beta-53-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.53)
-- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/SHA256SUMS.txt)
-
-Keine der Veröffentlichungsdateien enthält Modellgewichte. Vor dem Start
-Herkunft und SHA-256-Prüfsumme kontrollieren. Schutzfunktionen wegen einer
-Warnung nicht deaktivieren.
-
-## Wohin AETHER gehen soll
-
-Langfristig soll AETHER Windows-Diagnose, Hardwarezustand, Prozesse,
-Ereignisse und zeitliche Zusammenhänge noch stärker zusammenführen:
-
-- Baselines und Abweichungen vom normalen Rechnerzustand,
-- belegbare Zusammenhänge und Ursachenketten,
-- kontrollierte Reparatur und Wartung,
-- Hardware- und Softwarehistorie,
-- zentrale Verwaltung mehrerer Systeme,
-- lokale Modelle für unterschiedliche Aufgaben und Hardwareklassen.
-
-Das Ziel ist nicht:
-
-**„Eine KI steuert selbständig den Rechner.“**
-
-Sondern:
-
-**AETHER versteht immer besser, was auf dem Rechner passiert, und gibt dem
-Benutzer die Informationen und Werkzeuge, um selbst kontrolliert zu
-entscheiden.**
-
-Bei einem Rechnerproblem soll ich nicht mehr zuerst überlegen müssen:
-
-**„Welches Windows-Werkzeug brauche ich dafür jetzt wieder?“**
-
-AETHER soll als Ausgangspunkt helfen zu beantworten:
-
-- Was passiert?
-- Seit wann?
-- Was hängt damit zusammen?
-- Was ist wahrscheinlich die Ursache?
-- Was ist tatsächlich belegt?
-- Welche Möglichkeiten bestehen?
-- Was soll anschließend geändert werden?
-
-Genau dafür wird AETHER gebaut.
+Vor dem Start Herkunft und SHA-256-Prüfsumme kontrollieren. Schutzfunktionen
+wegen einer Warnung nicht deaktivieren.
 
 ## Weitere Dokumentation
 
@@ -359,6 +305,5 @@ Genau dafür wird AETHER gebaut.
 
 ## Lizenz
 
-AETHER-eigener Quellcode und diese Dokumentation stehen unter der
-[MIT-Lizenz](LICENSE). Drittanbieter behalten ihre eigenen Rechte und
-Lizenzbedingungen.
+Lizenz- und Drittanbieterhinweise stehen in [LICENSE](LICENSE) und
+[THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md).

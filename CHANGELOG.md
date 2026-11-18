@@ -2,6 +2,24 @@
 
 Neueste Version zuerst. Fachanleitungen stehen in `docs`.
 
+## 0.7.0-beta.54 — aktuelle öffentliche Vorabversion
+
+- Deutscher AETHER-Hauptinstaller mit dunklem Retro-Neon-Design,
+  vollständiger Optionsführung und konsistentem Beta-54-Versionsstand.
+- Der vorhandene qualifizierte Phi-4-Mini-Modellspeicher kann ohne erneuten
+  Download eingerichtet und verwendet werden.
+- Vorhandenes Benutzer-Ollama bleibt mit eigenem Prozess, Port, Store und
+  Konfiguration erhalten. AETHER verwendet bei Bedarf eine getrennte lokale
+  Laufzeit.
+- Sichere Deinstallation: eindeutig bestätigte AETHER-Dateien werden nach
+  bestehendem Vertrag entfernt; fremde oder nicht eindeutig zuordenbare
+  Dateien bleiben erhalten. Fehlermeldungen bleiben deutsch und zeigen keine
+  rohe PowerShell-Ausnahme.
+- Öffentliche README und Produktbilder auf den aktuellen Beta-54-Stand
+  überarbeitet.
+- Der reale Installations-, Start-, Local-AI- und Deinstallationsweg wurde
+  vor Veröffentlichung geprüft.
+
 ## 0.7.0-beta.53 — veröffentlichte Vorabversion
 
 - Lokales Windows-Systemcockpit für Systemübersicht, Hardware, Prozesse,

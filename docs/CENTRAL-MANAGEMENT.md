@@ -17,14 +17,12 @@ Operator- und Leserrolle; Mehrfaktoranmeldung ist nicht enthalten. Der
 Administrator-Token wird nur für den einmaligen Bootstrap und ausdrücklich
 freigegebene externe Verwaltungswerkzeuge verwendet.
 
-### Weiterentwicklung zur Infrastrukturverwaltung
+### Zentrale Verwaltung
 
-Der Entwicklungsbranch `feature/professional-server` ergänzt lokale
-AETHER-Konten mit Administrator-, Operator- und Leserrolle sowie eine
-animierte Flottenansicht. Dieser Stand wird separat geprüft und ist noch
-nicht Bestandteil der veröffentlichten Beta 38.
+Der Beta-54-Server enthält lokale AETHER-Konten mit Administrator-,
+Operator- und Leserrolle sowie eine animierte Flottenansicht.
 
-| Rolle | Geplanter und implementierter Prüfstand |
+| Rolle | Freigegebener Prüfstand |
 |---|---|
 | Leser | Server-/Geräteübersicht, Berichte, Aufträge und Audit lesen |
 | Operator | Zusätzlich feste lesende Diagnoseaufträge erstellen |
@@ -246,7 +244,7 @@ Web-/API-Listen zeigen die neuesten 500 Aufträge beziehungsweise Auditeinträge
 
 ## Serverpaket und HTTPS-Dienst
 
-Das separate `AetherManager-0.7.0-beta.38-win-x64.zip` enthält den Server
+Das separate `AETHER-0.7.0-beta.54-Server-win-x64.zip` enthält den Server
 mit Runtime, Weboberfläche und Installationsskript. Nach
 `C:\Program Files\AETHER Manager` entpacken und ein gültiges Serverzertifikat
 mit privatem Schlüssel in `LocalMachine\My` bereitstellen. DNS/SAN,
