@@ -570,19 +570,18 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
         var root = new DirectoryInfo(modelStorePath);
         if ((root.Attributes & FileAttributes.ReparsePoint) != 0)
             return false;
-        var entries = root.EnumerateFileSystemInfos().ToArray();
-        if (entries.Length == 0) return true;
-        var metadata = entries.SingleOrDefault(entry =>
-            entry.Name.Equals("metadata", StringComparison.OrdinalIgnoreCase));
-        if (entries.Length != 1 || metadata is not DirectoryInfo metadataDirectory ||
-            (metadataDirectory.Attributes & FileAttributes.ReparsePoint) != 0)
+        if (root.EnumerateDirectories("*", SearchOption.AllDirectories)
+                .Any(directory => (directory.Attributes & FileAttributes.ReparsePoint) != 0))
             return false;
-        var files = metadataDirectory.GetFileSystemInfos();
-        if (files.Length == 0) return true;
-        foreach (var item in files)
+        var files = root.EnumerateFiles("*", SearchOption.AllDirectories);
+        var retainedFiles = 0;
+        foreach (var file in files)
         {
-            if (item is not FileInfo file ||
-                (file.Attributes & FileAttributes.ReparsePoint) != 0 ||
+            var relative = Path.GetRelativePath(root.FullName, file.FullName);
+            if ((file.Attributes & FileAttributes.ReparsePoint) != 0 ||
+                !relative.StartsWith("metadata" + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase) ||
+                !relative.Equals(Path.Combine("metadata", file.Name), StringComparison.OrdinalIgnoreCase) ||
                 !Regex.IsMatch(file.Name, @"^sha256-[0-9a-f]{64}\.json$",
                     RegexOptions.CultureInvariant | RegexOptions.IgnoreCase) ||
                 file.Length is <= 2 or > 65536)
@@ -602,8 +601,9 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             {
                 return false;
             }
+            retainedFiles++;
         }
-        return true;
+        return retainedFiles > 0 || !root.EnumerateFiles("*", SearchOption.AllDirectories).Any();
     }
 
     private void SelectManagedEndpoint()

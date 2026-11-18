@@ -218,6 +218,8 @@ internal static class LocalAiSetupTests
         {
             var metadataDirectory = Path.Combine(orphanStore, "metadata");
             Directory.CreateDirectory(metadataDirectory);
+            Directory.CreateDirectory(Path.Combine(orphanStore, "manifests"));
+            Directory.CreateDirectory(Path.Combine(orphanStore, "manifests-v2"));
             File.WriteAllText(Path.Combine(metadataDirectory, "sha256-" + new string('a', 64) + ".json"),
                 """{"ollama_version":"0.40.15","kv":{"general.architecture":"fixture"}}""");
             Check(AetherLocalAiSetup.OllamaSetupOperations.ContainsOnlyRetainedOllamaMetadata(orphanStore),
