@@ -1,5 +1,7 @@
 # AETHER
 
+![AETHER-Logo](docs/images/aether-logo.png)
+
 **Eine Windows-Kommandozentrale für den eigenen Rechner.**
 
 Windows bringt für fast jedes technische Thema ein eigenes Werkzeug mit:
@@ -38,6 +40,10 @@ AETHER unterscheidet soweit technisch möglich zwischen gemessenen Daten,
 Informationen von Windows oder Hardware, daraus abgeleiteten
 Zusammenhängen, sprachlicher Einordnung und tatsächlich ausgeführten
 Änderungen.
+
+![AETHER beim Systemstart](docs/images/01-aether-neon-wave-boot.png)
+
+*AETHER beim lokalen Systemstart im Retro-Neon-Modus.*
 
 ## Was AETHER heute kann
 
