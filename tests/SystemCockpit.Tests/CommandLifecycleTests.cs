@@ -10,6 +10,8 @@ internal static class CommandLifecycleTests
     public static int Fixture(string mode)
     {
         if (mode == "wait") { Thread.Sleep(TimeSpan.FromMinutes(1)); return 0; }
+        if (mode == "partial-wait") { Console.Write("partial-output"); Thread.Sleep(TimeSpan.FromMinutes(1)); return 0; }
+        if (mode == "exit:7") { Console.Error.Write("synthetic failure"); return 7; }
         if (mode.StartsWith("error:", StringComparison.Ordinal))
         {
             Console.Error.Write(new string('x', int.Parse(mode[6..], System.Globalization.CultureInfo.InvariantCulture)));
@@ -77,6 +79,17 @@ internal static class CommandLifecycleTests
         Check(progress.ProcessId.HasValue, "Timeout fixture actually started.");
         Check(HasExited(progress.ProcessId!.Value), "Timeout waits for termination of its own process.");
         Check(ended.Count == 2 && ended[1].Exited && ended[1].Pid == progress.ProcessId, "Timeout also reports awaited own child termination.");
+        try
+        {
+            await CommandRunner.RunAsync(executable, Arguments("partial-wait"), TimeSpan.FromSeconds(2), CancellationToken.None);
+            throw new InvalidOperationException("Expected partial-output process timeout.");
+        }
+        catch (TimeoutException) { count++; }
+        var nonZero = await CommandRunner.RunAsync(executable, Arguments("exit:7"), TimeSpan.FromSeconds(15),
+            CancellationToken.None);
+        Check(nonZero.ExitCode == 7 && nonZero.Error == "synthetic failure" &&
+            nonZero.Outcome().State == OperationState.Failed,
+            "Non-zero exit with complete output remains a failed operation, not a partial measurement.");
         var failing = new ProcessProgress { Fail = true };
         try
         {

@@ -204,16 +204,18 @@ internal static class HardwareIntelligenceTests
         Check(!HardwareLogoRegistry.CanActivate(logo, logo.Sha256), "no unapproved logo");
         Check(HardwareLogoRegistry.CanActivate(logo with { Approved = true }, logo.Sha256), "full documented approval required");
         Check(!HardwareLogoRegistry.CanActivate(logo with { Approved = true }, new string('b', 64)), "asset hash gate");
-        foreach (var category in new[] { HardwareClass.System, HardwareClass.Storage, HardwareClass.Display })
-        {
-            var script = HardwareIntelligenceReader.Script(HardwareCimCatalog.Queries, category);
-            var encoded = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(script));
-            var syntax = AdminShell.RunAsync(
-                "$tokens=$null; $errors=$null; [void][Management.Automation.Language.Parser]::ParseInput(" +
-                "[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" + encoded + "')), [ref]$tokens, [ref]$errors); " +
-                "if($errors.Count){throw ($errors.Message -join '; ')}; 'syntax-ok'", TimeSpan.FromSeconds(15), CancellationToken.None).GetAwaiter().GetResult();
-            Check(syntax.ExitCode == 0 && syntax.Output.Contains("syntax-ok"), "PowerShell read-only script syntax: " + syntax.Error);
-        }
+        var encodedScripts = new[] { HardwareClass.System, HardwareClass.Storage, HardwareClass.Display }
+            .Select(category => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(
+                HardwareIntelligenceReader.Script(HardwareCimCatalog.Queries, category))))
+            .Select(encoded => $"'{encoded}'");
+        var syntax = AdminShell.RunAsync(
+            "$tokens=$null; $errors=$null; foreach($encoded in @(" + string.Join(",", encodedScripts) + ")){" +
+            "[void][Management.Automation.Language.Parser]::ParseInput(" +
+            "[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($encoded)), [ref]$tokens, [ref]$errors); " +
+            "if($errors.Count){throw ($errors.Message -join '; ')} }; 'syntax-ok'",
+            TimeSpan.FromSeconds(15), CancellationToken.None).GetAwaiter().GetResult();
+        Check(syntax.ExitCode == 0 && syntax.Output.Contains("syntax-ok"),
+            "PowerShell read-only script syntax: " + syntax.Error);
         return _assertions;
     }
 
