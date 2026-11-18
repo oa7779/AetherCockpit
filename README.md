@@ -41,10 +41,6 @@ Informationen von Windows oder Hardware, daraus abgeleiteten
 Zusammenhängen, sprachlicher Einordnung und tatsächlich ausgeführten
 Änderungen.
 
-![AETHER beim Systemstart](docs/images/00-neon-wave-boot.png)
-
-*AETHER beim lokalen Systemstart im Retro-Neon-Modus.*
-
 ## Was AETHER heute kann
 
 ### Systemübersicht
@@ -76,11 +72,6 @@ Vorhandene Diagnosebereiche befassen sich unter anderem mit Ereignissen,
 Geräten, Treibern, Diensten, Aufgaben, Autostart, Netzwerk, Systemzustand
 und ausgewählten Windows-Komponenten. Ereignisse und Inventardaten sind
 Hinweise, aber keine vollständige Ursachendiagnose für sich.
-
-![Mainboard- und Hardwareansicht](docs/images/03-mainboard.png)
-
-*Mainboard- und Hardwareansicht im AETHER Cockpit. Demonstration mit
-synthetischen Testdaten.*
 
 ### Verwaltung und Wartung
 
@@ -168,33 +159,69 @@ wo dies technisch und wirtschaftlich sinnvoll ist. Eine kostenpflichtige
 Cloud-Infrastruktur ist keine Voraussetzung und wird nicht automatisch
 eingerichtet.
 
-![AETHER Server](docs/images/08-aether-server-demo.png)
-
-*AETHER Server mit synthetischen Testgeräten zur Demonstration der zentralen
-Verwaltungsansicht.*
-
 ## Warum AETHER so aussieht
 
-Ich wollte kein weiteres graues Verwaltungsprogramm bauen.
+Meine Vorstellung davon, wie ein Computer aussehen und funktionieren
+sollte, ist nicht 2026 entstanden. Sie stammt aus den 80ern und 90ern. Ich
+bin mit dieser Computerwelt groß geworden und habe die Entwicklung vom
+klassischen PC über DOS, Windows 3.x und Windows 95 bis zum heutigen
+Windows selbst miterlebt.
+
+Damals bedeutete ein Computer häufig: ausprobieren, konfigurieren,
+Bootdisketten bauen, Treiber suchen, Steckkarten wechseln, Jumper setzen,
+Kabel ändern, Hardware aufrüsten, Fehler suchen, Dinge zerlegen, wieder
+zusammensetzen und vor allem verstehen, warum etwas funktioniert oder
+eben nicht. Wenn etwas nicht lief, gab es selten einen Assistenten, der das
+Problem einfach erledigte. Man musste sich mit dem Rechner beschäftigen.
+
+Genau das hat meinen Umgang mit Technik geprägt. Ich möchte nicht nur
+wissen, dass etwas funktioniert. Ich möchte verstehen, wie die einzelnen
+Komponenten zusammenspielen und warum ein System einen bestimmten Zustand
+erreicht.
+
+Filme, Spiele und Computerzeitschriften dieser Zeit zeigten eine andere
+Zukunft des Computers: dunkle Kommandozentralen, leuchtende Anzeigen,
+technische Instrumente, Raster und Statusanzeigen. Systeme sollten ihren
+eigenen Zustand sichtbar machen und Zusammenhänge verständlich darstellen.
+Diese Vorstellung hat das AETHER-Design geprägt.
 
 ### Retro-Neon
 
 AETHER verwendet dunkle Flächen, Cyan, Magenta und Grün für positive
 Zustände sowie technische Instrumente mit Mainboard- und Cockpit-Anmutung.
-Liveanzeigen und Verläufe sollen helfen, den aktuellen Zustand schneller zu
-erfassen. Farben zeigen Bereiche und Zustände; sie ersetzen weder Messwerte
-noch Quellen.
+Das Retro-Neon-Design ist keine aufgesetzte Retro-Dekoration. Mainboard,
+Instrumente, Neonfarben und technische Anzeigen verbinden für mich zwei
+Dinge:
+
+**die Computerwelt, mit der für mich alles angefangen hat**
+
+und
+
+**die Vorstellung davon, was ein Rechner irgendwann einmal können sollte.**
+
+Die Technik ist heute weit genug, einen Teil dieser damaligen Vorstellung
+umzusetzen. AETHER ist deshalb kein nostalgisches Museum und keine reine
+Retro-Spielerei, sondern moderne Technik mit der technischen Neugier und
+der Zukunftsvorstellung, mit der für mich alles angefangen hat.
+
+![Mainboard- und Hardwareansicht](docs/images/03-mainboard.png)
+
+*Mainboard- und Hardwareansicht im AETHER Cockpit. Demonstration mit
+synthetischen Testdaten.*
+
+Seit meinen ersten Rechnern habe ich vor neuer Technik Respekt, aber ich
+bin nie davor zurückgeschreckt, sie auseinanderzunehmen, zu verändern, zu
+testen oder neu aufzubauen, wenn ich verstehen wollte, wie etwas
+funktioniert. AETHER trägt genau diese Haltung in sich.
+
+**Im Grunde baue ich mit AETHER ein Stück der PC-Zukunft, die ich mir in den
+90ern gewünscht hätte.**
 
 ### Windows Modern
 
 Daneben gibt es eine zurückhaltendere Windows-Modern-Darstellung für
 Anwender, die lieber neutrale Fenster und Diagramme verwenden. Animationen
 lassen sich abschalten.
-
-![AETHER Guardian](docs/images/06-guardian.png)
-
-*Guardian-Arbeitsbereich der AETHER-Oberfläche. Darstellung mit synthetischen
-Testdaten; Guardian bleibt in Entwicklung.*
 
 ## AETHER Local AI Setup
 
@@ -214,6 +241,16 @@ Modellgewichte und Ollama-Runtime sind nicht Teil der GitHub-Programmpakete.
 ![AETHER Local AI Setup](docs/images/05-local-ai-setup.png)
 
 *AETHER Local AI Setup für den qualifizierten lokalen Phi-4-Mini-Pfad.*
+
+![AETHER Guardian](docs/images/06-guardian.png)
+
+*Guardian-Arbeitsbereich der AETHER-Oberfläche. Darstellung mit synthetischen
+Testdaten; Guardian bleibt in Entwicklung.*
+
+![AETHER Server](docs/images/08-aether-server-demo.png)
+
+*AETHER Server mit synthetischen Testgeräten zur Demonstration der zentralen
+Verwaltungsansicht.*
 
 ## AETHER 0.7.0 Beta 53
 
