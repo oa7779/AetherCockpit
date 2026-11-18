@@ -12,8 +12,10 @@ herunter.
 - Modellgewichte: separat gespeicherte lokale Dateien, nicht in Portable,
   Setup oder Serverpaket enthalten
 
-Andere Modelle sind für den automatischen Produktpfad nicht als
-gleichwertig qualifiziert.
+Andere Modelle sind für Beta 53 weder auswählbar noch freigegeben. Nemotron
+3 Nano 4B bleibt technisch abgelehnt; Nemotron 3 Nano 30B besitzt keinen
+vollständigen Hardware-Qualifikationsnachweis. Beide sind nicht Bestandteil
+der Beta-53-Modellauswahl.
 
 ## Einrichtung
 

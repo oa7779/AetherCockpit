@@ -17,7 +17,6 @@ public partial class MainWindow : Window
 {
     private readonly CancellationTokenSource _stop = new();
     private readonly AetherProductModel _phi = AetherProductModelCatalog.Current.Models.Single(model => model.ModelId == "phi4-mini:3.8b");
-    private readonly AetherProductModel _nemotron4B = AetherProductModelCatalog.Current.Models.Single(model => model.ModelId == "nemotron-3-nano:4b");
     private AetherProductModel? _selectedModel;
     private AetherSetupHardware? _hardware;
     private AetherLocalAiCapabilityResult? _capability;
@@ -33,7 +32,6 @@ public partial class MainWindow : Window
             .Select(attribute => attribute.InformationalVersion.Split('+')[0])
             .FirstOrDefault() ?? "0.7.0 Beta 53");
         ModelStorePathText.Text = AetherLocalAiStoreContract.ModelStorePath;
-        NemotronQualification.Text = DescribeModel(_nemotron4B);
         StoreConfigurationAccepted.Content =
             $"Ich bestätige die Konfiguration des AETHER-Modellstores und des Loopback-Endpunkts {AetherLocalAiStoreContract.Host}. Vorhandene Fremdmodelle bleiben unberührt.";
         Loaded += Window_Loaded;
@@ -62,7 +60,6 @@ public partial class MainWindow : Window
             CapabilityDetails.Text = string.Join(Environment.NewLine, _capability.Reasons);
             HardwareFacts.Text = DescribeHardware(_hardware);
             ModelQualification.Text = DescribeModel(_phi);
-            NemotronQualification.Text = DescribeModel(_nemotron4B);
             UpdateSetupAvailability();
             var inspectionModel = _selectedModel ?? _phi;
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token);
@@ -161,20 +158,13 @@ public partial class MainWindow : Window
 
     private void UpdateSetupAvailability()
     {
-        _selectedModel = _capability?.ModelId is { } modelId
-            ? AetherProductModelCatalog.Current.Models.SingleOrDefault(model => model.ModelId == modelId)
-            : null;
+        _selectedModel = _capability?.ModelId == _phi.ModelId ? _phi : null;
         var requirementsSatisfied = _selectedModel is
             { QualificationStatus: AetherModelQualificationStatus.Qualified, ApprovedForAutomaticSelection: true } &&
             _capability?.CanInstall == true;
-        var selectedPhi = _selectedModel?.ModelId == _phi.ModelId;
-        var selectedNemotron = _selectedModel?.ModelId == _nemotron4B.ModelId;
-        LicenseAccepted.IsEnabled = requirementsSatisfied && selectedPhi && _phi.LicenseAcceptanceRequired;
-        NemotronLicenseAccepted.IsEnabled = requirementsSatisfied && selectedNemotron && _nemotron4B.LicenseAcceptanceRequired;
+        LicenseAccepted.IsEnabled = requirementsSatisfied && _phi.LicenseAcceptanceRequired;
         StoreConfigurationAccepted.IsEnabled = requirementsSatisfied;
-        var licenseAccepted = _selectedModel is null || !_selectedModel.LicenseAcceptanceRequired ||
-            selectedPhi && LicenseAccepted.IsChecked == true ||
-            selectedNemotron && NemotronLicenseAccepted.IsChecked == true;
+        var licenseAccepted = !_phi.LicenseAcceptanceRequired || LicenseAccepted.IsChecked == true;
         SetupButton.IsEnabled = _busy || requirementsSatisfied &&
             licenseAccepted &&
             StoreConfigurationAccepted.IsChecked == true;
@@ -225,8 +215,7 @@ public partial class MainWindow : Window
             });
             await new AetherLocalAiSetupWorkflow(new OllamaSetupOperations()).RunAsync(
                 AetherProductModelCatalog.Current, selectedModel, currentHardware,
-                selectedModel.ModelId == _nemotron4B.ModelId
-                    ? NemotronLicenseAccepted.IsChecked == true : LicenseAccepted.IsChecked == true,
+                LicenseAccepted.IsChecked == true,
                 StoreConfigurationAccepted.IsChecked == true, progress, operationStop.Token);
             ProgressStatus.Text = "Lokale KI wurde geprüft, eingerichtet und im AETHER-Katalog freigegeben.";
             CapabilityLabel.Text = "AETHER Intelligence ist bereit";

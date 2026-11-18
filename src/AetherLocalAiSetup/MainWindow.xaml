@@ -188,27 +188,6 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Text="NEMOTRON 3 NANO 4B · OPTIONALER KANDIDAT"
-                                       Foreground="{StaticResource Warning}" FontFamily="Consolas"
-                                       FontSize="12" FontWeight="Bold"/>
-                            <TextBlock x:Name="NemotronQualification" Foreground="{StaticResource Muted}" Margin="0,8,0,0"/>
-                            <TextBlock Margin="0,8,0,0">
-                                <Hyperlink x:Name="NemotronLicenseLink"
-                                           NavigateUri="https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/"
-                                           RequestNavigate="LicenseLink_OnRequestNavigate">
-                                    NVIDIA Open Model License anzeigen
-                                </Hyperlink>
-                            </TextBlock>
-                            <CheckBox x:Name="NemotronLicenseAccepted"
-                                      Content="Ich habe die NVIDIA-Lizenz gelesen und stimme ihr für Nemotron ausdrücklich zu."
-                                      Checked="AcceptanceChanged" Unchecked="AcceptanceChanged"/>
-                            <TextBlock Text="Nemotron 30B wird nicht standardmäßig heruntergeladen."
-                                       Foreground="{StaticResource Muted}" Margin="0,8,0,0"/>
-                        </StackPanel>
-                    </Border>
-
                     <Expander Header="Technische Details" Margin="0,0,0,10" IsExpanded="False">
                         <Border Style="{StaticResource Card}" Margin="0,8,0,0">
                             <StackPanel>

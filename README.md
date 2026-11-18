@@ -59,7 +59,8 @@ erfolgreichen Hardware- und Integritätsprüfung automatisch für den
 qualifizierten lokalen Pfad ausgewählt. Danach verwendet AETHER den
 freigegebenen Pfad ohne manuelle Modellwahl für jede Frage (**Zero-Click
 Local AI**). Runtime und Modellgewichte werden nicht während einer Frage
-heruntergeladen und sind nicht Teil des Portable-Pakets.
+heruntergeladen und sind nicht Teil der Programmpakete. Nemotron ist in
+Beta 53 kein auswählbarer oder freigegebener Modellpfad.
 
 ## Funktionen
 
@@ -148,8 +149,9 @@ wird als Windows-x64-Vorabversion in drei Varianten bereitgestellt:
 - **Portable:** vollständiges, entpackbares AETHER-Verzeichnis.
 - **Setup:** Windows-Installer mit den AETHER-Programmkomponenten und dem
   integrierten Assistenten **AETHER Local AI Setup**.
-- **Server:** separate Management-Komponente; für den normalen
-  Einzelplatzbetrieb nicht erforderlich.
+- **Server:** optionale separate Management-Komponente; für den normalen
+  Einzelplatzbetrieb nicht erforderlich. Er führt in Beta 53 keine
+  serverseitige Modellinferenz aus.
 
 Die Dateinamen und SHA-256-Prüfsummen stehen in den Assets und in
 `SHA256SUMS.txt` des jeweiligen GitHub-Release. Die Builds sind unsigniert;

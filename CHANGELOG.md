@@ -21,11 +21,15 @@ Neueste Version zuerst. Fachanleitungen stehen in `docs`.
 - Der vorhandene Local-AI-Assistent verwendet das AETHER-Neon-Branding,
   ein eingebettetes kanonisches Logo, dezente Animation und einen
   definierten verschiebbaren Header.
+- Der Beta-53-Assistent zeigt ausschließlich den qualifizierten
+  Phi-4-Mini-Pfad. Nemotron bleibt abgelehnt beziehungsweise ohne
+  Hardwarefreigabe und ist nicht auswählbar.
 - Der vollständige Windows-Installer enthält den Assistenten und bietet
   dessen kontrollierten Start nach der Installation an. Modellgewichte
   werden nicht mitgeliefert.
 - Portable-, Installer- und separates Serverpaket werden für Beta 53 aus
-  demselben Quellstand veröffentlicht. Aktuelle Screenshots folgen separat.
+  demselben Quellstand veröffentlicht. Der optionale Server führt keine
+  Modellinferenz aus. Aktuelle Screenshots folgen separat.
 
 ## 0.7.0-beta.47 — veröffentlichte Vorabversion
 

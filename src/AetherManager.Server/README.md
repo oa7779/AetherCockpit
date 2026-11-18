@@ -3,6 +3,9 @@
 Separate .NET-10-API mit HTTPS-Webverwaltung für Geräteanmeldung,
 manuelle Freigabe, Diagnoseberichte, Heartbeats, feste Verwaltungsaufträge
 und Audit. Das Cockpit-Setup installiert diesen Server nicht.
+Für AETHER Beta 53 ist der Server optional. Der Einzelplatzbetrieb und die
+qualifizierte lokale Phi-Inferenz benötigen ihn nicht. Serverseitige
+Modellinferenz ist in diesem Stand deaktiviert.
 Das Serverpaket enthält einen gesondert zu bestätigenden Dienstassistenten.
 Der separate Serverstand wird zusammen mit Beta 53 als
 `AETHER-0.7.0-beta.53-Server-win-x64.zip` bereitgestellt. Dienstinstallation

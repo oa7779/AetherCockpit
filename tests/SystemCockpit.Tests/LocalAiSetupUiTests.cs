@@ -48,6 +48,10 @@ internal static class LocalAiSetupUiTests
         Check(xaml.Contains("MinimizeButton_OnClick", StringComparison.Ordinal) &&
             xaml.Contains("CloseButton_OnClick", StringComparison.Ordinal),
             "Header controls must remain separately interactive");
+        Check(!xaml.Contains("NEMOTRON", StringComparison.OrdinalIgnoreCase) &&
+            !xaml.Contains("NemotronLicenseAccepted", StringComparison.Ordinal) &&
+            !xaml.Contains("NemotronQualification", StringComparison.Ordinal),
+            "Beta 53 setup UI must expose only the qualified Phi model");
         Check(code.Contains("SystemParameters.ClientAreaAnimation", StringComparison.Ordinal) &&
             code.Contains("BeginAnimation(OpacityProperty", StringComparison.Ordinal),
             "Local AI branding animation must remain restrained and honor Windows animation permission");
