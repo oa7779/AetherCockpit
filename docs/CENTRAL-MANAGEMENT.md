@@ -244,7 +244,7 @@ Web-/API-Listen zeigen die neuesten 500 Aufträge beziehungsweise Auditeinträge
 
 ## Serverpaket und HTTPS-Dienst
 
-Das separate `AETHER-0.7.0-beta.54-Server-win-x64.zip` enthält den Server
+Das separate `AETHER-0.7.0-beta.55-Server-win-x64.zip` enthält den Server
 mit Runtime, Weboberfläche und Installationsskript. Nach
 `C:\Program Files\AETHER Manager` entpacken und ein gültiges Serverzertifikat
 mit privatem Schlüssel in `LocalMachine\My` bereitstellen. DNS/SAN,

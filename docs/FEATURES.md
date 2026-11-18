@@ -62,7 +62,7 @@ strukturierter Antwortvalidator prüft Claims und ihre Belegreferenzen;
 nicht belegbare oder widersprüchliche Aussagen werden abgelehnt.
 
 Die lokale Modellinstallation erfolgt separat, mit ausdrücklicher
-Lizenzannahme sowie Hardware- und Integritätsprüfung. Modellgewichte sind
+Lizenzannahme sowie Hardware- und Integritätsprüfung. Modelldateien sind
 nicht Teil des Portable-Pakets. Eine gültige Referenzprüfung ist keine
 allgemeine semantische Wahrheitsgarantie.
 

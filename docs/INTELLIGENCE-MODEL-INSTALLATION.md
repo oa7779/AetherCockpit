@@ -12,10 +12,10 @@ herunter.
 - Modelldateien: separat gespeicherte lokale Dateien, nicht in Portable,
   Setup oder Serverpaket enthalten
 
-Andere Modelle sind für Beta 54 weder auswählbar noch freigegeben. Nemotron
+Andere Modelle sind für Beta 55 weder auswählbar noch freigegeben. Nemotron
 3 Nano 4B bleibt technisch abgelehnt; Nemotron 3 Nano 30B besitzt keinen
 vollständigen Hardware-Qualifikationsnachweis. Beide sind nicht Bestandteil
-der Beta-54-Modellauswahl.
+der Beta-55-Modellauswahl.
 
 ## Einrichtung
 

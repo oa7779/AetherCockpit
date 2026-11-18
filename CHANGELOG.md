@@ -2,7 +2,17 @@
 
 Neueste Version zuerst. Fachanleitungen stehen in `docs`.
 
-## 0.7.0-beta.54 — aktuelle öffentliche Vorabversion
+## 0.7.0-beta.55 — aktueller Installations-Korrekturstand
+
+- Der Local-AI-Assistent akzeptiert nach einer Deinstallation erhaltene,
+  eindeutig erkannte Ollama-Metadaten und richtet den AETHER-Herkunftsnachweis
+  erneut ein.
+- Beliebige fremde Dateien, Blobs oder Manifeste in einem nicht belegten
+  Modellspeicher werden weiterhin abgelehnt.
+- Der Setup-Fehler „Der vorgesehene AETHER-Modellstore enthält nicht
+  zugeordnete Daten“ wird damit für den sicheren Neuenrichtungsfall behoben.
+
+## 0.7.0-beta.54 — veröffentlichte Vorgängerversion
 
 - Deutscher AETHER-Hauptinstaller mit dunklem Retro-Neon-Design,
   vollständiger Optionsführung und konsistentem Beta-54-Versionsstand.

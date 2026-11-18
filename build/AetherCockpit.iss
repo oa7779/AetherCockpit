@@ -1,6 +1,6 @@
-#define AppVersion "0.7.0-beta.54"
+#define AppVersion "0.7.0-beta.55"
 #ifndef PublishDir
-#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.54-win-x64"
+#define PublishDir "..\dist\AetherCockpit-0.7.0-beta.55-win-x64"
 #endif
 
 #ifdef SetupUninstallValidation
@@ -67,8 +67,8 @@ OutputBaseFilename=AETHER-{#AppVersion}-Setup-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe
-VersionInfoVersion=0.7.0.54
-VersionInfoProductVersion=0.7.0.54
+VersionInfoVersion=0.7.0.55
+VersionInfoProductVersion=0.7.0.55
 WizardStyle=modern dynamic
 WizardBackColor=#0B0817
 WizardBackColorDynamicDark=#090717
@@ -225,7 +225,7 @@ begin
   WizardForm.WizardBitmapImage.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-welcome.bmp'));
   WizardForm.WizardBitmapImage2.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-welcome.bmp'));
   WizardForm.WizardSmallBitmapImage.Bitmap.LoadFromFile(ExpandConstant('{tmp}\aether-installer-small.bmp'));
-  WizardForm.WelcomeLabel1.Caption := 'AETHER 0.7.0 Beta 54';
+  WizardForm.WelcomeLabel1.Caption := 'AETHER 0.7.0 Beta 55';
   WizardForm.WelcomeLabel1.Font.Color := $00E854D4;
   if (InstalledPath = '') then
     WizardForm.WelcomeLabel2.Caption :=

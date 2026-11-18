@@ -35,7 +35,7 @@ Screenshot und Diagnosedatensatz prüfen.
 Intelligence-Laufdiagnosen dienen der technischen Nachvollziehbarkeit und
 enthalten Lauf- und Validierungsmetadaten. Eine vollständige Modellantwort
 wird nicht als Laufdiagnose gespeichert. Lokale Einstellungen, Berichte
-und Modellgewichte bleiben von der Programmdatei getrennt.
+und Modelldateien bleiben von der Programmdatei getrennt.
 
 Der optionale Client-/Serverbetrieb überträgt Daten nur in seinem eigenen
 Bedienablauf. Gerätefreigabe und Übertragung benötigen die dort angezeigte

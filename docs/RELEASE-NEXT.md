@@ -1,12 +1,13 @@
-# AETHER 0.7.0 Beta 54
+# AETHER 0.7.0 Beta 55
 
-Beta 54 ist der aktuelle öffentliche Referenzstand. Er führt den real
-bestandenen Installationszyklus aus Beta 53 als eingefrorene Produktversion
-weiter.
+Beta 55 ist der aktuelle öffentliche Referenzstand. Er übernimmt den real
+bestandenen Beta-54-Produktumfang und korrigiert die erneute Local-AI-
+Einrichtung nach einer sicheren Deinstallation.
 
 ## Schwerpunkte
 
 - deutscher, dunkler AETHER-Hauptinstaller mit eigenem Erscheinungsbild
+- erneute Einrichtung trotz bewusst erhaltener Ollama-Metadaten
 - kontrollierte Einrichtung des qualifizierten Phi-4-Mini-Pfads
 - Koexistenz mit einer vorhandenen Benutzer-Ollama-Installation
 - getrennte AETHER-Laufzeit und eigener lokaler Modellspeicher
@@ -24,11 +25,11 @@ Prüfung transparent an.
 
 ## Download
 
-- [Setup](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Setup-win-x64.exe)
-- [Portable](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Portable-win-x64.zip)
-- [Server](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Server-win-x64.zip)
-- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/SHA256SUMS.txt)
-- [Beta-54-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.54)
+- [Setup](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Setup-win-x64.exe)
+- [Portable](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Portable-win-x64.zip)
+- [Server](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Server-win-x64.zip)
+- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/SHA256SUMS.txt)
+- [Beta-55-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.55)
 
 ## Hinweise
 

@@ -162,8 +162,8 @@ Intelligence.*
 
 ### Phi und Nemotron
 
-Phi 4 Mini ist für Beta 54 der geprüfte lokale Modellpfad. Nemotron wurde
-untersucht, aber nicht für den automatischen Beta-54-Pfad freigegeben.
+Phi 4 Mini ist für Beta 55 der geprüfte lokale Modellpfad. Nemotron wurde
+untersucht, aber nicht für den automatischen Beta-55-Pfad freigegeben.
 
 ## AETHER Local AI Setup
 
@@ -186,22 +186,13 @@ verwendet für seinen eigenen Modellbetrieb einen getrennten Zustand.
 Die Programmpakete enthalten keine Modelldateien. Die normale AETHER-Nutzung
 lädt weder Ollama noch Phi 4 Mini im Hintergrund herunter.
 
-## Eigener Installationsauftritt
-
-Der Hauptinstaller und der Uninstaller verwenden das AETHER-Neon-Design
-und deutsche Standardseiten.
-
-![AETHER Installer – Willkommen](docs/images/13-installer-welcome.png)
-
-*Willkommensseite des Beta-54-Installers.*
-
 ## Optionaler AETHER Server
 
 AETHER Server ist die optionale Erweiterung für mehrere Rechner. Der
 einzelne Client funktioniert vollständig ohne Server.
 
 Der Server ist für eine Geräteübersicht, zentrale Zustände und vorhandene
-Verwaltungsfunktionen gedacht. In Beta 54 führt er keine serverseitige
+Verwaltungsfunktionen gedacht. In Beta 55 führt er keine serverseitige
 Modellinferenz aus.
 
 ![AETHER Server – Flottenübersicht](docs/images/11-server-fleet.png)
@@ -255,11 +246,11 @@ Der erste Weg soll ins AETHER Cockpit führen, um beantworten zu können:
 
 **Genau dafür baue ich AETHER.**
 
-## AETHER 0.7.0 Beta 54
+## AETHER 0.7.0 Beta 55
 
-Beta 54 ist der aktuelle öffentliche AETHER-Stand. Er friert den real
-bestandenen Installations-, Local-AI- und Deinstallationsweg ein und
-ergänzt ihn um den aktuellen visuellen GitHub-Auftritt.
+Beta 55 ist der aktuelle öffentliche AETHER-Stand. Zusätzlich zum Beta-54-
+Produktumfang korrigiert er die erneute Einrichtung, wenn aus einer
+vorherigen sicheren Deinstallation nur Ollama-Metadaten erhalten blieben.
 
 Die Builds sind unsigniert. Hardware- und Sensorabdeckung hängen vom
 jeweiligen Gerät, Treiber und Windows-System ab.
@@ -268,23 +259,23 @@ jeweiligen Gerät, Treiber und Windows-System ab.
 
 ### Setup
 
-[AETHER-0.7.0-beta.54-Setup-win-x64.exe](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Setup-win-x64.exe)
+[AETHER-0.7.0-beta.55-Setup-win-x64.exe](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Setup-win-x64.exe)
 
 ### Portable
 
-[AETHER-0.7.0-beta.54-Portable-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Portable-win-x64.zip)
+[AETHER-0.7.0-beta.55-Portable-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Portable-win-x64.zip)
 
 Das Archiv vollständig in einen eigenen Ordner entpacken. DLLs, Runtime
 und Begleitdateien bleiben zusammen.
 
 ### Server
 
-[AETHER-0.7.0-beta.54-Server-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/AETHER-0.7.0-beta.54-Server-win-x64.zip)
+[AETHER-0.7.0-beta.55-Server-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/AETHER-0.7.0-beta.55-Server-win-x64.zip)
 
 Der Server ist für den Betrieb eines einzelnen PCs nicht erforderlich.
 
-- [Beta-54-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.54)
-- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.54/SHA256SUMS.txt)
+- [Beta-55-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.55)
+- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.55/SHA256SUMS.txt)
 
 Vor dem Start Herkunft und SHA-256-Prüfsumme kontrollieren. Schutzfunktionen
 wegen einer Warnung nicht deaktivieren.

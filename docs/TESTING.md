@@ -43,7 +43,7 @@ Ein echter Modelltest ist keine Routineprüfung. Er setzt eine zuvor
 abgeschlossene, ausdrücklich genehmigte lokale Einrichtung mit passender
 Runtime und Modell voraus und kann Modellinferenz ausführen. Er darf nicht
 mit synthetischen Testantworten oder einem WPF-UI-Test gleichgesetzt werden.
-Modellgewichte werden nicht als Teil der Testsuite heruntergeladen.
+Modelldateien werden nicht als Teil der Testsuite heruntergeladen.
 
 ## Testergebnisse
 

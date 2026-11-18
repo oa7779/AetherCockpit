@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AetherOperations.Intelligence;
@@ -209,7 +210,7 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
         var models = AetherLocalAiStoreContract.ModelStorePath;
         EnsureNoReparsePoints(models);
         if (Directory.Exists(models) && Directory.EnumerateFileSystemEntries(models).Any() &&
-            ReadOwnership() is null)
+            ReadOwnership() is null && !ContainsOnlyRetainedOllamaMetadata(models))
             throw new InvalidOperationException("Der vorgesehene AETHER-Modellstore enthält nicht zugeordnete Daten und wird nicht übernommen.");
 
         Directory.CreateDirectory(models);
@@ -561,6 +562,48 @@ internal sealed class OllamaSetupOperations : IAetherLocalAiSetupOperations
             EnvironmentVariableTarget.Process) ??
             Environment.GetEnvironmentVariable(AetherLocalAiStoreContract.EnvironmentVariable, EnvironmentVariableTarget.User);
         return configured ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ollama", "models");
+    }
+
+    internal static bool ContainsOnlyRetainedOllamaMetadata(string modelStorePath)
+    {
+        if (!Directory.Exists(modelStorePath)) return true;
+        var root = new DirectoryInfo(modelStorePath);
+        if ((root.Attributes & FileAttributes.ReparsePoint) != 0)
+            return false;
+        var entries = root.EnumerateFileSystemInfos().ToArray();
+        if (entries.Length == 0) return true;
+        var metadata = entries.SingleOrDefault(entry =>
+            entry.Name.Equals("metadata", StringComparison.OrdinalIgnoreCase));
+        if (entries.Length != 1 || metadata is not DirectoryInfo metadataDirectory ||
+            (metadataDirectory.Attributes & FileAttributes.ReparsePoint) != 0)
+            return false;
+        var files = metadataDirectory.GetFileSystemInfos();
+        if (files.Length == 0) return true;
+        foreach (var item in files)
+        {
+            if (item is not FileInfo file ||
+                (file.Attributes & FileAttributes.ReparsePoint) != 0 ||
+                !Regex.IsMatch(file.Name, @"^sha256-[0-9a-f]{64}\.json$",
+                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase) ||
+                file.Length is <= 2 or > 65536)
+                return false;
+            try
+            {
+                using var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var document = JsonDocument.Parse(stream, new JsonDocumentOptions { MaxDepth = 8 });
+                if (document.RootElement.ValueKind != JsonValueKind.Object ||
+                    !document.RootElement.TryGetProperty("ollama_version", out var version) ||
+                    version.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(version.GetString()) ||
+                    !document.RootElement.TryGetProperty("kv", out var values) ||
+                    values.ValueKind != JsonValueKind.Object)
+                    return false;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void SelectManagedEndpoint()

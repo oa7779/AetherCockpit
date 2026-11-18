@@ -132,7 +132,7 @@
                         </TextBlock.Effect>
                     </TextBlock>
                     <TextBlock Text="Local AI Setup" FontSize="19" FontWeight="SemiBold" Margin="0,2,0,2"/>
-                    <TextBlock x:Name="VersionText" Text="AETHER 0.7.0 Beta 54"
+                    <TextBlock x:Name="VersionText" Text="AETHER 0.7.0 Beta 55"
                                Foreground="{StaticResource Muted}" FontSize="11" FontFamily="Consolas"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"

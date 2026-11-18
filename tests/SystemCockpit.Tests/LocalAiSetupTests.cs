@@ -213,6 +213,24 @@ internal static class LocalAiSetupTests
         var baseHardware = new AetherSetupHardware(new Version(10, 0, 22631), true, "CPU fixture",
             8, 16, 1000, 500, ImmutableArray<AetherSetupGpu>.Empty, 1000);
 
+        var orphanStore = Path.Combine(Path.GetTempPath(), "Aether.OrphanStore-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var metadataDirectory = Path.Combine(orphanStore, "metadata");
+            Directory.CreateDirectory(metadataDirectory);
+            File.WriteAllText(Path.Combine(metadataDirectory, "sha256-" + new string('a', 64) + ".json"),
+                """{"ollama_version":"0.40.15","kv":{"general.architecture":"fixture"}}""");
+            Check(AetherLocalAiSetup.OllamaSetupOperations.ContainsOnlyRetainedOllamaMetadata(orphanStore),
+                "Retained Ollama metadata blocked a new AETHER ownership document after uninstall.");
+            File.WriteAllText(Path.Combine(orphanStore, "foreign.bin"), "must block");
+            Check(!AetherLocalAiSetup.OllamaSetupOperations.ContainsOnlyRetainedOllamaMetadata(orphanStore),
+                "A foreign file in an unowned model store was accepted as retained metadata.");
+        }
+        finally
+        {
+            Directory.Delete(orphanStore, true);
+        }
+
         using (var foreignOllama = new TcpListener(IPAddress.Loopback, 0))
         {
             foreignOllama.Start();

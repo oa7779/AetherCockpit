@@ -1,6 +1,6 @@
 # Anleitung für Betatester
 
-AETHER Beta 54 ist eine Vorabversion. Diese Anleitung beschreibt einen
+AETHER Beta 55 ist eine Vorabversion. Diese Anleitung beschreibt einen
 risikoarmen
 Bedienungsrundgang, keine Aufforderung zu produktiven Änderungen.
 

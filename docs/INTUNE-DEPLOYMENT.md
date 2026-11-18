@@ -2,7 +2,7 @@
 
 ## Paketstand
 
-Für Beta 54 wird kein Intune-Paket mitgeliefert. Dieses Dokument beschreibt
+Für Beta 55 wird kein Intune-Paket mitgeliefert. Dieses Dokument beschreibt
 den vorhandenen Verpackungs- und Deploymentablauf für einen ausdrücklich
 beauftragten Intune-Stand. Historische `.intunewin`-Pakete aus früheren Betas
 bleiben nicht automatisch Teil des aktuellen Downloads.
@@ -41,10 +41,10 @@ Erststart-Assistenten aus.
 
 ### Installation
 
-Beispiel für ein zu Beta 54 neu erzeugtes Paket:
+Beispiel für ein zu Beta 55 neu erzeugtes Paket:
 
 ```text
-AETHER-0.7.0-beta.54-Setup-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
+AETHER-0.7.0-beta.55-Setup-win-x64.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="%WINDIR%\Temp\AetherCockpit-Setup.log"
 ```
 
 Die vorausgewählte Autostart-Aufgabe wird ohne Zustimmung übersprungen
@@ -83,15 +83,15 @@ Benötigte Daten vorher sichern.
 
 ### Erkennung
 
-Für einen Beta-54-Intune-Build:
+Für einen Beta-55-Intune-Build:
 
 | Regel | Wert |
 |---|---|
 | Dateipfad | `C:\Program Files\AETHER System Control` |
 | Datei | `SystemCockpit.exe` |
-| Versionsvergleich | größer oder gleich `0.7.0.54`, 64-Bit-Zuordnung |
+| Versionsvergleich | größer oder gleich `0.7.0.55`, 64-Bit-Zuordnung |
 | Alternativer Registry-Pfad | `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7B0C30A1-7DB4-45B7-A872-F94664465F40}_is1` |
-| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.54`, 64-Bit-Zuordnung |
+| Registry-Wert | `DisplayVersion` gleich `0.7.0-beta.55`, 64-Bit-Zuordnung |
 
 Die Registry-Erkennung muss für jede neue Beta auf deren Versionszeichenfolge
 angepasst werden. Installationsziel kann abweichen; eine Dateiregel

@@ -34,7 +34,7 @@ positiven Zustand umgedeutet werden.
 Der qualifizierte Modellpfad verwendet Phi 4 Mini (`phi4-mini:3.8b`) über den
 lokalen Ollama-Provider. Die Modellinstallation ist ein separater Ablauf
 mit Hardwareprüfung, Lizenzanzeige und ausdrücklicher Annahme. Der
-Portable-Download enthält keine Modellgewichte.
+Portable-Download enthält keine Modelldateien.
 
 Wird der Modellpfad nicht freigegeben oder ist er nicht verfügbar, verwendet
 AETHER den dafür vorgesehenen deterministischen Antwortpfad. Ein Fallback

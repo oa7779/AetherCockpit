@@ -1,6 +1,6 @@
 # Installation
 
-AETHER Beta 54 wird als vollständiges Portable-Verzeichnis, als
+AETHER Beta 55 wird als vollständiges Portable-Verzeichnis, als
 Windows-Installer und mit einer getrennten Server-Komponente bereitgestellt.
 
 ## Voraussetzungen
@@ -22,7 +22,7 @@ erforderlich.
    Die Datei kann zum Beispiel so geprüft werden:
 
    ```powershell
-   Get-FileHash .\AETHER-0.7.0-beta.54-Portable-win-x64.zip -Algorithm SHA256
+   Get-FileHash .\AETHER-0.7.0-beta.55-Portable-win-x64.zip -Algorithm SHA256
    ```
 
 3. Das vollständige ZIP in einen eigenen Ordner entpacken. Keine einzelne
@@ -30,14 +30,14 @@ erforderlich.
 4. `SystemCockpit.exe` starten. Windows kann für einzelne Funktionen eine
    erhöhte Ausführung anfordern.
 
-Die Beta-54-Datei ist unsigniert. Eine Sicherheitswarnung nicht umgehen und
+Die Beta-55-Datei ist unsigniert. Eine Sicherheitswarnung nicht umgehen und
 keinen Schutz deaktivieren. Bei einer Warnung die Bezugsquelle und
 Prüfsumme kontrollieren.
 
 ## Setup-Installer
 
 Den Windows-Installer
-`AETHER-0.7.0-beta.54-Setup-win-x64.exe` aus den offiziellen Release-Assets
+`AETHER-0.7.0-beta.55-Setup-win-x64.exe` aus den offiziellen Release-Assets
 laden, die Prüfsumme vergleichen und den Dialogen folgen. Das Setup erkennt
 eine bestehende AETHER-Installation und aktualisiert sie im vorhandenen
 Vertrag. Nach erfolgreicher Hauptinstallation kann **Lokale KI für AETHER
@@ -47,7 +47,7 @@ das Startmenü erneut erreichbar.
 
 ## Separater Server
 
-`AETHER-0.7.0-beta.54-Server-win-x64.zip` enthält die optionale
+`AETHER-0.7.0-beta.55-Server-win-x64.zip` enthält die optionale
 Management-Komponente. Das Archiv vollständig entpacken und die
 mitgelieferte Serverdokumentation lesen, bevor eine Dienstinstallation oder
 Netzwerkkonfiguration vorgenommen wird. Der Server ist für den normalen
@@ -78,5 +78,5 @@ Windows-Benutzerdaten prüfen.
 
 ## Status
 
-Beta 54 ist eine Vorabversion. Aktuelle Produktbilder stehen in der
+Beta 55 ist eine Vorabversion. Aktuelle Produktbilder stehen in der
 [README](../README.md).
