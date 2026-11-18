@@ -2,7 +2,7 @@
 
 Neueste Version zuerst. Fachanleitungen stehen in `docs`.
 
-## 0.7.0-beta.53 — öffentliches Prerelease
+## 0.7.0-beta.53 — veröffentlichte Vorabversion
 
 - Lokales Windows-Systemcockpit für Systemübersicht, Hardware, Prozesse,
   Leistung, Diagnose und ausgewählte Verwaltungsabläufe.
@@ -16,9 +16,16 @@ Neueste Version zuerst. Fachanleitungen stehen in `docs`.
   abgeschlossener Einrichtung automatisch für Fragen.
 - Startup- und Branding-Ressourcenvertrag korrigiert; manueller Startup- und
   Branding-Smoke-Test bestanden.
-- Öffentliches unsigniertes Portable-win-x64-Prerelease; Modellgewichte
-  sind nicht enthalten. Installer ist nicht verfügbar; aktuelle Screenshots
-  folgen später.
+- Widersprüchliche und unbelegte Claims werden abgelehnt; der Validator
+  ist keine allgemeine semantische Wahrheitsgarantie.
+- Der vorhandene Local-AI-Assistent verwendet das AETHER-Neon-Branding,
+  ein eingebettetes kanonisches Logo, dezente Animation und einen
+  definierten verschiebbaren Header.
+- Der vollständige Windows-Installer enthält den Assistenten und bietet
+  dessen kontrollierten Start nach der Installation an. Modellgewichte
+  werden nicht mitgeliefert.
+- Portable-, Installer- und separates Serverpaket werden für Beta 53 aus
+  demselben Quellstand veröffentlicht. Aktuelle Screenshots folgen separat.
 
 ## 0.7.0-beta.47 — veröffentlichte Vorabversion
 

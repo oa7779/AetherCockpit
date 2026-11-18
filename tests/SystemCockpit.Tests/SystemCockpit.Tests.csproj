@@ -10,5 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SystemCockpit\SystemCockpit.csproj"/>
     <ProjectReference Include="..\..\src\AetherScreensaver\AetherScreensaver.csproj"/>
+    <ProjectReference Include="..\..\src\AetherLocalAiSetup\AetherLocalAiSetup.csproj"/>
   </ItemGroup>
 </Project>

@@ -9,15 +9,19 @@ herunter.
 - Modell: Phi 4 Mini, `phi4-mini:3.8b`
 - Inferenz: lokaler Ollama-Provider
 - Freigabe: ausschließlich nach Systemfähigkeits- und Integritätsprüfung
-- Modellgewichte: separat gespeicherte lokale Dateien, nicht im
-  Portable-Paket enthalten
+- Modellgewichte: separat gespeicherte lokale Dateien, nicht in Portable,
+  Setup oder Serverpaket enthalten
 
 Andere Modelle sind für den automatischen Produktpfad nicht als
 gleichwertig qualifiziert.
 
 ## Einrichtung
 
-1. AETHER öffnen und den ausdrücklich getrennten Modell-Setup-Ablauf wählen.
+1. Im installierten Produkt die Startmenü-Verknüpfung **AETHER Lokale KI
+   einrichten** beziehungsweise im Portable-Verzeichnis
+   `AetherLocalAiSetup\AetherLocalAiSetup.exe` starten. Die Installation
+   kann diesen Assistenten nach dem Hauptsetup auf ausdrückliche Auswahl
+   öffnen.
 2. Die angezeigte Systemfähigkeitsprüfung abwarten.
 3. Modell und Lizenzbedingungen lesen.
 4. Lizenz ausdrücklich annehmen, wenn die Einrichtung fortgesetzt werden
@@ -45,7 +49,7 @@ Bedienabläufe und Bestätigungen.
 ## Modellstatus und Daten
 
 Runtime und Gewichte werden lokal verwaltet und gehören nicht zum
-Portable-Programmverzeichnis. Während des gesonderten Setup-Ablaufs wird
+Programmpaket. Während des gesonderten Setup-Ablaufs wird
 der Modellbezug angezeigt. Der normale Frageablauf verwendet den lokalen
 Provider; ein Cloud-Fallback gehört nicht zum qualifizierten Pfad.
 

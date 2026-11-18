@@ -142,17 +142,27 @@ Weitere Einzelheiten stehen unter
 
 ## Installation und Download
 
-**AETHER 0.7.0 Beta 53** ist als öffentliches GitHub-Prerelease verfügbar:
-[Portable win-x64 herunterladen](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Portable-win-x64.zip)
-und
-[SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/SHA256SUMS.txt).
+**AETHER 0.7.0 Beta 53** ist als öffentliches GitHub-Prerelease verfügbar und
+wird als Windows-x64-Vorabversion in drei Varianten bereitgestellt:
+
+- **Portable:** vollständiges, entpackbares AETHER-Verzeichnis.
+- **Setup:** Windows-Installer mit den AETHER-Programmkomponenten und dem
+  integrierten Assistenten **AETHER Local AI Setup**.
+- **Server:** separate Management-Komponente; für den normalen
+  Einzelplatzbetrieb nicht erforderlich.
+
+Die Dateinamen und SHA-256-Prüfsummen stehen in den Assets und in
+`SHA256SUMS.txt` des jeweiligen GitHub-Release. Die Builds sind unsigniert;
+vor dem Start Herkunft und Prüfsumme kontrollieren und Schutzfunktionen
+wegen einer Warnung nicht deaktivieren.
 
 Das Portable-ZIP muss vollständig entpackt werden; DLLs, Laufzeit und
-Begleitdateien bleiben zusammen. `SystemCockpit.exe` für die unterstützten
-Verwaltungsabläufe erhöht starten. Vor dem Start Herkunft und SHA-256-
-Prüfsumme anhand der bereitgestellten Prüfsummendatei prüfen. Das Paket ist
-unsigniert; Schutzfunktionen wegen einer Warnung nicht deaktivieren. Ein
-Installer ist nicht verfügbar.
+Begleitdateien bleiben zusammen. Der Setup-Installer bietet die lokale
+KI-Einrichtung nach Abschluss als eigene Option an und startet sie nicht
+ohne Auswahl. Modellgewichte sind in keinem der drei Programmpakete
+enthalten.
+
+[Release und Downloads](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.53)
 
 ## Dokumentation
 
@@ -170,11 +180,18 @@ Installer ist nicht verfügbar.
 
 ## Beta-Status
 
+<<<<<<< HEAD
 AETHER 0.7.0 Beta 53 ist eine öffentliche Vorabversion. Der manuelle Startup-
 und Branding-Smoke-Test des Kandidaten ist bestanden; der qualifizierte
 Portable-Realtest mit lokalem Phi, erfolgreicher Validatorprüfung und ohne
 Fallback bleibt belegt. Screenshots folgen später. Der Build ist unsigniert;
 ein Installer ist nicht verfügbar.
+=======
+AETHER 0.7.0 Beta 53 ist eine Vorabversion. Der qualifizierte lokale
+Phi-Pfad, die Evidence-/Claim-Prüfung, das AETHER-Branding und der separate
+Local-AI-Setup-Ablauf wurden geprüft. Screenshots sind bewusst auf einen
+späteren Stand zurückgestellt.
+>>>>>>> f0185f7 (release: complete Beta 53 full installer)
 
 ## Lizenz
 

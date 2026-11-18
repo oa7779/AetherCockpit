@@ -9,7 +9,19 @@ using AetherManager.Server.Services;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Hosting.WindowsServices;
 
-var builder = WebApplication.CreateBuilder(args);
+var contentRootArgument = Array.FindIndex(args, value =>
+    value.Equals("--contentRoot", StringComparison.OrdinalIgnoreCase));
+if (contentRootArgument >= 0 && contentRootArgument + 1 >= args.Length)
+    throw new ArgumentException("--contentRoot benötigt einen Pfad.");
+var contentRoot = contentRootArgument >= 0
+    ? Path.GetFullPath(args[contentRootArgument + 1])
+    : AppContext.BaseDirectory;
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = contentRoot,
+    WebRootPath = Path.Combine(contentRoot, "wwwroot")
+});
 builder.Host.UseWindowsService(options => options.ServiceName = "AETHER Management Server");
 var urls = Environment.GetEnvironmentVariable("AETHER_MANAGER_URLS") ?? "http://127.0.0.1:5187";
 var configuredUrls = urls.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

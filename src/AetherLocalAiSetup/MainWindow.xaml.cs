@@ -4,6 +4,10 @@ using System.IO;
 using System.Net.Http;
 using System.Security;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using AetherOperations.Intelligence;
 
@@ -23,6 +27,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        VersionText.Text = "AETHER " + (typeof(App).Assembly.GetCustomAttributes(typeof(
+            System.Reflection.AssemblyInformationalVersionAttribute), false)
+            .Cast<System.Reflection.AssemblyInformationalVersionAttribute>()
+            .Select(attribute => attribute.InformationalVersion.Split('+')[0])
+            .FirstOrDefault() ?? "0.7.0 Beta 53");
         ModelStorePathText.Text = AetherLocalAiStoreContract.ModelStorePath;
         NemotronQualification.Text = DescribeModel(_nemotron4B);
         StoreConfigurationAccepted.Content =
@@ -37,7 +46,14 @@ public partial class MainWindow : Window
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        if (SystemParameters.ClientAreaAnimation)
+            BrandLogo.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(.84, 1, TimeSpan.FromSeconds(2.8))
+                    { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+        else
+            BrandLogo.BeginAnimation(OpacityProperty, null);
         SetupButton.IsEnabled = false;
+        ClearError();
         try
         {
             _hardware = await new AetherSetupHardwareProbe().ReadAsync(_stop.Token);
@@ -67,6 +83,7 @@ public partial class MainWindow : Window
             CapabilityDetails.Text = "Die System- oder Katalogprüfung konnte nicht abgeschlossen werden: " + ex.Message;
             RuntimeFacts.Text = "Ollama-Kompatibilität konnte nicht bestätigt werden.";
             ProgressStatus.Text = "Lokale KI bleibt deaktiviert; AETHER kann weiterhin regelbasiert arbeiten.";
+            ShowError("Die Prüfung konnte nicht abgeschlossen werden. AETHER bleibt verfügbar. Prüfen Sie die Systeminformationen und starten Sie den Assistenten erneut.", ex);
         }
     }
 
@@ -182,6 +199,8 @@ public partial class MainWindow : Window
         SetupButton.Content = "Abbrechen";
         SetupProgress.Visibility = Visibility.Visible;
         SetupProgress.IsIndeterminate = true;
+        SuccessNotice.Visibility = Visibility.Collapsed;
+        ClearError();
         try
         {
             ProgressStatus.Text = "System wird geprüft …";
@@ -210,16 +229,29 @@ public partial class MainWindow : Window
                     ? NemotronLicenseAccepted.IsChecked == true : LicenseAccepted.IsChecked == true,
                 StoreConfigurationAccepted.IsChecked == true, progress, operationStop.Token);
             ProgressStatus.Text = "Lokale KI wurde geprüft, eingerichtet und im AETHER-Katalog freigegeben.";
+            CapabilityLabel.Text = "AETHER Intelligence ist bereit";
+            CapabilityLabel.Foreground = (Brush)FindResource("Success");
+            ResultAccent.Background = (Brush)FindResource("Success");
+            CapabilityDetails.Text = "Phi 4 Mini wurde für die lokale Verwendung durch AETHER eingerichtet und geprüft.";
+            SuccessNotice.Visibility = Visibility.Visible;
         }
         catch (OperationCanceledException) when (operationStop.IsCancellationRequested)
         {
             ProgressStatus.Text = "Einrichtung abgebrochen. Der Modellkatalog wurde nicht freigegeben.";
+            CapabilityLabel.Text = "Einrichtung abgebrochen";
+            CapabilityLabel.Foreground = (Brush)FindResource("Warning");
+            ResultAccent.Background = (Brush)FindResource("Warning");
         }
         catch (Exception ex) when (ex is InvalidDataException or IOException or InvalidOperationException or UnauthorizedAccessException or
             HttpRequestException or Win32Exception or SecurityException or TimeoutException or System.Text.Json.JsonException or
             System.Runtime.InteropServices.COMException or AggregateException)
         {
-            ProgressStatus.Text = "Einrichtung fehlgeschlagen: " + ex.Message;
+            CapabilityLabel.Text = "Einrichtung nicht abgeschlossen";
+            CapabilityLabel.Foreground = (Brush)FindResource("Error");
+            ResultAccent.Background = (Brush)FindResource("Error");
+            CapabilityDetails.Text = "Der aktuelle Schritt ist fehlgeschlagen. Sie können die Ursache in den technischen Details prüfen und die Einrichtung anschließend erneut starten.";
+            ProgressStatus.Text = "Einrichtung fehlgeschlagen. AETHER bleibt ohne eine unbestätigte Modellfreigabe verfügbar.";
+            ShowError("Einrichtung nicht abgeschlossen. Prüfen Sie die technischen Details, beheben Sie die Ursache und starten Sie die Einrichtung erneut.", ex);
         }
         finally
         {
@@ -257,6 +289,45 @@ public partial class MainWindow : Window
     {
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         e.Handled = true;
+    }
+
+    private void WindowHeader_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState != MouseButtonState.Pressed ||
+            e.OriginalSource is DependencyObject source && FindAncestor<Button>(source) is not null)
+            return;
+        DragMove();
+        e.Handled = true;
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? source) where T : DependencyObject
+    {
+        while (source is not null)
+        {
+            if (source is T match) return match;
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return null;
+    }
+
+    private void MinimizeButton_OnClick(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState.Minimized;
+
+    private void ShowError(string message, Exception exception)
+    {
+        ProgressStatus.Foreground = (Brush)FindResource("Error");
+        ProgressStatus.Text = message;
+        ErrorDetailsHeading.Visibility = Visibility.Visible;
+        ErrorDetails.Visibility = Visibility.Visible;
+        ErrorDetails.Text = exception.ToString();
+    }
+
+    private void ClearError()
+    {
+        ProgressStatus.Foreground = (Brush)FindResource("Muted");
+        ErrorDetailsHeading.Visibility = Visibility.Collapsed;
+        ErrorDetails.Visibility = Visibility.Collapsed;
+        ErrorDetails.Text = string.Empty;
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) => Close();

@@ -63,7 +63,7 @@ OutputDir=..\dist
 #ifdef SetupValidation
 OutputBaseFilename=AetherSetupValidation
 #else
-OutputBaseFilename=AetherCockpit-Setup-{#AppVersion}-win-x64
+OutputBaseFilename=AETHER-{#AppVersion}-Setup-win-x64
 #endif
 SetupIconFile=..\src\SystemCockpit\Assets\aether.ico
 UninstallDisplayIcon={app}\SystemCockpit.exe

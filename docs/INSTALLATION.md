@@ -1,7 +1,7 @@
-# Portable-Installation
+# Installation
 
-AETHER wird als vollständiges Portable-Verzeichnis bereitgestellt. Für Beta
-53 ist kein Installer freigegeben.
+AETHER Beta 53 wird als vollständiges Portable-Verzeichnis, als
+Windows-Installer und mit einer getrennten Server-Komponente bereitgestellt.
 
 ## Voraussetzungen
 
@@ -12,9 +12,10 @@ AETHER wird als vollständiges Portable-Verzeichnis bereitgestellt. Für Beta
 
 Die lokale KI-Funktion benötigt zusätzlich den getrennten Setup-Ablauf für
 Runtime und Modell. Sie ist keine Voraussetzung für die übrigen
-Cockpitansichten.
+Cockpitansichten. Der Server ist nur für die optionale Zentralverwaltung
+erforderlich.
 
-## Download und erster Start
+## Portable: Download und erster Start
 
 1. Das Portable-ZIP aus einer offiziellen AETHER-Bezugsquelle laden.
 2. Die veröffentlichte SHA-256-Prüfsumme mit `SHA256SUMS.txt` vergleichen.
@@ -33,12 +34,31 @@ Die Beta-53-Datei ist unsigniert. Eine Sicherheitswarnung nicht umgehen und
 keinen Schutz deaktivieren. Bei einer Warnung die Bezugsquelle und
 Prüfsumme kontrollieren.
 
+## Setup-Installer
+
+Den Windows-Installer
+`AETHER-0.7.0-beta.53-Setup-win-x64.exe` aus den offiziellen Release-Assets
+laden, die Prüfsumme vergleichen und den Dialogen folgen. Das Setup erkennt
+eine bestehende AETHER-Installation und aktualisiert sie im vorhandenen
+Vertrag. Nach erfolgreicher Hauptinstallation kann **Lokale KI für AETHER
+einrichten** ausgewählt werden. Wird die Option übersprungen, bleiben die
+übrigen AETHER-Funktionen startfähig; der Assistent ist anschließend über
+das Startmenü erneut erreichbar.
+
+## Separater Server
+
+`AETHER-0.7.0-beta.53-Server-win-x64.zip` enthält die optionale
+Management-Komponente. Das Archiv vollständig entpacken und die
+mitgelieferte Serverdokumentation lesen, bevor eine Dienstinstallation oder
+Netzwerkkonfiguration vorgenommen wird. Der Server ist für den normalen
+lokalen Einzelplatzbetrieb nicht erforderlich.
+
 ## Lokale KI einrichten
 
-Die Modellinstallation wird separat aus AETHER gestartet. Der Ablauf prüft
-die Systemfähigkeit, zeigt die Lizenz an und benötigt deren ausdrückliche
-Annahme, bevor Runtime oder Modell eingerichtet werden. Modellgewichte
-sind nicht Teil des Portable-ZIPs. Einzelheiten stehen in der
+Die Modellinstallation wird über den mitgelieferten AETHER-Assistenten
+gestartet. Der Ablauf prüft die Systemfähigkeit, zeigt die Lizenz an und
+benötigt deren ausdrückliche Annahme, bevor Runtime oder Modell eingerichtet
+werden. Modellgewichte sind nicht Teil der Programmpakete. Einzelheiten stehen in der
 [Anleitung zur lokalen Modellinstallation](INTELLIGENCE-MODEL-INSTALLATION.md).
 
 ## Aktualisieren
@@ -58,5 +78,5 @@ Windows-Benutzerdaten prüfen.
 
 ## Status
 
-Beta 53 ist ein lokaler Portable-Kandidat; eine öffentliche Bezugsquelle
-steht noch aus. Es gibt keinen freigegebenen Beta-53-Installer.
+Beta 53 ist eine Vorabversion. Screenshots aktueller Paketstände sind in
+dieser Fassung bewusst noch nicht enthalten.

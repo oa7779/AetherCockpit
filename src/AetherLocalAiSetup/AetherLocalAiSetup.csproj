@@ -16,6 +16,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AetherOperations.Shared\AetherOperations.Shared.csproj" />
+    <Resource Include="..\SystemCockpit\Assets\aether-logo.png"
+              Link="Assets\aether-logo.png"
+              LogicalName="Assets\aether-logo.png" />
+    <None Remove="..\SystemCockpit\Assets\aether-logo.png" />
+    <Resource Include="..\SystemCockpit\Assets\aether.ico"
+              Link="Assets\aether.ico" />
   </ItemGroup>
 
 </Project>
