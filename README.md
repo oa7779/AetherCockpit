@@ -180,18 +180,13 @@ enthalten.
 
 ## Beta-Status
 
-<<<<<<< HEAD
 AETHER 0.7.0 Beta 53 ist eine öffentliche Vorabversion. Der manuelle Startup-
 und Branding-Smoke-Test des Kandidaten ist bestanden; der qualifizierte
 Portable-Realtest mit lokalem Phi, erfolgreicher Validatorprüfung und ohne
-Fallback bleibt belegt. Screenshots folgen später. Der Build ist unsigniert;
-ein Installer ist nicht verfügbar.
-=======
-AETHER 0.7.0 Beta 53 ist eine Vorabversion. Der qualifizierte lokale
+Fallback bleibt belegt. Der qualifizierte lokale
 Phi-Pfad, die Evidence-/Claim-Prüfung, das AETHER-Branding und der separate
 Local-AI-Setup-Ablauf wurden geprüft. Screenshots sind bewusst auf einen
-späteren Stand zurückgestellt.
->>>>>>> f0185f7 (release: complete Beta 53 full installer)
+späteren Stand zurückgestellt. Die Builds sind unsigniert.
 
 ## Lizenz
 
