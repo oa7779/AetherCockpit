@@ -56,7 +56,7 @@ internal static class BootTests
         icon.Stream.Position = 0;
         var decoder = BitmapDecoder.Create(icon.Stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         foreach (var frame in decoder.Frames) VerifyIconContrast(frame);
-        return 13 + VerifyTaskbarContract(decoder.Frames);
+        return 13 + RepositoryTestPathTests.Run() + VerifyTaskbarContract(decoder.Frames);
     }
 
     private static int VerifyTaskbarContract(IReadOnlyList<BitmapFrame> iconFrames)
@@ -94,7 +94,7 @@ internal static class BootTests
         }
         finally { window.Close(); }
 
-        var installerPath = FindRepositoryFile("build", "AetherCockpit.iss");
+        var installerPath = RepositoryTestPaths.FindFile("build", "AetherCockpit.iss");
         var repositoryRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(installerPath)!, ".."));
         var appSource = File.ReadAllText(Path.Combine(repositoryRoot, "src", "SystemCockpit", "App.xaml.cs"));
         var setIdentity = appSource.IndexOf("Services.TaskbarIdentity.SetForCurrentProcess()", StringComparison.Ordinal);
@@ -112,16 +112,6 @@ internal static class BootTests
                 !line.Contains($"AppUserModelID: \"{TaskbarIdentity.AppUserModelId}\"", StringComparison.Ordinal)))
             throw new InvalidOperationException("AETHER start-menu and desktop shortcuts must explicitly use the app icon and matching identity");
         return 4;
-    }
-
-    private static string FindRepositoryFile(params string[] path)
-    {
-        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
-        {
-            var candidate = Path.Combine([directory.FullName, .. path]);
-            if (File.Exists(candidate)) return candidate;
-        }
-        throw new DirectoryNotFoundException("Repository file not found from the test output directory: " + Path.Combine(path));
     }
 
     private static int VerifyLogoResourceContract(string repositoryRoot)
@@ -415,7 +405,7 @@ internal static class BootTests
                     $"{window.GetType().Name} must use the exact embedded AETHER window icon");
             }
         }
-        var installerPath = FindRepositoryFile("build", "AetherCockpit.iss");
+        var installerPath = RepositoryTestPaths.FindFile("build", "AetherCockpit.iss");
         var repositoryRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(installerPath)!, ".."));
         var logoUri = "pack://application:,,,/SystemCockpit;component/Assets/aether-logo.png";
         var bootXaml = File.ReadAllText(Path.Combine(repositoryRoot, "src", "SystemCockpit", "BootWindow.xaml"));

@@ -17,7 +17,7 @@ internal static class LocalAiSetupUiTests
             if (!valid) throw new InvalidOperationException(message);
         }
 
-        var projectPath = FindRepositoryFile("src", "AetherLocalAiSetup", "AetherLocalAiSetup.csproj");
+        var projectPath = RepositoryTestPaths.FindFile("src", "AetherLocalAiSetup", "AetherLocalAiSetup.csproj");
         var repositoryRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(projectPath)!, "..", ".."));
         var project = File.ReadAllText(projectPath);
         Check(project.Split("<Resource").Length - 1 == 2,
@@ -112,15 +112,4 @@ internal static class LocalAiSetupUiTests
         return assertions;
     }
 
-    private static string FindRepositoryFile(params string[] path)
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            var candidate = Path.Combine([directory.FullName, .. path]);
-            if (File.Exists(candidate)) return candidate;
-            directory = directory.Parent;
-        }
-        throw new FileNotFoundException("Repository file not found: " + string.Join(Path.DirectorySeparatorChar, path));
-    }
 }

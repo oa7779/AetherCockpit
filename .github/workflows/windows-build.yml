@@ -130,6 +130,8 @@ jobs:
           retention-days: 14
 
       - name: Run assertions against published assemblies
+        env:
+          AETHER_REPOSITORY_ROOT: ${{ github.workspace }}
         run: |
           $fixture = Join-Path $env:RUNNER_TEMP 'AetherPublishedTests'
           New-Item -ItemType Directory -Path $fixture | Out-Null
