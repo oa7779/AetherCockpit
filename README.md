@@ -1,197 +1,297 @@
 # AETHER
 
-**Lokales Windows-Systemcockpit für Analyse, Diagnose, Verwaltung und
-beleggebundene KI-Unterstützung.**
+**Eine Windows-Kommandozentrale für den eigenen Rechner.**
 
-![AETHER-Logo](src/SystemCockpit/Assets/aether-logo.png)
+Windows bringt für fast jedes technische Thema ein eigenes Werkzeug mit:
+Task-Manager, Geräte-Manager, Ereignisanzeige, Dienste, Aufgabenplanung,
+Systeminformationen, PowerShell, Netzwerkdiagnose, Hardware-Monitoring
+und Programme des jeweiligen Hardwareherstellers.
 
-## Problem und Ziel
+Die Informationen gehören technisch oft zusammen, liegen aber in mehreren
+Anwendungen und Oberflächen verteilt. AETHER soll sie in einem gemeinsamen
+Ausgangspunkt zusammenführen. Es ersetzt nicht jedes vorhandene
+Windows-Werkzeug und macht aus unbekannten Messwerten keine sicheren
+Aussagen.
 
-Systemzustand, Hardwaremessungen, Diagnose und Verwaltungsaufgaben sind
-häufig auf unterschiedliche Windows-Ansichten verteilt. Dadurch ist schwer
-zu erkennen, welche Daten tatsächlich gemessen, welche nur abgeleitet und
-welche Angaben nicht verfügbar sind.
+![AETHER-Systemübersicht](docs/images/02-system-overview.png)
 
-AETHER führt diese Informationen in einem lokalen Systemkontext zusammen.
-Das Ziel ist, vom Beobachten über das Verstehen und Diagnostizieren zu einer
-informierten Entscheidung und gegebenenfalls einer kontrollierten Aktion zu
-führen:
+*Die Systemübersicht von AETHER 0.7.0 Beta 53.*
 
-**Beobachten → verstehen → diagnostizieren → entscheiden → kontrolliert handeln.**
+## Die Idee hinter AETHER
 
-AETHER ordnet verfügbare Messungen und Quellen ein. Es unterscheidet
-gemessene Werte, abgeleitete Aussagen, Modellformulierungen, validierte
-Ergebnisse und nicht verfügbare Daten.
+Bei einem Problem mit meinem Rechner möchte ich nicht zuerst überlegen
+müssen, welches Windows-Werkzeug oder welches Herstellerprogramm ich jetzt
+öffnen sollte. Ich möchte einen gemeinsamen Ausgangspunkt haben:
 
-## Was AETHER ausmacht
+**Beobachten → Zusammenhänge erkennen → Ursache finden → Maßnahme auswählen
+→ kontrolliert handeln**
 
-- **Local first:** Die Cockpitansichten lesen lokale Windows- und
-  Hardwarequellen. Der qualifizierte Phi-Pfad führt die Inferenz über den
-  lokalen Ollama-Provider aus.
-- **Evidence before claims:** Modellbehauptungen werden strukturiert und
-  gegen die für die Anfrage verfügbaren Belege geprüft.
-- **Nachvollziehbarkeit:** Aussagen bleiben mit ihren Quellen und
-  Belegreferenzen verbunden. Eine formale Prüfung ist keine allgemeine
-  semantische Wahrheitsgarantie.
-- **Kontrollierte Verwaltung:** Die normale Intelligence-Anfrage führt keine
-  Systemänderung aus. Geführte Verwaltungsabläufe zeigen Ziel und Wirkung
-  und verlangen eine Bestätigung.
-- **Ein Systemcockpit:** Systemübersicht, Hardware, Prozesse, Diagnose,
-  Wartung und Intelligence teilen eine gemeinsame Arbeitsoberfläche.
+AETHER soll nicht nur Messwerte anzeigen. Es soll helfen zu sehen, welche
+Informationen zusammengehören, was tatsächlich gemessen wurde und wo eine
+weitere Prüfung sinnvoll ist.
 
-## AETHER Intelligence
+Der wichtige Grundsatz lautet:
 
-AETHER Intelligence verbindet lokale Systemmessungen mit dem qualifizierten
-Modellpfad **Phi 4 Mini** (`phi4-mini:3.8b`):
+**Erst messen, dann bewerten.**
 
-**Windows und Hardware → Evidence → kanonische Werte und Claims → lokale
-Phi-Inferenz → strukturierte Antwort → Claim-/Evidence-Validator → Anzeige**
+AETHER unterscheidet soweit technisch möglich zwischen gemessenen Daten,
+Informationen von Windows oder Hardware, daraus abgeleiteten
+Zusammenhängen, sprachlicher Einordnung und tatsächlich ausgeführten
+Änderungen.
 
-Der Validator prüft unter anderem Claim-Typ, Subjekt, Eigenschaft,
-kanonischen Wert und Evidence-Referenzen. Nicht belegbare oder
-widersprüchliche Claims werden abgelehnt. Fehlende Messwerte bleiben
-nicht verfügbar; sie werden nicht durch plausible Modellformulierungen
-ersetzt. Der normale Frageablauf erteilt dem Modell keine Befugnis,
-Verwaltungsaktionen auszuführen.
-
-Phi wird nach der getrennten Einrichtung, ausdrücklichen Lizenzannahme und
-erfolgreichen Hardware- und Integritätsprüfung automatisch für den
-qualifizierten lokalen Pfad ausgewählt. Danach verwendet AETHER den
-freigegebenen Pfad ohne manuelle Modellwahl für jede Frage (**Zero-Click
-Local AI**). Runtime und Modellgewichte werden nicht während einer Frage
-heruntergeladen und sind nicht Teil der Programmpakete. Nemotron ist in
-Beta 53 kein auswählbarer oder freigegebener Modellpfad.
-
-## Funktionen
+## Was AETHER heute kann
 
 ### Systemübersicht
 
-Livewerte für CPU, Arbeitsspeicher, Datenträger und Netzwerk sowie
-Windows-Status und verfügbare Hardwareinformationen. Nicht verfügbare
-Sensoren bleiben als solche gekennzeichnet.
-
-### Prozesse und Leistung
-
-Prozessübersicht, Leistungsdaten und nachvollziehbare Beziehungen zu
-Windows- und Hardwarequellen. Prozessaktionen zeigen ihr Ziel und
-verlangen eine bewusste Auswahl.
+Die Systemübersicht zeigt verfügbare Livewerte und Verläufe zu CPU,
+Arbeitsspeicher, GPU, Datenträgern und Netzwerk. Dazu kommen ein
+Windows-Status und ausgewählte Hardware-Sensoren. Nicht verfügbare Daten
+bleiben als nicht verfügbar gekennzeichnet.
 
 ### Hardware
 
-Hardwareinventar und Sensoransichten mit Quellen- und
-Verfügbarkeitsangaben. Grenzwerte werden nicht als Messwerte ausgegeben.
+Hardwareansichten ordnen Informationen zu CPU, GPU, Arbeitsspeicher,
+Mainboard, Datenträgern, Geräten und verfügbaren Sensoren. Dazu gehören
+soweit vorhanden SMART- und NVMe-Befunde. Nicht jede Hardware liefert
+dieselben Daten; Temperaturgrenzen und andere Herstellergrenzen sind keine
+Messwerte.
 
-### Diagnose und Wartung
+### Prozesse und Leistung
 
-Windows-Status, Ereignisse und geführte Prüfungen. Änderungen werden von
-reinen Beobachtungen getrennt; Verwaltungsabläufe zeigen Vorschau,
-Bestätigung und Nachprüfung.
+AETHER zeigt Prozesse mit Leistungsinformationen und begrenzter Historie.
+Ziel ist nicht nur zu sehen, dass Last entsteht, sondern die auffällige
+Situation mit Windows-Diensten, Aufgaben, Verbindungen und
+Hardwareinformationen einzuordnen. Eine Prozess-I/O-Zahl ist dabei kein
+Beweis für physische Datenträgeraktivität.
 
-### Verwaltung
+### Windows-Diagnose
 
-Ausgewählte Windows-Verwaltungsfunktionen für Prozesse, Dienste, Aufgaben,
-Netzwerk und Wartung. Verfügbarkeit und Rücknahme hängen von der jeweiligen
-Funktion und den Windows-Rechten ab. Die freie Administratorkonsole führt
-eingegebene Befehle unmittelbar aus.
+Vorhandene Diagnosebereiche befassen sich unter anderem mit Ereignissen,
+Geräten, Treibern, Diensten, Aufgaben, Autostart, Netzwerk, Systemzustand
+und ausgewählten Windows-Komponenten. Ereignisse und Inventardaten sind
+Hinweise, aber keine vollständige Ursachendiagnose für sich.
 
-### AETHER Guardian
+### Verwaltung und Wartung
 
-Guardian befindet sich in Entwicklung und ist keine freigegebene
-Produktionsfunktion.
+AETHER bietet geführte Abläufe für ausgewählte Prozesse, Dienste, Aufgaben,
+Netzwerkeinstellungen und Windows-Funktionen. Vor einer unterstützten
+Änderung werden Ziel und erwartete Wirkung angezeigt; anschließend ist
+eine bewusste Bestätigung erforderlich.
 
-## Gestaltung
+Analyse und Änderung bleiben getrennt. AETHER führt aufgrund einer
+Diagnose nicht ungefragt Änderungen am System aus. Nicht jede Aktion kann
+zurückgenommen werden; Windows-Rechte und Richtlinien gelten weiter.
 
-AETHER verwendet ein eigenständiges Retro-Neon-Design mit dunkler
-Cockpitoberfläche, Cyan-, Magenta- und Grünakzenten sowie technischer
-Instrumentenästhetik. Die Oberfläche ordnet dichte Informationen nach
-Aufgaben; Animationen lassen sich abschalten. Die Darstellung soll
-Funktionen unterstützen, nicht Messwerte oder Grenzen verdecken.
+## AETHER Intelligence
 
-## Screenshots
+AETHER besitzt eine lokale Assistenzfunktion. Der interessante Teil ist
+nicht, dass ein Sprachmodell eingebaut wurde. Der wichtige Punkt ist:
 
-Eine Galerie mit geprüften aktuellen Produktbildern kann hier ergänzt
-werden. Derzeit werden keine historischen oder synthetischen Aufnahmen als
-Beta-53-Ansichten dargestellt.
+**AETHER soll dem Modell nicht blind glauben.**
 
-## Lokale KI
+Der Ablauf ist dafür bewusst getrennt:
 
-Die lokale KI-Einrichtung ist ein separater, bestätigter Setup-Ablauf.
-Er prüft die Systemfähigkeit, zeigt die Modelllizenz an und verlangt deren
-ausdrückliche Annahme. Der normale Frageablauf lädt weder Runtime noch
-Modellgewichte herunter. Die einzelnen Schritte und Grenzen stehen in der
-[Anleitung zur lokalen Modellinstallation](docs/INTELLIGENCE-MODEL-INSTALLATION.md).
+1. AETHER liest reale Windows- und Hardwareinformationen.
+2. Relevante Daten werden als technische Belege aufbereitet.
+3. Das lokale Modell erhält nur den für die Aufgabe benötigten Kontext.
+4. Das Modell formuliert eine strukturierte Antwort.
+5. AETHER prüft technische Aussagen gegen die vorhandenen Daten.
+6. Nicht belegbare oder widersprüchliche Aussagen werden nicht einfach als
+   Tatsache angezeigt.
 
-## Sicherheit und Datenschutz
+![AETHER Intelligence](docs/images/04-aether-intelligence.png)
 
-Der qualifizierte Phi-Pfad nutzt den lokalen Ollama-Provider; er benötigt
-keine Cloud-Inferenz. Das optionale Client-/Serverangebot ist ein davon
-getrennter Bedienablauf mit eigener Anmeldung, Gerätefreigabe und
-Übertragungszustimmung. Berichte, Diagnosen und Screenshots können
-Systemdetails enthalten; Inhalte vor einer Weitergabe prüfen.
+*AETHER Intelligence mit Modellstatus, technischen Daten und
+Validierungsbereich.*
 
-Weitere Einzelheiten stehen unter
-[Sicherheit und Datenschutz](docs/SECURITY-AND-PRIVACY.md).
+Der qualifizierte Modellpfad in Beta 53 ist **Phi 4 Mini**
+(`phi4-mini:3.8b`). Die Verarbeitung erfolgt lokal über Ollama. AETHER
+prüft dabei Claims, kanonische Werte und Belegreferenzen; eine solche
+Prüfung ist keine allgemeine semantische Wahrheitsgarantie.
 
-## Systemvoraussetzungen
+AETHER selbst funktioniert auch ohne eingerichtetes Sprachmodell. Die
+normale Nutzung lädt weder die Ollama-Runtime noch Modellgewichte herunter.
 
-- Windows x64 mit grafischem Desktop; Windows 11 ist die Zielumgebung.
-- Das Portable-Paket enthält die benötigte .NET-Laufzeit.
-- Hardware- und Sensorabdeckung hängen von Gerät, Treiber und
-  Windows-Konfiguration ab.
-- Die lokale Phi-Funktion erfordert den getrennten Setup-Ablauf und ein
-  geeignetes, ausdrücklich freigegebenes System.
+### Warum lokale KI?
 
-## Installation und Download
+Ein Windows-PC liefert viele technische Informationen. Ein erfahrener
+Benutzer kann diese selbst zusammensetzen, muss dafür aber häufig mehrere
+Quellen durchsuchen. Das lokale Modell soll dabei helfen, vorhandene
+Informationen verständlich zusammenzufassen und einzuordnen.
 
-**AETHER 0.7.0 Beta 53** ist als öffentliches GitHub-Prerelease verfügbar und
-wird als Windows-x64-Vorabversion in drei Varianten bereitgestellt:
+**Das Sprachmodell ist Helfer und Dolmetscher, nicht die Messstelle.**
 
-- **Portable:** vollständiges, entpackbares AETHER-Verzeichnis.
-- **Setup:** Windows-Installer mit den AETHER-Programmkomponenten und dem
-  integrierten Assistenten **AETHER Local AI Setup**.
-- **Server:** optionale separate Management-Komponente; für den normalen
-  Einzelplatzbetrieb nicht erforderlich. Er führt in Beta 53 keine
-  serverseitige Modellinferenz aus.
+### Phi und Nemotron in Beta 53
 
-Die Dateinamen und SHA-256-Prüfsummen stehen in den Assets und in
-`SHA256SUMS.txt` des jeweiligen GitHub-Release. Die Builds sind unsigniert;
-vor dem Start Herkunft und Prüfsumme kontrollieren und Schutzfunktionen
-wegen einer Warnung nicht deaktivieren.
+**Phi 4 Mini** ist der qualifizierte Standardpfad und tatsächlich für den
+lokalen automatischen Einsatz freigegeben.
 
-Das Portable-ZIP muss vollständig entpackt werden; DLLs, Laufzeit und
-Begleitdateien bleiben zusammen. Der Setup-Installer bietet die lokale
-KI-Einrichtung nach Abschluss als eigene Option an und startet sie nicht
-ohne Auswahl. Modellgewichte sind in keinem der drei Programmpakete
-enthalten.
+**Nemotron 3 Nano 4B** ist nicht Bestandteil des freigegebenen
+Beta-53-Modellpfads und im Setup nicht auswählbar. Die Variante wurde
+technisch untersucht, hat aber die vollständige Produktqualifikation nicht
+bestanden. **Nemotron 3 Nano 30B** bleibt ein möglicher Kandidat für eine
+spätere Hardware- und Infrastrukturprüfung.
 
-[Release und Downloads](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.53)
+AETHER nimmt Modelle erst in den Produktpfad auf, wenn Identität, Lizenz,
+Digest, Hardwarebedarf, Ausgabe und bestehende Validierungsverträge
+zusammenpassen.
 
-## Dokumentation
+## Local first und Client first
 
-| Thema | Anleitung |
-|---|---|
-| Produktumfang | [Funktionen](docs/FEATURES.md) |
-| Bedienung | [Benutzerhandbuch](docs/USER-GUIDE.md) |
-| Installation und Updates | [Portable-Installation](docs/INSTALLATION.md) |
-| Hardware und Sensoren | [Messwerte und Quellen](docs/HARDWARE-SENSORS.md) |
-| AETHER Intelligence | [Architektur](docs/INTELLIGENCE-ARCHITECTURE.md) |
-| Modellpfad | [Lokale Modellinstallation](docs/INTELLIGENCE-MODEL-INSTALLATION.md) |
-| Sicherheit und Datenschutz | [Sicherheitsgrenzen](docs/SECURITY-AND-PRIVACY.md) |
-| Drittanbieter | [Lizenzen und Herkunft](THIRD-PARTY-NOTICES.md) |
-| Versionsgeschichte | [Changelog](CHANGELOG.md) |
+AETHER ist zuerst ein Programm für den lokalen Windows-PC. Ein einzelner
+Rechner bleibt ohne Server vollständig benutzbar. Der lokale Client hat
+Vorrang.
 
-## Beta-Status
+Der separate Server ergänzt AETHER für zentrale Verwaltungs- und
+Managementszenarien mit mehreren Rechnern. Er ist keine Voraussetzung für
+den Einzelplatzbetrieb. In Beta 53 führt der Server keine lokale oder
+serverseitige Modellinferenz aus.
 
-AETHER 0.7.0 Beta 53 ist eine öffentliche Vorabversion. Der manuelle Startup-
-und Branding-Smoke-Test des Kandidaten ist bestanden; der qualifizierte
-Portable-Realtest mit lokalem Phi, erfolgreicher Validatorprüfung und ohne
-Fallback bleibt belegt. Der qualifizierte lokale
-Phi-Pfad, die Evidence-/Claim-Prüfung, das AETHER-Branding und der separate
-Local-AI-Setup-Ablauf wurden geprüft. Screenshots sind bewusst auf einen
-späteren Stand zurückgestellt. Die Builds sind unsigniert.
+Langfristig kann der Server zusätzliche Aufgaben übernehmen, aber nur dort,
+wo dies technisch und wirtschaftlich sinnvoll ist. Eine kostenpflichtige
+Cloud-Infrastruktur ist keine Voraussetzung und wird nicht automatisch
+eingerichtet.
+
+## Warum AETHER so aussieht
+
+Ich wollte kein weiteres graues Verwaltungsprogramm bauen.
+
+### Retro-Neon
+
+AETHER verwendet dunkle Flächen, Cyan, Magenta und Grün für positive
+Zustände sowie technische Instrumente mit Mainboard- und Cockpit-Anmutung.
+Liveanzeigen und Verläufe sollen helfen, den aktuellen Zustand schneller zu
+erfassen. Farben zeigen Bereiche und Zustände; sie ersetzen weder Messwerte
+noch Quellen.
+
+### Windows Modern
+
+Daneben gibt es eine zurückhaltendere Windows-Modern-Darstellung für
+Anwender, die lieber neutrale Fenster und Diagramme verwenden. Animationen
+lassen sich abschalten.
+
+## AETHER Local AI Setup
+
+Der Hauptinstaller enthält den separaten Assistenten **AETHER Local AI
+Setup**. Er gehört optisch zur AETHER-Produktfamilie, verwendet das
+Neon-Design mit Logo und Wortmarke und besitzt einen definierten,
+verschiebbaren Header.
+
+Der Assistent prüft System, Hardware und vorhandene Runtime, zeigt die
+Modelllizenz und benötigt eine ausdrückliche Annahme. Er richtet den
+unterstützten Phi-4-Mini-Pfad kontrolliert ein und startet keinen
+Modellbezug ungefragt. Vorhandene qualifizierte lokale Daten können
+wiederverwendet werden.
+
+Modellgewichte und Ollama-Runtime sind nicht Teil der GitHub-Programmpakete.
+
+## AETHER 0.7.0 Beta 53
+
+Beta 53 ist die aktuelle Vorabversion. Ihr Schwerpunkt liegt auf dem
+zusammenhängenden Local-AI-Setup, dem qualifizierten Phi-4-Mini-Pfad, der
+Prüfung von Modellantworten gegen vorhandene Systemdaten sowie dem
+vollständigen Windows-Installer.
+
+Bereitgestellt werden:
+
+- die vollständige Portable-Version,
+- das Windows-Setup mit integriertem AETHER Local AI Setup,
+- die separate Serverversion für optionale Managementszenarien,
+- ein konsistentes AETHER-Branding.
+
+Hardware- und Sensorabdeckung hängen vom jeweiligen Gerät, Treiber und
+Windows-System ab. Die Builds sind unsigniert.
+
+## Download
+
+### Setup
+
+Für die normale Installation:
+
+[AETHER-0.7.0-beta.53-Setup-win-x64.exe](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Setup-win-x64.exe)
+
+Das Setup enthält den Assistenten **AETHER Local AI Setup**.
+
+### Portable
+
+Zum direkten Entpacken und Starten:
+
+[AETHER-0.7.0-beta.53-Portable-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Portable-win-x64.zip)
+
+Das Archiv vollständig in einen eigenen Ordner entpacken. DLLs, Runtime
+und Begleitdateien bleiben zusammen.
+
+### Server
+
+Nur für zentrale Verwaltungsfunktionen:
+
+[AETHER-0.7.0-beta.53-Server-win-x64.zip](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/AETHER-0.7.0-beta.53-Server-win-x64.zip)
+
+Der Server ist für den Betrieb eines einzelnen PCs nicht erforderlich.
+
+Prüfsummen und weitere Dateien:
+
+- [Beta-53-Release](https://github.com/oa7779/AetherCockpit/releases/tag/v0.7.0-beta.53)
+- [SHA256SUMS.txt](https://github.com/oa7779/AetherCockpit/releases/download/v0.7.0-beta.53/SHA256SUMS.txt)
+
+Keine der Veröffentlichungsdateien enthält Modellgewichte. Vor dem Start
+Herkunft und SHA-256-Prüfsumme kontrollieren. Schutzfunktionen wegen einer
+Warnung nicht deaktivieren.
+
+## Wohin AETHER gehen soll
+
+Langfristig soll AETHER Windows-Diagnose, Hardwarezustand, Prozesse,
+Ereignisse und zeitliche Zusammenhänge noch stärker zusammenführen:
+
+- Baselines und Abweichungen vom normalen Rechnerzustand,
+- belegbare Zusammenhänge und Ursachenketten,
+- kontrollierte Reparatur und Wartung,
+- Hardware- und Softwarehistorie,
+- zentrale Verwaltung mehrerer Systeme,
+- lokale Modelle für unterschiedliche Aufgaben und Hardwareklassen.
+
+Das Ziel ist nicht:
+
+**„Eine KI steuert selbständig den Rechner.“**
+
+Sondern:
+
+**AETHER versteht immer besser, was auf dem Rechner passiert, und gibt dem
+Benutzer die Informationen und Werkzeuge, um selbst kontrolliert zu
+entscheiden.**
+
+Bei einem Rechnerproblem soll ich nicht mehr zuerst überlegen müssen:
+
+**„Welches Windows-Werkzeug brauche ich dafür jetzt wieder?“**
+
+AETHER soll als Ausgangspunkt helfen zu beantworten:
+
+- Was passiert?
+- Seit wann?
+- Was hängt damit zusammen?
+- Was ist wahrscheinlich die Ursache?
+- Was ist tatsächlich belegt?
+- Welche Möglichkeiten bestehen?
+- Was soll anschließend geändert werden?
+
+Genau dafür wird AETHER gebaut.
+
+## Weitere Dokumentation
+
+- [Funktionsübersicht](docs/FEATURES.md)
+- [Installation](docs/INSTALLATION.md)
+- [Benutzerhandbuch](docs/USER-GUIDE.md)
+- [Hardware und Sensoren](docs/HARDWARE-SENSORS.md)
+- [AETHER Intelligence](docs/INTELLIGENCE-ARCHITECTURE.md)
+- [Lokale Modellinstallation](docs/INTELLIGENCE-MODEL-INSTALLATION.md)
+- [Systemverwaltung](docs/USER-GUIDE.md#verwaltung)
+- [Netzwerk und Mitschnitt](docs/NETWORK.md)
+- [Zentrale Verwaltung](docs/CENTRAL-MANAGEMENT.md)
+- [Sicherheit und Datenschutz](docs/SECURITY-AND-PRIVACY.md)
+- [Versionsgeschichte](CHANGELOG.md)
 
 ## Lizenz
 
-AETHER-eigener Quellcode und Dokumentation stehen unter der
+AETHER-eigener Quellcode und diese Dokumentation stehen unter der
 [MIT-Lizenz](LICENSE). Drittanbieter behalten ihre eigenen Rechte und
 Lizenzbedingungen.
